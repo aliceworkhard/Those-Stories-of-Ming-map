@@ -6,6 +6,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](./LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org/)
 [![MapLibre GL](https://img.shields.io/badge/MapLibre_GL-3D_WebGL-2962FF)](https://maplibre.org/)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel_Online-B83B2A)](https://those-stories-of-ming-map.vercel.app)
+
+🌐 **在线体验地址（Live Preview）**：**https://those-stories-of-ming-map.vercel.app**
 
 ---
 
