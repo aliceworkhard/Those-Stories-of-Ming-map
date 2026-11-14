@@ -9,37 +9,40 @@ import {
   ALL_EVENTS,
   CAMPAIGN_MAP,
   EVENT_MAP,
-  PLACES,
-  formatPlaceDisplay,
   getSnapshotForYear,
 } from '@/lib/atlasData';
 import {
-  TERRAIN_EXAGGERATION,
   createHistoricalBaseStyle,
+  getTerrainExaggeration,
   registerTacticalSprites,
 } from '@/engine/mapStyle';
 import {
   buildPhaseRouteFeatures,
+  buildPolityLabelGeoJSON,
   mountHistoricalLayers,
+  setPlaceNameModeOnGpu,
   syncLayerVisibility,
   updateCampaignAnimationFrame,
+  updateCausalArcsOnMap,
   type PreparedRouteCurve,
 } from '@/engine/MingMapLayers';
 import { sampleAlongPath } from '@/lib/curve';
+import { useAtlasStore } from '@/store/useAtlasStore';
 import type {
   CampaignPhase,
   HistoricalEvent,
-  HistoricalPlace,
   LngLat,
   MapVisualTheme,
+  PerformanceMode,
+  TerritoryPolityProps,
 } from '@/types/ming';
-import { useAtlasStore } from '@/store/useAtlasStore';
 
 const BASE_PHASE_DURATION_MS = 7800;
-const ROUTE_GROW_DURATION_MS = 4200;
-const OPENING_FLY_DURATION_MS = 1300;
-const STORY_STOP_DURATION_MS = 6800;
-const STORY_FLY_DURATION_MS = 1450;
+const ROUTE_GROW_DURATION_MS = 3000;
+const OPENING_FLY_DURATION_MS = 1350;
+
+const STORY_STOP_DURATION_MS = 6200;
+const STORY_FLY_DURATION_MS = 1400;
 
 interface ScreenBox {
   x1: number;
@@ -49,34 +52,29 @@ interface ScreenBox {
 }
 
 function boxesOverlap(a: ScreenBox, b: ScreenBox): boolean {
-  return a.x1 < b.x2 && a.x2 > b.x1 && a.y1 < b.y2 && a.y2 > b.y1;
+  return !(a.x2 < b.x1 || a.x1 > b.x2 || a.y2 < b.y1 || a.y1 > b.y2);
 }
 
 function padBox(b: ScreenBox, pad: number): ScreenBox {
-  return {
-    x1: b.x1 - pad,
-    y1: b.y1 - pad,
-    x2: b.x2 + pad,
-    y2: b.y2 + pad,
-  };
+  return { x1: b.x1 - pad, y1: b.y1 - pad, x2: b.x2 + pad, y2: b.y2 + pad };
 }
 
-/**
- * Accurate pixel width estimator for CJK + Latin/numeral pill labels (avoids forced DOM reflow).
- */
-function estimateLabelWidthPx(text: string, fontPx = 11, extraPad = 18): number {
-  let w = extraPad;
-  for (const ch of text) {
-    w += ch.charCodeAt(0) > 255 ? fontPx * 1.04 : fontPx * 0.62;
+function estimateLabelWidthPx(text: string, fontPx = 11, padX = 18): number {
+  let w = padX;
+  for (let i = 0; i < text.length; i++) {
+    w += text.charCodeAt(i) > 255 ? fontPx * 1.04 : fontPx * 0.62;
   }
   return Math.ceil(w);
 }
 
-/**
- * Creates a strictly 0x0, zero-transition anchor container for MapLibre Markers.
- * Keeping `root` 0x0 with ZERO CSS transitions guarantees markers NEVER jump or fight `flyTo`.
- */
-function createImmutableMarkerRoot(zIndex = '15'): HTMLDivElement {
+function getTargetPixelRatio(perfMode: PerformanceMode): number {
+  const dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
+  if (perfMode === 'eco') return 1;
+  if (perfMode === 'ultra') return Math.min(dpr, 2);
+  return Math.min(dpr, 1.5);
+}
+
+function createImmutableMarkerRoot(zIndex = '18'): HTMLDivElement {
   const root = document.createElement('div');
   root.style.width = '0px';
   root.style.height = '0px';
@@ -92,30 +90,13 @@ interface EventMarkerRecord {
   root: HTMLDivElement;
   tetherSvg: SVGSVGElement;
   tetherLine: SVGLineElement;
-  tetherDot: SVGCircleElement;
   anchorWrap: HTMLDivElement;
-  pingEl: HTMLSpanElement;
+  haloEl: HTMLSpanElement;
   badgeEl: HTMLDivElement;
   labelEl: HTMLDivElement;
   labelText: string;
   visible: boolean;
   hovered: boolean;
-}
-
-interface PlaceMarkerRecord {
-  place: HistoricalPlace;
-  marker: maplibregl.Marker;
-  root: HTMLDivElement;
-  dotWrap: HTMLDivElement;
-  labelEl: HTMLDivElement;
-  labelText: string;
-}
-
-interface PolityMarkerRecord {
-  coord: LngLat;
-  marker: maplibregl.Marker;
-  widthPx: number;
-  heightPx: number;
 }
 
 interface CampaignCalloutRecord {
@@ -146,13 +127,33 @@ function computeSlotBox(
 ): ScreenBox {
   switch (slot) {
     case 'bottom':
-      return { x1: ax - w / 2, y1: ay + r + 4, x2: ax + w / 2, y2: ay + r + 4 + h };
+      return {
+        x1: ax - w / 2,
+        y1: ay + r + 5,
+        x2: ax + w / 2,
+        y2: ay + r + 5 + h,
+      };
     case 'top':
-      return { x1: ax - w / 2, y1: ay - r - 4 - h, x2: ax + w / 2, y2: ay - r - 4 };
+      return {
+        x1: ax - w / 2,
+        y1: ay - r - 5 - h,
+        x2: ax + w / 2,
+        y2: ay - r - 5,
+      };
     case 'right':
-      return { x1: ax + r + 5, y1: ay - h / 2, x2: ax + r + 5 + w, y2: ay + h / 2 };
+      return {
+        x1: ax + r + 6,
+        y1: ay - h / 2,
+        x2: ax + r + 6 + w,
+        y2: ay + h / 2,
+      };
     case 'left':
-      return { x1: ax - r - 5 - w, y1: ay - h / 2, x2: ax - r - 5, y2: ay + h / 2 };
+      return {
+        x1: ax - r - 6 - w,
+        y1: ay - h / 2,
+        x2: ax - r - 6,
+        y2: ay + h / 2,
+      };
   }
 }
 
@@ -160,21 +161,21 @@ function applySlotPosition(el: HTMLElement, r: number, slot: LabelSlot): void {
   switch (slot) {
     case 'bottom':
       el.style.left = '0px';
-      el.style.top = `${r + 4}px`;
+      el.style.top = `${r + 5}px`;
       el.style.transform = 'translateX(-50%)';
       break;
     case 'top':
       el.style.left = '0px';
-      el.style.top = `${-r - 4}px`;
+      el.style.top = `${-r - 5}px`;
       el.style.transform = 'translate(-50%, -100%)';
       break;
     case 'right':
-      el.style.left = `${r + 5}px`;
+      el.style.left = `${r + 6}px`;
       el.style.top = '0px';
       el.style.transform = 'translateY(-50%)';
       break;
     case 'left':
-      el.style.left = `${-r - 5}px`;
+      el.style.left = `${-r - 6}px`;
       el.style.top = '0px';
       el.style.transform = 'translate(-100%, -50%)';
       break;
@@ -187,11 +188,15 @@ export default function MingMapCanvas() {
   const styleReadyRef = useRef(false);
   const activeCurvesRef = useRef<PreparedRouteCurve[]>([]);
   const animFrameRef = useRef<number | null>(null);
+  const startDirectorLoopRef = useRef<() => void>(() => {});
   const layoutRafPendingRef = useRef(false);
+  const lastMoveLayoutMsRef = useRef(0);
 
-  // Unified 60fps Auto-Camera & Route Growth Director Refs
+  // On-Demand Animation Clocks & Throttles (0% CPU/GPU when idle!)
   const phaseElapsedMsRef = useRef(0);
   const routeGrowElapsedMsRef = useRef(0);
+  const routeGrowFinishedRef = useRef(false);
+  const lastWebglFrameMsRef = useRef(0);
   const storyElapsedMsRef = useRef(0);
   const lastFrameTimeRef = useRef<number | null>(null);
   const lastProgressReportMsRef = useRef(0);
@@ -199,10 +204,9 @@ export default function MingMapCanvas() {
   const storyUserInteractedRef = useRef(false);
   const activePhaseRef = useRef<CampaignPhase | null>(null);
   const is3DRef = useRef(true);
+  const hoveredPolityIdRef = useRef<string | null>(null);
 
-  // Marker registries for Screen-Space De-Overlapping
-  const polityRecordsRef = useRef<PolityMarkerRecord[]>([]);
-  const placeRecordsRef = useRef<PlaceMarkerRecord[]>([]);
+  // Lightweight Marker Registries (Places & Polity Seals now live 100% on GPU!)
   const eventMarkerMapRef = useRef<Map<string, EventMarkerRecord>>(new Map());
   const campaignCalloutsRef = useRef<CampaignCalloutRecord[]>([]);
   const campaignShockwavesRef = useRef<CampaignShockwaveRecord[]>([]);
@@ -220,12 +224,13 @@ export default function MingMapCanvas() {
   const campaignCameraMode = useAtlasStore((s) => s.campaignCameraMode);
   const campaignReplayNonce = useAtlasStore((s) => s.campaignReplayNonce);
   const theme = useAtlasStore((s) => s.theme);
+  const perfMode = useAtlasStore((s) => s.perfMode);
   const is3D = useAtlasStore((s) => s.is3D);
   const placeNameMode = useAtlasStore((s) => s.placeNameMode);
   const layers = useAtlasStore((s) => s.layers);
   const cameraCommand = useAtlasStore((s) => s.cameraCommand);
 
-  is3DRef.current = is3D;
+  is3DRef.current = is3D && perfMode !== 'eco';
 
   const currentSnapshot = useMemo(
     () => getSnapshotForYear(currentYear),
@@ -240,10 +245,23 @@ export default function MingMapCanvas() {
     : null;
   activePhaseRef.current = activePhase;
 
+  const selectedEventObj = selectedEventId ? EVENT_MAP[selectedEventId] : null;
+
+  // Set of causal neighbor IDs (`prevEventIds` + `nextEventIds`) for the selected event
+  const causalLinkedSet = useMemo(() => {
+    const s = new Set<string>();
+    if (selectedEventObj) {
+      for (const id of selectedEventObj.why.prevEventIds ?? []) s.add(id);
+      for (const id of selectedEventObj.why.nextEventIds ?? []) s.add(id);
+    }
+    return s;
+  }, [selectedEventObj]);
+  const causalLinkedSetRef = useRef(causalLinkedSet);
+  causalLinkedSetRef.current = causalLinkedSet;
+
   /**
-   * Deterministic Screen-Space Spiderfy & 4-Quadrant 2D Bounding-Box Collision Solver!
-   * Guarantees ZERO overlapping text labels at ANY zoom level (z3 - z14), even when
-   * multiple events and cities share identical [lng, lat] coordinates.
+   * Fast Screen-Space Spiderfy & 4-Quadrant AABB Collision Solver for Event Medallions
+   * & Campaign Tactical Callouts. (Static Places & Polity Seals are handled natively by GPU!)
    */
   const runScreenSpaceLayout = () => {
     layoutRafPendingRef.current = false;
@@ -253,46 +271,37 @@ export default function MingMapCanvas() {
     const st = useAtlasStore.getState();
     const z = map.getZoom();
     const bucket: 'far' | 'mid' | 'close' =
-      z >= 6.8 ? 'close' : z >= 5.7 ? 'mid' : 'far';
+      z >= 6.6 ? 'close' : z >= 5.6 ? 'mid' : 'far';
     const canvas = map.getCanvas();
     const viewW = canvas.clientWidth || 1280;
     const viewH = canvas.clientHeight || 800;
 
     const occupied: ScreenBox[] = [];
 
-    // 1. Register Polity Dynasty Seal Banners first (high visual hierarchy)
-    if (st.layers.territories) {
-      for (const pol of polityRecordsRef.current) {
-        const pt = map.project(pol.coord);
-        const box: ScreenBox = {
-          x1: pt.x - pol.widthPx / 2,
-          y1: pt.y - pol.heightPx / 2,
-          x2: pt.x + pol.widthPx / 2,
-          y2: pt.y + pol.heightPx / 2,
-        };
-        occupied.push(padBox(box, 4));
-      }
-    }
-
-    // 2. Layout Campaign Shockwaves & Route Tactical Callouts (when in campaign mode)
+    // 1. Layout Campaign Shockwaves & Tactical Route Callouts (only during Campaign mode)
     if (st.activeCampaignId) {
       for (const sw of campaignShockwavesRef.current) {
         const pt = map.project(sw.coord);
-        occupied.push({ x1: pt.x - 20, y1: pt.y - 20, x2: pt.x + 20, y2: pt.y + 20 });
+        occupied.push({
+          x1: pt.x - 18,
+          y1: pt.y - 18,
+          x2: pt.x + 18,
+          y2: pt.y + 18,
+        });
 
         const slots: LabelSlot[] = ['bottom', 'top', 'right', 'left'];
         let placedSlot: LabelSlot = 'bottom';
         for (const sl of slots) {
-          const cand = computeSlotBox(pt.x, pt.y, 18, sw.widthPx, sw.heightPx, sl);
+          const cand = computeSlotBox(pt.x, pt.y, 17, sw.widthPx, sw.heightPx, sl);
           if (occupied.every((b) => !boxesOverlap(cand, b))) {
             placedSlot = sl;
             break;
           }
         }
-        applySlotPosition(sw.labelEl, 18, placedSlot);
+        applySlotPosition(sw.labelEl, 17, placedSlot);
         occupied.push(
           padBox(
-            computeSlotBox(pt.x, pt.y, 18, sw.widthPx, sw.heightPx, placedSlot),
+            computeSlotBox(pt.x, pt.y, 17, sw.widthPx, sw.heightPx, placedSlot),
             4
           )
         );
@@ -300,12 +309,12 @@ export default function MingMapCanvas() {
 
       const calloutOffsets: Array<[number, number]> = [
         [0, 0],
-        [0, -26],
-        [0, 26],
-        [44, 0],
-        [-44, 0],
-        [0, -48],
-        [0, 48],
+        [0, -24],
+        [0, 24],
+        [42, 0],
+        [-42, 0],
+        [0, -46],
+        [0, 46],
       ];
       for (const co of campaignCalloutsRef.current) {
         const pt = map.project(co.coord);
@@ -331,9 +340,10 @@ export default function MingMapCanvas() {
         co.wrapEl.style.top = `${chosen[1]}px`;
         co.wrapEl.style.opacity = found ? '1' : '0';
       }
+      return;
     }
 
-    // 3. Spiderfy Co-Located Visible Event Icons so identical [lng, lat] NEVER stack!
+    // 2. Spiderfy Co-Located Event Medallions so identical [lng, lat] never stack!
     const visibleEventRecs: Array<{
       rec: EventMarkerRecord;
       baseX: number;
@@ -348,7 +358,6 @@ export default function MingMapCanvas() {
       visibleEventRecs.push({ rec, baseX: pt.x, baseY: pt.y, dx: 0, dy: 0 });
     });
 
-    // Greedy proximity clustering (events within 34px screen distance form a spiderfy ring)
     const assigned = new Set<number>();
     for (let i = 0; i < visibleEventRecs.length; i++) {
       if (assigned.has(i)) continue;
@@ -361,7 +370,7 @@ export default function MingMapCanvas() {
             Math.hypot(
               visibleEventRecs[idx].baseX - visibleEventRecs[j].baseX,
               visibleEventRecs[idx].baseY - visibleEventRecs[j].baseY
-            ) < 34
+            ) < 32
         );
         if (nearAny) {
           cluster.push(j);
@@ -377,7 +386,7 @@ export default function MingMapCanvas() {
           cluster.reduce((s, idx) => s + visibleEventRecs[idx].baseY, 0) /
           cluster.length;
         const ringRadius =
-          cluster.length === 2 ? 22 : cluster.length <= 4 ? 28 : 36;
+          cluster.length === 2 ? 21 : cluster.length <= 4 ? 27 : 34;
 
         cluster.forEach((memberIdx, k) => {
           const item = visibleEventRecs[memberIdx];
@@ -390,7 +399,6 @@ export default function MingMapCanvas() {
       }
     }
 
-    // Apply spiderfy offsets, tether lines, and reserve icon hitboxes in `occupied`
     for (const item of visibleEventRecs) {
       const { rec, baseX, baseY, dx, dy } = item;
       rec.anchorWrap.style.left = `${dx}px`;
@@ -399,8 +407,8 @@ export default function MingMapCanvas() {
       const dist = Math.hypot(dx, dy);
       if (dist > 5) {
         rec.tetherSvg.style.display = 'block';
-        rec.tetherLine.setAttribute('x2', String(60 + dx));
-        rec.tetherLine.setAttribute('y2', String(60 + dy));
+        rec.tetherLine.setAttribute('x2', String(56 + dx));
+        rec.tetherLine.setAttribute('y2', String(56 + dy));
       } else {
         rec.tetherSvg.style.display = 'none';
       }
@@ -414,103 +422,57 @@ export default function MingMapCanvas() {
       });
     }
 
-    // Also reserve tiny 6x6 dots for visible places
-    const projectedPlaces = placeRecordsRef.current.map((pl) => {
-      const pt = map.project(pl.place.coordinates);
-      return { pl, x: pt.x, y: pt.y };
-    });
+    // 3. Priority-Sorted 4-Quadrant Event Label Solver with Temporal Decluttering
+    const linkedIds = causalLinkedSetRef.current;
+    const candidates = visibleEventRecs
+      .map((item) => {
+        const { rec, baseX, baseY, dx, dy } = item;
+        const isSelected = rec.evt.id === st.selectedEventId;
+        const isCausal = linkedIds.has(rec.evt.id);
+        const isMacro = rec.evt.tier === 'macro';
+        const yearGap = Math.abs(rec.evt.time.year - st.currentYear);
+        const isInEraFocus = yearGap <= 8;
 
-    // 4. Unified Priority-Sorted 4-Quadrant Label Solver (Events + Places)
-    type UnifiedLabelCandidate =
-      | {
-          kind: 'event';
-          priority: number;
-          ax: number;
-          ay: number;
-          r: number;
-          w: number;
-          h: number;
-          rec: EventMarkerRecord;
-          forceShow: boolean;
+        // Smart Temporal Decluttering: when zoomed out at China overview (`far`),
+        // show labels only on Selected, Hovered, Causal-Linked, or Current-Era events!
+        const shouldDisplayLabel =
+          rec.hovered ||
+          isSelected ||
+          isCausal ||
+          bucket === 'close' ||
+          (bucket === 'mid' && (isMacro || st.layers.showAllMicroEvents)) ||
+          (bucket === 'far' && isMacro && isInEraFocus);
+
+        if (!shouldDisplayLabel) {
+          rec.labelEl.style.display = 'none';
+          return null;
         }
-      | {
-          kind: 'place';
-          priority: number;
-          ax: number;
-          ay: number;
-          r: number;
-          w: number;
-          h: number;
-          plRec: PlaceMarkerRecord;
-        };
 
-    const candidates: UnifiedLabelCandidate[] = [];
-
-    for (const item of visibleEventRecs) {
-      const { rec, baseX, baseY, dx, dy } = item;
-      const isSelected = rec.evt.id === st.selectedEventId;
-      const isMacro = rec.evt.tier === 'macro';
-      const isNearYear = Math.abs(rec.evt.time.year - st.currentYear) <= 5;
-
-      // Keep micro event labels hover-only when zoomed far out unless selected or forced
-      if (
-        !isMacro &&
-        !isSelected &&
-        bucket === 'far' &&
-        !st.layers.showAllMicroEvents &&
-        !rec.hovered
-      ) {
-        rec.labelEl.style.display = 'none';
-        continue;
-      }
-
-      const priority =
-        rec.hovered
-          ? 120
+        const priority = rec.hovered
+          ? 130
           : isSelected
-          ? 100
-          : isMacro && isNearYear
-          ? 82
+          ? 110
+          : isCausal
+          ? 92
+          : isMacro && isInEraFocus
+          ? 78
           : isMacro
-          ? 64
-          : 38;
+          ? 60
+          : 40;
 
-      candidates.push({
-        kind: 'event',
-        priority,
-        ax: baseX + dx,
-        ay: baseY + dy,
-        r: isMacro ? 15 : 12,
-        w: estimateLabelWidthPx(rec.labelText, 11, 20),
-        h: 22,
-        rec,
-        forceShow: isSelected || rec.hovered,
-      });
-    }
-
-    if (st.layers.places) {
-      for (const { pl, x, y } of projectedPlaces) {
-        const isCap = pl.place.type === 'capital';
-        const isNine = pl.place.type === 'garrison-nine';
-        const nearEventIcon = visibleEventRecs.some(
-          (it) => Math.hypot(it.baseX + it.dx - x, it.baseY + it.dy - y) < 20
-        );
-        pl.dotWrap.style.display = nearEventIcon ? 'none' : 'block';
-
-        candidates.push({
-          kind: 'place',
-          priority: isCap ? 74 : isNine ? 56 : 44,
-          ax: x,
-          ay: y,
-          r: nearEventIcon ? 16 : 6,
-          w: estimateLabelWidthPx(pl.labelText, isCap ? 11 : 10, 18),
-          h: 20,
-          plRec: pl,
-        });
-      }
-    }
-
-    candidates.sort((a, b) => b.priority - a.priority);
+        return {
+          rec,
+          priority,
+          ax: baseX + dx,
+          ay: baseY + dy,
+          r: isMacro ? 15 : 12,
+          w: estimateLabelWidthPx(rec.labelText, 11, 18),
+          h: 22,
+          forceShow: isSelected || rec.hovered,
+        };
+      })
+      .filter((x): x is NonNullable<typeof x> => x !== null)
+      .sort((a, b) => b.priority - a.priority);
 
     const overlapArea = (a: ScreenBox, b: ScreenBox): number => {
       const ox = Math.max(0, Math.min(a.x2, b.x2) - Math.max(a.x1, b.x1));
@@ -518,33 +480,33 @@ export default function MingMapCanvas() {
       return ox * oy;
     };
 
+    const slotOrder: LabelSlot[] = ['bottom', 'right', 'left', 'top'];
+    const safeLeft =
+      viewW >= 640 && st.isDirectoryOpen && !st.activeCampaignId ? 290 : 8;
+    const safeRight =
+      viewW >= 640 && st.isDrawerOpen && !st.activeCampaignId
+        ? viewW - 360
+        : viewW - 8;
+
     for (const cand of candidates) {
-      // Offscreen guard
       if (
-        cand.ax < -60 ||
-        cand.ax > viewW + 60 ||
-        cand.ay < -60 ||
-        cand.ay > viewH + 60
+        cand.ax < -50 ||
+        cand.ax > viewW + 50 ||
+        cand.ay < -50 ||
+        cand.ay > viewH + 50
       ) {
-        if (cand.kind === 'event') cand.rec.labelEl.style.display = 'none';
-        else cand.plRec.root.style.display = 'none';
+        cand.rec.labelEl.style.display = 'none';
         continue;
       }
-
-      // Places prefer 'top' first so Events at the same city naturally claim 'bottom' without colliding!
-      const slotOrder: LabelSlot[] =
-        cand.kind === 'place'
-          ? ['top', 'right', 'left', 'bottom']
-          : ['bottom', 'right', 'left', 'top'];
 
       let chosenSlot: LabelSlot | null = null;
       for (const sl of slotOrder) {
         const box = computeSlotBox(cand.ax, cand.ay, cand.r, cand.w, cand.h, sl);
         if (
-          box.x1 >= 6 &&
-          box.x2 <= viewW - 6 &&
-          box.y1 >= 54 &&
-          box.y2 <= viewH - 44 &&
+          box.x1 >= safeLeft &&
+          box.x2 <= safeRight &&
+          box.y1 >= 56 &&
+          box.y2 <= viewH - 56 &&
           occupied.every((b) => !boxesOverlap(box, b))
         ) {
           chosenSlot = sl;
@@ -552,87 +514,63 @@ export default function MingMapCanvas() {
         }
       }
 
-      if (cand.kind === 'event') {
-        if (chosenSlot || cand.forceShow) {
-          let finalSlot = chosenSlot;
-          if (!finalSlot) {
-            let bestCost = Number.POSITIVE_INFINITY;
-            finalSlot = 'bottom';
-            for (const sl of slotOrder) {
-              const box = computeSlotBox(
-                cand.ax,
-                cand.ay,
-                cand.r,
-                cand.w,
-                cand.h,
-                sl
-              );
-              const cost = occupied.reduce(
-                (sum, b) => sum + overlapArea(box, b),
-                0
-              );
-              if (cost < bestCost) {
-                bestCost = cost;
-                finalSlot = sl;
-              }
+      if (chosenSlot || cand.forceShow) {
+        let finalSlot = chosenSlot;
+        if (!finalSlot) {
+          let bestCost = Number.POSITIVE_INFINITY;
+          finalSlot = 'bottom';
+          for (const sl of slotOrder) {
+            const box = computeSlotBox(
+              cand.ax,
+              cand.ay,
+              cand.r,
+              cand.w,
+              cand.h,
+              sl
+            );
+            const cost = occupied.reduce(
+              (sum, b) => sum + overlapArea(box, b),
+              0
+            );
+            if (cost < bestCost) {
+              bestCost = cost;
+              finalSlot = sl;
             }
           }
-          applySlotPosition(cand.rec.labelEl, cand.r, finalSlot);
-          cand.rec.labelEl.style.display = 'block';
-          const box = computeSlotBox(
-            cand.ax,
-            cand.ay,
-            cand.r,
-            cand.w,
-            cand.h,
-            finalSlot
-          );
-          occupied.push(padBox(box, 3));
-        } else {
-          cand.rec.labelEl.style.display = 'none';
         }
+        applySlotPosition(cand.rec.labelEl, cand.r, finalSlot);
+        cand.rec.labelEl.style.display = 'block';
+        occupied.push(
+          padBox(
+            computeSlotBox(cand.ax, cand.ay, cand.r, cand.w, cand.h, finalSlot),
+            3
+          )
+        );
       } else {
-        if (chosenSlot) {
-          cand.plRec.root.style.display = 'block';
-          applySlotPosition(cand.plRec.labelEl, cand.r, chosenSlot);
-          if (cand.r <= 6) {
-            occupied.push({
-              x1: cand.ax - 4,
-              y1: cand.ay - 4,
-              x2: cand.ax + 4,
-              y2: cand.ay + 4,
-            });
-          }
-          const box = computeSlotBox(
-            cand.ax,
-            cand.ay,
-            cand.r,
-            cand.w,
-            cand.h,
-            chosenSlot
-          );
-          occupied.push(padBox(box, 3));
-        } else {
-          cand.plRec.root.style.display = 'none';
-        }
+        cand.rec.labelEl.style.display = 'none';
       }
     }
   };
 
-  const scheduleScreenLayout = () => {
+  const scheduleScreenLayout = (throttleMove = false) => {
+    if (throttleMove) {
+      const now = performance.now();
+      if (now - lastMoveLayoutMsRef.current < 42) return;
+      lastMoveLayoutMsRef.current = now;
+    }
     if (layoutRafPendingRef.current) return;
     layoutRafPendingRef.current = true;
     requestAnimationFrame(runScreenSpaceLayout);
   };
 
-  // Sync All WebGL Data into Current Style
   const syncAllMapSourcesAndLayers = () => {
     const map = mapRef.current;
     if (!map || !styleReadyRef.current) return;
+    const st = useAtlasStore.getState();
 
     registerTacticalSprites(map);
-    mountHistoricalLayers(map, currentSnapshot.geojson, theme);
-    syncLayerVisibility(map, layers);
+    mountHistoricalLayers(map, currentSnapshot.geojson, st.theme, st.placeNameMode);
+    syncLayerVisibility(map, st.layers);
 
     const terSource = map.getSource('ming-territories') as
       | maplibregl.GeoJSONSource
@@ -641,6 +579,20 @@ export default function MingMapCanvas() {
       terSource.setData(currentSnapshot.geojson);
     }
 
+    const polPtSource = map.getSource('ming-polity-points') as
+      | maplibregl.GeoJSONSource
+      | undefined;
+    if (polPtSource) {
+      polPtSource.setData(buildPolityLabelGeoJSON(currentSnapshot.geojson));
+    }
+
+    const activeEvt = st.selectedEventId ? EVENT_MAP[st.selectedEventId] : null;
+    updateCausalArcsOnMap(
+      map,
+      activeEvt,
+      st.layers.causalArcs && !st.activeCampaignId
+    );
+
     const { preparedCurves } = buildPhaseRouteFeatures(
       activeCampaign,
       activePhase
@@ -648,52 +600,51 @@ export default function MingMapCanvas() {
     activeCurvesRef.current = preparedCurves;
 
     if (!activeCampaign) {
-      updateCampaignAnimationFrame(map, [], 0, 0);
+      updateCampaignAnimationFrame(map, [], 0, 0, false);
     }
   };
 
-  // Build Persistent Event Markers Once on Map Init
+  // Mount Lightweight Bespoke Oriental Seal Medallions for Events (0 infinite CSS animations!)
   const mountPersistentEventMarkers = (map: maplibregl.Map) => {
     eventMarkerMapRef.current.forEach((rec) => rec.marker.remove());
     eventMarkerMapRef.current.clear();
 
     for (const evt of ALL_EVENTS) {
       const isMacro = evt.tier === 'macro';
-      const root = createImmutableMarkerRoot(isMacro ? '22' : '18');
+      const isBattle = Boolean(evt.campaignId);
+      const root = createImmutableMarkerRoot(isMacro ? '24' : '19');
 
-      // Subtle SVG callout tether when co-located events spiderfy into a ring
       const svgNs = 'http://www.w3.org/2000/svg';
       const tetherSvg = document.createElementNS(svgNs, 'svg');
-      tetherSvg.setAttribute('width', '120');
-      tetherSvg.setAttribute('height', '120');
+      tetherSvg.setAttribute('width', '112');
+      tetherSvg.setAttribute('height', '112');
       tetherSvg.style.position = 'absolute';
-      tetherSvg.style.left = '-60px';
-      tetherSvg.style.top = '-60px';
+      tetherSvg.style.left = '-56px';
+      tetherSvg.style.top = '-56px';
       tetherSvg.style.pointerEvents = 'none';
       tetherSvg.style.display = 'none';
 
-      const tetherLine = document.createElementNS(svgNs, 'line');
-      tetherLine.setAttribute('x1', '60');
-      tetherLine.setAttribute('y1', '60');
-      tetherLine.setAttribute('x2', '60');
-      tetherLine.setAttribute('y2', '60');
-      tetherLine.setAttribute('stroke', '#9B2C1D');
-      tetherLine.setAttribute('stroke-width', '1.2');
-      tetherLine.setAttribute('stroke-dasharray', '2,2');
-      tetherLine.setAttribute('opacity', '0.65');
-
       const tetherDot = document.createElementNS(svgNs, 'circle');
-      tetherDot.setAttribute('cx', '60');
-      tetherDot.setAttribute('cy', '60');
+      tetherDot.setAttribute('cx', '56');
+      tetherDot.setAttribute('cy', '56');
       tetherDot.setAttribute('r', '2.5');
       tetherDot.setAttribute('fill', '#9B2C1D');
       tetherDot.setAttribute('opacity', '0.75');
+
+      const tetherLine = document.createElementNS(svgNs, 'line');
+      tetherLine.setAttribute('x1', '56');
+      tetherLine.setAttribute('y1', '56');
+      tetherLine.setAttribute('x2', '56');
+      tetherLine.setAttribute('y2', '56');
+      tetherLine.setAttribute('stroke', '#9B2C1D');
+      tetherLine.setAttribute('stroke-width', '1.2');
+      tetherLine.setAttribute('stroke-dasharray', '2.5 2');
+      tetherLine.setAttribute('opacity', '0.7');
 
       tetherSvg.appendChild(tetherLine);
       tetherSvg.appendChild(tetherDot);
       root.appendChild(tetherSvg);
 
-      // Spiderfyable anchor wrapper (ZERO CSS transition)
       const anchorWrap = document.createElement('div');
       anchorWrap.style.position = 'absolute';
       anchorWrap.style.left = '0px';
@@ -718,36 +669,43 @@ export default function MingMapCanvas() {
       btn.style.border = 'none';
       btn.style.padding = '0';
 
-      const pingEl = document.createElement('span');
-      pingEl.className =
-        'animate-ping rounded-full border-2 opacity-60 pointer-events-none';
-      pingEl.style.position = 'absolute';
-      pingEl.style.width = isMacro ? '26px' : '20px';
-      pingEl.style.height = isMacro ? '26px' : '20px';
+      // Static double-ring halo (ZERO GPU-draining `animate-ping`!)
+      const haloEl = document.createElement('span');
+      haloEl.className = 'rounded-full border pointer-events-none';
+      haloEl.style.position = 'absolute';
+      haloEl.style.width = isMacro ? '28px' : '22px';
+      haloEl.style.height = isMacro ? '28px' : '22px';
+      haloEl.style.display = 'none';
 
       const badgeEl = document.createElement('div');
       badgeEl.className = `${
-        isMacro
-          ? 'w-6.5 h-6.5 rounded-md rotate-45 border-2 border-amber-200/90 shadow-md group-hover:scale-110'
-          : 'w-5 h-5 rounded-full border border-amber-100 shadow group-hover:scale-110'
+        isBattle
+          ? 'w-7 h-7 rounded-lg rotate-45 border-2 shadow-md group-hover:scale-110'
+          : isMacro
+          ? 'w-6 h-6 rounded-[5px] rotate-45 border-[1.5px] shadow-md group-hover:scale-110'
+          : 'w-5 h-5 rounded-full border shadow-sm group-hover:scale-110'
       } flex items-center justify-center transition-transform duration-150 pointer-events-none`;
 
       const charSpan = document.createElement('span');
       charSpan.className = `${
-        isMacro ? '-rotate-45 text-[11px] font-serif font-bold' : 'text-[10px]'
-      } text-amber-50 select-none`;
-      charSpan.textContent = evt.campaignId ? '战' : isMacro ? '史' : '轶';
+        isBattle || isMacro
+          ? '-rotate-45 text-[11px] font-serif font-bold'
+          : 'text-[10px] font-serif font-semibold'
+      } text-amber-50 select-none leading-none`;
+      charSpan.textContent = isBattle ? '战' : isMacro ? '史' : '轶';
       badgeEl.appendChild(charSpan);
 
-      btn.appendChild(pingEl);
+      btn.appendChild(haloEl);
       btn.appendChild(badgeEl);
 
-      const shortTitle = `${evt.title.slice(0, 9)}${evt.title.length > 9 ? '…' : ''}`;
+      const shortTitle = `${evt.title.slice(0, 9)}${
+        evt.title.length > 9 ? '…' : ''
+      }`;
       const labelText = `${evt.time.year} ${shortTitle}`;
       const labelEl = document.createElement('div');
       labelEl.style.position = 'absolute';
       labelEl.style.pointerEvents = 'none';
-      labelEl.innerHTML = `<span class="opacity-75 mr-1 tabular-nums">${evt.time.year}</span>${shortTitle}`;
+      labelEl.innerHTML = `<span class="opacity-75 mr-1 tabular-nums font-semibold">${evt.time.year}</span><span>${shortTitle}</span>`;
 
       const record: EventMarkerRecord = {
         evt,
@@ -755,9 +713,8 @@ export default function MingMapCanvas() {
         root,
         tetherSvg,
         tetherLine,
-        tetherDot,
         anchorWrap,
-        pingEl,
+        haloEl,
         badgeEl,
         labelEl,
         labelText,
@@ -768,13 +725,13 @@ export default function MingMapCanvas() {
       btn.addEventListener('mouseenter', () => {
         record.hovered = true;
         root.style.zIndex = '60';
-        scheduleScreenLayout();
+        scheduleScreenLayout(false);
       });
       btn.addEventListener('mouseleave', () => {
         record.hovered = false;
         const sel = useAtlasStore.getState().selectedEventId === evt.id;
-        root.style.zIndex = sel ? '42' : isMacro ? '24' : '19';
-        scheduleScreenLayout();
+        root.style.zIndex = sel ? '44' : isMacro ? '24' : '19';
+        scheduleScreenLayout(false);
       });
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -804,65 +761,104 @@ export default function MingMapCanvas() {
     bucket: 'far' | 'mid' | 'close',
     macroVis: boolean,
     allMicroVis: boolean,
-    inCampaign: boolean
+    inCampaign: boolean,
+    causalIds: Set<string>
   ) => {
     const showMicro = allMicroVis || bucket !== 'far';
 
     eventMarkerMapRef.current.forEach((rec) => {
-      const { evt, root, pingEl, badgeEl, labelEl } = rec;
+      const { evt, root, haloEl, badgeEl, labelEl } = rec;
       const isMacro = evt.tier === 'macro';
+      const isBattle = Boolean(evt.campaignId);
+      const isCausal = causalIds.has(evt.id);
 
       const visible =
-        !inCampaign && ((isMacro && macroVis) || (!isMacro && showMicro));
+        !inCampaign &&
+        ((isMacro && macroVis) || (!isMacro && (showMicro || isCausal)));
       rec.visible = visible;
       root.style.display = visible ? 'block' : 'none';
       if (!visible) return;
 
       const isSelected = evt.id === selectedId;
-      const isNearYear = Math.abs(evt.time.year - year) <= 5;
+      const isNearYear = Math.abs(evt.time.year - year) <= 8;
       if (!rec.hovered) {
-        root.style.zIndex = isSelected ? '42' : isMacro ? '24' : '19';
+        root.style.zIndex = isSelected
+          ? '44'
+          : isCausal
+          ? '32'
+          : isMacro
+          ? '24'
+          : '19';
       }
 
-      const badgeBg = isMacro
-        ? isSelected
-          ? '#9B1C1C'
-          : '#B83B2A'
-        : isSelected
-        ? '#B45309'
-        : '#D97706';
+      const badgeBg = isSelected
+        ? '#8E1912'
+        : isBattle
+        ? '#B83B2A'
+        : isMacro
+        ? '#9F3526'
+        : '#B76E1D';
 
       badgeEl.style.background = badgeBg;
-      badgeEl.style.opacity = isSelected || isNearYear ? '1' : '0.88';
-      pingEl.style.borderColor = badgeBg;
-      pingEl.style.display = isSelected || isNearYear ? 'block' : 'none';
+      badgeEl.style.borderColor = isSelected
+        ? '#FDE68A'
+        : isCausal
+        ? '#FBBF24'
+        : 'rgba(253, 230, 138, 0.78)';
+      badgeEl.style.opacity =
+        isSelected || isCausal || isNearYear ? '1' : '0.68';
 
-      labelEl.className = `px-2 py-0.5 rounded shadow-sm border text-[11px] whitespace-nowrap font-medium select-none ${
+      if (isSelected || isCausal) {
+        haloEl.style.display = 'block';
+        haloEl.style.borderColor = isSelected ? '#F59E0B' : '#D97706';
+        haloEl.style.boxShadow = isSelected
+          ? '0 0 12px rgba(217, 119, 6, 0.55)'
+          : 'none';
+      } else {
+        haloEl.style.display = 'none';
+      }
+
+      labelEl.className = `px-2 py-0.5 rounded-md shadow-sm border text-[11px] font-serif whitespace-nowrap select-none ${
         isSelected
-          ? 'bg-red-900 text-amber-50 border-amber-300 font-bold'
+          ? 'bg-[#8E1912] text-amber-50 border-amber-300 font-bold shadow-md'
+          : isCausal
+          ? currentTheme === 'xuanmo'
+            ? 'bg-amber-950/95 text-amber-200 border-amber-500/60 font-semibold'
+            : 'bg-[#FFF8E7] text-amber-950 border-amber-600/50 font-semibold'
           : currentTheme === 'xuanmo'
-          ? 'bg-slate-900/92 text-amber-50/95 border-slate-700'
-          : 'bg-[#FFFDF7]/95 text-stone-900 border-amber-900/20'
+          ? 'bg-slate-900/95 text-amber-50/95 border-slate-700'
+          : 'bg-[#FCF8EE]/96 text-stone-900 border-amber-900/25'
       }`;
     });
 
-    scheduleScreenLayout();
+    scheduleScreenLayout(false);
   };
 
-  // 1. Initialize MapLibre GL Instance & Unified 60fps Dual-Mode Camera Director
+  // 1. Initialize MapLibre GL & On-Demand Hardware-Friendly Director Loop
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
+    const initState = useAtlasStore.getState();
 
     const map = new maplibregl.Map({
       container: containerRef.current,
-      style: createHistoricalBaseStyle(theme, is3D),
+      style: createHistoricalBaseStyle(
+        initState.theme,
+        initState.is3D,
+        initState.perfMode
+      ),
       center: SITE_CONFIG.defaultCamera.center,
       zoom: SITE_CONFIG.defaultCamera.zoom,
-      pitch: is3D ? SITE_CONFIG.defaultCamera.pitch : 0,
+      pitch:
+        initState.is3D && initState.perfMode !== 'eco'
+          ? SITE_CONFIG.defaultCamera.pitch
+          : 0,
       bearing: SITE_CONFIG.defaultCamera.bearing,
-      maxPitch: 72,
+      pixelRatio: getTargetPixelRatio(initState.perfMode),
+      maxTileCacheSize: initState.perfMode === 'eco' ? 48 : 96,
+      maxPitch: 54,
       minZoom: 3.2,
-      maxZoom: 13.5,
+      maxZoom: 13.0,
+      fadeDuration: 160,
       attributionControl: false,
       localIdeographFontFamily:
         "'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'Microsoft YaHei', serif",
@@ -880,27 +876,85 @@ export default function MingMapCanvas() {
     const onManualInput = (e: { originalEvent?: Event }) => {
       if (!e.originalEvent) return;
       const st = useAtlasStore.getState();
-      if (st.activeCampaignId) {
-        userInteractedInPhaseRef.current = true;
-      }
-      if (st.isStoryTourPlaying) {
-        storyUserInteractedRef.current = true;
-      }
+      if (st.activeCampaignId) userInteractedInPhaseRef.current = true;
+      if (st.isStoryTourPlaying) storyUserInteractedRef.current = true;
     };
     map.on('mousedown', onManualInput);
     map.on('touchstart', onManualInput);
     map.on('wheel', onManualInput);
 
+    // Interactive Territory Hover Highlight (Throttled to 50ms -> near-zero CPU!)
+    let lastHoverMs = 0;
+    map.on('mousemove', (e) => {
+      const now = performance.now();
+      if (now - lastHoverMs < 55 || !styleReadyRef.current) return;
+      lastHoverMs = now;
+      if (!map.getLayer('ming-territories-fill')) return;
+
+      const hits = map.queryRenderedFeatures(e.point, {
+        layers: ['ming-territories-fill'],
+      });
+      const topFeat = hits[0];
+      const nextId = topFeat
+        ? String(topFeat.properties?.polityId ?? '')
+        : null;
+
+      if (nextId !== hoveredPolityIdRef.current) {
+        hoveredPolityIdRef.current = nextId;
+        if (map.getLayer('ming-territories-hover')) {
+          map.setFilter('ming-territories-hover', [
+            '==',
+            ['get', 'polityId'],
+            nextId ?? '__none__',
+          ]);
+        }
+        if (topFeat?.properties) {
+          const p = topFeat.properties;
+          useAtlasStore.getState().setHoveredPolity({
+            polityId: String(p.polityId ?? ''),
+            polityName: String(p.polityName ?? ''),
+            shortLabel: String(p.shortLabel ?? ''),
+            ruler: String(p.ruler ?? ''),
+            controlType:
+              p.controlType === 'tributary-garrison'
+                ? 'tributary-garrison'
+                : 'direct',
+            color: String(p.color ?? '#B83B2A'),
+            labelCoord: [0, 0],
+            capitalName: String(p.capitalName ?? ''),
+            changeReason: String(p.changeReason ?? ''),
+          } satisfies TerritoryPolityProps);
+        } else {
+          useAtlasStore.getState().setHoveredPolity(null);
+        }
+      }
+    });
+
+    map.getCanvas().addEventListener('mouseleave', () => {
+      if (hoveredPolityIdRef.current !== null) {
+        hoveredPolityIdRef.current = null;
+        if (styleReadyRef.current && map.getLayer('ming-territories-hover')) {
+          map.setFilter('ming-territories-hover', [
+            '==',
+            ['get', 'polityId'],
+            '__none__',
+          ]);
+        }
+        useAtlasStore.getState().setHoveredPolity(null);
+      }
+    });
+
     const updateZoomBucket = () => {
       const z = map.getZoom();
-      const next = z >= 6.8 ? 'close' : z >= 5.7 ? 'mid' : 'far';
+      const next = z >= 6.6 ? 'close' : z >= 5.6 ? 'mid' : 'far';
       setZoomBucket((prev) => (prev === next ? prev : next));
-      scheduleScreenLayout();
+      scheduleScreenLayout(false);
     };
 
-    map.on('move', scheduleScreenLayout);
+    map.on('move', () => scheduleScreenLayout(true));
+    map.on('moveend', () => scheduleScreenLayout(false));
     map.on('zoomend', updateZoomBucket);
-    map.on('resize', scheduleScreenLayout);
+    map.on('resize', () => scheduleScreenLayout(false));
 
     map.on('load', () => {
       styleReadyRef.current = true;
@@ -911,25 +965,44 @@ export default function MingMapCanvas() {
         st.theme,
         st.selectedEventId,
         st.currentYear,
-        map.getZoom() >= 6.8 ? 'close' : map.getZoom() >= 5.7 ? 'mid' : 'far',
+        map.getZoom() >= 6.6 ? 'close' : map.getZoom() >= 5.6 ? 'mid' : 'far',
         st.layers.macroEvents,
         st.layers.showAllMicroEvents,
-        Boolean(st.activeCampaignId)
+        Boolean(st.activeCampaignId),
+        causalLinkedSetRef.current
       );
       updateZoomBucket();
-      scheduleScreenLayout();
+      scheduleScreenLayout(false);
+      startDirectorLoopRef.current();
     });
 
-    // Unified 60fps Director Loop:
-    //  A) Campaign Progressive Route Growth + Vanguard Spearheads + Follow/Orbit 3D Camera
-    //  B) Chronological Full-History Story Tour 3D Orbital Camera
+    // ON-DEMAND Director Loop: Automatically sleeps (0% CPU/GPU) whenever idle!
+    const shouldKeepRunning = (): boolean => {
+      if (typeof document !== 'undefined' && document.hidden) return false;
+      const st = useAtlasStore.getState();
+      const growTotalMs = ROUTE_GROW_DURATION_MS / st.campaignSpeed;
+      const campaignNeedsFrames =
+        Boolean(st.activeCampaignId) &&
+        activeCurvesRef.current.length > 0 &&
+        (st.isCampaignPlaying || routeGrowElapsedMsRef.current < growTotalMs);
+      const tourNeedsFrames = !st.activeCampaignId && st.isStoryTourPlaying;
+      return campaignNeedsFrames || tourNeedsFrames;
+    };
+
     const tick = (now: number) => {
+      if (!shouldKeepRunning()) {
+        animFrameRef.current = null;
+        lastFrameTimeRef.current = null;
+        return;
+      }
+
       const prevNow = lastFrameTimeRef.current ?? now;
       const dt = Math.min(80, Math.max(0, now - prevNow));
       lastFrameTimeRef.current = now;
 
       const store = useAtlasStore.getState();
       const currentMap = mapRef.current;
+      const minWebglInterval = store.perfMode === 'ultra' ? 20 : 33;
 
       // --- MODE A: Active Battlefield Campaign Replay ---
       if (
@@ -946,16 +1019,30 @@ export default function MingMapCanvas() {
           growTotalMs,
           routeGrowElapsedMsRef.current + dt
         );
-        const rawGrow = Math.min(1, routeGrowElapsedMsRef.current / growTotalMs);
-        const easedGrow = 1 - Math.pow(1 - rawGrow, 2.2);
-        const pulseProgress = (now % 3000) / 3000;
-
-        updateCampaignAnimationFrame(
-          currentMap,
-          activeCurvesRef.current,
-          easedGrow,
-          pulseProgress
+        const rawGrow = Math.min(
+          1,
+          routeGrowElapsedMsRef.current / growTotalMs
         );
+        const easedGrow = 1 - Math.pow(1 - rawGrow, 2.2);
+        const pulseProgress = (now % 3200) / 3200;
+
+        // Throttle GeoJSONSource updates to ~30fps, and freeze line geometry once grown!
+        if (now - lastWebglFrameMsRef.current >= minWebglInterval) {
+          lastWebglFrameMsRef.current = now;
+          const justFinished = rawGrow >= 0.999 && !routeGrowFinishedRef.current;
+          const skipLineUpdate = routeGrowFinishedRef.current && !justFinished;
+          if (justFinished) routeGrowFinishedRef.current = true;
+
+          if (!(store.perfMode === 'eco' && skipLineUpdate)) {
+            updateCampaignAnimationFrame(
+              currentMap,
+              activeCurvesRef.current,
+              easedGrow,
+              pulseProgress,
+              skipLineUpdate
+            );
+          }
+        }
 
         if (store.isCampaignPlaying) {
           phaseElapsedMsRef.current += dt;
@@ -964,13 +1051,13 @@ export default function MingMapCanvas() {
             (phaseElapsedMsRef.current / phaseTotalMs) * 100
           );
 
-          if (now - lastProgressReportMsRef.current > 65) {
+          if (now - lastProgressReportMsRef.current > 85) {
             lastProgressReportMsRef.current = now;
             store.setCampaignPhaseProgress(pct);
           }
 
-          // Continuous 60fps 3D Camera Choreography after opening fly-in settles!
           if (
+            store.perfMode !== 'eco' &&
             phaseElapsedMsRef.current >= OPENING_FLY_DURATION_MS &&
             !userInteractedInPhaseRef.current &&
             store.campaignCameraMode !== 'free' &&
@@ -986,44 +1073,33 @@ export default function MingMapCanvas() {
               postFlyRatio * postFlyRatio * (3 - 2 * postFlyRatio);
 
             const primaryCurve = activeCurvesRef.current[0];
-            const baseBearing = phase.camera.bearing ?? -12;
-            const basePitch = phase.camera.pitch ?? 52;
+            const baseBearing = phase.camera.bearing ?? -10;
+            const basePitch = Math.min(48, phase.camera.pitch ?? 44);
 
             if (store.campaignCameraMode === 'follow' && primaryCurve) {
-              // Follow advancing vanguard spearhead from origin toward battle objective!
-              const routeT = Math.min(0.96, 0.12 + smoothRatio * 0.84);
+              const routeT = Math.min(0.95, 0.14 + smoothRatio * 0.81);
               const { coordinates: vanguardPt } = sampleAlongPath(
                 primaryCurve.coords,
                 routeT
               );
-              const targetCenter: LngLat = [
-                vanguardPt[0] * 0.56 + phase.camera.center[0] * 0.44,
-                vanguardPt[1] * 0.56 + phase.camera.center[1] * 0.44,
-              ];
-              const targetZoom = Math.min(
-                9.2,
-                phase.camera.zoom + 0.18 + smoothRatio * 0.42
-              );
-              const targetBearing = is3DRef.current
-                ? baseBearing + smoothRatio * 26
-                : 0;
-              const targetPitch = is3DRef.current
-                ? Math.min(62, basePitch + 5)
-                : 0;
-
               currentMap.jumpTo({
-                center: targetCenter,
-                zoom: targetZoom,
-                bearing: targetBearing,
-                pitch: targetPitch,
+                center: [
+                  vanguardPt[0] * 0.54 + phase.camera.center[0] * 0.46,
+                  vanguardPt[1] * 0.54 + phase.camera.center[1] * 0.46,
+                ],
+                zoom: Math.min(
+                  8.8,
+                  phase.camera.zoom + 0.14 + smoothRatio * 0.36
+                ),
+                bearing: is3DRef.current ? baseBearing + smoothRatio * 22 : 0,
+                pitch: is3DRef.current ? basePitch : 0,
               });
             } else if (store.campaignCameraMode === 'orbit') {
-              // Panoramic 360-style theater orbital sweep
               currentMap.jumpTo({
                 center: phase.camera.center,
-                zoom: phase.camera.zoom + smoothRatio * 0.22,
-                bearing: is3DRef.current ? baseBearing + smoothRatio * 34 : 0,
-                pitch: is3DRef.current ? Math.min(60, basePitch + 4) : 0,
+                zoom: phase.camera.zoom + smoothRatio * 0.18,
+                bearing: is3DRef.current ? baseBearing + smoothRatio * 28 : 0,
+                pitch: is3DRef.current ? basePitch : 0,
               });
             }
           }
@@ -1035,7 +1111,7 @@ export default function MingMapCanvas() {
         }
       }
 
-      // --- MODE B: Chronological Full-History Story Tour ("全史自动运镜推演") ---
+      // --- MODE B: Chronological Full-History Story Tour ---
       if (
         currentMap &&
         styleReadyRef.current &&
@@ -1046,14 +1122,17 @@ export default function MingMapCanvas() {
         const stopTotalMs = STORY_STOP_DURATION_MS / speed;
         storyElapsedMsRef.current += dt;
 
-        const pct = Math.min(100, (storyElapsedMsRef.current / stopTotalMs) * 100);
-        if (now - lastProgressReportMsRef.current > 65) {
+        const pct = Math.min(
+          100,
+          (storyElapsedMsRef.current / stopTotalMs) * 100
+        );
+        if (now - lastProgressReportMsRef.current > 85) {
           lastProgressReportMsRef.current = now;
           store.setStoryTourProgress(pct);
         }
 
-        // Smooth 3D mountain/river drone orbit after flyTo arrival!
         if (
+          store.perfMode !== 'eco' &&
           storyElapsedMsRef.current >= STORY_FLY_DURATION_MS &&
           !storyUserInteractedRef.current
         ) {
@@ -1066,13 +1145,13 @@ export default function MingMapCanvas() {
               (storyElapsedMsRef.current - STORY_FLY_DURATION_MS) /
                 Math.max(1, stopTotalMs - STORY_FLY_DURATION_MS)
             );
-            const baseBearing = evt.camera.bearing ?? -14;
-            const baseZoom = Math.max(6.4, evt.camera.zoom);
+            const baseBearing = evt.camera.bearing ?? -12;
+            const baseZoom = Math.max(6.2, evt.camera.zoom);
             currentMap.jumpTo({
               center: evt.location.coordinates,
-              zoom: baseZoom + orbitRatio * 0.28,
-              pitch: is3DRef.current ? (evt.camera.pitch ?? 54) : 0,
-              bearing: is3DRef.current ? baseBearing + orbitRatio * 30 : 0,
+              zoom: baseZoom + orbitRatio * 0.24,
+              pitch: is3DRef.current ? Math.min(46, evt.camera.pitch ?? 44) : 0,
+              bearing: is3DRef.current ? baseBearing + orbitRatio * 24 : 0,
             });
           }
         }
@@ -1085,11 +1164,26 @@ export default function MingMapCanvas() {
 
       animFrameRef.current = requestAnimationFrame(tick);
     };
-    animFrameRef.current = requestAnimationFrame(tick);
+
+    const startDirectorLoop = () => {
+      if (animFrameRef.current !== null) return;
+      if (!shouldKeepRunning()) return;
+      lastFrameTimeRef.current = performance.now();
+      animFrameRef.current = requestAnimationFrame(tick);
+    };
+    startDirectorLoopRef.current = startDirectorLoop;
+
+    const onVisibilityChange = () => {
+      if (!document.hidden) {
+        startDirectorLoop();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
 
     mapRef.current = map;
 
     return () => {
+      document.removeEventListener('visibilitychange', onVisibilityChange);
       if (animFrameRef.current !== null) {
         cancelAnimationFrame(animFrameRef.current);
       }
@@ -1101,22 +1195,42 @@ export default function MingMapCanvas() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 2. React to Theme or 3D Terrain Mode Changes
+  // Wake up on-demand RAF loop whenever tour or campaign state activates!
+  useEffect(() => {
+    startDirectorLoopRef.current();
+  }, [
+    isStoryTourPlaying,
+    activeCampaignId,
+    activePhaseIndex,
+    isCampaignPlaying,
+    campaignReplayNonce,
+    storyTourNonce,
+  ]);
+
+  // 2. React to Theme, Performance Tier, or 3D Terrain Mode Changes
   const prevThemeRef = useRef(theme);
+  const prevPerfRef = useRef(perfMode);
   const prev3DRef = useRef(is3D);
+
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 
-    if (prevThemeRef.current !== theme) {
+    if (prevPerfRef.current !== perfMode) {
+      map.setPixelRatio(getTargetPixelRatio(perfMode));
+    }
+
+    if (prevThemeRef.current !== theme || prevPerfRef.current !== perfMode) {
       prevThemeRef.current = theme;
+      prevPerfRef.current = perfMode;
       prev3DRef.current = is3D;
       styleReadyRef.current = false;
-      map.setStyle(createHistoricalBaseStyle(theme, is3D));
+      map.setStyle(createHistoricalBaseStyle(theme, is3D, perfMode));
       map.once('styledata', () => {
         styleReadyRef.current = true;
         syncAllMapSourcesAndLayers();
-        scheduleScreenLayout();
+        scheduleScreenLayout(false);
+        startDirectorLoopRef.current();
       });
       return;
     }
@@ -1125,36 +1239,60 @@ export default function MingMapCanvas() {
       prev3DRef.current = is3D;
       if (styleReadyRef.current && map.getSource('terrain-dem')) {
         map.setTerrain(
-          is3D ? { source: 'terrain-dem', exaggeration: TERRAIN_EXAGGERATION } : null
+          is3D && perfMode !== 'eco'
+            ? {
+                source: 'terrain-dem',
+                exaggeration: getTerrainExaggeration(perfMode),
+              }
+            : null
         );
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [theme, is3D]);
+  }, [theme, is3D, perfMode]);
 
-  // 3. Sync WebGL Territory Polygons, Visibility & Campaign Curve Definitions
+  // 3. Instant GPU Switch for Ancient/Modern Place Name Mode (0 DOM churn!)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !styleReadyRef.current) return;
+    setPlaceNameModeOnGpu(map, placeNameMode);
+  }, [placeNameMode]);
+
+  // 4. Sync WebGL Territory Polygons, Causal Arcs, Visibility & Campaign Curves
   useEffect(() => {
     syncAllMapSourcesAndLayers();
-    scheduleScreenLayout();
+    scheduleScreenLayout(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentSnapshot, layers, activeCampaignId, activePhaseIndex]);
+  }, [
+    currentSnapshot,
+    layers,
+    activeCampaignId,
+    activePhaseIndex,
+    selectedEventId,
+  ]);
 
-  // 4. Reset Story Tour Stop Clock when Selected Event or Tour Nonce Changes
+  // 5. Reset Story Tour Clock on Event Change
   useEffect(() => {
     storyElapsedMsRef.current = 0;
     storyUserInteractedRef.current = false;
+    startDirectorLoopRef.current();
   }, [selectedEventId, storyTourNonce, isStoryTourPlaying]);
 
-  // 5. Campaign Phase Opening Camera & Clock Reset
+  // 6. Campaign Phase Opening Camera & Route Growth Reset
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !activeCampaign || !activePhase) return;
 
     phaseElapsedMsRef.current = 0;
     routeGrowElapsedMsRef.current = 0;
+    routeGrowFinishedRef.current = false;
     userInteractedInPhaseRef.current = false;
 
-    const { preparedCurves } = buildPhaseRouteFeatures(activeCampaign, activePhase);
+    const { preparedCurves } = buildPhaseRouteFeatures(
+      activeCampaign,
+      activePhase
+    );
+    activeCurvesRef.current = preparedCurves;
     const firstCurve = preparedCurves[0];
     const startCenter: LngLat =
       campaignCameraMode === 'follow' && firstCurve
@@ -1164,39 +1302,44 @@ export default function MingMapCanvas() {
           ]
         : activePhase.camera.center;
 
+    const use3D = is3D && perfMode !== 'eco';
     map.flyTo({
       center: startCenter,
       zoom: activePhase.camera.zoom,
-      pitch: is3D ? (activePhase.camera.pitch ?? 52) : 0,
-      bearing: is3D ? (activePhase.camera.bearing ?? -12) : 0,
+      pitch: use3D ? Math.min(46, activePhase.camera.pitch ?? 44) : 0,
+      bearing: use3D ? (activePhase.camera.bearing ?? -10) : 0,
       duration: OPENING_FLY_DURATION_MS,
       essential: true,
     });
+
+    startDirectorLoopRef.current();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeCampaignId, activePhaseIndex, campaignReplayNonce]);
 
   useEffect(() => {
     if (isCampaignPlaying) {
       userInteractedInPhaseRef.current = false;
+      startDirectorLoopRef.current();
     }
   }, [isCampaignPlaying]);
 
-  // 6. Execute Non-Campaign Declarative Camera FlyTo Commands
+  // 7. Execute Declarative Camera FlyTo Commands
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !cameraCommand) return;
     const { pose } = cameraCommand;
+    const use3D = is3D && perfMode !== 'eco';
     map.flyTo({
       center: pose.center,
       zoom: pose.zoom,
-      pitch: is3D ? (pose.pitch ?? 50) : 0,
-      bearing: is3D ? (pose.bearing ?? -10) : 0,
-      duration: 1350,
+      pitch: use3D ? Math.min(46, pose.pitch ?? 42) : 0,
+      bearing: use3D ? (pose.bearing ?? -8) : 0,
+      duration: 1200,
       essential: true,
     });
-  }, [cameraCommand, is3D]);
+  }, [cameraCommand, is3D, perfMode]);
 
-  // 7. Sync Persistent Event Markers In-Place
+  // 8. Sync Event Medallions Appearance In-Place
   useEffect(() => {
     syncEventMarkersAppearance(
       theme,
@@ -1205,11 +1348,13 @@ export default function MingMapCanvas() {
       zoomBucket,
       layers.macroEvents,
       layers.showAllMicroEvents,
-      Boolean(activeCampaign)
+      Boolean(activeCampaign),
+      causalLinkedSet
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     activeCampaign,
+    causalLinkedSet,
     currentYear,
     layers.macroEvents,
     layers.showAllMicroEvents,
@@ -1218,157 +1363,7 @@ export default function MingMapCanvas() {
     zoomBucket,
   ]);
 
-  // 8. Render Polity Dynasty Seal Banners
-  useEffect(() => {
-    const map = mapRef.current;
-    polityRecordsRef.current.forEach((r) => r.marker.remove());
-    polityRecordsRef.current = [];
-    if (!map || !layers.territories) {
-      scheduleScreenLayout();
-      return;
-    }
-
-    for (const feat of currentSnapshot.geojson.features) {
-      const props = feat.properties as Record<string, unknown>;
-      const coord = props.labelCoord as [number, number] | undefined;
-      if (!coord) continue;
-
-      const root = createImmutableMarkerRoot('12');
-      const color = String(props.color || '#B83B2A');
-      const shortLabel = String(props.shortLabel || props.polityName || '');
-      const ruler = String(props.ruler || '');
-      const changeReason = String(props.changeReason || '');
-      const isTributary = props.controlType === 'tributary-garrison';
-
-      root.innerHTML = `
-        <div style="position:absolute;left:0;top:0;transform:translate(-50%,-50%)" class="group pointer-events-auto select-none cursor-help">
-          <div style="border-color:${color}88; background:${
-            theme === 'xuanmo'
-              ? 'rgba(18, 22, 29, 0.84)'
-              : 'rgba(250, 246, 236, 0.88)'
-          }" class="px-2.5 py-1 rounded border shadow-sm backdrop-blur-xs transition-transform duration-150 group-hover:scale-105 flex items-center gap-1.5 whitespace-nowrap">
-            <span style="background:${color}" class="w-2 h-2 rounded-full shrink-0"></span>
-            <span style="color:${
-              theme === 'xuanmo' ? '#F5EFE2' : '#261E18'
-            }" class="font-serif font-bold tracking-widest text-xs">${shortLabel}</span>
-            ${
-              isTributary
-                ? '<span class="text-[10px] opacity-70 px-1 border border-current rounded">羁縻</span>'
-                : ''
-            }
-          </div>
-          <div class="hidden group-hover:block absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 p-2.5 rounded-lg shadow-xl border text-xs z-50 pointer-events-none ${
-            theme === 'xuanmo'
-              ? 'bg-slate-900/95 border-amber-500/30 text-amber-50'
-              : 'bg-[#FAF6EC]/98 border-amber-900/25 text-stone-800'
-          }">
-            <div class="font-serif font-bold text-sm mb-0.5" style="color:${color}">${String(
-              props.polityName
-            )}</div>
-            <div class="opacity-75 text-[11px] mb-1">主帅/君主：${ruler} · 治所：${String(
-              props.capitalName
-            )}</div>
-            <div class="leading-relaxed border-t border-current/10 pt-1 text-[11px]">
-              <span class="font-semibold">版图成因：</span>${changeReason}
-            </div>
-          </div>
-        </div>
-      `;
-
-      const marker = new maplibregl.Marker({ element: root, anchor: 'top-left' })
-        .setLngLat(coord)
-        .addTo(map);
-      polityRecordsRef.current.push({
-        coord,
-        marker,
-        widthPx:
-          estimateLabelWidthPx(shortLabel, 12, 28) + (isTributary ? 34 : 0),
-        heightPx: 26,
-      });
-    }
-
-    scheduleScreenLayout();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentSnapshot, layers.territories, theme]);
-
-  // 9. Render Strategic Ancient-Modern Place Labels (Managed by 4-Quadrant Collision Solver!)
-  useEffect(() => {
-    const map = mapRef.current;
-    placeRecordsRef.current.forEach((r) => r.marker.remove());
-    placeRecordsRef.current = [];
-    if (!map || !layers.places) {
-      scheduleScreenLayout();
-      return;
-    }
-
-    const visiblePlaces = PLACES.filter((p) => {
-      if (p.type === 'capital' || p.type === 'garrison-nine') return true;
-      if (zoomBucket === 'mid') return p.type === 'pass';
-      if (zoomBucket === 'close') return true;
-      return false;
-    });
-
-    for (const place of visiblePlaces) {
-      const root = createImmutableMarkerRoot('14');
-      root.style.pointerEvents = 'none';
-
-      const labelText = formatPlaceDisplay(
-        place.ancientName,
-        place.modernName,
-        placeNameMode
-      );
-      const isCap = place.type === 'capital';
-      const isPass = place.type === 'pass' || place.type === 'garrison-nine';
-
-      const dotWrap = document.createElement('div');
-      dotWrap.style.position = 'absolute';
-      dotWrap.style.left = '0px';
-      dotWrap.style.top = '0px';
-      dotWrap.style.transform = 'translate(-50%, -50%)';
-      dotWrap.innerHTML = `<span class="${
-        isCap
-          ? 'w-2 h-2 rotate-45 bg-red-700 border border-amber-300'
-          : isPass
-          ? 'w-1.5 h-1.5 bg-amber-700'
-          : 'w-1.5 h-1.5 rounded-full bg-stone-500'
-      } block"></span>`;
-
-      const labelEl = document.createElement('div');
-      labelEl.style.position = 'absolute';
-      labelEl.className = `px-1.5 py-0.5 rounded select-none whitespace-nowrap tracking-wide ${
-        isCap ? 'font-serif font-bold text-[11px]' : 'text-[10px] font-medium'
-      } ${
-        theme === 'xuanmo'
-          ? 'bg-slate-950/76 text-stone-200 border border-slate-800/80'
-          : 'bg-[#F8F3E6]/88 text-stone-800 border border-amber-900/12'
-      }`;
-      labelEl.textContent = labelText;
-
-      root.appendChild(dotWrap);
-      root.appendChild(labelEl);
-
-      const marker = new maplibregl.Marker({
-        element: root,
-        anchor: 'top-left',
-      })
-        .setLngLat(place.coordinates)
-        .addTo(map);
-
-      placeRecordsRef.current.push({
-        place,
-        marker,
-        root,
-        dotWrap,
-        labelEl,
-        labelText,
-      });
-    }
-
-    scheduleScreenLayout();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [layers.places, placeNameMode, zoomBucket, theme]);
-
-  // 10. Render Active Campaign Shockwaves & Route Callouts (Collision-Managed!)
+  // 9. Render Active Campaign Shockwaves & Tactical Callouts (Zero `animate-ping`!)
   useEffect(() => {
     const map = mapRef.current;
     campaignCalloutsRef.current.forEach((r) => r.marker.remove());
@@ -1377,11 +1372,14 @@ export default function MingMapCanvas() {
     campaignShockwavesRef.current = [];
 
     if (!map || !activeCampaign || !activePhase) {
-      scheduleScreenLayout();
+      scheduleScreenLayout(false);
       return;
     }
 
-    const { preparedCurves } = buildPhaseRouteFeatures(activeCampaign, activePhase);
+    const { preparedCurves } = buildPhaseRouteFeatures(
+      activeCampaign,
+      activePhase
+    );
     for (const curve of preparedCurves) {
       const root = createImmutableMarkerRoot('28');
       root.style.pointerEvents = 'none';
@@ -1402,13 +1400,13 @@ export default function MingMapCanvas() {
       wrapEl.style.top = '0px';
       wrapEl.style.transform = 'translate(-50%, -50%)';
       wrapEl.style.borderColor = curve.color;
-      wrapEl.className = `px-2 py-0.5 rounded-full border shadow-md text-[11px] font-medium flex items-center gap-1 whitespace-nowrap select-none ${
+      wrapEl.className = `px-2 py-0.5 rounded-full border shadow-md text-[11px] font-serif font-medium flex items-center gap-1 whitespace-nowrap select-none ${
         theme === 'xuanmo'
-          ? 'bg-slate-950/92 text-amber-50'
-          : 'bg-[#FFFDF8]/96 text-stone-900'
+          ? 'bg-slate-950/95 text-amber-50'
+          : 'bg-[#FFFDF8]/97 text-stone-900'
       }`;
       wrapEl.innerHTML = `
-        <span style="background:${curve.color}" class="px-1.5 py-0.2 rounded-full text-[10px] text-white font-bold">${tacticBadge}</span>
+        <span style="background:${curve.color}" class="px-1.5 py-0.2 rounded-full text-[10px] text-white font-sans font-bold">${tacticBadge}</span>
         <span>${curve.label}</span>
       `;
       root.appendChild(wrapEl);
@@ -1446,8 +1444,8 @@ export default function MingMapCanvas() {
       iconWrap.style.transform = 'translate(-50%, -50%)';
       iconWrap.className = 'flex items-center justify-center select-none';
       iconWrap.innerHTML = `
-        <span style="background:${accent}" class="animate-ping absolute inline-flex h-10 w-10 rounded-full opacity-45"></span>
-        <div style="background:${accent}" class="relative w-8 h-8 rounded-full border-2 border-amber-200 shadow-lg flex items-center justify-center text-white font-serif font-bold text-xs">
+        <span style="border-color:${accent}" class="absolute inline-flex h-9 w-9 rounded-full border-2 opacity-60"></span>
+        <div style="background:${accent}" class="relative w-7 h-7 rounded-full border-2 border-amber-200 shadow-lg flex items-center justify-center text-white font-serif font-bold text-xs">
           ${iconChar}
         </div>
       `;
@@ -1457,8 +1455,8 @@ export default function MingMapCanvas() {
       labelEl.style.borderColor = accent;
       labelEl.className = `px-2.5 py-1 rounded-md shadow-lg border-l-4 text-xs select-none ${
         theme === 'xuanmo'
-          ? 'bg-slate-900/95 text-amber-50'
-          : 'bg-[#FAF5E8]/98 text-stone-900'
+          ? 'bg-slate-900/96 text-amber-50'
+          : 'bg-[#FCF8EE]/98 text-stone-900'
       }`;
       labelEl.innerHTML = `
         <div class="font-serif font-bold whitespace-nowrap">${bm.label}</div>
@@ -1476,29 +1474,45 @@ export default function MingMapCanvas() {
         .setLngLat(bm.coordinates)
         .addTo(map);
 
-      const longestLine =
-        bm.subLabel && bm.subLabel.length > bm.label.length
-          ? bm.subLabel
-          : bm.label;
+      const maxChars = Math.max(bm.label.length, (bm.subLabel ?? '').length);
       campaignShockwavesRef.current.push({
         coord: bm.coordinates,
         marker: m,
         labelEl,
-        widthPx: estimateLabelWidthPx(longestLine, 12, 26),
-        heightPx: bm.subLabel ? 40 : 26,
+        widthPx: maxChars * 12 + 24,
+        heightPx: bm.subLabel ? 36 : 24,
       });
     }
 
-    scheduleScreenLayout();
+    scheduleScreenLayout(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeCampaign, activePhase, theme]);
+  }, [activeCampaignId, activePhaseIndex, theme]);
+
+  // Re-run label safe-zone layout when side panels open/close
+  const isDirectoryOpen = useAtlasStore((s) => s.isDirectoryOpen);
+  const isDrawerOpen = useAtlasStore((s) => s.isDrawerOpen);
+  useEffect(() => {
+    scheduleScreenLayout(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDirectoryOpen, isDrawerOpen]);
 
   return (
-    <div className="relative w-full h-full overflow-hidden">
+    <div className="relative z-0 w-full h-full overflow-hidden">
       <div
         ref={containerRef}
         className="w-full h-full"
-        aria-label="明途舆图纪三维交互历史地图画布"
+        aria-label="《明途 · 舆图纪》三维交互式历史地图主画布"
+      />
+      {/* Subtle Classical Scroll Vignette Frame (Pure CSS linear/radial gradient, 0 GPU blur cost!) */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-10"
+        style={{
+          boxShadow:
+            theme === 'xuanmo'
+              ? 'inset 0 0 70px rgba(3, 6, 12, 0.55)'
+              : 'inset 0 0 65px rgba(92, 70, 40, 0.16)',
+        }}
       />
     </div>
   );

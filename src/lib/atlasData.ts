@@ -1,6 +1,7 @@
 import tocJson from '@data/chapters/toc.json';
 import placesJson from '@data/geo-base/ming-places.json';
 import waterwaysGeoJson from '@data/geo-base/ming-waterways.json';
+import landformsGeoJson from '@data/geo-base/ming-landforms.json';
 import territoriesIndexJson from '@data/territories/index.json';
 import ter1356 from '@data/territories/ter-1356.json';
 import ter1363 from '@data/territories/ter-1363.json';
@@ -34,9 +35,14 @@ export const PLACE_MAP: Record<string, HistoricalPlace> = Object.fromEntries(
   PLACES.map((p) => [p.id, p])
 );
 
-export const MING_WATERWAYS_GEOJSON = waterwaysGeoJson as unknown as GeoJSON.FeatureCollection;
+export const MING_WATERWAYS_GEOJSON =
+  waterwaysGeoJson as unknown as GeoJSON.FeatureCollection;
 
-export const TERRITORY_INDEX = territoriesIndexJson as unknown as TerritorySnapshotMeta[];
+export const MING_LANDFORMS_GEOJSON =
+  landformsGeoJson as unknown as GeoJSON.FeatureCollection;
+
+export const TERRITORY_INDEX =
+  territoriesIndexJson as unknown as TerritorySnapshotMeta[];
 
 const TERRITORY_DATA_BY_FILE: Record<string, GeoJSON.FeatureCollection> = {
   'ter-1356.json': ter1356 as unknown as GeoJSON.FeatureCollection,
@@ -49,7 +55,9 @@ const TERRITORY_DATA_BY_FILE: Record<string, GeoJSON.FeatureCollection> = {
 export const ALL_EVENTS: HistoricalEvent[] = [
   ...(eventsFoundingJson as unknown as HistoricalEvent[]),
   ...(eventsJingnanJson as unknown as HistoricalEvent[]),
-].sort((a, b) => a.time.year - b.time.year || (a.time.month ?? 1) - (b.time.month ?? 1));
+].sort(
+  (a, b) => a.time.year - b.time.year || (a.time.month ?? 1) - (b.time.month ?? 1)
+);
 
 export const EVENT_MAP: Record<string, HistoricalEvent> = Object.fromEntries(
   ALL_EVENTS.map((e) => [e.id, e])
@@ -79,7 +87,8 @@ export function getSnapshotForYear(year: number): {
 
   return {
     meta: matched,
-    geojson: TERRITORY_DATA_BY_FILE[matched.file] ?? TERRITORY_DATA_BY_FILE['ter-1363.json'],
+    geojson:
+      TERRITORY_DATA_BY_FILE[matched.file] ?? TERRITORY_DATA_BY_FILE['ter-1363.json'],
   };
 }
 
@@ -89,9 +98,43 @@ export function formatPlaceDisplay(
   mode: PlaceNameMode
 ): string {
   const shortAncient = ancientName.replace(/（.+?）/g, '');
-  const shortModern = modernName.replace(/^(江苏|安徽|江西|湖北|浙江|山东|河南|河北|陕西|四川|内蒙古)/, '');
-  if (mode === 'ancient') return ancientName;
-  if (mode === 'modern') return modernName;
-  if (shortAncient === shortModern) return ancientName;
-  return `${shortAncient}（今${shortModern}）`;
+  const shortModern = modernName.replace(
+    /^(江苏|安徽|江西|湖北|浙江|山东|河南|河北|陕西|四川|内蒙古)/,
+    ''
+  );
+  if (mode === 'ancient') return shortAncient;
+  if (mode === 'modern') return shortModern;
+  if (shortAncient === shortModern) return shortAncient;
+  return `${shortAncient} · ${shortModern}`;
 }
+
+/**
+ * Pre-computed GPU GeoJSON FeatureCollection for all 40 strategic places so MapLibre
+ * renders & collision-tests them in C++/WebGL with 0 HTML DOM overhead!
+ */
+export const PLACES_GEOJSON: GeoJSON.FeatureCollection = {
+  type: 'FeatureCollection',
+  features: PLACES.map((p) => ({
+    type: 'Feature',
+    properties: {
+      id: p.id,
+      placeType: p.type,
+      sortKey:
+        p.type === 'capital'
+          ? 1
+          : p.type === 'garrison-nine'
+          ? 2
+          : p.type === 'pass'
+          ? 3
+          : 4,
+      label_ancient: formatPlaceDisplay(p.ancientName, p.modernName, 'ancient'),
+      label_both: formatPlaceDisplay(p.ancientName, p.modernName, 'both'),
+      label_modern: formatPlaceDisplay(p.ancientName, p.modernName, 'modern'),
+      strategicNote: p.strategicNote ?? '',
+    },
+    geometry: {
+      type: 'Point',
+      coordinates: p.coordinates,
+    },
+  })),
+};

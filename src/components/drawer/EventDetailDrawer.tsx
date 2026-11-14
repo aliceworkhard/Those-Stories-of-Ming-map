@@ -64,14 +64,14 @@ export default function EventDetailDrawer() {
       <button
         type="button"
         onClick={() => setDrawerOpen(true)}
-        className={`fixed right-3 top-[98px] z-25 px-3 py-2.5 rounded-xl border shadow-xl backdrop-blur-md flex items-center gap-1.5 text-xs font-serif font-bold cursor-pointer transition hover:scale-105 ${
+        className={`fixed right-3 top-[58px] z-25 px-3 py-2 rounded-xl border shadow-lg flex items-center gap-1.5 text-xs font-serif font-bold cursor-pointer transition hover:scale-105 ${
           isDark
-            ? 'bg-slate-950/90 border-amber-500/30 text-amber-100'
-            : 'bg-[#FAF5E8]/95 border-amber-900/25 text-stone-900'
+            ? 'bg-[#0D131D]/97 border-amber-500/30 text-amber-100'
+            : 'bg-[#FAF5E8]/97 border-amber-900/25 text-stone-900'
         }`}
         title="展开当前选中事件的五维详情面板"
       >
-        <PanelRightOpen className="w-4 h-4 text-[#B83B2A] dark:text-amber-400" />
+        <PanelRightOpen className="w-4 h-4 text-[#9E2318] dark:text-amber-400" />
         <span>事件详情</span>
       </button>
     );
@@ -80,12 +80,12 @@ export default function EventDetailDrawer() {
   return (
     <aside
       aria-label="事件五维详情与原著对照面板"
-      className={`fixed top-[98px] ${
-        isTourHudOpen ? 'bottom-[168px] 2xl:bottom-20' : 'bottom-20'
-      } right-3 z-25 w-[calc(100vw-24px)] sm:w-[352px] xl:w-[380px] rounded-2xl border shadow-2xl backdrop-blur-md flex flex-col overflow-hidden transition-all ${
+      className={`fixed top-[58px] ${
+        isTourHudOpen ? 'bottom-[164px] 2xl:bottom-16' : 'bottom-16'
+      } right-3 z-25 w-[calc(100vw-24px)] sm:w-[336px] xl:w-[356px] rounded-2xl border shadow-xl flex flex-col overflow-hidden ${
         isDark
-          ? 'bg-slate-950/92 border-amber-500/30 text-amber-50'
-          : 'bg-[#FAF5E8]/95 border-amber-900/25 text-stone-900'
+          ? 'bg-[#0D131D]/97 border-amber-500/30 text-amber-50'
+          : 'bg-[#FAF5E8]/97 border-amber-900/25 text-stone-900'
       }`}
     >
       {/* Drawer Header */}

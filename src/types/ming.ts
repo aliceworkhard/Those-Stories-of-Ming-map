@@ -225,3 +225,4 @@ export interface TerritorySnapshotMeta {
 
 export type PlaceNameMode = 'ancient' | 'modern' | 'both';
 export type MapVisualTheme = 'xuanzhi' | 'xuanmo';
+export type PerformanceMode = 'eco' | 'balanced' | 'ultra';

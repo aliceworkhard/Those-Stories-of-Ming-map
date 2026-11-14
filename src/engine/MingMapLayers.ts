@@ -1,12 +1,24 @@
 import type maplibregl from 'maplibre-gl';
 import type { GeoJSONSource } from 'maplibre-gl';
-import { MING_WATERWAYS_GEOJSON } from '@/lib/atlasData';
+import {
+  EVENT_MAP,
+  MING_LANDFORMS_GEOJSON,
+  MING_WATERWAYS_GEOJSON,
+  PLACES_GEOJSON,
+} from '@/lib/atlasData';
 import {
   buildCurvedRouteCoords,
   sampleAlongPath,
   sliceCurveByProgress,
 } from '@/lib/curve';
-import type { Campaign, CampaignPhase, LngLat, MapVisualTheme } from '@/types/ming';
+import type {
+  Campaign,
+  CampaignPhase,
+  HistoricalEvent,
+  LngLat,
+  MapVisualTheme,
+  PlaceNameMode,
+} from '@/types/ming';
 import type { LayerVisibility } from '@/store/useAtlasStore';
 
 const EMPTY_FC: GeoJSON.FeatureCollection = {
@@ -27,19 +39,124 @@ export interface PreparedRouteCurve {
 }
 
 /**
- * Installs all historical GIS & Campaign Route WebGL sources and layers onto the MapLibre instance.
+ * Extracts lightweight Point features from Territory polygons so Polity Dynasty Seals
+ * render on the GPU with zero HTML DOM overhead!
+ */
+export function buildPolityLabelGeoJSON(
+  territories: GeoJSON.FeatureCollection
+): GeoJSON.FeatureCollection {
+  const features: GeoJSON.Feature[] = [];
+  for (const feat of territories.features) {
+    const props = (feat.properties ?? {}) as Record<string, unknown>;
+    const coord = props.labelCoord as LngLat | undefined;
+    if (!coord) continue;
+    const shortLabel = String(props.shortLabel || props.polityName || '');
+    const ruler = String(props.ruler || '');
+    const isTributary = props.controlType === 'tributary-garrison';
+    const sealTitle = isTributary ? `${shortLabel}（羁縻）` : shortLabel;
+    const subCaption = ruler ? `${ruler}` : '';
+
+    features.push({
+      type: 'Feature',
+      properties: {
+        polityId: String(props.polityId || ''),
+        sealTitle,
+        subCaption,
+        color: String(props.color || '#B83B2A'),
+        isTributary: isTributary ? 1 : 0,
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: coord,
+      },
+    });
+  }
+  return { type: 'FeatureCollection', features };
+}
+
+/**
+ * Builds curved historical causal arcs (`← 前因` & `深远后果 →`) for the currently selected event!
+ */
+export function buildCausalArcGeoJSON(
+  selectedEvent: HistoricalEvent | null | undefined
+): GeoJSON.FeatureCollection {
+  if (!selectedEvent) return EMPTY_FC;
+  const features: GeoJSON.Feature[] = [];
+
+  for (const prevId of selectedEvent.why.prevEventIds ?? []) {
+    const prevEvt = EVENT_MAP[prevId];
+    if (!prevEvt) continue;
+    const d = Math.hypot(
+      prevEvt.location.coordinates[0] - selectedEvent.location.coordinates[0],
+      prevEvt.location.coordinates[1] - selectedEvent.location.coordinates[1]
+    );
+    if (d < 0.03) continue; // Co-located in same city; no spatial arc needed
+
+    const arcCoords = buildCurvedRouteCoords(
+      [prevEvt.location.coordinates, selectedEvent.location.coordinates],
+      'ambush',
+      24
+    );
+    features.push({
+      type: 'Feature',
+      properties: {
+        arcKind: 'prev',
+        label: `前因：${prevEvt.time.year} ${prevEvt.title.slice(0, 8)}`,
+      },
+      geometry: {
+        type: 'LineString',
+        coordinates: arcCoords,
+      },
+    });
+  }
+
+  for (const nextId of selectedEvent.why.nextEventIds ?? []) {
+    const nextEvt = EVENT_MAP[nextId];
+    if (!nextEvt) continue;
+    const d = Math.hypot(
+      nextEvt.location.coordinates[0] - selectedEvent.location.coordinates[0],
+      nextEvt.location.coordinates[1] - selectedEvent.location.coordinates[1]
+    );
+    if (d < 0.03) continue;
+
+    const arcCoords = buildCurvedRouteCoords(
+      [selectedEvent.location.coordinates, nextEvt.location.coordinates],
+      'assault',
+      24
+    );
+    features.push({
+      type: 'Feature',
+      properties: {
+        arcKind: 'next',
+        label: `后果 → ${nextEvt.time.year} ${nextEvt.title.slice(0, 8)}`,
+      },
+      geometry: {
+        type: 'LineString',
+        coordinates: arcCoords,
+      },
+    });
+  }
+
+  return { type: 'FeatureCollection', features };
+}
+
+/**
+ * Installs all historical GIS, Landforms, Places, Causal Arcs & Campaign Route WebGL layers.
  */
 export function mountHistoricalLayers(
   map: maplibregl.Map,
   initialTerritories: GeoJSON.FeatureCollection,
-  theme: MapVisualTheme
+  theme: MapVisualTheme,
+  placeNameMode: PlaceNameMode = 'both'
 ): void {
   const isDark = theme === 'xuanmo';
   const beforeWaterId = map.getLayer('vector-water-fill')
     ? 'vector-water-fill'
     : undefined;
 
-  // 1. Territories Source & Layers
+  // =========================================================================
+  // 1. Sovereign Territories (3-Layer "Inner-Vignette + Dual-Border" Styling)
+  // =========================================================================
   if (!map.getSource('ming-territories')) {
     map.addSource('ming-territories', {
       type: 'geojson',
@@ -47,9 +164,15 @@ export function mountHistoricalLayers(
     });
   }
 
-  // Place territory fill UNDER crisp vector oceans & lakes so coastlines, islands,
-  // Poyang Lake, Dongting Lake, and Taihu Lake stay 100% razor-sharp z14 vector shapes!
+  if (!map.getSource('ming-polity-points')) {
+    map.addSource('ming-polity-points', {
+      type: 'geojson',
+      data: buildPolityLabelGeoJSON(initialTerritories),
+    });
+  }
+
   if (!map.getLayer('ming-territories-fill')) {
+    // Interior wash placed UNDER vector lakes & oceans for razor-sharp coastlines
     map.addLayer(
       {
         id: 'ming-territories-fill',
@@ -62,18 +185,55 @@ export function mountHistoricalLayers(
             'match',
             ['get', 'controlType'],
             'tributary-garrison',
-            isDark ? 0.17 : 0.16,
-            isDark ? 0.28 : 0.24,
+            isDark ? 0.13 : 0.11,
+            isDark ? 0.22 : 0.17,
           ],
+        },
+      },
+      beforeWaterId
+    );
+
+    // Grand-Strategy Inner Frontier Band (rich depth along borders while keeping center breathable!)
+    map.addLayer(
+      {
+        id: 'ming-territories-frontier-band',
+        type: 'line',
+        source: 'ming-territories',
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round',
+        },
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            3.5,
+            ['match', ['get', 'controlType'], 'tributary-garrison', 3.5, 6.5],
+            7,
+            ['match', ['get', 'controlType'], 'tributary-garrison', 6, 12],
+            10,
+            ['match', ['get', 'controlType'], 'tributary-garrison', 9, 16],
+          ],
+          'line-opacity': [
+            'match',
+            ['get', 'controlType'],
+            'tributary-garrison',
+            isDark ? 0.2 : 0.16,
+            isDark ? 0.36 : 0.28,
+          ],
+          'line-blur': 3.5,
         },
       },
       beforeWaterId
     );
   }
 
-  if (!map.getLayer('ming-territories-glow')) {
+  if (!map.getLayer('ming-territories-outline')) {
+    // Crisp dark/parchment contrast casing on landward borders
     map.addLayer({
-      id: 'ming-territories-glow',
+      id: 'ming-territories-outline-casing',
       type: 'line',
       source: 'ming-territories',
       layout: {
@@ -81,10 +241,9 @@ export function mountHistoricalLayers(
         'line-cap': 'round',
       },
       paint: {
-        'line-color': ['get', 'color'],
-        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 2.8, 7, 5.5, 10, 8],
-        'line-opacity': isDark ? 0.28 : 0.20,
-        'line-blur': 2.5,
+        'line-color': isDark ? 'rgba(6, 10, 16, 0.75)' : 'rgba(253, 249, 240, 0.72)',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 2.8, 7, 4.2, 10, 5.5],
+        'line-opacity': 0.75,
       },
     });
 
@@ -103,11 +262,11 @@ export function mountHistoricalLayers(
           ['linear'],
           ['zoom'],
           3.5,
-          ['match', ['get', 'controlType'], 'tributary-garrison', 1.0, 1.4],
+          ['match', ['get', 'controlType'], 'tributary-garrison', 1.1, 1.8],
           7,
-          ['match', ['get', 'controlType'], 'tributary-garrison', 1.5, 2.2],
+          ['match', ['get', 'controlType'], 'tributary-garrison', 1.6, 2.7],
           10,
-          ['match', ['get', 'controlType'], 'tributary-garrison', 2.0, 3.0],
+          ['match', ['get', 'controlType'], 'tributary-garrison', 2.2, 3.6],
         ],
         'line-dasharray': [
           'match',
@@ -116,12 +275,31 @@ export function mountHistoricalLayers(
           ['literal', [3, 2]],
           ['literal', [1, 0]],
         ],
-        'line-opacity': isDark ? 0.88 : 0.84,
+        'line-opacity': isDark ? 0.94 : 0.9,
+      },
+    });
+
+    // Interactive Hover Highlight Border
+    map.addLayer({
+      id: 'ming-territories-hover',
+      type: 'line',
+      source: 'ming-territories',
+      filter: ['==', ['get', 'polityId'], '__none__'],
+      layout: {
+        'line-join': 'round',
+        'line-cap': 'round',
+      },
+      paint: {
+        'line-color': isDark ? '#FCD34D' : '#9B1C1C',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 2.6, 8, 4.5],
+        'line-opacity': 0.95,
       },
     });
   }
 
-  // 2. Ming Historical Waterways (Natural Earth 10m + 1194-1855 Duohuai Yellow River + Grand Canal + Ming Great Wall)
+  // =========================================================================
+  // 2. Ming Historical Waterways & Great Wall
+  // =========================================================================
   if (!map.getSource('ming-waterways')) {
     map.addSource('ming-waterways', {
       type: 'geojson',
@@ -130,7 +308,6 @@ export function mountHistoricalLayers(
   }
 
   if (!map.getLayer('ming-rivers-line')) {
-    // Subtle river bank casing for crisp cartographic legibility over territory fills
     map.addLayer({
       id: 'ming-rivers-casing',
       type: 'line',
@@ -140,24 +317,21 @@ export function mountHistoricalLayers(
         ['get', 'kind'],
         ['literal', ['major-river', 'secondary-river']],
       ],
-      layout: {
-        'line-join': 'round',
-        'line-cap': 'round',
-      },
+      layout: { 'line-join': 'round', 'line-cap': 'round' },
       paint: {
-        'line-color': isDark ? '#0B1928' : '#EBF4F8',
+        'line-color': isDark ? '#071320' : '#E8F3F8',
         'line-width': [
           'interpolate',
           ['linear'],
           ['zoom'],
           3.5,
-          ['match', ['get', 'kind'], 'major-river', 2.2, 1.2],
+          ['match', ['get', 'kind'], 'major-river', 2.4, 1.3],
           7,
-          ['match', ['get', 'kind'], 'major-river', 4.2, 2.4],
+          ['match', ['get', 'kind'], 'major-river', 4.5, 2.5],
           10,
-          ['match', ['get', 'kind'], 'major-river', 6.2, 3.6],
+          ['match', ['get', 'kind'], 'major-river', 6.6, 3.8],
         ],
-        'line-opacity': isDark ? 0.55 : 0.65,
+        'line-opacity': isDark ? 0.6 : 0.72,
       },
     });
 
@@ -170,41 +344,35 @@ export function mountHistoricalLayers(
         ['get', 'kind'],
         ['literal', ['major-river', 'secondary-river']],
       ],
-      layout: {
-        'line-join': 'round',
-        'line-cap': 'round',
-      },
+      layout: { 'line-join': 'round', 'line-cap': 'round' },
       paint: {
-        'line-color': isDark ? '#3882BA' : '#3B7EA1',
+        'line-color': isDark ? '#3B89C4' : '#2E7296',
         'line-width': [
           'interpolate',
           ['linear'],
           ['zoom'],
           3.5,
-          ['match', ['get', 'kind'], 'major-river', 1.3, 0.7],
+          ['match', ['get', 'kind'], 'major-river', 1.4, 0.75],
           7,
-          ['match', ['get', 'kind'], 'major-river', 2.6, 1.45],
+          ['match', ['get', 'kind'], 'major-river', 2.8, 1.5],
           10,
-          ['match', ['get', 'kind'], 'major-river', 4.0, 2.2],
+          ['match', ['get', 'kind'], 'major-river', 4.2, 2.3],
         ],
-        'line-opacity': 0.9,
+        'line-opacity': 0.92,
       },
     });
 
-    // Historical Ming Yellow River (1194-1855 Duohuai Course!) with warm casing + Ochre-Gold core
+    // 1194-1855 Ming Duohuai Yellow River
     map.addLayer({
       id: 'ming-yellow-river-casing',
       type: 'line',
       source: 'ming-waterways',
       filter: ['==', ['get', 'kind'], 'yellow-river-ming'],
-      layout: {
-        'line-join': 'round',
-        'line-cap': 'round',
-      },
+      layout: { 'line-join': 'round', 'line-cap': 'round' },
       paint: {
-        'line-color': isDark ? '#1A1408' : '#FBF4E2',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 2.6, 7, 4.6, 10, 6.8],
-        'line-opacity': 0.72,
+        'line-color': isDark ? '#1C1406' : '#FDF6E4',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 2.8, 7, 5.0, 10, 7.2],
+        'line-opacity': 0.8,
       },
     });
 
@@ -213,83 +381,53 @@ export function mountHistoricalLayers(
       type: 'line',
       source: 'ming-waterways',
       filter: ['==', ['get', 'kind'], 'yellow-river-ming'],
-      layout: {
-        'line-join': 'round',
-        'line-cap': 'round',
-      },
+      layout: { 'line-join': 'round', 'line-cap': 'round' },
       paint: {
-        'line-color': isDark ? '#E0A838' : '#BE7B1E',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 1.5, 7, 2.8, 10, 4.2],
-        'line-opacity': 0.94,
+        'line-color': isDark ? '#EAB338' : '#B97316',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 1.6, 7, 3.0, 10, 4.5],
+        'line-opacity': 0.96,
       },
     });
 
-    // Grand Canal (Ming Grain Lifeline)
+    // Grand Canal
     map.addLayer({
       id: 'ming-grand-canal-line',
       type: 'line',
       source: 'ming-waterways',
       filter: ['==', ['get', 'kind'], 'canal'],
-      layout: {
-        'line-join': 'round',
-        'line-cap': 'round',
-      },
+      layout: { 'line-join': 'round', 'line-cap': 'round' },
       paint: {
-        'line-color': isDark ? '#38B2AC' : '#0E8A7E',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 4, 1.2, 7, 2.2, 10, 3.2],
+        'line-color': isDark ? '#38C6BD' : '#0B7D72',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 4, 1.4, 7, 2.4, 10, 3.4],
         'line-dasharray': [2.2, 1.4],
-        'line-opacity': 0.92,
+        'line-opacity': 0.94,
       },
     });
 
-    // Curved Vector Waterway Labels along real river bends!
-    map.addLayer({
-      id: 'ming-waterways-label',
-      type: 'symbol',
-      source: 'ming-waterways',
-      minzoom: 4.6,
-      filter: [
-        'in',
-        ['get', 'kind'],
-        ['literal', ['yellow-river-ming', 'major-river', 'canal', 'secondary-river']],
-      ],
-      layout: {
-        'symbol-placement': 'line',
-        'symbol-spacing': 420,
-        'text-field': ['get', 'name'],
-        'text-font': ['Noto Sans Regular'],
-        'text-size': ['interpolate', ['linear'], ['zoom'], 4.6, 10, 8, 12],
-        'text-letter-spacing': 0.15,
-      },
-      paint: {
-        'text-color': [
-          'match',
-          ['get', 'kind'],
-          'yellow-river-ming',
-          isDark ? '#F6CA65' : '#8C530D',
-          'canal',
-          isDark ? '#6EE7B7' : '#0B6B61',
-          isDark ? '#7CC1E8' : '#265E7D',
-        ],
-        'text-halo-color': isDark ? 'rgba(15, 20, 28, 0.88)' : 'rgba(250, 246, 236, 0.92)',
-        'text-halo-width': 1.5,
-      },
-    });
-
-    // Ming Great Wall (Double-layered crenellated wall line)
+    // Ming Great Wall (Double Crenellated Frontier Line)
     map.addLayer({
       id: 'ming-great-wall-casing',
       type: 'line',
       source: 'ming-waterways',
       filter: ['==', ['get', 'kind'], 'great-wall'],
-      layout: {
-        'line-join': 'round',
-        'line-cap': 'round',
-      },
+      layout: { 'line-join': 'round', 'line-cap': 'round' },
       paint: {
-        'line-color': isDark ? '#2D3748' : '#8C7A6B',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 2.4, 7, 4.0, 10, 5.5],
-        'line-opacity': 0.55,
+        'line-color': isDark ? '#0B0F17' : '#EFE5D4',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 3.2, 7, 5.2, 10, 7.0],
+        'line-opacity': 0.75,
+      },
+    });
+
+    map.addLayer({
+      id: 'ming-great-wall-base',
+      type: 'line',
+      source: 'ming-waterways',
+      filter: ['==', ['get', 'kind'], 'great-wall'],
+      layout: { 'line-join': 'round', 'line-cap': 'round' },
+      paint: {
+        'line-color': isDark ? '#94A3B8' : '#6B5344',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 1.3, 7, 2.2, 10, 3.0],
+        'line-opacity': 0.85,
       },
     });
 
@@ -298,20 +436,401 @@ export function mountHistoricalLayers(
       type: 'line',
       source: 'ming-waterways',
       filter: ['==', ['get', 'kind'], 'great-wall'],
-      layout: {
-        'line-cap': 'butt',
-        'line-join': 'miter',
-      },
+      layout: { 'line-cap': 'butt', 'line-join': 'miter' },
       paint: {
-        'line-color': isDark ? '#CBD5E0' : '#4E3D34',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 1.5, 7, 2.5, 10, 3.6],
-        'line-dasharray': [1.6, 1.0],
-        'line-opacity': 0.88,
+        'line-color': isDark ? '#E2E8F0' : '#3E2E24',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 2.2, 7, 3.6, 10, 5.0],
+        'line-dasharray': [1.2, 1.4],
+        'line-opacity': 0.92,
       },
     });
   }
 
-  // 3. Campaign Dynamic Marching Routes & Vanguard Spearheads
+  // =========================================================================
+  // 3. Classical Landforms (Mountain Ranges, Famous Lakes & Four Seas) — GPU!
+  // =========================================================================
+  if (!map.getSource('ming-landforms')) {
+    map.addSource('ming-landforms', {
+      type: 'geojson',
+      data: MING_LANDFORMS_GEOJSON,
+    });
+  }
+
+  if (!map.getLayer('ming-mountains-label')) {
+    map.addLayer({
+      id: 'ming-mountains-label',
+      type: 'symbol',
+      source: 'ming-landforms',
+      minzoom: 4.0,
+      filter: [
+        'in',
+        ['get', 'kind'],
+        ['literal', ['mountain-major', 'mountain-minor']],
+      ],
+      layout: {
+        'symbol-placement': 'line',
+        'symbol-spacing': 600,
+        'text-field': ['get', 'name'],
+        'text-font': ['Noto Sans Regular'],
+        'text-size': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          4,
+          ['match', ['get', 'kind'], 'mountain-major', 11, 9.5],
+          7.5,
+          ['match', ['get', 'kind'], 'mountain-major', 14.5, 12],
+        ],
+        'text-letter-spacing': 0.35,
+        'text-max-angle': 35,
+      },
+      paint: {
+        'text-color': isDark ? '#A89474' : '#6A5337',
+        'text-halo-color': isDark
+          ? 'rgba(12, 16, 23, 0.88)'
+          : 'rgba(244, 237, 222, 0.92)',
+        'text-halo-width': 1.8,
+        'text-opacity': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          4.0,
+          ['match', ['get', 'kind'], 'mountain-major', 0.82, 0.0],
+          5.3,
+          0.88,
+        ],
+      },
+    });
+
+    map.addLayer({
+      id: 'ming-waters-regions-label',
+      type: 'symbol',
+      source: 'ming-landforms',
+      minzoom: 3.8,
+      filter: ['in', ['get', 'kind'], ['literal', ['lake', 'sea', 'region']]],
+      layout: {
+        'text-field': ['get', 'name'],
+        'text-font': ['Noto Sans Regular'],
+        'text-size': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          4,
+          ['match', ['get', 'kind'], 'sea', 12.5, 'region', 12, 10],
+          8,
+          ['match', ['get', 'kind'], 'sea', 16, 'region', 15, 12.5],
+        ],
+        'text-letter-spacing': ['match', ['get', 'kind'], 'lake', 0.15, 0.45],
+      },
+      paint: {
+        'text-color': [
+          'match',
+          ['get', 'kind'],
+          'region',
+          isDark ? '#94A3B8' : '#786852',
+          isDark ? '#63A3C9' : '#2D6B8A',
+        ],
+        'text-halo-color': isDark
+          ? 'rgba(8, 19, 32, 0.88)'
+          : 'rgba(225, 240, 246, 0.9)',
+        'text-halo-width': 1.6,
+        'text-opacity': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          3.8,
+          ['match', ['get', 'kind'], 'lake', 0.0, 0.8],
+          5.2,
+          0.86,
+        ],
+      },
+    });
+  }
+
+  // Curved Waterway Labels
+  if (!map.getLayer('ming-waterways-label')) {
+    map.addLayer({
+      id: 'ming-waterways-label',
+      type: 'symbol',
+      source: 'ming-waterways',
+      minzoom: 4.6,
+      filter: [
+        'in',
+        ['get', 'kind'],
+        [
+          'literal',
+          ['yellow-river-ming', 'major-river', 'canal', 'secondary-river'],
+        ],
+      ],
+      layout: {
+        'symbol-placement': 'line',
+        'symbol-spacing': 440,
+        'text-field': ['get', 'name'],
+        'text-font': ['Noto Sans Regular'],
+        'text-size': ['interpolate', ['linear'], ['zoom'], 4.6, 10, 8, 12],
+        'text-letter-spacing': 0.16,
+      },
+      paint: {
+        'text-color': [
+          'match',
+          ['get', 'kind'],
+          'yellow-river-ming',
+          isDark ? '#F6CA65' : '#8A500B',
+          'canal',
+          isDark ? '#6EE7B7' : '#09655B',
+          isDark ? '#7CC1E8' : '#225A78',
+        ],
+        'text-halo-color': isDark
+          ? 'rgba(12, 18, 26, 0.9)'
+          : 'rgba(250, 246, 236, 0.94)',
+        'text-halo-width': 1.6,
+      },
+    });
+  }
+
+  // =========================================================================
+  // 4. Polity Dynasty Seal Titles & 40 Strategic Places — 100% GPU Symbol!
+  // =========================================================================
+  if (!map.getLayer('ming-polity-labels')) {
+    map.addLayer({
+      id: 'ming-polity-labels',
+      type: 'symbol',
+      source: 'ming-polity-points',
+      maxzoom: 8.5,
+      layout: {
+        'text-field': [
+          'format',
+          ['get', 'sealTitle'],
+          { 'font-scale': 1.0 },
+          '\n',
+          {},
+          ['get', 'subCaption'],
+          { 'font-scale': 0.68 },
+        ],
+        'text-font': ['Noto Sans Regular'],
+        'text-size': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          3.5,
+          ['case', ['==', ['get', 'isTributary'], 1], 11.5, 14.5],
+          6.5,
+          ['case', ['==', ['get', 'isTributary'], 1], 13.5, 17.5],
+        ],
+        'text-letter-spacing': 0.28,
+        'text-line-height': 1.25,
+        'symbol-sort-key': ['get', 'isTributary'],
+        'text-padding': 8,
+      },
+      paint: {
+        'text-color': isDark ? '#F6EAD2' : '#2A1D15',
+        'text-halo-color': isDark
+          ? 'rgba(12, 16, 24, 0.92)'
+          : 'rgba(250, 245, 233, 0.94)',
+        'text-halo-width': 2.2,
+        'text-opacity': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          3.5,
+          0.92,
+          7.5,
+          0.75,
+          8.5,
+          0.0,
+        ],
+      },
+    });
+  }
+
+  if (!map.getSource('ming-places')) {
+    map.addSource('ming-places', {
+      type: 'geojson',
+      data: PLACES_GEOJSON,
+    });
+  }
+
+  if (!map.getLayer('ming-places-symbol')) {
+    map.addLayer({
+      id: 'ming-places-symbol',
+      type: 'symbol',
+      source: 'ming-places',
+      filter: [
+        'all',
+        ['!=', ['get', 'placeType'], 'battlefield'],
+        [
+          'any',
+          ['in', ['get', 'placeType'], ['literal', ['capital', 'garrison-nine']]],
+          ['all', ['>=', ['zoom'], 5.3], ['==', ['get', 'placeType'], 'pass']],
+          ['>=', ['zoom'], 6.1],
+        ],
+      ],
+      layout: {
+        'symbol-sort-key': ['get', 'sortKey'],
+        'icon-image': [
+          'match',
+          ['get', 'placeType'],
+          'capital',
+          'place-capital-seal',
+          ['garrison-nine', 'pass'],
+          'place-pass-fort',
+          'place-city-dot',
+        ],
+        'icon-size': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          4,
+          ['match', ['get', 'placeType'], 'capital', 0.85, 0.72],
+          8,
+          ['match', ['get', 'placeType'], 'capital', 1.05, 0.9],
+        ],
+        'icon-allow-overlap': false,
+        'text-field': ['get', `label_${placeNameMode}`],
+        'text-font': ['Noto Sans Regular'],
+        'text-size': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          4,
+          ['match', ['get', 'placeType'], 'capital', 11.5, 10],
+          8,
+          ['match', ['get', 'placeType'], 'capital', 13.5, 11.5],
+        ],
+        'text-variable-anchor': ['top', 'right', 'left', 'bottom'],
+        'text-radial-offset': [
+          'match',
+          ['get', 'placeType'],
+          'capital',
+          0.85,
+          0.7,
+        ],
+        'text-padding': 4,
+        'text-optional': true,
+      },
+      paint: {
+        'text-color': [
+          'match',
+          ['get', 'placeType'],
+          'capital',
+          isDark ? '#FDE68A' : '#7C1D13',
+          ['garrison-nine', 'pass'],
+          isDark ? '#E2C792' : '#5C3D1E',
+          isDark ? '#CBD5E1' : '#332922',
+        ],
+        'text-halo-color': isDark
+          ? 'rgba(11, 15, 23, 0.94)'
+          : 'rgba(252, 248, 238, 0.96)',
+        'text-halo-width': 1.8,
+      },
+    });
+  }
+
+  // =========================================================================
+  // 5. On-Map Historical Causal Arcs (`← 前因` & `深远后果 →`)
+  // =========================================================================
+  if (!map.getSource('causal-arcs')) {
+    map.addSource('causal-arcs', {
+      type: 'geojson',
+      data: EMPTY_FC,
+    });
+  }
+
+  if (!map.getLayer('causal-arcs-glow')) {
+    map.addLayer({
+      id: 'causal-arcs-glow',
+      type: 'line',
+      source: 'causal-arcs',
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: {
+        'line-color': [
+          'match',
+          ['get', 'arcKind'],
+          'prev',
+          '#D97706',
+          '#C53030',
+        ],
+        'line-width': 7,
+        'line-opacity': isDark ? 0.34 : 0.24,
+        'line-blur': 3,
+      },
+    });
+
+    map.addLayer({
+      id: 'causal-arcs-line',
+      type: 'line',
+      source: 'causal-arcs',
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: {
+        'line-color': [
+          'match',
+          ['get', 'arcKind'],
+          'prev',
+          isDark ? '#FBBF24' : '#B45309',
+          isDark ? '#F87171' : '#B83B2A',
+        ],
+        'line-width': 2.4,
+        'line-dasharray': [2.2, 1.5],
+        'line-opacity': 0.92,
+      },
+    });
+
+    map.addLayer({
+      id: 'causal-arcs-arrows',
+      type: 'symbol',
+      source: 'causal-arcs',
+      layout: {
+        'symbol-placement': 'line',
+        'symbol-spacing': 110,
+        'icon-image': 'tactical-spearhead',
+        'icon-size': 0.38,
+        'icon-rotate': 90,
+        'icon-rotation-alignment': 'map',
+        'icon-allow-overlap': true,
+      },
+      paint: {
+        'icon-color': [
+          'match',
+          ['get', 'arcKind'],
+          'prev',
+          isDark ? '#FDE68A' : '#B45309',
+          isDark ? '#FCA5A5' : '#9B1C1C',
+        ],
+        'icon-halo-color': isDark ? '#0F172A' : '#FFFDF7',
+        'icon-halo-width': 1.2,
+      },
+    });
+
+    map.addLayer({
+      id: 'causal-arcs-label',
+      type: 'symbol',
+      source: 'causal-arcs',
+      layout: {
+        'symbol-placement': 'line-center',
+        'text-field': ['get', 'label'],
+        'text-font': ['Noto Sans Regular'],
+        'text-size': 11,
+        'text-offset': [0, -0.85],
+      },
+      paint: {
+        'text-color': [
+          'match',
+          ['get', 'arcKind'],
+          'prev',
+          isDark ? '#FDE68A' : '#92400E',
+          isDark ? '#FECACA' : '#991B1B',
+        ],
+        'text-halo-color': isDark
+          ? 'rgba(11, 15, 23, 0.95)'
+          : 'rgba(255, 251, 240, 0.96)',
+        'text-halo-width': 2.0,
+      },
+    });
+  }
+
+  // =========================================================================
+  // 6. Campaign War-Room Dynamic Marching Routes (4-Layer Composite Arrows)
+  // =========================================================================
   if (!map.getSource('campaign-routes')) {
     map.addSource('campaign-routes', {
       type: 'geojson',
@@ -331,36 +850,42 @@ export function mountHistoricalLayers(
       id: 'campaign-routes-glow',
       type: 'line',
       source: 'campaign-routes',
-      layout: {
-        'line-cap': 'round',
-        'line-join': 'round',
-      },
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: {
         'line-color': ['get', 'color'],
-        'line-width': 11,
-        'line-opacity': 0.30,
+        'line-width': 12,
+        'line-opacity': isDark ? 0.34 : 0.25,
         'line-blur': 4,
       },
     });
 
-    // Solid base routes (assault & naval)
+    // High-contrast military outer casing
+    map.addLayer({
+      id: 'campaign-routes-casing',
+      type: 'line',
+      source: 'campaign-routes',
+      filter: ['in', ['get', 'tactic'], ['literal', ['assault', 'naval']]],
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: {
+        'line-color': isDark ? '#090D14' : '#FFFDF7',
+        'line-width': ['match', ['get', 'tactic'], 'naval', 7.4, 6.8],
+        'line-opacity': 0.88,
+      },
+    });
+
     map.addLayer({
       id: 'campaign-routes-solid',
       type: 'line',
       source: 'campaign-routes',
       filter: ['in', ['get', 'tactic'], ['literal', ['assault', 'naval']]],
-      layout: {
-        'line-cap': 'round',
-        'line-join': 'round',
-      },
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: {
         'line-color': ['get', 'color'],
-        'line-width': ['match', ['get', 'tactic'], 'naval', 4.6, 4.2],
-        'line-opacity': 0.94,
+        'line-width': ['match', ['get', 'tactic'], 'naval', 4.8, 4.4],
+        'line-opacity': 0.96,
       },
     });
 
-    // Dashed tactical routes (ambush, retreat, supply)
     map.addLayer({
       id: 'campaign-routes-dashed',
       type: 'line',
@@ -370,26 +895,22 @@ export function mountHistoricalLayers(
         ['get', 'tactic'],
         ['literal', ['ambush', 'retreat', 'supply']],
       ],
-      layout: {
-        'line-cap': 'round',
-        'line-join': 'round',
-      },
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: {
         'line-color': ['get', 'color'],
-        'line-width': ['match', ['get', 'tactic'], 'ambush', 3.8, 3.0],
-        'line-dasharray': [2.2, 1.5],
-        'line-opacity': ['match', ['get', 'tactic'], 'retreat', 0.76, 0.95],
+        'line-width': ['match', ['get', 'tactic'], 'ambush', 4.0, 3.2],
+        'line-dasharray': [2.2, 1.4],
+        'line-opacity': ['match', ['get', 'tactic'], 'retreat', 0.78, 0.96],
       },
     });
 
-    // Repeating directional chevrons along marching lines
     map.addLayer({
       id: 'campaign-routes-chevrons',
       type: 'symbol',
       source: 'campaign-routes',
       layout: {
         'symbol-placement': 'line',
-        'symbol-spacing': 64,
+        'symbol-spacing': 58,
         'icon-image': 'tactical-spearhead',
         'icon-size': 0.42,
         'icon-rotate': 90,
@@ -400,19 +921,18 @@ export function mountHistoricalLayers(
       paint: {
         'icon-color': '#FFFFFF',
         'icon-halo-color': ['get', 'color'],
-        'icon-halo-width': 1.5,
-        'icon-opacity': 0.92,
+        'icon-halo-width': 1.4,
+        'icon-opacity': 0.94,
       },
     });
 
-    // Animated leading vanguard spearhead gliding along each active route
     map.addLayer({
       id: 'campaign-vanguard-heads',
       type: 'symbol',
       source: 'campaign-vanguards',
       layout: {
         'icon-image': 'tactical-spearhead',
-        'icon-size': 0.84,
+        'icon-size': 0.88,
         'icon-rotate': ['get', 'bearing'],
         'icon-rotation-alignment': 'map',
         'icon-pitch-alignment': 'map',
@@ -422,10 +942,32 @@ export function mountHistoricalLayers(
       paint: {
         'icon-color': ['get', 'color'],
         'icon-halo-color': '#FFFDF7',
-        'icon-halo-width': 2.4,
+        'icon-halo-width': 2.6,
       },
     });
   }
+}
+
+export function setPlaceNameModeOnGpu(
+  map: maplibregl.Map,
+  mode: PlaceNameMode
+): void {
+  if (map.getLayer('ming-places-symbol')) {
+    map.setLayoutProperty('ming-places-symbol', 'text-field', [
+      'get',
+      `label_${mode}`,
+    ]);
+  }
+}
+
+export function updateCausalArcsOnMap(
+  map: maplibregl.Map,
+  selectedEvent: HistoricalEvent | null | undefined,
+  visible: boolean
+): void {
+  const src = map.getSource('causal-arcs') as GeoJSONSource | undefined;
+  if (!src) return;
+  src.setData(visible ? buildCausalArcGeoJSON(selectedEvent) : EMPTY_FC);
 }
 
 export function syncLayerVisibility(
@@ -439,8 +981,11 @@ export function syncLayerVisibility(
   };
 
   setVis('ming-territories-fill', layers.territories);
-  setVis('ming-territories-glow', layers.territories);
+  setVis('ming-territories-frontier-band', layers.territories);
+  setVis('ming-territories-outline-casing', layers.territories);
   setVis('ming-territories-outline', layers.territories);
+  setVis('ming-territories-hover', layers.territories);
+  setVis('ming-polity-labels', layers.territories);
 
   setVis('vector-natural-waterways', layers.waterways);
   setVis('ming-rivers-casing', layers.waterways);
@@ -451,13 +996,20 @@ export function syncLayerVisibility(
   setVis('ming-waterways-label', layers.waterways);
 
   setVis('ming-great-wall-casing', layers.greatWall);
+  setVis('ming-great-wall-base', layers.greatWall);
   setVis('ming-great-wall-line', layers.greatWall);
+
+  setVis('ming-mountains-label', layers.landforms);
+  setVis('ming-waters-regions-label', layers.landforms);
+
+  setVis('ming-places-symbol', layers.places);
+
+  setVis('causal-arcs-glow', layers.causalArcs);
+  setVis('causal-arcs-line', layers.causalArcs);
+  setVis('causal-arcs-arrows', layers.causalArcs);
+  setVis('causal-arcs-label', layers.causalArcs);
 }
 
-/**
- * Builds curved GeoJSON features for a campaign phase and returns prepared curve metadata
- * for the progressive route growth + vanguard spearhead animator & callout badges.
- */
 export function buildPhaseRouteFeatures(
   campaign: Campaign | null,
   phase: CampaignPhase | null
@@ -521,14 +1073,16 @@ export function buildPhaseRouteFeatures(
 }
 
 /**
- * Updates both progressive route extension (`growProgress` 0..1) and leading/pulsing
- * vanguard spearhead symbols (`pulseProgress` 0..1) at 60fps.
+ * Hardware-friendly Route & Spearhead Frame Updater:
+ * - If `skipRouteGeometryUpdate` is true (once `growProgress >= 1`), skips `routeSrc.setData()`
+ *   completely so MapLibre NEVER re-tessellates line geometry needlessly!
  */
 export function updateCampaignAnimationFrame(
   map: maplibregl.Map,
   curves: PreparedRouteCurve[],
   growProgress: number,
-  pulseProgress: number
+  pulseProgress: number,
+  skipRouteGeometryUpdate = false
 ): void {
   const routeSrc = map.getSource('campaign-routes') as GeoJSONSource | undefined;
   const vanguardSrc = map.getSource('campaign-vanguards') as
@@ -548,70 +1102,74 @@ export function updateCampaignAnimationFrame(
   const vanguardFeatures: GeoJSON.Feature[] = [];
 
   curves.forEach((curve, idx) => {
-    const delay = curves.length > 1 ? (idx / (curves.length - 1)) * maxStagger : 0;
+    const delay =
+      curves.length > 1 ? (idx / (curves.length - 1)) * maxStagger : 0;
     const localGrow = isGrowing
       ? Math.max(0.02, Math.min(1, (growProgress - delay) / (1 - maxStagger)))
       : 1;
 
-    const { sliced, headCoord, headBearing } = sliceCurveByProgress(
-      curve.coords,
-      localGrow
-    );
+    if (!skipRouteGeometryUpdate) {
+      const { sliced, headCoord, headBearing } = sliceCurveByProgress(
+        curve.coords,
+        localGrow
+      );
 
-    routeFeatures.push({
+      routeFeatures.push({
+        type: 'Feature',
+        properties: {
+          id: curve.id,
+          color: curve.color,
+          tactic: curve.tactic,
+          label: curve.label,
+        },
+        geometry: {
+          type: 'LineString',
+          coordinates: sliced,
+        },
+      });
+
+      if (localGrow < 0.999) {
+        vanguardFeatures.push({
+          type: 'Feature',
+          properties: {
+            id: curve.id,
+            color: curve.color,
+            bearing: headBearing,
+          },
+          geometry: {
+            type: 'Point',
+            coordinates: headCoord,
+          },
+        });
+        return;
+      }
+    }
+
+    const staggeredPulse = (pulseProgress + idx * 0.19) % 1;
+    const { coordinates, bearing } = sampleAlongPath(
+      curve.coords,
+      staggeredPulse
+    );
+    vanguardFeatures.push({
       type: 'Feature',
       properties: {
         id: curve.id,
         color: curve.color,
-        tactic: curve.tactic,
-        label: curve.label,
+        bearing,
       },
       geometry: {
-        type: 'LineString',
-        coordinates: sliced,
+        type: 'Point',
+        coordinates,
       },
     });
-
-    // While route is still marching toward its objective, keep spearhead pinned to the advancing tip!
-    // Once full route has arrived, stream tactical pulse spearheads continuously along the line.
-    if (localGrow < 0.999) {
-      vanguardFeatures.push({
-        type: 'Feature',
-        properties: {
-          id: curve.id,
-          color: curve.color,
-          bearing: headBearing,
-        },
-        geometry: {
-          type: 'Point',
-          coordinates: headCoord,
-        },
-      });
-    } else {
-      const staggeredPulse = (pulseProgress + idx * 0.19) % 1;
-      const { coordinates, bearing } = sampleAlongPath(
-        curve.coords,
-        staggeredPulse
-      );
-      vanguardFeatures.push({
-        type: 'Feature',
-        properties: {
-          id: curve.id,
-          color: curve.color,
-          bearing,
-        },
-        geometry: {
-          type: 'Point',
-          coordinates,
-        },
-      });
-    }
   });
 
-  routeSrc.setData({
-    type: 'FeatureCollection',
-    features: routeFeatures,
-  });
+  if (!skipRouteGeometryUpdate) {
+    routeSrc.setData({
+      type: 'FeatureCollection',
+      features: routeFeatures,
+    });
+  }
   vanguardSrc.setData({
     type: 'FeatureCollection',
     features: vanguardFeatures,

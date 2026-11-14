@@ -1,13 +1,21 @@
 import { create } from 'zustand';
 import { SITE_CONFIG } from '@/config/site';
 import { ALL_EVENTS, CAMPAIGN_MAP, EVENT_MAP } from '@/lib/atlasData';
-import type { CameraPose, MapVisualTheme, PlaceNameMode } from '@/types/ming';
+import type {
+  CameraPose,
+  MapVisualTheme,
+  PerformanceMode,
+  PlaceNameMode,
+  TerritoryPolityProps,
+} from '@/types/ming';
 
 export interface LayerVisibility {
   territories: boolean;
   waterways: boolean;
   greatWall: boolean;
+  landforms: boolean;
   places: boolean;
+  causalArcs: boolean;
   macroEvents: boolean;
   showAllMicroEvents: boolean;
 }
@@ -18,10 +26,12 @@ interface AtlasState {
   currentYear: number;
   yearFilterMode: 'era-window' | 'all';
   selectedEventId: string | null;
+  hoveredPolity: TerritoryPolityProps | null;
 
-  // Separated Left Directory vs Right Detail Panels
+  // Separated Left Directory vs Right Detail Panels + Pure Map Immersion Mode
   isDirectoryOpen: boolean;
   isDrawerOpen: boolean;
+  isImmersionMode: boolean;
 
   // Chronological Full-History Auto-Camera Tour ("全史运镜推演")
   isStoryTourPlaying: boolean;
@@ -40,6 +50,7 @@ interface AtlasState {
 
   isTocModalOpen: boolean;
   theme: MapVisualTheme;
+  perfMode: PerformanceMode;
   is3D: boolean;
   placeNameMode: PlaceNameMode;
   layers: LayerVisibility;
@@ -49,9 +60,11 @@ interface AtlasState {
   setCurrentYear: (year: number) => void;
   setYearFilterMode: (mode: 'era-window' | 'all') => void;
   selectEvent: (eventId: string | null, fly?: boolean) => void;
+  setHoveredPolity: (polity: TerritoryPolityProps | null) => void;
   stepStoryEvent: (delta: 1 | -1) => void;
   setDirectoryOpen: (open: boolean) => void;
   setDrawerOpen: (open: boolean) => void;
+  toggleImmersionMode: () => void;
 
   // Story Tour Actions
   startStoryTour: (fromEventId?: string) => void;
@@ -74,6 +87,7 @@ interface AtlasState {
 
   setTocModalOpen: (open: boolean) => void;
   setTheme: (theme: MapVisualTheme) => void;
+  setPerfMode: (mode: PerformanceMode) => void;
   toggle3D: () => void;
   setPlaceNameMode: (mode: PlaceNameMode) => void;
   toggleLayer: (key: keyof LayerVisibility) => void;
@@ -84,9 +98,11 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   currentYear: SITE_CONFIG.timeline.defaultYear,
   yearFilterMode: 'all',
   selectedEventId: 'evt-1363-poyang-decisive',
+  hoveredPolity: null,
 
   isDirectoryOpen: true,
   isDrawerOpen: true,
+  isImmersionMode: false,
 
   isStoryTourPlaying: false,
   storyTourSpeed: 1,
@@ -103,13 +119,16 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
 
   isTocModalOpen: false,
   theme: 'xuanzhi',
+  perfMode: 'balanced',
   is3D: true,
   placeNameMode: 'both',
   layers: {
     territories: true,
     waterways: true,
     greatWall: true,
+    landforms: true,
     places: true,
+    causalArcs: true,
     macroEvents: true,
     showAllMicroEvents: false,
   },
@@ -135,13 +154,17 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     const prevSeq = get().cameraCommand?.seq ?? 0;
     set((state) => ({
       selectedEventId: eventId,
-      isDrawerOpen: true,
+      isDrawerOpen: state.isImmersionMode ? state.isDrawerOpen : true,
       currentYear: evt.time.year,
       storyTourProgress: 0,
       storyTourNonce: state.storyTourNonce + 1,
-      cameraCommand: fly ? { pose: evt.camera, seq: prevSeq + 1 } : state.cameraCommand,
+      cameraCommand: fly
+        ? { pose: evt.camera, seq: prevSeq + 1 }
+        : state.cameraCommand,
     }));
   },
+
+  setHoveredPolity: (polity) => set({ hoveredPolity: polity }),
 
   stepStoryEvent: (delta) => {
     const { selectedEventId, isStoryTourPlaying } = get();
@@ -162,8 +185,27 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     get().selectEvent(ALL_EVENTS[nextIdx].id, true);
   },
 
-  setDirectoryOpen: (open) => set({ isDirectoryOpen: open }),
-  setDrawerOpen: (open) => set({ isDrawerOpen: open }),
+  setDirectoryOpen: (open) =>
+    set((state) => ({
+      isDirectoryOpen: open,
+      isImmersionMode: open ? false : state.isImmersionMode,
+    })),
+
+  setDrawerOpen: (open) =>
+    set((state) => ({
+      isDrawerOpen: open,
+      isImmersionMode: open ? false : state.isImmersionMode,
+    })),
+
+  toggleImmersionMode: () =>
+    set((state) => {
+      const next = !state.isImmersionMode;
+      return {
+        isImmersionMode: next,
+        isDirectoryOpen: !next,
+        isDrawerOpen: !next,
+      };
+    }),
 
   startStoryTour: (fromEventId) => {
     const state = get();
@@ -174,13 +216,14 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     }
     const evt = EVENT_MAP[targetId] ?? ALL_EVENTS[0];
     const prevSeq = state.cameraCommand?.seq ?? 0;
+    const use3D = state.perfMode !== 'eco';
 
     set({
       activeCampaignId: null,
       isCampaignPlaying: false,
       isStoryTourPlaying: true,
-      is3D: true,
-      isDrawerOpen: true,
+      is3D: use3D,
+      isDrawerOpen: !state.isImmersionMode,
       selectedEventId: evt.id,
       currentYear: evt.time.year,
       storyTourProgress: 0,
@@ -188,9 +231,9 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
       cameraCommand: {
         pose: {
           center: evt.camera.center,
-          zoom: Math.max(6.4, evt.camera.zoom),
-          pitch: evt.camera.pitch ?? 54,
-          bearing: evt.camera.bearing ?? -14,
+          zoom: Math.max(6.2, evt.camera.zoom),
+          pitch: use3D ? Math.min(46, evt.camera.pitch ?? 44) : 0,
+          bearing: use3D ? (evt.camera.bearing ?? -12) : 0,
         },
         seq: prevSeq + 1,
       },
@@ -223,7 +266,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
       activeCampaignId: campaignId,
       activePhaseIndex: safeIdx,
       isCampaignPlaying: true,
-      is3D: true,
+      is3D: state.perfMode !== 'eco',
       campaignCameraMode:
         state.campaignCameraMode === 'free' ? 'follow' : state.campaignCameraMode,
       campaignPhaseProgress: 0,
@@ -235,14 +278,14 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   },
 
   exitCampaign: () =>
-    set({
+    set((state) => ({
       activeCampaignId: null,
       activePhaseIndex: 0,
       isCampaignPlaying: false,
       campaignPhaseProgress: 0,
-      isDirectoryOpen: true,
-      isDrawerOpen: true,
-    }),
+      isDirectoryOpen: !state.isImmersionMode,
+      isDrawerOpen: !state.isImmersionMode,
+    })),
 
   setCampaignPhase: (phaseIndex) => {
     const { activeCampaignId } = get();
@@ -300,21 +343,41 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   setTocModalOpen: (open) => set({ isTocModalOpen: open }),
   setTheme: (theme) => set({ theme }),
 
-  toggle3D: () => {
-    const next3D = !get().is3D;
+  setPerfMode: (mode) => {
+    const next3D = mode !== 'eco';
     const prevSeq = get().cameraCommand?.seq ?? 0;
-    set({
+    set((state) => ({
+      perfMode: mode,
       is3D: next3D,
       cameraCommand: {
         pose: {
-          center: get().cameraCommand?.pose.center ?? SITE_CONFIG.defaultCamera.center,
-          zoom: get().cameraCommand?.pose.zoom ?? SITE_CONFIG.defaultCamera.zoom,
-          pitch: next3D ? 48 : 0,
-          bearing: next3D ? -10 : 0,
+          center:
+            state.cameraCommand?.pose.center ?? SITE_CONFIG.defaultCamera.center,
+          zoom: state.cameraCommand?.pose.zoom ?? SITE_CONFIG.defaultCamera.zoom,
+          pitch: next3D ? 38 : 0,
+          bearing: next3D ? -8 : 0,
         },
         seq: prevSeq + 1,
       },
-    });
+    }));
+  },
+
+  toggle3D: () => {
+    const next3D = !get().is3D;
+    const prevSeq = get().cameraCommand?.seq ?? 0;
+    set((state) => ({
+      is3D: next3D,
+      cameraCommand: {
+        pose: {
+          center:
+            state.cameraCommand?.pose.center ?? SITE_CONFIG.defaultCamera.center,
+          zoom: state.cameraCommand?.pose.zoom ?? SITE_CONFIG.defaultCamera.zoom,
+          pitch: next3D ? 42 : 0,
+          bearing: next3D ? -8 : 0,
+        },
+        seq: prevSeq + 1,
+      },
+    }));
   },
 
   setPlaceNameMode: (mode) => set({ placeNameMode: mode }),

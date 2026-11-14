@@ -26,10 +26,10 @@ export default function TimelineBar() {
   return (
     <footer
       aria-label="历史年份时间轴控制器"
-      className={`fixed bottom-2.5 left-3 right-3 z-30 rounded-2xl border shadow-xl backdrop-blur-md px-3.5 py-2 flex flex-col sm:flex-row items-center gap-2 sm:gap-3 ${
+      className={`fixed bottom-2 left-3 right-3 z-30 rounded-2xl border shadow-xl px-3 py-1.5 flex flex-col sm:flex-row items-center gap-2 sm:gap-3 ${
         isDark
-          ? 'bg-slate-950/90 border-amber-500/25 text-amber-50'
-          : 'bg-[#FAF5E8]/94 border-amber-900/20 text-stone-900'
+          ? 'bg-[#0D131D]/97 border-amber-500/30 text-amber-50'
+          : 'bg-[#FAF5E8]/97 border-amber-900/25 text-stone-900'
       }`}
     >
       {/* Era Quick Jump Capsules + Direct Auto-Camera Replay Button */}

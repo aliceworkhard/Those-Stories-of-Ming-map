@@ -1,29 +1,23 @@
 # 系统架构与技术实现说明 (`ARCHITECTURE.md`)
 
-## 1. 总体分层架构
+## 1. 总体分层与硬件效能架构
 
-《明途 · 舆图纪》（`Those-Stories-of-Ming-map`）采用**高精度矢量地理数据驱动 + WebGL 三维硬件加速 + 容器化就绪**的前后端解耦架构：
+《明途 · 舆图纪》（`Those-Stories-of-Ming-map`）采用**全 GPU 矢量制图管线 + 按需零闲置导演引擎 + 容器化就绪**的高效能架构：
 
-- **展现与交互层 (`src/components/`)**：
-  - `header/TopAtlasBar.tsx`：全局时代定位、**「🎬 全史运镜推演」主入口**、战役运镜推演直达栏、3D 山川开关、古今地名切换（古称/双显/今名）、宣纸/玄墨双主题切换与要素图层控制。
-  - `directory/EventDirectoryPanel.tsx`：**左侧独立《事件目录》检索面板**，支持关键词全文检索（事件、人物、古今地名、年份）、分类标签筛选（全部 / 大事 / 轶事 / 战役）与编年聚焦定位，与右侧详情抽屉物理分离、互不遮挡。
-  - `drawer/EventDetailDrawer.tsx`：**右侧独立《事件详情》五维叙事抽屉**，专注呈现单一事件的时空定位、关联战役入口、「为啥会这样？」地理与制度双因子因果拆解（含前后向事件链跨时空跳转）、《明朝那些事儿》原著章节锚点与史实考据双栏对照及上一站/下一站/从此开启运镜推演控制条。
-  - `tour/StoryTourPlayer.tsx`：**全史自动运镜推演悬浮导演台**，实时展示全书编年巡礼站点进度、倍速切换（`1x / 1.5x`）、前后跳站与一键切入战役行军推演。
-  - `campaign/CampaignPlayer.tsx`：**分幕战役行军运镜推演控制台**，驱动实时进度光带、**三档运镜模式切换（`跟随行军运镜 | 全景环绕运镜 | 自由视角`）**、倍速切换（`1x / 1.5x`）、多阶段兵力对比与各幕胜负手解读。
-  - `map/MingMapCanvas.tsx`：全屏三维历史舆图画布，内置三大核心引擎：
-    1. **零抖动常驻锚点系统**：所有 DOM 标记均挂载于零尺寸（`0x0`）无 CSS 过渡锚点容器并通过常驻字典原地刷新，彻底杜绝缩放/飞行/悬停跳动。
-    2. **屏幕空间蛛网散开（Spiderfy）+ 四象限 2D AABB 碰撞避让求解器（`runScreenSpaceLayout`）**：对同城共址事件（如应天府、北平府多起事件）自动按像素环散开并绘制虚线牵引丝，再按优先级对政权大印、战役震波、战术路标、事件标签与城池古今地名执行四象限包围盒避让，确保任意缩放层级下文字零重叠。
-    3. **统一 60fps 双模三维自动运镜导演引擎**：战役模式下支持沿 Catmull-Rom 行军曲线实时追踪先锋箭头或战区全景环绕；全史巡礼模式下飞抵事件地标后自动执行平滑三维山川环绕运镜并推进编年。
-  - `timeline/TimelineBar.tsx` & `modals/BookTocModal.tsx`：带「▶ 运镜推演」快捷开关的编年滑块刻度尺与全书 7 部 157 章目录索引导航。
-- **状态管理层 (`src/store/useAtlasStore.ts`)**：
-  - 基于 `Zustand` 管理纯可序列化状态（含独立左右面板开关、全史运镜推演状态、战役运镜模式等）；`maplibregl.Map` 实例严格通过 `useRef` 隔离在画布组件内部，避免响应式代理损耗帧率。
-- **WebGL 地图与推演引擎层 (`src/engine/` & `src/lib/curve.ts`)**：
-  - `mapStyle.ts`：免商业 Token 多级高清开源矢量底图样式生成器（基于 OpenFreeMap `z0–z14` OpenMapTiles 矢量海岸线、岛屿、鄱阳湖/洞庭湖/太湖等真实湖泊与自然支流水系，配合淡墨水墨风 AWS Open Data Terrarium 3D 地形起伏，100% 剔除现代公路、铁路、建筑与现代国界）及离屏 Canvas 动态注册 SDF 战术矛头精灵。
-  - `MingMapLayers.ts`：管理真实州府/山川拓扑归并的政权动态版图层（置于高清矢量水体层之下以确保江海湖岸无像素溢出）、明代真实历史水系层（Natural Earth 10m 实测水系 + 1194–1855 夺淮入海故黄河、京杭大运河、九边外墙与内三关明长城及沿河弯曲注记）、Catmull-Rom 样条渐进生长行军箭头与 60fps 动态先锋矛头。
-- **开放结构化数据与契约层 (`data/` & `scripts/`)**：
-  - 所有历史时空数据遵循 `src/lib/schemas.ts`（Zod）与 `scripts/validate-data.mjs` 自动化引用完整性、真实 GIS 顶点密度及版权合规检查。
+### A. 硬件渲染减负五大机制
+1. **按需零闲置帧调度（On-Demand Zero-Idle RAF）**：`MingMapCanvas.tsx` 仅在「全史自动运镜推演」或「战役行军动画」实际播放期间挂载 `requestAnimationFrame`，静止阅读与后台标签页（`visibilitychange`）下帧循环 **100% 休眠（0 FPS / 0% 闲置 CPU·GPU 占用）**。
+2. **双源分离高程缓存（`hillshade-dem` vs `terrain-dem`）**：严格遵循 MapLibre 官方最佳实践，将 2.5D 青绿矿物山体阴影源（`maxzoom: 8`，全东亚仅需数张瓦片）与 3D 地形网格源（`maxzoom: 9/11`）独立分离，彻底消除高程纹理反复解码抖动，并限制 `maxPitch: 54°` 与瓦片池上限（`maxTileCacheSize`）。
+3. **三档硬件性能模式（`均衡 / 省电 / 极致`）**：动态调节 WebGL `pixelRatio`（`1.0 / 1.5 / 2.0`）、三维地形夸张度及动态流光采样频率（行军路线生长完毕后立即冻结线要素顶点缓冲区，仅做低开销先锋点采样）。
+4. **零高斯模糊合成（Zero `backdrop-blur` over WebGL）与零全局脉冲重绘**：移除覆盖在 WebGL 画布之上的多层面板 `backdrop-filter` 与多节点无限 `animate-ping`，改用高质感不透明宣纸/玄漆面板与静态双环印记，大幅降低 2K/4K 高刷屏下的浏览器 Skia 合成器负载。
+5. **静态地理注记全量下沉 GPU（C++/WebWorker 符号碰撞）**：40 处战略城池关隘（支持 `古称 / 双显 / 今名` 毫秒级 GPU 表达式切换）、22 处名山大川湖海脊线注记与政权国号大印全部由 MapLibre 原生 WebGL `symbol` 图层渲染，DOM 节点数量精简 65% 以上。
+
+### B. 东方青绿山水 × 玄墨数字沙盘可视化层 (`src/engine/` & `src/components/`)
+- **三层政权疆界带（内晕外实）与悬停题跋**：由底层宣纸设色洗染 + 内侧政权色晕疆界带 + 外侧双线实/虚国界构成，配合 `TerritoryLegendCard.tsx` 实现悬停政权高亮与版图伸缩考据题跋展示。
+- **地图级跨时空历史因果飞弧（`causal-arcs`）**：选中任意历史事件时，自动在地图上绘制连接前因事件（琥珀金虚线飞弧）与深远后果事件（朱砂红流光飞弧）的平滑曲线，直观呈现空间地缘与时间因果的交织。
+- **四层军略行军箭矢**：战役模式下由高对比外廓衬线、阵营流光主干、等距战术箭羽与动态先锋矛头组成。
+- **单行轻量化顶栏与一键「沉浸观图」**：`TopAtlasBar.tsx` 聚合全史运镜推演、战役推演下拉面板、沉浸观图开关、3D 山川、古今地名与硬件性能档位；左右分立瘦身版 `EventDirectoryPanel.tsx` 与 `EventDetailDrawer.tsx`。
 
 ## 2. 双阶段部署设计
 
-1. **云原生 Git 自动持续部署（GitHub -> Vercel Production）**：仓库内置 `vercel.json`，零环境变量依赖，每次向 `main` 分支推送代码自动运行 `npm run check && npm run build` 并更新在线生产环境 `https://those-stories-of-ming-map.vercel.app`。
-2. **独立云服务器容器化生产部署（`deploy/`）**：`Dockerfile` 自动注入 `DOCKER_STANDALONE=1` 构建 Next.js Standalone 镜像，配合 `docker-compose.yml` 与 `Caddyfile` 自动签发免费 HTTPS 证书并开启静态地理 JSON Zstd/Gzip 高压缩缓存。
+1. **云原生 Git 自动持续部署（GitHub -> Vercel Production）**：仓库内置 `vercel.json`，每次推送 `main` 分支自动校验并更新在线生产环境 `https://those-stories-of-ming-map.vercel.app`。
+2. **独立云服务器容器化生产部署（`deploy/`）**：`Dockerfile` 自动构建 Next.js Standalone 镜像，配合 `docker-compose.yml` 与 `Caddyfile` 自动签发免费 HTTPS 证书。

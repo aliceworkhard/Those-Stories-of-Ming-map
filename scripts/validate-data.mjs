@@ -220,6 +220,16 @@ if (fs.existsSync(waterwaysPath)) {
   }
 }
 
+const landformsPath = path.join(DATA_DIR, 'geo-base', 'ming-landforms.json');
+if (fs.existsSync(landformsPath)) {
+  const lfc = JSON.parse(fs.readFileSync(landformsPath, 'utf8'));
+  if (!Array.isArray(lfc.features) || lfc.features.length < 15) {
+    fail(`ming-landforms.json expected >= 15 landform features, got ${lfc.features?.length}`);
+  } else {
+    ok(`Historical mountain ridges, lakes & seas verified (${lfc.features.length} features)`);
+  }
+}
+
 if (errors > 0) {
   console.error(`\nValidation FAILED with ${errors} error(s).`);
   process.exit(1);

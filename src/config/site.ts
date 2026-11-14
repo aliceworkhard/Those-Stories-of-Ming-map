@@ -29,9 +29,9 @@ export const SITE_CONFIG = {
     ],
   },
   defaultCamera: {
-    center: [116.2, 31.8] as [number, number],
-    zoom: 5.4,
-    pitch: 40,
-    bearing: 0,
+    center: [116.2, 31.6] as [number, number],
+    zoom: 5.45,
+    pitch: 34,
+    bearing: -4,
   },
 } as const;

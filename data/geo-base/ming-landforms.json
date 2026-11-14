@@ -1,0 +1,151 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-taihang", "name": "太 行 山 脉", "kind": "mountain-major" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[113.55, 35.35], [113.85, 36.85], [114.25, 38.35], [114.85, 39.65]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-yanshan", "name": "燕 山 山 脉", "kind": "mountain-major" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[115.65, 40.38], [117.15, 40.58], [118.65, 40.32], [119.55, 40.08]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-qinling", "name": "秦   岭", "kind": "mountain-major" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[106.85, 33.78], [108.35, 33.85], [109.95, 33.92], [111.15, 33.82]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-yinshan", "name": "阴 山 山 脉", "kind": "mountain-major" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[107.25, 40.85], [109.45, 41.05], [111.65, 41.15], [113.35, 41.12]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-dabie", "name": "大 别 山", "kind": "mountain-minor" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[114.65, 31.45], [115.65, 31.15], [116.55, 30.85]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-lushan", "name": "庐 山", "kind": "mountain-minor" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[115.86, 29.42], [116.06, 29.66]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-wuyi", "name": "武 夷 山 脉", "kind": "mountain-major" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[116.65, 26.25], [117.65, 27.35], [118.55, 28.25]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-nanling", "name": "南   岭", "kind": "mountain-major" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[111.15, 25.15], [113.05, 25.35], [114.85, 25.42]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-taishan", "name": "泰 山（岱 宗）", "kind": "mountain-minor" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[116.85, 36.18], [117.55, 36.36]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-yiwulv", "name": "医 巫 闾 山", "kind": "mountain-minor" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[121.45, 41.35], [121.95, 41.95]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-changbai", "name": "长 白 山 脉", "kind": "mountain-major" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[126.65, 41.35], [128.05, 42.05], [129.25, 42.85]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-helan", "name": "贺 兰 山", "kind": "mountain-minor" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[105.75, 38.25], [106.15, 39.15]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-poyang-lake", "name": "鄱阳湖", "kind": "lake" },
+      "geometry": { "type": "Point", "coordinates": [116.24, 29.08] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-dongting-lake", "name": "洞庭湖", "kind": "lake" },
+      "geometry": { "type": "Point", "coordinates": [112.88, 29.18] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-taihu-lake", "name": "太湖", "kind": "lake" },
+      "geometry": { "type": "Point", "coordinates": [120.22, 31.22] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-hongze-lake", "name": "洪泽古泽", "kind": "lake" },
+      "geometry": { "type": "Point", "coordinates": [118.68, 33.32] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-chaohu-lake", "name": "巢湖", "kind": "lake" },
+      "geometry": { "type": "Point", "coordinates": [117.52, 31.56] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-bohai-sea", "name": "渤  海", "kind": "sea" },
+      "geometry": { "type": "Point", "coordinates": [119.85, 38.65] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-huanghai-sea", "name": "黄  海", "kind": "sea" },
+      "geometry": { "type": "Point", "coordinates": [122.85, 34.85] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-donghai-sea", "name": "东  海", "kind": "sea" },
+      "geometry": { "type": "Point", "coordinates": [123.65, 29.25] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-mobei-region", "name": "漠 北 草 原", "kind": "region" },
+      "geometry": { "type": "Point", "coordinates": [111.5, 44.6] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-guanzhong-region", "name": "关 中 形 胜", "kind": "region" },
+      "geometry": { "type": "Point", "coordinates": [108.85, 34.55] }
+    }
+  ]
+}

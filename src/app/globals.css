@@ -42,13 +42,19 @@
   background: rgba(184, 59, 42, 0.65);
 }
 
-/* Position MapLibre navigation control above bottom timeline & left of drawer */
+/* Dynamically position MapLibre navigation control above bottom timeline & clear of right drawer */
 .maplibregl-ctrl-bottom-right {
-  bottom: 76px !important;
+  bottom: 72px !important;
   right: 12px !important;
+  transition: right 0.2s ease;
 }
 @media (min-width: 640px) {
-  .maplibregl-ctrl-bottom-right {
-    right: 414px !important;
+  main[data-drawer-open="true"] .maplibregl-ctrl-bottom-right {
+    right: 360px !important;
+  }
+}
+@media (min-width: 1280px) {
+  main[data-drawer-open="true"] .maplibregl-ctrl-bottom-right {
+    right: 380px !important;
   }
 }
