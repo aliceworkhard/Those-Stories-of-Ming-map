@@ -182,8 +182,8 @@ if (fs.existsSync(eventsDir)) {
   }
 }
 
-// 6. Validate Territories
-console.log('6. Validating data/territories/...');
+// 6. Validate High-Resolution GIS Territories & Waterways
+console.log('6. Validating data/territories/ & data/geo-base/ming-waterways.json...');
 const terIndexPath = path.join(DATA_DIR, 'territories', 'index.json');
 if (fs.existsSync(terIndexPath)) {
   const terIndex = JSON.parse(fs.readFileSync(terIndexPath, 'utf8'));
@@ -191,9 +191,33 @@ if (fs.existsSync(terIndexPath)) {
     const fPath = path.join(DATA_DIR, 'territories', item.file);
     if (!fs.existsSync(fPath)) {
       fail(`Territory snapshot file missing: ${item.file}`);
+      continue;
+    }
+    const fc = JSON.parse(fs.readFileSync(fPath, 'utf8'));
+    const totalPts = (fc.features || []).reduce(
+      (sum, f) =>
+        sum +
+        (f.geometry?.coordinates || []).reduce(
+          (ps, poly) => ps + poly.reduce((rs, ring) => rs + ring.length, 0),
+          0
+        ),
+      0
+    );
+    if (totalPts < 1500) {
+      fail(`Territory snapshot ${item.file} has too few GIS vertices (${totalPts} < 1500)`);
     }
   }
-  ok(`Territories index verified (${terIndex.length} historical snapshots)`);
+  ok(`Territories index & high-res GIS geometry verified (${terIndex.length} historical snapshots)`);
+}
+
+const waterwaysPath = path.join(DATA_DIR, 'geo-base', 'ming-waterways.json');
+if (fs.existsSync(waterwaysPath)) {
+  const wfc = JSON.parse(fs.readFileSync(waterwaysPath, 'utf8'));
+  if (!Array.isArray(wfc.features) || wfc.features.length < 10) {
+    fail(`ming-waterways.json expected >= 10 GIS features, got ${wfc.features?.length}`);
+  } else {
+    ok(`Historical GIS waterways & Ming Great Wall verified (${wfc.features.length} features)`);
+  }
 }
 
 if (errors > 0) {

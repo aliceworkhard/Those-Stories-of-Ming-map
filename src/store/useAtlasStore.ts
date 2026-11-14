@@ -20,6 +20,9 @@ interface AtlasState {
   activeCampaignId: string | null;
   activePhaseIndex: number;
   isCampaignPlaying: boolean;
+  campaignSpeed: 1 | 1.5;
+  campaignPhaseProgress: number;
+  campaignReplayNonce: number;
   isTocModalOpen: boolean;
   theme: MapVisualTheme;
   is3D: boolean;
@@ -38,6 +41,9 @@ interface AtlasState {
   nextCampaignPhase: () => void;
   prevCampaignPhase: () => void;
   setCampaignPlaying: (playing: boolean) => void;
+  setCampaignSpeed: (speed: 1 | 1.5) => void;
+  setCampaignPhaseProgress: (progress: number) => void;
+  replayCurrentPhase: () => void;
   setTocModalOpen: (open: boolean) => void;
   setTheme: (theme: MapVisualTheme) => void;
   toggle3D: () => void;
@@ -54,6 +60,9 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   activeCampaignId: null,
   activePhaseIndex: 0,
   isCampaignPlaying: false,
+  campaignSpeed: 1,
+  campaignPhaseProgress: 0,
+  campaignReplayNonce: 0,
   isTocModalOpen: false,
   theme: 'xuanzhi',
   is3D: true,
@@ -101,15 +110,16 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     if (!cmp) return;
     const safeIdx = Math.max(0, Math.min(cmp.phases.length - 1, phaseIndex));
     const phase = cmp.phases[safeIdx];
-    const prevSeq = get().cameraCommand?.seq ?? 0;
-    set({
+    set((state) => ({
       activeCampaignId: campaignId,
       activePhaseIndex: safeIdx,
-      isCampaignPlaying: false,
+      // Auto-start 3D camera choreography & progressive route replay immediately!
+      isCampaignPlaying: true,
+      campaignPhaseProgress: 0,
+      campaignReplayNonce: state.campaignReplayNonce + 1,
       isDrawerOpen: false,
       currentYear: phase.year,
-      cameraCommand: { pose: phase.camera, seq: prevSeq + 1 },
-    });
+    }));
   },
 
   exitCampaign: () =>
@@ -117,21 +127,23 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
       activeCampaignId: null,
       activePhaseIndex: 0,
       isCampaignPlaying: false,
+      campaignPhaseProgress: 0,
       isDrawerOpen: true,
     }),
 
   setCampaignPhase: (phaseIndex) => {
-    const { activeCampaignId, cameraCommand } = get();
+    const { activeCampaignId } = get();
     if (!activeCampaignId) return;
     const cmp = CAMPAIGN_MAP[activeCampaignId];
     if (!cmp) return;
     const safeIdx = Math.max(0, Math.min(cmp.phases.length - 1, phaseIndex));
     const phase = cmp.phases[safeIdx];
-    set({
+    set((state) => ({
       activePhaseIndex: safeIdx,
+      campaignPhaseProgress: 0,
+      campaignReplayNonce: state.campaignReplayNonce + 1,
       currentYear: phase.year,
-      cameraCommand: { pose: phase.camera, seq: (cameraCommand?.seq ?? 0) + 1 },
-    });
+    }));
   },
 
   nextCampaignPhase: () => {
@@ -142,7 +154,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     if (activePhaseIndex < cmp.phases.length - 1) {
       get().setCampaignPhase(activePhaseIndex + 1);
     } else {
-      set({ isCampaignPlaying: false });
+      set({ isCampaignPlaying: false, campaignPhaseProgress: 100 });
     }
   },
 
@@ -154,6 +166,17 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   },
 
   setCampaignPlaying: (playing) => set({ isCampaignPlaying: playing }),
+
+  setCampaignSpeed: (speed) => set({ campaignSpeed: speed }),
+
+  setCampaignPhaseProgress: (progress) => set({ campaignPhaseProgress: progress }),
+
+  replayCurrentPhase: () =>
+    set((state) => ({
+      isCampaignPlaying: true,
+      campaignPhaseProgress: 0,
+      campaignReplayNonce: state.campaignReplayNonce + 1,
+    })),
 
   setTocModalOpen: (open) => set({ isTocModalOpen: open }),
 

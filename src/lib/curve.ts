@@ -7,7 +7,7 @@ import type { LngLat, RouteTacticType } from '@/types/ming';
 export function buildCurvedRouteCoords(
   rawCoords: LngLat[],
   tactic: RouteTacticType,
-  segmentsPerSpan = 18
+  segmentsPerSpan = 22
 ): LngLat[] {
   if (rawCoords.length < 2) return rawCoords;
 
@@ -59,6 +59,14 @@ export function buildCurvedRouteCoords(
   return result;
 }
 
+function computeBearingDeg(a: LngLat, b: LngLat): number {
+  const midLat = (a[1] + b[1]) * 0.5;
+  const dLng = (b[0] - a[0]) * Math.cos((midLat * Math.PI) / 180);
+  const dLat = b[1] - a[1];
+  const rad = Math.atan2(dLng, dLat);
+  return ((rad * 180) / Math.PI + 360) % 360;
+}
+
 /**
  * Samples a position and geographic bearing (degrees clockwise from North)
  * at normalized progress `t` in [0, 1] along a polyline.
@@ -70,7 +78,7 @@ export function sampleAlongPath(
   if (coords.length === 0) return { coordinates: [116.4, 32.0], bearing: 0 };
   if (coords.length === 1) return { coordinates: coords[0], bearing: 0 };
 
-  const clamped = Math.max(0, Math.min(0.999, progress));
+  const clamped = Math.max(0, Math.min(0.9999, progress));
   const scaled = clamped * (coords.length - 1);
   const idx = Math.floor(scaled);
   const frac = scaled - idx;
@@ -81,11 +89,54 @@ export function sampleAlongPath(
   const lng = a[0] + (b[0] - a[0]) * frac;
   const lat = a[1] + (b[1] - a[1]) * frac;
 
-  // Approximate geographic bearing (degrees clockwise from North, 0 = North, 90 = East)
-  const dLng = (b[0] - a[0]) * Math.cos(((lat * Math.PI) / 180));
-  const dLat = b[1] - a[1];
-  const rad = Math.atan2(dLng, dLat);
-  const bearing = ((rad * 180) / Math.PI + 360) % 360;
+  return {
+    coordinates: [lng, lat],
+    bearing: computeBearingDeg(a, b),
+  };
+}
 
-  return { coordinates: [lng, lat], bearing };
+/**
+ * Slices a polyline smoothly from index 0 up to normalized `progress` in (0, 1],
+ * returning the partial polyline and exact leading spearhead pose.
+ */
+export function sliceCurveByProgress(
+  coords: LngLat[],
+  progress: number
+): { sliced: LngLat[]; headCoord: LngLat; headBearing: number } {
+  if (coords.length < 2) {
+    const pt = coords[0] ?? ([116.4, 32.0] as LngLat);
+    return { sliced: [pt, pt], headCoord: pt, headBearing: 0 };
+  }
+
+  const clamped = Math.max(0.02, Math.min(1, progress));
+  if (clamped >= 0.999) {
+    const n = coords.length;
+    return {
+      sliced: coords,
+      headCoord: coords[n - 1],
+      headBearing: computeBearingDeg(coords[n - 2], coords[n - 1]),
+    };
+  }
+
+  const scaled = clamped * (coords.length - 1);
+  const idx = Math.floor(scaled);
+  const frac = scaled - idx;
+
+  const a = coords[idx];
+  const b = coords[Math.min(coords.length - 1, idx + 1)];
+  const tip: LngLat = [
+    a[0] + (b[0] - a[0]) * frac,
+    a[1] + (b[1] - a[1]) * frac,
+  ];
+
+  const sliced = coords.slice(0, idx + 1);
+  if (frac > 1e-4 || sliced.length < 2) {
+    sliced.push(tip);
+  }
+
+  return {
+    sliced,
+    headCoord: tip,
+    headBearing: computeBearingDeg(a, b),
+  };
 }

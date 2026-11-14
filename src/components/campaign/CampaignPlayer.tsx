@@ -1,13 +1,15 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   ChevronLeft,
   ChevronRight,
   HelpCircle,
   Pause,
   Play,
+  RotateCcw,
   Swords,
+  Video,
   X,
 } from 'lucide-react';
 import { CAMPAIGN_MAP } from '@/lib/atlasData';
@@ -17,30 +19,20 @@ export default function CampaignPlayer() {
   const activeCampaignId = useAtlasStore((s) => s.activeCampaignId);
   const activePhaseIndex = useAtlasStore((s) => s.activePhaseIndex);
   const isCampaignPlaying = useAtlasStore((s) => s.isCampaignPlaying);
+  const campaignSpeed = useAtlasStore((s) => s.campaignSpeed);
+  const campaignPhaseProgress = useAtlasStore((s) => s.campaignPhaseProgress);
   const setCampaignPhase = useAtlasStore((s) => s.setCampaignPhase);
   const nextCampaignPhase = useAtlasStore((s) => s.nextCampaignPhase);
   const prevCampaignPhase = useAtlasStore((s) => s.prevCampaignPhase);
   const setCampaignPlaying = useAtlasStore((s) => s.setCampaignPlaying);
+  const setCampaignSpeed = useAtlasStore((s) => s.setCampaignSpeed);
+  const replayCurrentPhase = useAtlasStore((s) => s.replayCurrentPhase);
   const exitCampaign = useAtlasStore((s) => s.exitCampaign);
   const theme = useAtlasStore((s) => s.theme);
 
   const campaign = activeCampaignId
     ? CAMPAIGN_MAP[activeCampaignId] ?? null
     : null;
-
-  // Auto-advance phases when playing
-  useEffect(() => {
-    if (!campaign || !isCampaignPlaying) return;
-    const timer = setInterval(() => {
-      const state = useAtlasStore.getState();
-      if (state.activePhaseIndex < campaign.phases.length - 1) {
-        state.nextCampaignPhase();
-      } else {
-        state.setCampaignPlaying(false);
-      }
-    }, 6500);
-    return () => clearInterval(timer);
-  }, [campaign, isCampaignPlaying]);
 
   if (!campaign) return null;
 
@@ -58,15 +50,23 @@ export default function CampaignPlayer() {
   return (
     <section
       aria-label="战役分幕行军推演控制台"
-      className={`fixed bottom-20 left-3 right-3 lg:left-6 lg:right-16 z-30 max-w-5xl rounded-2xl border shadow-2xl backdrop-blur-md p-3.5 sm:p-4 transition-all ${
+      className={`fixed bottom-20 left-3 right-3 lg:left-6 lg:right-16 z-30 max-w-5xl rounded-2xl border shadow-2xl backdrop-blur-md p-3.5 sm:p-4 transition-all overflow-hidden ${
         isDark
           ? 'bg-slate-950/92 border-amber-500/35 text-amber-50'
           : 'bg-[#FAF5E8]/96 border-amber-900/25 text-stone-900'
       }`}
     >
-      {/* Top Bar: Campaign Title + Phase Pills + Exit */}
-      <div className="flex items-center justify-between gap-2 flex-wrap border-b border-current/12 pb-2.5">
-        <div className="flex items-center gap-2 min-w-0">
+      {/* Live Cinematic Phase Progress Ribbon along Top Edge */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-current/10">
+        <div
+          style={{ width: `${campaignPhaseProgress}%` }}
+          className="h-full bg-gradient-to-r from-[#B83B2A] via-amber-500 to-amber-300 transition-[width] duration-75"
+        />
+      </div>
+
+      {/* Top Bar: Campaign Title + Auto-Camera Status + Phase Pills + Exit */}
+      <div className="flex items-center justify-between gap-2 flex-wrap border-b border-current/12 pb-2.5 pt-0.5">
+        <div className="flex items-center gap-2 min-w-0 flex-wrap">
           <span className="px-2 py-0.5 rounded bg-[#B83B2A] text-amber-50 text-[11px] font-bold flex items-center gap-1 shrink-0">
             <Swords className="w-3 h-3" />
             分幕推演
@@ -77,6 +77,12 @@ export default function CampaignPlayer() {
           <span className="text-xs opacity-70 hidden sm:inline">
             （{phase.dateLabel}）
           </span>
+          {isCampaignPlaying && (
+            <span className="px-2 py-0.5 rounded-full bg-emerald-600/15 border border-emerald-500/40 text-emerald-700 dark:text-emerald-300 text-[11px] font-medium flex items-center gap-1">
+              <Video className="w-3 h-3 animate-pulse" />
+              3D 自动运镜推演中
+            </span>
+          )}
         </div>
 
         <div className="flex items-center gap-1.5">
@@ -85,7 +91,6 @@ export default function CampaignPlayer() {
               key={p.phaseNo}
               type="button"
               onClick={() => {
-                setCampaignPlaying(false);
                 setCampaignPhase(idx);
               }}
               className={`w-6 h-6 rounded-full text-xs font-bold tabular-nums transition cursor-pointer ${
@@ -137,7 +142,7 @@ export default function CampaignPlayer() {
         </div>
       </div>
 
-      {/* Bottom: Faction Strength Bar + Playback Controls */}
+      {/* Bottom: Faction Strength Bar + Playback & Camera Speed Controls */}
       <div className="mt-3 pt-2 border-t border-current/10 flex flex-wrap items-center justify-between gap-3">
         {strength && (
           <div className="flex-1 min-w-[200px]">
@@ -168,7 +173,26 @@ export default function CampaignPlayer() {
           </div>
         )}
 
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="flex items-center gap-1.5 sm:gap-2 ml-auto flex-wrap">
+          <button
+            type="button"
+            onClick={() => setCampaignSpeed(campaignSpeed === 1 ? 1.5 : 1)}
+            className="px-2 py-1.5 rounded-lg border border-current/20 text-xs font-bold tabular-nums hover:bg-current/10 cursor-pointer"
+            title="切换自动运镜推演倍速"
+          >
+            {campaignSpeed}x
+          </button>
+
+          <button
+            type="button"
+            onClick={replayCurrentPhase}
+            className="px-2 py-1.5 rounded-lg border border-current/20 text-xs font-medium flex items-center gap-1 hover:bg-current/10 cursor-pointer"
+            title="重播本幕行军与运镜"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">重播本幕</span>
+          </button>
+
           <button
             type="button"
             disabled={activePhaseIndex === 0}
@@ -198,12 +222,12 @@ export default function CampaignPlayer() {
             {isCampaignPlaying ? (
               <>
                 <Pause className="w-3.5 h-3.5" />
-                暂停推演
+                暂停运镜
               </>
             ) : (
               <>
                 <Play className="w-3.5 h-3.5" />
-                自动运镜推演
+                继续运镜推演
               </>
             )}
           </button>

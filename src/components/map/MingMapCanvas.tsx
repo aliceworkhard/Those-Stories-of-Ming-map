@@ -13,6 +13,7 @@ import {
   getSnapshotForYear,
 } from '@/lib/atlasData';
 import {
+  TERRAIN_EXAGGERATION,
   createHistoricalBaseStyle,
   registerTacticalSprites,
 } from '@/engine/mapStyle';
@@ -20,10 +21,70 @@ import {
   buildPhaseRouteFeatures,
   mountHistoricalLayers,
   syncLayerVisibility,
-  updateVanguardAnimationFrame,
+  updateCampaignAnimationFrame,
   type PreparedRouteCurve,
 } from '@/engine/MingMapLayers';
+import type { CampaignPhase, HistoricalEvent, LngLat, MapVisualTheme } from '@/types/ming';
 import { useAtlasStore } from '@/store/useAtlasStore';
+
+const BASE_PHASE_DURATION_MS = 7600;
+const ROUTE_GROW_DURATION_MS = 3600;
+const OPENING_FLY_DURATION_MS = 1400;
+
+/**
+ * Creates a strictly 0x0, zero-transition anchor container for MapLibre Markers.
+ * Why: MapLibre writes `root.style.transform = "translate(Xpx, Ypx)..."` every frame.
+ * Keeping `root` 0x0 with ZERO CSS transitions or hover-scale classes guarantees
+ * markers NEVER jump, lag, or oscillate on click, hover, or flyTo!
+ */
+function createImmutableMarkerRoot(zIndex = '15'): HTMLDivElement {
+  const root = document.createElement('div');
+  root.style.width = '0px';
+  root.style.height = '0px';
+  root.style.position = 'relative';
+  root.style.overflow = 'visible';
+  root.style.zIndex = zIndex;
+  return root;
+}
+
+interface EventMarkerRecord {
+  evt: HistoricalEvent;
+  marker: maplibregl.Marker;
+  root: HTMLDivElement;
+  pingEl: HTMLSpanElement;
+  badgeEl: HTMLDivElement;
+  labelEl: HTMLDivElement;
+}
+
+function computeCinematicTrackingPose(
+  phase: CampaignPhase,
+  curves: PreparedRouteCurve[],
+  is3D: boolean
+): { center: LngLat; zoom: number; pitch: number; bearing: number } {
+  const baseCenter = phase.camera.center;
+  const baseZoom = phase.camera.zoom;
+  const basePitch = phase.camera.pitch ?? 48;
+  const baseBearing = phase.camera.bearing ?? -10;
+
+  // Determine the dramatic focal destination of this phase (primary clash marker or primary route target)
+  const primaryTarget: LngLat =
+    phase.markers[0]?.coordinates ??
+    curves[0]?.endPoint ??
+    baseCenter;
+
+  // Blend 58% base framing + 42% focal objective so all routes remain framed while gliding forward
+  const focusCenter: LngLat = [
+    baseCenter[0] * 0.58 + primaryTarget[0] * 0.42,
+    baseCenter[1] * 0.58 + primaryTarget[1] * 0.42,
+  ];
+
+  return {
+    center: focusCenter,
+    zoom: Math.min(9.2, baseZoom + 0.34),
+    pitch: is3D ? Math.min(62, basePitch + 7) : 0,
+    bearing: is3D ? baseBearing + 16 : 0,
+  };
+}
 
 export default function MingMapCanvas() {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -32,10 +93,20 @@ export default function MingMapCanvas() {
   const activeCurvesRef = useRef<PreparedRouteCurve[]>([]);
   const animFrameRef = useRef<number | null>(null);
 
-  // Marker registries (kept outside React state for 60fps pan/tilt performance)
+  // Unified Campaign Auto-Camera & Route Growth Director Refs
+  const phaseElapsedMsRef = useRef(0);
+  const routeGrowElapsedMsRef = useRef(0);
+  const lastFrameTimeRef = useRef<number | null>(null);
+  const lastProgressReportMsRef = useRef(0);
+  const trackingShotActiveRef = useRef(false);
+  const userInteractedInPhaseRef = useRef(false);
+  const activePhaseRef = useRef<CampaignPhase | null>(null);
+  const is3DRef = useRef(true);
+
+  // Marker registries (kept outside React state for rock-solid 60fps performance)
   const polityMarkersRef = useRef<maplibregl.Marker[]>([]);
   const placeMarkersRef = useRef<maplibregl.Marker[]>([]);
-  const eventMarkersRef = useRef<maplibregl.Marker[]>([]);
+  const eventMarkerMapRef = useRef<Map<string, EventMarkerRecord>>(new Map());
   const campaignMarkersRef = useRef<maplibregl.Marker[]>([]);
 
   const [zoomBucket, setZoomBucket] = useState<'far' | 'mid' | 'close'>('far');
@@ -44,12 +115,17 @@ export default function MingMapCanvas() {
   const selectedEventId = useAtlasStore((s) => s.selectedEventId);
   const activeCampaignId = useAtlasStore((s) => s.activeCampaignId);
   const activePhaseIndex = useAtlasStore((s) => s.activePhaseIndex);
+  const isCampaignPlaying = useAtlasStore((s) => s.isCampaignPlaying);
+  const campaignSpeed = useAtlasStore((s) => s.campaignSpeed);
+  const campaignReplayNonce = useAtlasStore((s) => s.campaignReplayNonce);
   const theme = useAtlasStore((s) => s.theme);
   const is3D = useAtlasStore((s) => s.is3D);
   const placeNameMode = useAtlasStore((s) => s.placeNameMode);
   const layers = useAtlasStore((s) => s.layers);
   const cameraCommand = useAtlasStore((s) => s.cameraCommand);
   const selectEvent = useAtlasStore((s) => s.selectEvent);
+
+  is3DRef.current = is3D;
 
   const currentSnapshot = useMemo(
     () => getSnapshotForYear(currentYear),
@@ -62,6 +138,7 @@ export default function MingMapCanvas() {
   const activePhase = activeCampaign
     ? activeCampaign.phases[activePhaseIndex] ?? activeCampaign.phases[0]
     : null;
+  activePhaseRef.current = activePhase;
 
   // Helper to Sync All WebGL Data into Current Style
   const syncAllMapSourcesAndLayers = () => {
@@ -79,21 +156,168 @@ export default function MingMapCanvas() {
       terSource.setData(currentSnapshot.geojson);
     }
 
-    const { featureCollection, preparedCurves } = buildPhaseRouteFeatures(
+    const { preparedCurves } = buildPhaseRouteFeatures(
       activeCampaign,
       activePhase
     );
     activeCurvesRef.current = preparedCurves;
 
-    const routeSource = map.getSource('campaign-routes') as
-      | maplibregl.GeoJSONSource
-      | undefined;
-    if (routeSource) {
-      routeSource.setData(featureCollection);
+    if (!activeCampaign) {
+      updateCampaignAnimationFrame(map, [], 0, 0);
     }
   };
 
-  // 1. Initialize MapLibre GL Instance Once
+  // Build Persistent Event Markers Once on Map Init (Never torn down on click!)
+  const mountPersistentEventMarkers = (map: maplibregl.Map) => {
+    eventMarkerMapRef.current.forEach((rec) => rec.marker.remove());
+    eventMarkerMapRef.current.clear();
+
+    for (const evt of ALL_EVENTS) {
+      const isMacro = evt.tier === 'macro';
+      const root = createImmutableMarkerRoot(isMacro ? '22' : '18');
+
+      // Fixed 32x32 hitbox centered at (0, 0) — NEVER scales or shifts!
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.setAttribute('aria-label', `${evt.time.year}年 ${evt.title}`);
+      btn.className = 'group cursor-pointer focus:outline-none';
+      btn.style.position = 'absolute';
+      btn.style.left = '0px';
+      btn.style.top = '0px';
+      btn.style.width = '32px';
+      btn.style.height = '32px';
+      btn.style.transform = 'translate(-50%, -50%)';
+      btn.style.display = 'flex';
+      btn.style.alignItems = 'center';
+      btn.style.justifyContent = 'center';
+      btn.style.background = 'transparent';
+      btn.style.border = 'none';
+      btn.style.padding = '0';
+
+      const pingEl = document.createElement('span');
+      pingEl.className = 'animate-ping rounded-full border-2 opacity-60 pointer-events-none';
+      pingEl.style.position = 'absolute';
+      pingEl.style.width = isMacro ? '28px' : '22px';
+      pingEl.style.height = isMacro ? '28px' : '22px';
+
+      const badgeEl = document.createElement('div');
+      badgeEl.className = `${
+        isMacro
+          ? 'w-7 h-7 rounded-md rotate-45 border-2 border-amber-200/90 shadow-md group-hover:scale-110'
+          : 'w-5 h-5 rounded-full border border-amber-100 shadow group-hover:scale-110'
+      } flex items-center justify-center transition-transform duration-150 pointer-events-none`;
+
+      const charSpan = document.createElement('span');
+      charSpan.className = `${
+        isMacro ? '-rotate-45 text-[11px] font-serif font-bold' : 'text-[10px]'
+      } text-amber-50 select-none`;
+      charSpan.textContent = evt.campaignId ? '战' : isMacro ? '史' : '轶';
+      badgeEl.appendChild(charSpan);
+
+      btn.appendChild(pingEl);
+      btn.appendChild(badgeEl);
+
+      // Decoupled absolute text pill below the stationary hitbox
+      const labelEl = document.createElement('div');
+      labelEl.style.position = 'absolute';
+      labelEl.style.left = '0px';
+      labelEl.style.top = isMacro ? '18px' : '15px';
+      labelEl.style.transform = 'translateX(-50%)';
+      labelEl.style.pointerEvents = 'none';
+      labelEl.innerHTML = `<span class="opacity-75 mr-1 tabular-nums">${evt.time.year}</span>${evt.title.slice(
+        0,
+        10
+      )}${evt.title.length > 10 ? '…' : ''}`;
+
+      btn.addEventListener('mouseenter', () => {
+        if (labelEl.dataset.hoverReveal === '1') {
+          labelEl.style.display = 'block';
+        }
+      });
+      btn.addEventListener('mouseleave', () => {
+        if (labelEl.dataset.hoverReveal === '1') {
+          labelEl.style.display = 'none';
+        }
+      });
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        useAtlasStore.getState().selectEvent(evt.id, true);
+      });
+
+      root.appendChild(btn);
+      root.appendChild(labelEl);
+
+      const marker = new maplibregl.Marker({
+        element: root,
+        anchor: 'top-left',
+      })
+        .setLngLat(evt.location.coordinates)
+        .addTo(map);
+
+      eventMarkerMapRef.current.set(evt.id, {
+        evt,
+        marker,
+        root,
+        pingEl,
+        badgeEl,
+        labelEl,
+      });
+    }
+  };
+
+  // Sync Persistent Event Markers In-Place (Zero remove/add churn!)
+  const syncEventMarkersAppearance = (
+    currentTheme: MapVisualTheme,
+    selectedId: string | null,
+    year: number,
+    bucket: 'far' | 'mid' | 'close',
+    macroVis: boolean,
+    allMicroVis: boolean,
+    inCampaign: boolean
+  ) => {
+    const showMicro = allMicroVis || bucket !== 'far';
+
+    eventMarkerMapRef.current.forEach((rec) => {
+      const { evt, root, pingEl, badgeEl, labelEl } = rec;
+      const isMacro = evt.tier === 'macro';
+
+      const visible =
+        !inCampaign && ((isMacro && macroVis) || (!isMacro && showMicro));
+      root.style.display = visible ? 'block' : 'none';
+      if (!visible) return;
+
+      const isSelected = evt.id === selectedId;
+      const isNearYear = Math.abs(evt.time.year - year) <= 5;
+      root.style.zIndex = isSelected ? '38' : isMacro ? '22' : '18';
+
+      const badgeBg = isMacro
+        ? isSelected
+          ? '#9B1C1C'
+          : '#B83B2A'
+        : isSelected
+        ? '#B45309'
+        : '#D97706';
+
+      badgeEl.style.background = badgeBg;
+      badgeEl.style.opacity = isSelected || isNearYear ? '1' : '0.88';
+      pingEl.style.borderColor = badgeBg;
+      pingEl.style.display = isSelected || isNearYear ? 'block' : 'none';
+
+      const alwaysShowLabel =
+        isMacro || isSelected || bucket === 'close' || allMicroVis;
+      labelEl.dataset.hoverReveal = alwaysShowLabel ? '0' : '1';
+      labelEl.style.display = alwaysShowLabel ? 'block' : 'none';
+      labelEl.className = `px-2 py-0.5 rounded shadow-sm border text-[11px] whitespace-nowrap font-medium select-none ${
+        isSelected
+          ? 'bg-red-900 text-amber-50 border-amber-300 font-bold'
+          : currentTheme === 'xuanmo'
+          ? 'bg-slate-900/92 text-amber-50/95 border-slate-700'
+          : 'bg-[#FFFDF7]/95 text-stone-900 border-amber-900/20'
+      }`;
+    });
+  };
+
+  // 1. Initialize MapLibre GL Instance & Unified 60fps Director Loop Once
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
@@ -106,7 +330,7 @@ export default function MingMapCanvas() {
       bearing: SITE_CONFIG.defaultCamera.bearing,
       maxPitch: 72,
       minZoom: 3.2,
-      maxZoom: 12.5,
+      maxZoom: 13.5,
       attributionControl: false,
       localIdeographFontFamily:
         "'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'Microsoft YaHei', serif",
@@ -121,6 +345,16 @@ export default function MingMapCanvas() {
       'bottom-right'
     );
 
+    // Yield auto-camera gracefully if user manually drags/zooms/rotates the map
+    const onManualInput = (e: { originalEvent?: Event }) => {
+      if (e.originalEvent && useAtlasStore.getState().activeCampaignId) {
+        userInteractedInPhaseRef.current = true;
+      }
+    };
+    map.on('mousedown', onManualInput);
+    map.on('touchstart', onManualInput);
+    map.on('wheel', onManualInput);
+
     const updateZoomBucket = () => {
       const z = map.getZoom();
       const next = z >= 6.8 ? 'close' : z >= 5.7 ? 'mid' : 'far';
@@ -130,22 +364,107 @@ export default function MingMapCanvas() {
     map.on('load', () => {
       styleReadyRef.current = true;
       syncAllMapSourcesAndLayers();
+      mountPersistentEventMarkers(map);
+      const st = useAtlasStore.getState();
+      syncEventMarkersAppearance(
+        st.theme,
+        st.selectedEventId,
+        st.currentYear,
+        map.getZoom() >= 6.8 ? 'close' : map.getZoom() >= 5.7 ? 'mid' : 'far',
+        st.layers.macroEvents,
+        st.layers.showAllMicroEvents,
+        Boolean(st.activeCampaignId)
+      );
       updateZoomBucket();
     });
 
     map.on('zoomend', updateZoomBucket);
 
-    // 60fps Vanguard Spearhead Animation Loop (active only when campaign routes exist)
-    const startTime = performance.now();
+    // Unified 60fps Campaign Route Growth, Vanguard Pulse & Auto-Camera Director Loop
     const tick = (now: number) => {
-      if (mapRef.current && styleReadyRef.current && activeCurvesRef.current.length > 0) {
-        const progress = ((now - startTime) % 3600) / 3600;
-        updateVanguardAnimationFrame(
-          mapRef.current,
-          activeCurvesRef.current,
-          progress
+      const prevNow = lastFrameTimeRef.current ?? now;
+      const dt = Math.min(80, Math.max(0, now - prevNow));
+      lastFrameTimeRef.current = now;
+
+      const store = useAtlasStore.getState();
+      const currentMap = mapRef.current;
+
+      if (
+        currentMap &&
+        styleReadyRef.current &&
+        store.activeCampaignId &&
+        activeCurvesRef.current.length > 0
+      ) {
+        const speed = store.campaignSpeed;
+        const phaseTotalMs = BASE_PHASE_DURATION_MS / speed;
+        const growTotalMs = ROUTE_GROW_DURATION_MS / speed;
+
+        // Route arrows always extend smoothly when a phase opens (even if paused for inspection)
+        routeGrowElapsedMsRef.current = Math.min(
+          growTotalMs,
+          routeGrowElapsedMsRef.current + dt
         );
+        const rawGrow = Math.min(1, routeGrowElapsedMsRef.current / growTotalMs);
+        // Smooth cubic ease-out for dramatic marching extension
+        const easedGrow = 1 - Math.pow(1 - rawGrow, 2.4);
+        const pulseProgress = (now % 3200) / 3200;
+
+        updateCampaignAnimationFrame(
+          currentMap,
+          activeCurvesRef.current,
+          easedGrow,
+          pulseProgress
+        );
+
+        if (store.isCampaignPlaying) {
+          phaseElapsedMsRef.current += dt;
+          const pct = Math.min(
+            100,
+            (phaseElapsedMsRef.current / phaseTotalMs) * 100
+          );
+
+          // Update UI progress bar at ~15fps to avoid unnecessary React renders
+          if (now - lastProgressReportMsRef.current > 65) {
+            lastProgressReportMsRef.current = now;
+            store.setCampaignPhaseProgress(pct);
+          }
+
+          // Stage B: Continuous 3D Cinematic Tracking & Orbit after opening fly-in completes!
+          if (
+            phaseElapsedMsRef.current >= OPENING_FLY_DURATION_MS &&
+            !trackingShotActiveRef.current &&
+            !userInteractedInPhaseRef.current &&
+            activePhaseRef.current
+          ) {
+            trackingShotActiveRef.current = true;
+            const remainingMs = Math.max(
+              1200,
+              phaseTotalMs - phaseElapsedMsRef.current
+            );
+            const targetPose = computeCinematicTrackingPose(
+              activePhaseRef.current,
+              activeCurvesRef.current,
+              is3DRef.current
+            );
+            currentMap.easeTo({
+              center: targetPose.center,
+              zoom: targetPose.zoom,
+              pitch: targetPose.pitch,
+              bearing: targetPose.bearing,
+              duration: remainingMs,
+              easing: (t) => t * (2 - t),
+              essential: true,
+            });
+          }
+
+          // Stage C: Automatic Phase Progression when act completes!
+          if (phaseElapsedMsRef.current >= phaseTotalMs) {
+            phaseElapsedMsRef.current = 0;
+            store.nextCampaignPhase();
+          }
+        }
       }
+
       animFrameRef.current = requestAnimationFrame(tick);
     };
     animFrameRef.current = requestAnimationFrame(tick);
@@ -157,6 +476,7 @@ export default function MingMapCanvas() {
         cancelAnimationFrame(animFrameRef.current);
       }
       styleReadyRef.current = false;
+      eventMarkerMapRef.current.clear();
       map.remove();
       mapRef.current = null;
     };
@@ -186,23 +506,55 @@ export default function MingMapCanvas() {
       prev3DRef.current = is3D;
       if (styleReadyRef.current && map.getSource('terrain-dem')) {
         map.setTerrain(
-          is3D ? { source: 'terrain-dem', exaggeration: 1.85 } : null
+          is3D ? { source: 'terrain-dem', exaggeration: TERRAIN_EXAGGERATION } : null
         );
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [theme, is3D]);
 
-  // 3. Sync WebGL Territory Polygons, Visibility & Campaign Routes
+  // 3. Sync WebGL Territory Polygons, Visibility & Campaign Curve Definitions
   useEffect(() => {
     syncAllMapSourcesAndLayers();
-    if (!activeCampaign && mapRef.current && styleReadyRef.current) {
-      updateVanguardAnimationFrame(mapRef.current, [], 0);
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSnapshot, layers, activeCampaignId, activePhaseIndex]);
 
-  // 4. Execute Declarative Camera FlyTo Commands
+  // 4. Campaign Phase Opening Camera & Clock Reset (Stage A of Auto-Camera Director!)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !activeCampaign || !activePhase) return;
+
+    phaseElapsedMsRef.current = 0;
+    routeGrowElapsedMsRef.current = 0;
+    trackingShotActiveRef.current = false;
+    userInteractedInPhaseRef.current = false;
+
+    map.flyTo({
+      center: activePhase.camera.center,
+      zoom: activePhase.camera.zoom,
+      pitch: is3D ? (activePhase.camera.pitch ?? 50) : 0,
+      bearing: is3D ? (activePhase.camera.bearing ?? -12) : 0,
+      duration: OPENING_FLY_DURATION_MS,
+      essential: true,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeCampaignId, activePhaseIndex, campaignReplayNonce]);
+
+  // Pause / Resume Camera Glide cleanly when `isCampaignPlaying` toggles mid-phase
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !activeCampaign) return;
+    if (!isCampaignPlaying) {
+      if (trackingShotActiveRef.current) {
+        map.stop();
+        trackingShotActiveRef.current = false;
+      }
+    } else {
+      userInteractedInPhaseRef.current = false;
+    }
+  }, [isCampaignPlaying, activeCampaign]);
+
+  // 5. Execute Non-Campaign Declarative Camera FlyTo Commands (Event Click, TOC, Terrain Inspect)
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !cameraCommand) return;
@@ -212,12 +564,33 @@ export default function MingMapCanvas() {
       zoom: pose.zoom,
       pitch: is3D ? (pose.pitch ?? 44) : 0,
       bearing: is3D ? (pose.bearing ?? 0) : 0,
-      duration: 1350,
+      duration: 1300,
       essential: true,
     });
   }, [cameraCommand, is3D]);
 
-  // 5. Render Polity Dynasty Seal Banners (with WHY tooltip on hover)
+  // 6. Sync Persistent Event Markers In-Place (Rock-Solid Zero Jumping!)
+  useEffect(() => {
+    syncEventMarkersAppearance(
+      theme,
+      selectedEventId,
+      currentYear,
+      zoomBucket,
+      layers.macroEvents,
+      layers.showAllMicroEvents,
+      Boolean(activeCampaign)
+    );
+  }, [
+    activeCampaign,
+    currentYear,
+    layers.macroEvents,
+    layers.showAllMicroEvents,
+    selectedEventId,
+    theme,
+    zoomBucket,
+  ]);
+
+  // 7. Render Polity Dynasty Seal Banners (Immutable 0x0 Root + WHY Tooltip)
   useEffect(() => {
     const map = mapRef.current;
     polityMarkersRef.current.forEach((m) => m.remove());
@@ -229,56 +602,56 @@ export default function MingMapCanvas() {
       const coord = props.labelCoord as [number, number] | undefined;
       if (!coord) continue;
 
-      const el = document.createElement('div');
-      el.className = 'group pointer-events-auto relative select-none cursor-help';
-
+      const root = createImmutableMarkerRoot('12');
       const color = String(props.color || '#B83B2A');
       const shortLabel = String(props.shortLabel || props.polityName || '');
       const ruler = String(props.ruler || '');
       const changeReason = String(props.changeReason || '');
       const isTributary = props.controlType === 'tributary-garrison';
 
-      el.innerHTML = `
-        <div style="border-color:${color}88; background:${
-          theme === 'xuanmo'
-            ? 'rgba(18, 22, 29, 0.82)'
-            : 'rgba(250, 246, 236, 0.86)'
-        }" class="px-2.5 py-1 rounded border shadow-sm backdrop-blur-xs transition-transform duration-200 group-hover:scale-105 flex items-center gap-1.5">
-          <span style="background:${color}" class="w-2 h-2 rounded-full shrink-0"></span>
-          <span style="color:${
-            theme === 'xuanmo' ? '#F5EFE2' : '#261E18'
-          }" class="font-serif font-bold tracking-widest text-xs whitespace-nowrap">${shortLabel}</span>
-          ${
-            isTributary
-              ? '<span class="text-[10px] opacity-70 px-1 border border-current rounded">羁縻</span>'
-              : ''
-          }
-        </div>
-        <div class="hidden group-hover:block absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 p-2.5 rounded-lg shadow-xl border text-xs z-50 pointer-events-none ${
-          theme === 'xuanmo'
-            ? 'bg-slate-900/95 border-amber-500/30 text-amber-50'
-            : 'bg-[#FAF6EC]/98 border-amber-900/25 text-stone-800'
-        }">
-          <div class="font-serif font-bold text-sm mb-0.5" style="color:${color}">${String(
-            props.polityName
-          )}</div>
-          <div class="opacity-75 text-[11px] mb-1">主帅/君主：${ruler} · 治所：${String(
-            props.capitalName
-          )}</div>
-          <div class="leading-relaxed border-t border-current/10 pt-1 text-[11px]">
-            <span class="font-semibold">版图成因：</span>${changeReason}
+      root.innerHTML = `
+        <div style="position:absolute;left:0;top:0;transform:translate(-50%,-50%)" class="group pointer-events-auto select-none cursor-help">
+          <div style="border-color:${color}88; background:${
+            theme === 'xuanmo'
+              ? 'rgba(18, 22, 29, 0.84)'
+              : 'rgba(250, 246, 236, 0.88)'
+          }" class="px-2.5 py-1 rounded border shadow-sm backdrop-blur-xs transition-transform duration-150 group-hover:scale-105 flex items-center gap-1.5 whitespace-nowrap">
+            <span style="background:${color}" class="w-2 h-2 rounded-full shrink-0"></span>
+            <span style="color:${
+              theme === 'xuanmo' ? '#F5EFE2' : '#261E18'
+            }" class="font-serif font-bold tracking-widest text-xs">${shortLabel}</span>
+            ${
+              isTributary
+                ? '<span class="text-[10px] opacity-70 px-1 border border-current rounded">羁縻</span>'
+                : ''
+            }
+          </div>
+          <div class="hidden group-hover:block absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 p-2.5 rounded-lg shadow-xl border text-xs z-50 pointer-events-none ${
+            theme === 'xuanmo'
+              ? 'bg-slate-900/95 border-amber-500/30 text-amber-50'
+              : 'bg-[#FAF6EC]/98 border-amber-900/25 text-stone-800'
+          }">
+            <div class="font-serif font-bold text-sm mb-0.5" style="color:${color}">${String(
+              props.polityName
+            )}</div>
+            <div class="opacity-75 text-[11px] mb-1">主帅/君主：${ruler} · 治所：${String(
+              props.capitalName
+            )}</div>
+            <div class="leading-relaxed border-t border-current/10 pt-1 text-[11px]">
+              <span class="font-semibold">版图成因：</span>${changeReason}
+            </div>
           </div>
         </div>
       `;
 
-      const marker = new maplibregl.Marker({ element: el, anchor: 'center' })
+      const marker = new maplibregl.Marker({ element: root, anchor: 'top-left' })
         .setLngLat(coord)
         .addTo(map);
       polityMarkersRef.current.push(marker);
     }
   }, [currentSnapshot, layers.territories, theme]);
 
-  // 6. Render Strategic Ancient-Modern Place Labels (Zoom LOD aware)
+  // 8. Render Strategic Ancient-Modern Place Labels (Immutable 0x0 Root)
   useEffect(() => {
     const map = mapRef.current;
     placeMarkersRef.current.forEach((m) => m.remove());
@@ -293,8 +666,8 @@ export default function MingMapCanvas() {
     });
 
     for (const place of visiblePlaces) {
-      const el = document.createElement('div');
-      el.className = 'pointer-events-none select-none flex flex-col items-center';
+      const root = createImmutableMarkerRoot('14');
+      root.style.pointerEvents = 'none';
 
       const labelText = formatPlaceDisplay(
         place.ancientName,
@@ -304,11 +677,11 @@ export default function MingMapCanvas() {
       const isCap = place.type === 'capital';
       const isPass = place.type === 'pass' || place.type === 'garrison-nine';
 
-      el.innerHTML = `
-        <div class="flex items-center gap-1 px-1.5 py-0.5 rounded ${
+      root.innerHTML = `
+        <div style="position:absolute;left:0;top:6px;transform:translateX(-50%)" class="flex items-center gap-1 px-1.5 py-0.5 rounded select-none ${
           theme === 'xuanmo'
-            ? 'bg-slate-950/65 text-stone-200'
-            : 'bg-[#F8F3E6]/78 text-stone-800'
+            ? 'bg-slate-950/68 text-stone-200'
+            : 'bg-[#F8F3E6]/82 text-stone-800'
         } backdrop-blur-[1px]">
           <span class="${
             isCap
@@ -324,9 +697,8 @@ export default function MingMapCanvas() {
       `;
 
       const marker = new maplibregl.Marker({
-        element: el,
-        anchor: 'top',
-        offset: [0, 6],
+        element: root,
+        anchor: 'top-left',
       })
         .setLngLat(place.coordinates)
         .addTo(map);
@@ -334,115 +706,17 @@ export default function MingMapCanvas() {
     }
   }, [layers.places, placeNameMode, zoomBucket, theme]);
 
-  // 7. Render Macro & Micro Event Markers (LOD Filtered!)
-  useEffect(() => {
-    const map = mapRef.current;
-    eventMarkersRef.current.forEach((m) => m.remove());
-    eventMarkersRef.current = [];
-    if (!map) return;
-
-    // Hide standard event markers during active battle phase replay to keep war-room crystal clear,
-    // or keep only selected event subtly visible
-    if (activeCampaign) return;
-
-    const showMicro = layers.showAllMicroEvents || zoomBucket !== 'far';
-
-    for (const evt of ALL_EVENTS) {
-      if (evt.tier === 'macro' && !layers.macroEvents) continue;
-      if (evt.tier === 'micro' && !showMicro) continue;
-
-      const isSelected = evt.id === selectedEventId;
-      const isNearYear = Math.abs(evt.time.year - currentYear) <= 5;
-      const isMacro = evt.tier === 'macro';
-
-      const el = document.createElement('button');
-      el.type = 'button';
-      el.setAttribute('aria-label', `${evt.time.year}年 ${evt.title}`);
-      el.className =
-        'group cursor-pointer focus:outline-none flex flex-col items-center transition-transform duration-200 hover:scale-110 z-20';
-
-      const badgeBg = isMacro
-        ? isSelected
-          ? '#9B1C1C'
-          : '#B83B2A'
-        : isSelected
-        ? '#B45309'
-        : '#D97706';
-
-      el.innerHTML = `
-        <div class="relative flex items-center justify-center">
-          ${
-            isSelected || isNearYear
-              ? `<span style="border-color:${badgeBg}" class="animate-ping absolute inline-flex h-full w-full rounded-full border-2 opacity-60"></span>`
-              : ''
-          }
-          <div style="background:${badgeBg}; opacity:${
-            isSelected || isNearYear ? '1' : '0.84'
-          }" class="${
-            isMacro
-              ? 'w-7 h-7 rounded-md rotate-45 border-2 border-amber-200/90 shadow-md'
-              : 'w-5 h-5 rounded-full border border-amber-100 shadow'
-          } flex items-center justify-center">
-            <span class="${
-              isMacro ? '-rotate-45 text-[11px] font-serif font-bold' : 'text-[10px]'
-            } text-amber-50">${
-              evt.campaignId ? '战' : isMacro ? '史' : '轶'
-            }</span>
-          </div>
-        </div>
-        <div class="mt-1 px-2 py-0.5 rounded shadow-sm border text-[11px] whitespace-nowrap font-medium transition-all ${
-          isSelected
-            ? 'bg-red-900 text-amber-50 border-amber-300 font-bold scale-105'
-            : theme === 'xuanmo'
-            ? 'bg-slate-900/90 text-amber-50/95 border-slate-700'
-            : 'bg-[#FFFDF7]/95 text-stone-900 border-amber-900/20'
-        } ${
-          !isMacro && !isSelected && zoomBucket !== 'close' && !layers.showAllMicroEvents
-            ? 'hidden group-hover:block'
-            : 'block'
-        }">
-          <span class="opacity-75 mr-1 tabular-nums">${evt.time.year}</span>${evt.title.slice(0, 10)}${
-            evt.title.length > 10 ? '…' : ''
-          }
-        </div>
-      `;
-
-      el.addEventListener('click', (e) => {
-        e.stopPropagation();
-        selectEvent(evt.id, true);
-      });
-
-      const marker = new maplibregl.Marker({
-        element: el,
-        anchor: 'center',
-      })
-        .setLngLat(evt.location.coordinates)
-        .addTo(map);
-      eventMarkersRef.current.push(marker);
-    }
-  }, [
-    activeCampaign,
-    currentYear,
-    layers.macroEvents,
-    layers.showAllMicroEvents,
-    selectEvent,
-    selectedEventId,
-    theme,
-    zoomBucket,
-  ]);
-
-  // 8. Render Active Campaign Battlefield Shockwaves & Route Callout Tags
+  // 9. Render Active Campaign Battlefield Shockwaves & Route Callout Tags (Immutable 0x0 Root)
   useEffect(() => {
     const map = mapRef.current;
     campaignMarkersRef.current.forEach((m) => m.remove());
     campaignMarkersRef.current = [];
     if (!map || !activeCampaign || !activePhase) return;
 
-    // 8a. Route midpoint tactical labels
     const { preparedCurves } = buildPhaseRouteFeatures(activeCampaign, activePhase);
     for (const curve of preparedCurves) {
-      const tagEl = document.createElement('div');
-      tagEl.className = 'pointer-events-none select-none';
+      const root = createImmutableMarkerRoot('28');
+      root.style.pointerEvents = 'none';
       const tacticBadge =
         curve.tactic === 'ambush'
           ? '奇袭'
@@ -453,26 +727,25 @@ export default function MingMapCanvas() {
           : curve.tactic === 'supply'
           ? '粮道'
           : '主力';
-      tagEl.innerHTML = `
-        <div style="border-color:${curve.color}" class="px-2 py-0.5 rounded-full border shadow-md text-[11px] font-medium flex items-center gap-1 whitespace-nowrap ${
+      root.innerHTML = `
+        <div style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);border-color:${curve.color}" class="px-2 py-0.5 rounded-full border shadow-md text-[11px] font-medium flex items-center gap-1 whitespace-nowrap select-none ${
           theme === 'xuanmo'
-            ? 'bg-slate-950/90 text-amber-50'
-            : 'bg-[#FFFDF8]/95 text-stone-900'
+            ? 'bg-slate-950/92 text-amber-50'
+            : 'bg-[#FFFDF8]/96 text-stone-900'
         }">
           <span style="background:${curve.color}" class="px-1.5 py-0.2 rounded-full text-[10px] text-white font-bold">${tacticBadge}</span>
           <span>${curve.label}</span>
         </div>
       `;
-      const m = new maplibregl.Marker({ element: tagEl, anchor: 'center' })
+      const m = new maplibregl.Marker({ element: root, anchor: 'top-left' })
         .setLngLat(curve.midPoint)
         .addTo(map);
       campaignMarkersRef.current.push(m);
     }
 
-    // 8b. Siege / Clash / Cutoff shockwave markers
     for (const bm of activePhase.markers) {
-      const bmEl = document.createElement('div');
-      bmEl.className = 'pointer-events-none select-none flex flex-col items-center z-30';
+      const root = createImmutableMarkerRoot('32');
+      root.style.pointerEvents = 'none';
       const accent = bm.color || '#B83B2A';
       const iconChar =
         bm.kind === 'siege'
@@ -483,14 +756,14 @@ export default function MingMapCanvas() {
           ? '关'
           : '战';
 
-      bmEl.innerHTML = `
-        <div class="relative flex items-center justify-center">
+      root.innerHTML = `
+        <div style="position:absolute;left:0;top:0;transform:translate(-50%,-50%)" class="flex items-center justify-center select-none">
           <span style="background:${accent}" class="animate-ping absolute inline-flex h-10 w-10 rounded-full opacity-45"></span>
           <div style="background:${accent}" class="relative w-8 h-8 rounded-full border-2 border-amber-200 shadow-lg flex items-center justify-center text-white font-serif font-bold text-xs">
             ${iconChar}
           </div>
         </div>
-        <div style="border-color:${accent}" class="mt-1 px-2.5 py-1 rounded-md shadow-lg border-l-4 text-xs ${
+        <div style="position:absolute;left:0;top:20px;transform:translateX(-50%);border-color:${accent}" class="px-2.5 py-1 rounded-md shadow-lg border-l-4 text-xs select-none ${
           theme === 'xuanmo'
             ? 'bg-slate-900/95 text-amber-50'
             : 'bg-[#FAF5E8]/98 text-stone-900'
@@ -503,7 +776,7 @@ export default function MingMapCanvas() {
           }
         </div>
       `;
-      const m = new maplibregl.Marker({ element: bmEl, anchor: 'center' })
+      const m = new maplibregl.Marker({ element: root, anchor: 'top-left' })
         .setLngLat(bm.coordinates)
         .addTo(map);
       campaignMarkersRef.current.push(m);
