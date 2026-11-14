@@ -1,0 +1,58 @@
+# ==========================================
+# 1. Dependencies & Package Managers
+# ==========================================
+node_modules/
+.pnp
+.pnp.js
+
+# ==========================================
+# 2. Next.js / Build / Cache Outputs
+# ==========================================
+.next/
+out/
+dist/
+build/
+.vercel/
+*.tsbuildinfo
+next-env.d.ts
+
+# ==========================================
+# 3. Environment & Secrets (NEVER COMMIT)
+# ==========================================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ==========================================
+# 4. Copyright & Local Private Safeguards
+#    (Physical isolation is outside this repo,
+#     these rules act as a second hard firewall)
+# ==========================================
+*.epub
+*.mobi
+*.azw3
+*lunarora*
+*明朝那些事儿*.txt
+*明朝那些事儿*.pdf
+local-private/
+local-workbench/
+raw-books/
+reference-scans/
+
+# ==========================================
+# 5. Logs, Testing & OS Artifacts
+# ==========================================
+coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
