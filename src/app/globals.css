@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --font-serif-cn: "Noto Serif SC", "Source Han Serif SC", "Songti SC",
+      "STSong", "SimSun", Georgia, serif;
+    --font-sans-cn: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+      system-ui, -apple-system, sans-serif;
+  }
+
+  html,
+  body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: var(--font-sans-cn);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .font-serif {
+    font-family: var(--font-serif-cn);
+  }
+}
+
+/* Subtle classical scrollbar inside drawers & modals */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(168, 130, 90, 0.38);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(184, 59, 42, 0.65);
+}
+
+/* Position MapLibre navigation control above bottom timeline & left of drawer */
+.maplibregl-ctrl-bottom-right {
+  bottom: 76px !important;
+  right: 12px !important;
+}
+@media (min-width: 640px) {
+  .maplibregl-ctrl-bottom-right {
+    right: 414px !important;
+  }
+}

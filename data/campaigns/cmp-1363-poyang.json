@@ -1,0 +1,336 @@
+{
+  "id": "cmp-1363-poyang",
+  "title": "洪都奇迹与鄱阳湖决死水战",
+  "subtitle": "六十万巨舰围孤城 · 三十六日水火定江南（1363）",
+  "yearRange": [1363, 1363],
+  "chapterIds": ["v1-zhu-yuanzhang-ch11", "v1-zhu-yuanzhang-ch12"],
+  "summary": "元至正二十三年（1363），陈友谅趁朱元璋主力北救安丰之机，倾举国六十万水陆大军、数百艘三层裹铁巨舰顺江东下猛扑洪都。朱文正死守八十五日创造守城奇迹，为朱元璋赢得集结二十万援军反锁鄱阳湖口的决胜良机。",
+  "strategicOutcome": "陈友谅在泾江口突围时中流矢身亡，大汉主力灰飞烟灭；朱元璋一跃成为江南最强霸主，奠定大明开国根基。",
+  "factions": [
+    {
+      "id": "zhu-wu",
+      "name": "朱元璋 · 西吴水陆军",
+      "leader": "朱元璋 / 朱文正 / 常遇春",
+      "color": "#B83B2A",
+      "badgeText": "吴"
+    },
+    {
+      "id": "chen-han",
+      "name": "陈友谅 · 大汉楼船主力",
+      "leader": "陈友谅 / 张定边",
+      "color": "#1E5F74",
+      "badgeText": "汉"
+    }
+  ],
+  "phases": [
+    {
+      "phaseNo": 1,
+      "title": "第一幕：趁虚东下 · 六十万巨舰猛扑洪都",
+      "dateLabel": "1363年 四月",
+      "year": 1363,
+      "narrative": "朱元璋率主力北上安丰救援韩林儿，后方空虚。陈友谅尽起湖广精锐号称六十万，乘坐高达数丈、外裹铁皮的巨型楼船自武昌顺长江东下，过江州后却并未直扑南京，而是折入鄱阳湖沿赣江南下，将洪都（南昌）团团围困！",
+      "whyKeyPoint": "为啥陈友谅不顺长江直捣空虚的应天？因为洪都扼守赣江与鄱阳湖西南腹地，若不拔除，汉军一旦在南京城下顿兵，洪都明军顺流北出湖口即可截断汉军唯一归路！",
+      "camera": {
+        "center": [115.85, 29.55],
+        "zoom": 6.6,
+        "pitch": 45,
+        "bearing": -15
+      },
+      "strengthComparison": {
+        "leftFactionId": "zhu-wu",
+        "leftLabel": "洪都守军约 2–3 万",
+        "leftPower": 22,
+        "rightFactionId": "chen-han",
+        "rightLabel": "陈友谅大军号称 60 万",
+        "rightPower": 78
+      },
+      "routes": [
+        {
+          "id": "r-p1-zhu-anfeng",
+          "factionId": "zhu-wu",
+          "type": "assault",
+          "label": "朱元璋主力北救安丰（后方空虚）",
+          "commander": "朱元璋",
+          "coordinates": [
+            [118.8, 32.06],
+            [117.56, 32.87],
+            [116.78, 32.55]
+          ]
+        },
+        {
+          "id": "r-p1-chen-armada",
+          "factionId": "chen-han",
+          "type": "naval",
+          "label": "陈友谅六十万巨舰顺江入鄱阳湖",
+          "commander": "陈友谅",
+          "coordinates": [
+            [114.31, 30.55],
+            [115.25, 30.08],
+            [115.99, 29.72],
+            [116.22, 29.74],
+            [116.18, 29.18],
+            [115.89, 28.68]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-p1-hongdu",
+          "kind": "siege",
+          "label": "洪都孤城合围",
+          "subLabel": "朱文正 vs 陈友谅",
+          "coordinates": [115.892, 28.676],
+          "color": "#1E5F74"
+        }
+      ]
+    },
+    {
+      "phaseNo": 2,
+      "title": "第二幕：八十五日血守 · 洪都城头的奇迹",
+      "dateLabel": "1363年 四月—七月",
+      "year": 1363,
+      "narrative": "陈友谅亲督猛攻抚州门、章江门，城墙被轰塌三十余丈，邓愈以火铳边打边筑新墙，赵德胜中箭殉国。统帅朱文正展现出惊世军事才华，硬生生守住孤城整整八十五天！张仁自水路潜出突围向应天告急，朱元璋得以平定安丰后从容回师集结二十万水师西征。",
+      "whyKeyPoint": "为啥洪都八十五天改变了中国历史？陈友谅六十万大军师老兵疲、士气锐减，更致命的是从初夏拖入盛夏枯水退落前夕，陈友谅的巨舰即将在鄱阳湖浅滩失去机动优势！",
+      "camera": {
+        "center": [116.85, 29.85],
+        "zoom": 6.4,
+        "pitch": 48,
+        "bearing": -22
+      },
+      "strengthComparison": {
+        "leftFactionId": "zhu-wu",
+        "leftLabel": "朱元璋集结 20 万水师",
+        "leftPower": 42,
+        "rightFactionId": "chen-han",
+        "rightLabel": "汉军久攻师老 50 余万",
+        "rightPower": 58
+      },
+      "routes": [
+        {
+          "id": "r-p2-courier",
+          "factionId": "zhu-wu",
+          "type": "ambush",
+          "label": "张仁潜越重围赴应天告急",
+          "commander": "张仁",
+          "coordinates": [
+            [115.89, 28.68],
+            [116.45, 29.45],
+            [117.04, 30.51],
+            [118.8, 32.06]
+          ]
+        },
+        {
+          "id": "r-p2-zhu-return",
+          "factionId": "zhu-wu",
+          "type": "assault",
+          "label": "朱元璋回师应天集结水师",
+          "commander": "朱元璋",
+          "coordinates": [
+            [116.78, 32.55],
+            [117.85, 32.25],
+            [118.8, 32.06]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-p2-hongdu-hold",
+          "kind": "siege",
+          "label": "血守八十五昼夜",
+          "subLabel": "朱文正·邓愈·薛显死战不退",
+          "coordinates": [115.892, 28.676],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 3,
+      "title": "第三幕：封锁湖口 · 关门打狗之瓮",
+      "dateLabel": "1363年 七月中旬",
+      "year": 1363,
+      "narrative": "朱元璋亲率二十万水师溯江西上，不直接去救洪都城下，而是抢先占据鄱阳湖通往长江的唯一出口——湖口，并在泾江口、南湖嘴修筑水陆营垒重兵把守！陈友谅闻讯大惊，被迫撤洪都之围，率巨舰编队北上进入鄱阳湖康郎山水域迎战。",
+      "whyKeyPoint": "看三维水系秒懂胜负手：鄱阳湖就像一个大葫芦，湖口就是唯一的细葫芦嘴！朱元璋提前卡死湖口，陈友谅若不能击穿明军防线，六十万大军就彻底断绝回武昌老巢的退路与粮道。",
+      "camera": {
+        "center": [116.32, 29.38],
+        "zoom": 7.6,
+        "pitch": 52,
+        "bearing": -10
+      },
+      "strengthComparison": {
+        "leftFactionId": "zhu-wu",
+        "leftLabel": "扼守咽喉以逸待劳",
+        "leftPower": 48,
+        "rightFactionId": "chen-han",
+        "rightLabel": "巨舰正面强冲优势",
+        "rightPower": 52
+      },
+      "routes": [
+        {
+          "id": "r-p3-zhu-west",
+          "factionId": "zhu-wu",
+          "type": "naval",
+          "label": "朱元璋二十万水师溯江抢占湖口",
+          "commander": "朱元璋 · 徐达",
+          "coordinates": [
+            [118.8, 32.06],
+            [118.46, 31.66],
+            [117.04, 30.51],
+            [116.22, 29.74],
+            [116.38, 29.12]
+          ]
+        },
+        {
+          "id": "r-p3-chen-north",
+          "factionId": "chen-han",
+          "type": "naval",
+          "label": "陈友谅撤洪都之围北上迎战",
+          "commander": "陈友谅",
+          "coordinates": [
+            [115.89, 28.68],
+            [116.15, 28.88],
+            [116.4, 28.98]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-p3-hukou-lock",
+          "kind": "cutoff",
+          "label": "锁死湖口咽喉",
+          "subLabel": "截断汉军退回长江唯一通道",
+          "coordinates": [116.218, 29.738],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 4,
+      "title": "第四幕：康郎山烈焰 · 东北风火烧铁索连舟",
+      "dateLabel": "1363年 七月二十—二十二日",
+      "year": 1363,
+      "narrative": "前两日交锋，汉军巨舰居高临下碾压明军小船，张定边直扑朱元璋座舰，幸得常遇春一箭射伤张定边、俞通海撞船救主。二十二日午后东北风骤起，郭兴献计以七艘敢死火船满载芦苇火药，乘风直冲陈友谅铁索相连的巨舰群！烈焰蔽天，湖水尽赤，陈友谅弟陈友仁、陈友贵葬身火海。",
+      "whyKeyPoint": "为啥巨舰反成催命符？陈友谅为求船阵稳固将大船连锁，而鄱阳湖夏季浅水航道狭窄，大型楼船转向极慢；朱元璋吃水浅的轻舟配合火攻船顺风突击，瞬间逆转装备代差！",
+      "camera": {
+        "center": [116.38, 29.02],
+        "zoom": 8.4,
+        "pitch": 55,
+        "bearing": 25
+      },
+      "strengthComparison": {
+        "leftFactionId": "zhu-wu",
+        "leftLabel": "火攻大捷士气如虹",
+        "leftPower": 68,
+        "rightFactionId": "chen-han",
+        "rightLabel": "主力战舰焚毁过半",
+        "rightPower": 32
+      },
+      "routes": [
+        {
+          "id": "r-p4-fire-ships",
+          "factionId": "zhu-wu",
+          "type": "ambush",
+          "label": "敢死七火船乘东北风突袭连环舰",
+          "commander": "常遇春 · 俞通海 · 丁普郎",
+          "coordinates": [
+            [116.58, 29.15],
+            [116.48, 29.06],
+            [116.405, 28.985]
+          ]
+        },
+        {
+          "id": "r-p4-chen-line",
+          "factionId": "chen-han",
+          "type": "naval",
+          "label": "陈友谅铁索巨舰横阵受困",
+          "commander": "陈友谅",
+          "coordinates": [
+            [116.28, 28.95],
+            [116.405, 28.985],
+            [116.46, 28.92]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-p4-kanglang",
+          "kind": "clash",
+          "label": "康郎山火攻决战",
+          "subLabel": "焚毁汉军巨舰数百艘",
+          "coordinates": [116.405, 28.985],
+          "color": "#D97706"
+        }
+      ]
+    },
+    {
+      "phaseNo": 5,
+      "title": "第五幕：泾江口绝命突围 · 一箭定乾坤",
+      "dateLabel": "1363年 八月二十六日",
+      "year": 1363,
+      "narrative": "朱元璋采纳刘伯温建议，移师湖口及长江南北岸严密封锁，耗尽汉军最后一粒粮食。被困月余、粮尽援绝的陈友谅率残部冒死向湖口泾江口突围，明军水陆夹击，乱箭齐发——一支不知谁射出的流矢贯穿陈友谅头颅眼眶，一代枭雄当场毙命！张定边仅载其幼子陈理夜遁武昌。",
+      "whyKeyPoint": "为啥朱元璋康郎山大胜后不再硬拼，而是退守湖口耗一个月？因为困兽犹斗最凶险，断粮封锁能让数十万汉军不战自溃，以最小伤亡保全讨伐张士诚与北伐元廷的本钱！",
+      "camera": {
+        "center": [116.12, 29.72],
+        "zoom": 7.8,
+        "pitch": 48,
+        "bearing": -30
+      },
+      "strengthComparison": {
+        "leftFactionId": "zhu-wu",
+        "leftLabel": "全胜收编汉军五万余",
+        "leftPower": 88,
+        "rightFactionId": "chen-han",
+        "rightLabel": "陈友谅阵亡残部溃逃",
+        "rightPower": 12
+      },
+      "routes": [
+        {
+          "id": "r-p5-breakout",
+          "factionId": "chen-han",
+          "type": "assault",
+          "label": "陈友谅绝命强冲湖口泾江口",
+          "commander": "陈友谅",
+          "coordinates": [
+            [116.35, 29.15],
+            [116.25, 29.52],
+            [116.218, 29.738]
+          ]
+        },
+        {
+          "id": "r-p5-pincer",
+          "factionId": "zhu-wu",
+          "type": "assault",
+          "label": "朱元璋水陆伏兵合围截杀",
+          "commander": "朱元璋 · 常遇春",
+          "coordinates": [
+            [116.48, 29.82],
+            [116.28, 29.78],
+            [116.218, 29.738]
+          ]
+        },
+        {
+          "id": "r-p5-flee",
+          "factionId": "chen-han",
+          "type": "retreat",
+          "label": "张定边载遗体与陈理夜逃武昌",
+          "commander": "张定边",
+          "coordinates": [
+            [116.218, 29.738],
+            [115.99, 29.72],
+            [115.15, 30.15],
+            [114.305, 30.546]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-p5-jingjiang",
+          "kind": "clash",
+          "label": "泾江口陈友谅中箭身亡",
+          "subLabel": "三十六日鄱阳湖大战终局",
+          "coordinates": [116.218, 29.738],
+          "color": "#B83B2A"
+        }
+      ]
+    }
+  ]
+}

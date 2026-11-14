@@ -1,0 +1,12 @@
+# Replace :80 with your purchased domain in December (e.g., mingmap.yourdomain.com)
+# Caddy will automatically provision and renew free Let's Encrypt HTTPS certificates!
+{$DOMAIN::80} {
+  encode zstd gzip
+
+  @staticGeo {
+    path /geo/* *.topo.json *.geojson *.pbf
+  }
+  header @staticGeo Cache-Control "public, max-age=604800, immutable"
+
+  reverse_proxy ming-atlas-web:3000
+}

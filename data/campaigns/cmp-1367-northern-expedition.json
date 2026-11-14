@@ -1,0 +1,287 @@
+{
+  "id": "cmp-1367-northern-expedition",
+  "title": "平吴灭张与洪武万里大北伐",
+  "subtitle": "剪羽翼平姑苏 · 大迂回克复元大都（1366—1368）",
+  "yearRange": [1366, 1368],
+  "chapterIds": ["v1-zhu-yuanzhang-ch13", "v1-zhu-yuanzhang-ch14", "v1-zhu-yuanzhang-ch16"],
+  "summary": "铲除陈友谅后，徐达、常遇春先以“剪除羽翼”之策攻灭苏州张士诚；洪武元年（1368），二十五万北伐大军高举“驱逐胡虏，恢复中华”旗帜，不直扑大都，而是走出一条先山东、旋河南、拔潼关、再会师临清北取元大都的教科书级战略大弧线，缔造中国历史上最经典的由南向北统一战争。",
+  "strategicOutcome": "元顺帝夜奔上都，蒙元在中原近百年的统治终结，燕云十六州自石敬瑭割让四百余年后重归汉家版图。",
+  "factions": [
+    {
+      "id": "ming-army",
+      "name": "大明北伐主力军",
+      "leader": "徐达（征虏大将军）· 常遇春",
+      "color": "#B83B2A",
+      "badgeText": "明"
+    },
+    {
+      "id": "zhang-zhou",
+      "name": "张士诚 · 平江守军",
+      "leader": "张士诚",
+      "color": "#5B7A3E",
+      "badgeText": "周"
+    },
+    {
+      "id": "yuan-army",
+      "name": "元廷及北方军阀",
+      "leader": "元顺帝 · 扩廓帖木儿（王保保）",
+      "color": "#4A5568",
+      "badgeText": "元"
+    }
+  ],
+  "phases": [
+    {
+      "phaseNo": 1,
+      "title": "第一幕：剪除羽翼 · 先下湖州杭州合围平江",
+      "dateLabel": "1366年 八月—1367年 九月",
+      "year": 1367,
+      "narrative": "讨伐富甲天下的张士诚时，朱元璋与徐达没有一头撞向坚城苏州，而是先扫清淮东，再渡江猛攻湖州、杭州、绍兴、嘉兴，剥光苏州所有外援粮道后，二十万大军筑长围困死平江十个月，最终轰破胥门生擒张士诚！",
+      "whyKeyPoint": "为啥不直攻苏州？苏州城坚粮足且水网密布，若直攻受挫，湖州、杭州援军背刺明军必败；先断其苏北盐利与浙西粮仓，苏州便成无源死水。",
+      "camera": {
+        "center": [120.15, 31.35],
+        "zoom": 6.8,
+        "pitch": 42,
+        "bearing": 12
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-army",
+        "leftLabel": "徐达常遇春 20 万精锐",
+        "leftPower": 72,
+        "rightFactionId": "zhang-zhou",
+        "rightLabel": "张士诚孤城困守",
+        "rightPower": 28
+      },
+      "routes": [
+        {
+          "id": "r-ne1-huzhou",
+          "factionId": "ming-army",
+          "type": "assault",
+          "label": "徐达先克湖州、杭州剪除羽翼",
+          "commander": "徐达 · 常遇春",
+          "coordinates": [
+            [118.8, 32.06],
+            [119.55, 31.35],
+            [120.09, 30.89],
+            [120.16, 30.27]
+          ]
+        },
+        {
+          "id": "r-ne1-suzhou",
+          "factionId": "ming-army",
+          "type": "assault",
+          "label": "南北合围攻破平江（苏州）",
+          "commander": "徐达",
+          "coordinates": [
+            [120.09, 30.89],
+            [120.62, 31.3]
+          ]
+        },
+        {
+          "id": "r-ne1-north-pincer",
+          "factionId": "ming-army",
+          "type": "assault",
+          "label": "江北军渡江封锁常熟昆山",
+          "commander": "常遇春",
+          "coordinates": [
+            [119.41, 32.39],
+            [120.3, 31.82],
+            [120.62, 31.3]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-ne1-pingjiang",
+          "kind": "siege",
+          "label": "平江十月合围破城",
+          "subLabel": "江南彻底一统，军饷充盈",
+          "coordinates": [120.619, 31.299],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 2,
+      "title": "第二幕：先取山东 · 撤除元大都南面屏蔽",
+      "dateLabel": "1367年 十月—1368年 二月",
+      "year": 1368,
+      "narrative": "朱元璋力排常遇春“直捣大都”之议，定下千古名策：“先取山东，撤其屏蔽；旋师河南，断其羽翼；拔潼关而守之，据其户槛；天下形势入我掌握，然后进兵元都！”徐达二十五万大军沿淮入鲁，势如破竹攻克沂州、益都、济南，平定山东全境。",
+      "whyKeyPoint": "为啥由南向北绝不能孤军直插北京？若不先扫清山东与河南两翼，北伐军深入华北平原后粮道长达两千里，山西王保保与山东元军随时可腰斩明军重演宋人北伐惨败！",
+      "camera": {
+        "center": [117.45, 35.15],
+        "zoom": 6.0,
+        "pitch": 44,
+        "bearing": -8
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-army",
+        "leftLabel": "北伐大军 25 万（严明军纪）",
+        "leftPower": 70,
+        "rightFactionId": "yuan-army",
+        "rightLabel": "山东元军各自为战",
+        "rightPower": 30
+      },
+      "routes": [
+        {
+          "id": "r-ne2-shandong",
+          "factionId": "ming-army",
+          "type": "assault",
+          "label": "徐达常遇春挥师北上平定山东",
+          "commander": "徐达 · 常遇春",
+          "coordinates": [
+            [118.8, 32.06],
+            [117.56, 32.87],
+            [117.18, 34.26],
+            [118.35, 35.08],
+            [118.48, 36.68],
+            [117.0, 36.68]
+          ]
+        },
+        {
+          "id": "r-ne2-canal-supply",
+          "factionId": "ming-army",
+          "type": "supply",
+          "label": "淮安—徐州—济宁水上粮道跟进",
+          "coordinates": [
+            [119.02, 33.58],
+            [117.18, 34.26],
+            [116.59, 35.41],
+            [117.0, 36.68]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-ne2-jinan",
+          "kind": "pass",
+          "label": "平定济南与山东全境",
+          "subLabel": "元大都丧失东南屏障",
+          "coordinates": [117.001, 36.675],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 3,
+      "title": "第三幕：旋师河南拔潼关 · 锁死关中元军大门",
+      "dateLabel": "1368年 三月—五月",
+      "year": 1368,
+      "narrative": "平定山东后，徐达并未贪功北上，而是突然大转向沿明代黄河西进！水陆并进攻取开封（汴梁），在洛水北岸大破元军五万精锐克复洛阳，前锋冯宗异一鼓作气夺占天下第一险口——潼关！把李思齐、张思道十余万关中元军死死关在门内动弹不得。",
+      "whyKeyPoint": "看三维秦岭黄河夹角秒懂“拔潼关而守之”的绝妙：只要几万明军卡死潼关这道窄门，陕西元军就绝无可能东出偷袭明军侧后，徐达北取大都再无后顾之忧！",
+      "camera": {
+        "center": [113.25, 35.15],
+        "zoom": 6.1,
+        "pitch": 50,
+        "bearing": -25
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-army",
+        "leftLabel": "明军控扼中原与潼关天险",
+        "leftPower": 78,
+        "rightFactionId": "yuan-army",
+        "rightLabel": "关中李思齐部被锁死潼关西",
+        "rightPower": 22
+      },
+      "routes": [
+        {
+          "id": "r-ne3-henan",
+          "factionId": "ming-army",
+          "type": "assault",
+          "label": "徐达自济宁旋师西进克汴梁、洛阳",
+          "commander": "徐达 · 常遇春",
+          "coordinates": [
+            [117.0, 36.68],
+            [116.59, 35.41],
+            [114.35, 34.8],
+            [112.45, 34.62]
+          ]
+        },
+        {
+          "id": "r-ne3-tongguan",
+          "factionId": "ming-army",
+          "type": "ambush",
+          "label": "冯胜（冯宗异）疾趋西夺潼关守险",
+          "commander": "冯胜",
+          "coordinates": [
+            [112.45, 34.62],
+            [111.2, 34.77],
+            [110.25, 34.54]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-ne3-tongguan",
+          "kind": "cutoff",
+          "label": "封死潼关户槛",
+          "subLabel": "彻底隔绝关中元军东援",
+          "coordinates": [110.246, 34.544],
+          "color": "#D97706"
+        }
+      ]
+    },
+    {
+      "phaseNo": 4,
+      "title": "第四幕：会师临清直捣大都 · 故国衣冠重见天日",
+      "dateLabel": "1368年 闰七月—八月初二",
+      "year": 1368,
+      "narrative": "朱元璋亲赴汴梁督师，诸路大军在运河枢纽临清会师，水陆帆樯蔽日北上！连下德州、长芦（沧州）、通州。七月二十八日夜元顺帝仓皇开健德门北逃上都。八月初二，徐达大军攻入齐化门克复元大都，改名北平府！自石敬瑭公元938年割让燕云十六州，时隔四百三十年重归汉家！",
+      "whyKeyPoint": "为啥最后从临清到大都只用了十几天？因为外围屏蔽与两翼强援已被前三幕剥得干干净净，加之大运河卫河水路直接把江南粮草送到大都城下，势同摧枯拉朽！",
+      "camera": {
+        "center": [116.45, 38.95],
+        "zoom": 6.2,
+        "pitch": 46,
+        "bearing": -10
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-army",
+        "leftLabel": "明军秋毫无犯入主北平",
+        "leftPower": 90,
+        "rightFactionId": "yuan-army",
+        "rightLabel": "元顺帝夜奔塞外上都",
+        "rightPower": 10
+      },
+      "routes": [
+        {
+          "id": "r-ne4-linqing-beiping",
+          "factionId": "ming-army",
+          "type": "assault",
+          "label": "临清誓师沿运河北上攻克元大都",
+          "commander": "徐达 · 常遇春",
+          "coordinates": [
+            [114.35, 34.8],
+            [115.71, 36.84],
+            [116.36, 37.44],
+            [116.84, 38.3],
+            [117.18, 39.13],
+            [116.66, 39.9],
+            [116.41, 39.9]
+          ]
+        },
+        {
+          "id": "r-ne4-yuan-flee",
+          "factionId": "yuan-army",
+          "type": "retreat",
+          "label": "元顺帝夜出居庸关北奔开平上都",
+          "commander": "元顺帝",
+          "coordinates": [
+            [116.41, 39.9],
+            [116.07, 40.29],
+            [115.65, 41.15],
+            [116.18, 42.36]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-ne4-dadu",
+          "kind": "clash",
+          "label": "克复大都改北平府",
+          "subLabel": "燕云四百三十年重光",
+          "coordinates": [116.4074, 39.9042],
+          "color": "#B83B2A"
+        }
+      ]
+    }
+  ]
+}

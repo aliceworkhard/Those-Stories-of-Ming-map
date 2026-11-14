@@ -1,0 +1,485 @@
+[
+  {
+    "id": "evt-1376-feudal-princes",
+    "title": "洪武分封诸王与九边塞王拥兵卫国制",
+    "tier": "macro",
+    "category": "institution",
+    "time": {
+      "year": 1376,
+      "month": 4,
+      "display": "洪武三年至十一年（1370—1378定型）",
+      "reignTitle": "洪武年间"
+    },
+    "location": {
+      "placeId": "place-beiping",
+      "ancientName": "北平燕王府及九边藩封线",
+      "modernName": "北京、大同、宁城、太原、西安一线",
+      "coordinates": [116.4074, 39.9042]
+    },
+    "camera": {
+      "center": [115.25, 39.55],
+      "zoom": 5.5,
+      "pitch": 42,
+      "bearing": -5
+    },
+    "summary": "吸取宋元孤立无援之教训，朱元璋将二十四个儿子和一个侄孙分封全国各地，尤以北方边境的秦王（西安）、晋王（太原）、燕王朱棣（北平）、代王（大同）、宁王朱权（大宁）、辽王（广宁）等“塞王”权柄最重——不仅拥有三护卫精兵，战时更可节制沿边诸卫所大军出塞北伐！",
+    "actors": ["朱元璋", "朱棣（燕王）", "朱权（宁王）", "叶伯巨"],
+    "why": {
+      "geoFactor": "明初国都在江南南京，距北方长城防线远达两千余里，快马奏报往返需十余日；若不在北平、大宁、大同、太原一线派驻皇子就地指挥骑兵，根本来不及应对蒙古铁骑闪电南侵。",
+      "systemFactor": "只要铁腕太祖朱元璋与仁厚长兄朱标在世，诸王皆俯首帖耳；但当皇位传给年轻侄子朱允炆时，手握重兵的叔叔们瞬间从帝国长城变成了皇权心腹大患（训导叶伯巨早在洪武九年上书预言必酿汉代七国之乱，竟惨死狱中）。",
+      "terrainCamera": {
+        "center": [116.05, 40.35],
+        "zoom": 6.0,
+        "pitch": 48,
+        "bearing": 0
+      },
+      "prevEventIds": ["evt-1368-ming-founding"],
+      "nextEventIds": ["evt-1398-jianwen-abolish-princes"]
+    },
+    "bookLens": {
+      "chapterIds": ["v1-zhu-yuanzhang-ch22", "v1-zhu-yunwen-ch24"],
+      "mingyuePerspective": "当年明月犀利指出：朱元璋是个算无遗策的制度大师，但他算漏了一件事——人性。他以为朱家子孙会永远兄友弟恭替朱允炆看家护院，却忘了皇位面前亲情最薄。",
+      "historicalNote": "《皇明祖训》甚至规定朝中若有“奸臣”，亲王可训兵待命入京“清君侧”，这恰恰被朱棣拿来当成了起兵“奉天靖难”的合法尚方宝剑！"
+    }
+  },
+  {
+    "id": "evt-1398-jianwen-abolish-princes",
+    "title": "建文强行削藩：齐泰、黄子澄的“先易后难”打草惊蛇",
+    "tier": "macro",
+    "category": "politics",
+    "time": {
+      "year": 1398,
+      "month": 8,
+      "display": "洪武三十一年秋—建文元年（1398—1399）",
+      "reignTitle": "建文元年"
+    },
+    "location": {
+      "placeId": "place-yingtian",
+      "ancientName": "应天府皇宫",
+      "modernName": "江苏南京",
+      "coordinates": [118.7969, 32.0603]
+    },
+    "camera": {
+      "center": [116.85, 34.85],
+      "zoom": 5.6,
+      "pitch": 38,
+      "bearing": -8
+    },
+    "summary": "朱元璋驾崩尸骨未寒，继位的建文帝朱允炆便与兵部尚书齐泰、太常寺卿黄子澄密谋削藩。齐泰主张直接擒拿实力最强的燕王朱棣，黄子澄却力主“先易后难”，在一年之内连废周王、代王、岷王、齐王，更逼得湘王朱柏在荆州王府阖家自焚！兔死狐悲之下，北平的朱棣被彻底逼上绝路。",
+    "actors": ["朱允炆", "齐泰", "黄子澄", "方孝孺", "朱棣"],
+    "why": {
+      "geoFactor": "开封周王朱橚是朱棣同母胞弟且扼守中原腹地，朝廷先拿周王虽剪断了北平与南京之间的内应，却在尚未在华北完成军事合围前就彻底惊醒了北平猛虎。",
+      "systemFactor": "与汉景帝重用周亚夫、或汉武帝“推恩令”温水煮青蛙不同，建文君臣全是缺乏实战政治经验的书生——削藩不留活路（连湘王都被逼全家烧死），等于公开告诉朱棣：坐以待毙也是死，造反反而有一线生机！",
+      "prevEventIds": ["evt-1393-lanyu-purge", "evt-1376-feudal-princes"],
+      "nextEventIds": ["evt-1399-zhudi-madness", "evt-1399-beiping-uprising"]
+    },
+    "bookLens": {
+      "chapterIds": ["v1-zhu-yunwen-ch24", "v1-zhu-yunwen-ch25"],
+      "mingyuePerspective": "书中把黄子澄与齐泰评为“建文三大蠢材”代表：打蛇不打七寸，先把小蛇全打死给巨蟒敲警钟，甚至为了表现仁孝还把扣在南京当人质的朱棣三个儿子（朱高炽兄弟）放回了北平，堪称送分天花板！",
+      "historicalNote": "放回朱高炽、朱高煦、朱高燧三子是舅父徐辉祖极力反对而黄子澄坚持促成的决定，朱棣见到三个儿子平安归北平后仰天大喜：“天赞我也！”自此再无投鼠忌器之顾虑。"
+    }
+  },
+  {
+    "id": "evt-1399-zhudi-madness",
+    "title": "六月酷暑围火炉、当街抢猪食：影帝朱棣装疯续命",
+    "tier": "micro",
+    "category": "anecdote",
+    "time": {
+      "year": 1399,
+      "month": 6,
+      "display": "建文元年（1399年）盛夏",
+      "reignTitle": "建文元年"
+    },
+    "location": {
+      "placeId": "place-beiping",
+      "ancientName": "北平燕王府",
+      "modernName": "北京",
+      "coordinates": [116.395, 39.918]
+    },
+    "camera": {
+      "center": [116.407, 39.904],
+      "zoom": 8.4,
+      "pitch": 45,
+      "bearing": 10
+    },
+    "summary": "朝廷步步紧逼调走北平防军，起兵准备尚未就绪的朱棣决定效仿孙膑装疯拖延时间：他在北平大街狂呼乱跑、抢夺酒食、躺在泥水沟里昏睡不醒；朝廷官员张昺、谢贵盛夏入府探视，只见朱棣裹着厚棉袄围着大火炉浑身发抖直喊“好冷”，啃西瓜皮胡言乱语，险些瞒天过海，直至王府长史葛诚暗中告密“燕王装病”！",
+    "actors": ["朱棣", "张昺", "谢贵", "葛诚"],
+    "why": {
+      "geoFactor": "北平城内早已被朝廷布政使张昺、都指挥使谢贵派兵层层围控王府四周，城外都督宋忠亦率三万兵驻开平、怀来虎视眈眈，朱棣需要哪怕多十几天时间串联张玉、朱能与王府地下兵械作坊。",
+      "systemFactor": "帝王之争毫无体面可言——为了活命与翻盘，高高在上的塞王能瞬间放下全部皇室尊严睡猪圈啃泥巴，这种可怕的心理韧性远非温室长大的建文帝所能想象。",
+      "prevEventIds": ["evt-1398-jianwen-abolish-princes"],
+      "nextEventIds": ["evt-1399-yaoguangxiao-roof", "evt-1399-beiping-uprising"]
+    },
+    "bookLens": {
+      "chapterIds": ["v1-zhu-yunwen-ch26", "v1-zhu-yunwen-ch27"],
+      "mingyuePerspective": "当年明月妙趣横生地还原了这场奥斯卡级表演，更写活了王府后院地下室里养着大批鹅鸭嘎嘎乱叫掩盖铁匠昼夜打造盔甲叮当声的绝妙细节！",
+      "historicalNote": "据《奉天靖难记》与《明通鉴》，长史葛诚与护卫指挥卢振向张昺、谢贵密告燕王实未真疯，促使南京下达密诏逮捕燕府官属，引爆最终摊牌。"
+    }
+  },
+  {
+    "id": "evt-1399-yaoguangxiao-roof",
+    "title": "狂风吹落燕府青瓦：黑衣宰相姚广孝一言定乾坤",
+    "tier": "micro",
+    "category": "anecdote",
+    "time": {
+      "year": 1399,
+      "month": 7,
+      "display": "建文元年（1399年）七月初四",
+      "reignTitle": "建文元年"
+    },
+    "location": {
+      "placeId": "place-beiping",
+      "ancientName": "北平燕王府",
+      "modernName": "北京",
+      "coordinates": [116.418, 39.912]
+    },
+    "camera": {
+      "center": [116.418, 39.912],
+      "zoom": 8.6,
+      "pitch": 46,
+      "bearing": -15
+    },
+    "summary": "誓师起兵当天狂风暴雨大作，燕王府殿顶的青色琉璃瓦被狂风掀落摔得粉碎！将士们惊恐以为大凶之兆，朱棣亦脸色铁青。此时妖僧道衍（姚广孝）神色自若上前贺喜：“大吉之兆！飞龙在天，从以风雨；青瓦坠地，正当换成天子专用的黄瓦耳！”全军瞬间士气沸腾！",
+    "actors": ["姚广孝（道衍）", "朱棣"],
+    "why": {
+      "geoFactor": "孤城北平起事时仅掌握八百王府精壮护卫，面对城内外数万朝廷正规军，军心一旦因天象恐慌动摇便会顷刻瓦解。",
+      "systemFactor": "姚广孝早在洪武十五年马皇后葬礼上就向朱棣献“白帽加王（皇）”奇言，他并非为富贵官爵（功成后不住豪宅仍居僧寺），纯粹是为了施展颠覆乾坤的平生所学。",
+      "prevEventIds": ["evt-1399-zhudi-madness"],
+      "nextEventIds": ["evt-1399-beiping-uprising"]
+    },
+    "bookLens": {
+      "chapterIds": ["v1-zhu-yunwen-ch25", "v1-zhu-yunwen-ch27"],
+      "mingyuePerspective": "书中把姚广孝刻画为明代第一奇人：别人造反是为了封妻荫子，这位和尚造反就像做一道高难度艺术品——功成名就后朱棣赐他美女豪宅全不要，白天上朝穿官服，晚上脱衣回庙念经。",
+      "historicalNote": "《明史·姚广孝传》载：“适大风雨至，檐瓦堕地，帝色变。道衍曰：‘祥也。飞龙在天，从以风雨。瓦堕，将易黄也。’”"
+    }
+  },
+  {
+    "id": "evt-1399-beiping-uprising",
+    "title": "奉天靖难起兵：端礼门伏杀朝臣、一夜夺北平九门",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1399,
+      "month": 7,
+      "display": "建文元年（1399年）七月初五",
+      "reignTitle": "建文元年"
+    },
+    "location": {
+      "placeId": "place-beiping",
+      "ancientName": "北平府",
+      "modernName": "北京",
+      "coordinates": [116.4074, 39.9042]
+    },
+    "camera": {
+      "center": [116.05, 39.45],
+      "zoom": 6.6,
+      "pitch": 45,
+      "bearing": -10
+    },
+    "summary": "朱棣以交出朝廷指名捉拿的王府官属为诱饵，骗张昺、谢贵入端礼门赴宴，伏兵尽起斩杀二人及内应葛诚、卢振！张玉、朱能率八百壮士乘夜突袭夺占北平九门，三日定全城，继而闪电夺居庸关、破怀来宋忠，并在真定夜袭击败老将耿炳文，正式树起“清君侧、奉天靖难”大旗！",
+    "actors": ["朱棣", "张玉", "朱能", "耿炳文"],
+    "why": {
+      "geoFactor": "起兵后第一时间北抢居庸关、东控遵化永平，是北平存亡的生死线——只要卡住太行与燕山关口，北平便从四战平地变成背靠险山的铁堡。",
+      "systemFactor": "引用朱元璋《皇明祖训》指责齐泰、黄子澄为“奸臣”，自去建文年号改称“洪武三十二年”，在法理名分上最大化降低了北平旧部将士造反的心理阻力。",
+      "prevEventIds": [
+        "evt-1398-jianwen-abolish-princes",
+        "evt-1399-zhudi-madness",
+        "evt-1399-yaoguangxiao-roof"
+      ],
+      "nextEventIds": ["evt-1399-daning-raid"]
+    },
+    "bookLens": {
+      "chapterIds": ["v1-zhu-yunwen-ch27", "v1-zhu-yunwen-ch28"],
+      "mingyuePerspective": "当年明月感叹“切西瓜”名场面：朱棣拄杖装病吃西瓜，扔瓜皮为号当场翻脸，忍耐了一整年的屈辱在刀出鞘那一刻化作摧枯拉朽的雷霆风暴。",
+      "historicalNote": "真定之战后，建文帝听信黄子澄谗言撤换稳扎稳打的耿炳文，启用李景隆统兵五十万北上，朱棣得知后大笑列出“李九江（景隆）五败必亡”论断。"
+    },
+    "campaignId": "cmp-1399-jingnan"
+  },
+  {
+    "id": "evt-1399-daning-raid",
+    "title": "奇袭大宁裹挟宁王：收编朵颜三卫却拆掉北方外屏",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1399,
+      "month": 10,
+      "display": "建文元年（1399年）十月",
+      "reignTitle": "建文元年"
+    },
+    "location": {
+      "placeId": "place-daning",
+      "ancientName": "大宁都司（宁王藩府）",
+      "modernName": "内蒙古赤峰宁城县大明镇",
+      "coordinates": [119.225, 41.586]
+    },
+    "camera": {
+      "center": [117.85, 40.75],
+      "zoom": 6.5,
+      "pitch": 52,
+      "bearing": 18
+    },
+    "summary": "趁李景隆五十万大军猛攻北平（世子朱高炽泼水成冰死守），朱棣亲率精骑走松亭关险道奇袭塞外大宁！单骑入城抱着十七弟宁王朱权痛哭求救，暗中重金结纳城外剽悍善战的朵颜三卫蒙古骑兵。郊外送别时伏兵四起绑走宁王，尽得大宁八万甲士与朵颜铁骑，并将大宁都司军民一扫而空迁入关内！",
+    "actors": ["朱棣", "朱权（宁王）", "朱高炽", "李景隆"],
+    "why": {
+      "geoFactor": "看三维地形一目了然：大宁位于燕山山脉以北的西辽河上游，东连辽东、西通开平宣府，是拱卫北平的塞外超级前哨。夺大宁让朱棣获得无敌骑兵赢下内战，但腾空大宁给了朵颜三卫，直接导致辽东与宣府连接中断，燕山防线彻底暴露在草原铁骑鼻尖下！",
+      "systemFactor": "当时谚云“宁王带甲八万，革车六千，所属朵颜三卫骑兵皆骁勇善战”，朱棣许诺“事成之后平分天下”，结果即位后把宁王改封到了江西南昌（并为百年后第四代宁王朱宸濠反叛王阳明埋下另一条伏笔！）。",
+      "terrainCamera": {
+        "center": [118.15, 40.85],
+        "zoom": 6.8,
+        "pitch": 56,
+        "bearing": 20
+      },
+      "prevEventIds": ["evt-1399-beiping-uprising"],
+      "nextEventIds": ["evt-1400-jinan-tiexuan", "evt-1449-tumubao-echo"]
+    },
+    "bookLens": {
+      "chapterIds": ["v1-zhu-yunwen-ch28", "v2-zhu-qizhen-ch13"],
+      "mingyuePerspective": "当年明月在第一部写朱棣“空手套白狼”套走弟弟全部家当令人拍案叫绝，更在第二部《祸根》章里拉长五十年视角揭示：历史没有免费的午餐，朱棣在大宁埋下的雷，最终炸在了曾孙朱祁镇的土木堡！",
+      "historicalNote": "永乐元年正式将大宁都司内迁保定，塞外大宁故地归兀良哈三卫游牧，明朝北疆自此失去最关键的辽西—漠南战略机动走廊。"
+    },
+    "campaignId": "cmp-1399-jingnan"
+  },
+  {
+    "id": "evt-1400-jinan-tiexuan",
+    "title": "铁铉死守济南三月：千斤铁闸惊魂与城头太祖神牌",
+    "tier": "micro",
+    "category": "war",
+    "time": {
+      "year": 1400,
+      "month": 5,
+      "display": "建文二年（1400年）五月—八月",
+      "reignTitle": "建文二年"
+    },
+    "location": {
+      "placeId": "place-jinan",
+      "ancientName": "济南府",
+      "modernName": "山东济南",
+      "coordinates": [117.001, 36.675]
+    },
+    "camera": {
+      "center": [117.001, 36.675],
+      "zoom": 7.8,
+      "pitch": 46,
+      "bearing": -10
+    },
+    "summary": "白沟河大败李景隆六十万大军后，山东眼看唾手可得，半路却杀出一位运粮文官——山东参政铁铉！他联合盛庸坚守济南，先派人哭着诈降诱朱棣单骑入城门，落下千斤铁板砸烂朱棣马头（朱棣换马狼狈逃出）；朱棣暴怒架起大炮狂轰城墙，铁铉竟连夜书写无数块“高皇帝（朱元璋）神牌”挂满城垛，吓得打着孝子旗号的燕军一炮都不敢再开！",
+    "actors": ["铁铉", "盛庸", "朱棣", "高巍"],
+    "why": {
+      "geoFactor": "济南南依泰山山脉、北濒大清河（今黄河河道前身）与小清河水网，地泉密布；朱棣决水灌城反被铁铉派死士夜袭决堤，围困三月寸土未得。",
+      "systemFactor": "精准打击朱棣“奉天靖难、遵奉太祖”的政治软肋——你若一炮轰碎亲爹朱元璋的牌位，全天下将士谁还信你是靖难孝子？",
+      "prevEventIds": ["evt-1399-daning-raid"],
+      "nextEventIds": ["evt-1400-dongchang-trap"]
+    },
+    "bookLens": {
+      "chapterIds": ["v1-zhu-yunwen-ch29"],
+      "mingyuePerspective": "书中盛赞色目人出身的文官铁铉刚烈智勇双全：李景隆握六十万雄兵一触即溃，一个管粮草的书生却靠智谋和血性把百战名将朱棣耍得团团转，直至靖难城破被磔杀时仍背转身体至死不屈。",
+      "historicalNote": "铁铉守住济南并乘胜收复德州，使建文朝廷转危为安，铁铉亦因此由山东参政火线擢升为兵部尚书。"
+    },
+    "campaignId": "cmp-1399-jingnan"
+  },
+  {
+    "id": "evt-1400-dongchang-trap",
+    "title": "东昌惨败与“毋杀叔父”诏：张玉战死、朱棣一生最险一役",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1400,
+      "month": 12,
+      "display": "建文二年（1400年）十二月",
+      "reignTitle": "建文二年"
+    },
+    "location": {
+      "placeId": "place-dongchang",
+      "ancientName": "东昌府（聊城）",
+      "modernName": "山东聊城",
+      "coordinates": [115.985, 36.456]
+    },
+    "camera": {
+      "center": [115.985, 36.456],
+      "zoom": 7.5,
+      "pitch": 48,
+      "bearing": 15
+    },
+    "summary": "平燕将军盛庸在运河要塞东昌严密布设火铳、火箭与强弩大阵。朱棣率骑兵强冲中军陷入重重铁桶包围，燕军精锐死伤惨重！朱棣之所以没死在乱军之中，全因建文帝此前反复严令三军“毋使朕负杀叔父名”——南军士兵不敢放冷箭射朱棣，只敢拿木棍绳索围抓，让他靠一把剑左冲右突硬杀出去；而不知他已突围的第一名将张玉杀入重围救主，身被数十创壮烈战死！",
+    "actors": ["盛庸", "平安", "朱棣", "张玉", "朱能", "朱高煦"],
+    "why": {
+      "geoFactor": "东昌城池环水、运河纵贯，限制了朵颜宽正面骑兵迂回展开，反而让盛庸密集列装的明初管形火器发挥出最大杀伤威力。",
+      "systemFactor": "建文帝的妇人之仁在战场上变成了对将士生命的残忍：既逼叔叔造反，又不许士兵杀叔叔，导致朱棣可以肆无忌惮单骑冲阵当诱饵而不死！",
+      "prevEventIds": ["evt-1400-jinan-tiexuan"],
+      "nextEventIds": ["evt-1402-lingbi-nanjing"]
+    },
+    "bookLens": {
+      "chapterIds": ["v1-zhu-yunwen-ch30"],
+      "mingyuePerspective": "《离胜利只差一步》写尽了历史荒诞感：朱棣战后痛哭“胜负兵家常事，唯恨失我张玉！”——打了三年，地盘没多一寸，头号名将还折在了山东，正常人早已绝望，却逼出了姚广孝那记颠覆常规的绝杀奇谋。",
+      "historicalNote": "据《明史·张玉传》，朱棣即位后论靖难第一功臣首推河间忠武王张玉，其子张辅后成为永乐朝横扫安南的一代战神英国公。"
+    },
+    "campaignId": "cmp-1399-jingnan"
+  },
+  {
+    "id": "evt-1402-lingbi-nanjing",
+    "title": "灵璧决胜与金川门之变：绕开天下坚城一剑封喉",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1402,
+      "month": 4,
+      "display": "建文四年（1402年）四月灵璧大捷 · 六月入南京",
+      "reignTitle": "建文四年 / 永乐元年"
+    },
+    "location": {
+      "placeId": "place-lingbi",
+      "ancientName": "宿州灵璧 -> 应天金川门",
+      "modernName": "安徽灵璧至江苏南京",
+      "coordinates": [117.558, 33.543]
+    },
+    "camera": {
+      "center": [118.15, 32.85],
+      "zoom": 6.4,
+      "pitch": 46,
+      "bearing": -15
+    },
+    "summary": "采纳姚广孝“毋下城邑，疾趋京师”与南京宦官内线情报，朱棣于1401年底绕过山东全部城防直扑淮北！在灵璧切断南军粮道，一夜之间击溃并生擒平安、陈晖等三十七员南军核心将领，十万机动主力灰飞烟灭！随即泗州渡淮、镇江水师陈瑄倒戈渡江，六月十三日曹国公李景隆打开南京金川门投降，皇宫大火中建文帝不知所踪，朱棣登基开创永乐大帝时代！",
+    "actors": ["朱棣", "姚广孝", "朱能", "平安", "陈瑄", "李景隆", "朱允炆"],
+    "why": {
+      "geoFactor": "徐宿灵璧至泗州扬州一线地势平坦且紧邻大运河，只要避开济南、东昌堡垒带南插皖北平原，燕军骑兵高机动性便如入无人之境，瞬间把重兵屯驻山东的盛庸甩在身后！",
+      "systemFactor": "高度中央集权的软肋在于“心脏一旦失守，四肢百万人马立刻瘫痪”——灵璧一战吃掉朝廷最后机动兵团后，南京勋贵（以李景隆为首）瞬间倒戈献城。",
+      "terrainCamera": {
+        "center": [118.1, 32.9],
+        "zoom": 6.6,
+        "pitch": 50,
+        "bearing": -20
+      },
+      "prevEventIds": ["evt-1400-dongchang-trap"],
+      "nextEventIds": ["evt-1402-fangxiaoru-ten-clans", "evt-1421-yongle-beijing-capital"]
+    },
+    "bookLens": {
+      "chapterIds": ["v1-zhu-yunwen-ch31"],
+      "mingyuePerspective": "当年明月深刻复盘了这场古代罕见的“闪电斩首战”：战争从来不是占领格子的跳棋，当你耗不过对手的体量时，直接打爆他的指挥中枢就是唯一生路；而两次葬送建文六十万大军的李景隆最后还亲自去开城门，堪称大明第一卧底。",
+      "historicalNote": "建文帝下落（焚死宫中或由地道剃度出逃云贵南洋）成为明代第一历史悬案，亦成为日后郑和下西洋与胡濙寻访张邋遢的隐秘动机之一。"
+    },
+    "campaignId": "cmp-1399-jingnan"
+  },
+  {
+    "id": "evt-1402-fangxiaoru-ten-clans",
+    "title": "“燕贼篡位”四字染血：读书种子方孝孺与诛十族考辨",
+    "tier": "micro",
+    "category": "culture",
+    "time": {
+      "year": 1402,
+      "month": 6,
+      "display": "建文四年（1402年）六月二十五日",
+      "reignTitle": "建文四年"
+    },
+    "location": {
+      "placeId": "place-yingtian",
+      "ancientName": "应天府奉天殿 / 聚宝门外",
+      "modernName": "江苏南京中华门外雨花台",
+      "coordinates": [118.782, 32.005]
+    },
+    "camera": {
+      "center": [118.782, 32.005],
+      "zoom": 8.4,
+      "pitch": 42,
+      "bearing": 0
+    },
+    "summary": "姚广孝送别朱棣出征前唯独跪求一事：“城破之日，方孝孺必不降，然切不可杀之，杀之则天下读书种子绝矣！”入京后朱棣强命天下大儒方孝孺起草即位诏书以收士林之心，方孝孺披麻号哭，提笔掷地大书“燕贼篡位”四字！朱棣怒吼：“汝不怕诛九族乎？”方孝孺凛然答：“便十族奈我何！”最终连同门生朋友作第十族共八百七十三人血洒聚宝门外。",
+    "actors": ["方孝孺", "朱棣", "姚广孝"],
+    "why": {
+      "geoFactor": "南京作为江南文教士林中心，江南儒臣集团普遍视建文帝为嫡长正统、视北平武力夺位的朱棣为篡逆，政治合法性危机在南京皇城集中爆发。",
+      "systemFactor": "方孝孺虽在军政实务上迂腐书生气，但在生死关头以生命捍卫儒家“士可杀不可辱”之气节；朱棣靠屠刀压服了朝堂，却一生背负合法性焦虑，不得不以远超前人的文治武功证明自己配得上皇位！",
+      "prevEventIds": ["evt-1402-lingbi-nanjing"],
+      "nextEventIds": ["evt-1421-yongle-beijing-capital"]
+    },
+    "bookLens": {
+      "chapterIds": ["v1-zhu-yunwen-ch31", "v2-zhu-di-ch01"],
+      "mingyuePerspective": "书中对建文忠臣（方孝孺、铁铉、景清、黄观）给予了极崇高的敬意：平时你可以笑方孝孺改官名迂腐无用，但当刀架在脖子上、满朝勋贵跪迎新主时，恰恰是这群手无寸铁的读书人挺直了脊梁。",
+      "historicalNote": "正史《明实录》载“丁丑，杀齐泰、黄子澄、方孝孺，皆夷其族”，“诛十族”最早见于祝允明《野记》与崇祯朝《熹宗实录》追述，但方孝孺门生廖镛、卢原质等确因收尸与连坐同日死难。"
+    }
+  },
+  {
+    "id": "evt-1421-yongle-beijing-capital",
+    "title": "永乐迁都北京：“天子守国门”的地缘大决断",
+    "tier": "macro",
+    "category": "institution",
+    "time": {
+      "year": 1421,
+      "month": 1,
+      "display": "永乐元年升北平为北京—永乐十九年（1421年）正式迁都",
+      "reignTitle": "永乐十九年"
+    },
+    "location": {
+      "placeId": "place-beiping",
+      "ancientName": "北京顺天府（紫禁城）",
+      "modernName": "北京故宫",
+      "coordinates": [116.397, 39.916]
+    },
+    "camera": {
+      "center": [116.45, 39.85],
+      "zoom": 6.4,
+      "pitch": 48,
+      "bearing": -10
+    },
+    "summary": "靖难功成后，朱棣不顾江南百官反对，一方面命宋礼、陈瑄彻底打通京杭大运河会通河解决百万漕粮北运难题，一方面耗费十余年营建恢弘北京紫禁城，于永乐十九年正月正式改北京为京师、南京为留都，亲自坐镇燕山脚下直面漠北风沙，奠定大明后二百二十余年“天子守国门”之大格局！",
+    "actors": ["朱棣", "姚广孝", "宋礼", "陈瑄", "蒯祥"],
+    "why": {
+      "geoFactor": "一方面朱棣在大宁内迁后深知燕山防线单薄，若朝廷远在两千里外的南京，北方早晚失控；另一方面北京东控辽东女真、北扼蒙古草原、南借大运河吸纳江南财赋，是维系南北大一统帝国的唯一战略支点！",
+      "systemFactor": "南京遍布建文旧臣势力与江南士绅网络，而北平是朱棣经营二十余年的龙兴大本营；迁都既稳固了北方国防，又彻底重塑了帝国政治军事重心。",
+      "terrainCamera": {
+        "center": [116.35, 40.15],
+        "zoom": 7.0,
+        "pitch": 55,
+        "bearing": -15
+      },
+      "prevEventIds": ["evt-1402-lingbi-nanjing", "evt-1402-fangxiaoru-ten-clans"],
+      "nextEventIds": ["evt-1449-tumubao-echo"]
+    },
+    "bookLens": {
+      "chapterIds": ["v2-zhu-di-ch06"],
+      "mingyuePerspective": "《第六章 天子守国门！》是全书最具家国气魄的华章之一：南宋偏安杭州苟且偷安，而大明把皇帝宝座直接搬到了离长城居庸关只有几十公里的前线战壕里——不和亲、不赔款、不割地、不纳贡，天子守国门，君王死社稷！",
+      "historicalNote": "迁都北京得以站稳脚跟的真正命脉是永乐九年工部尚书宋礼采纳民间水利专家白英“南旺分水”绝技疏通山东会通河，每年经大运河北运漕粮高达四百万石以上。"
+    }
+  },
+  {
+    "id": "evt-1449-tumubao-echo",
+    "title": "【远期因果回响】土木堡之变：大宁弃守四十七年后的惊雷",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1449,
+      "month": 8,
+      "display": "正统十四年（1449年）八月十五日",
+      "reignTitle": "正统十四年"
+    },
+    "location": {
+      "placeId": "place-tumubao",
+      "ancientName": "土木堡（怀来西）",
+      "modernName": "河北怀来县土木镇",
+      "coordinates": [115.606, 40.382]
+    },
+    "camera": {
+      "center": [115.606, 40.382],
+      "zoom": 7.6,
+      "pitch": 56,
+      "bearing": -20
+    },
+    "summary": "大宁内迁与宣宗弃守开平卫后，北京西北防线退缩至宣府、大同与居庸关一线。正统十四年（1449），明英宗朱祁镇听信宦官王振怂恿，草率亲征瓦剌太师也先，撤退途中被王振强留于距怀来水城仅二十里的无水高台——土木堡。也先铁骑切断南面桑干河水源四面围杀，二十万大明精锐与五十余名英国公张辅等勋臣覆没，皇帝本人被俘，大明盛极转衰！（Phase 3 将展开完整北京保卫战推演）",
+    "actors": ["朱祁镇", "王振", "也先", "张辅", "于谦"],
+    "why": {
+      "geoFactor": "在 3D 地形下俯瞰怀来盆地清晰可见：土木堡北倚群山、南临洋河（桑干河）低谷，本身地势高亢掘井两丈无水！王振为等自己一千辆辎重车拒绝进怀来城，等于亲手把二十万饥渴明军送上了无水无险的活棺材！",
+      "systemFactor": "从 1399 年朱棣腾空大宁丧失塞外纵深，到 1449 年宦官专权乱政、京营卫所腐化，四十七年前靖难之役种下的边防与集权隐患在此刻集中引爆。",
+      "terrainCamera": {
+        "center": [115.65, 40.38],
+        "zoom": 8.5,
+        "pitch": 60,
+        "bearing": -15
+      },
+      "prevEventIds": ["evt-1399-daning-raid", "evt-1421-yongle-beijing-capital"],
+      "nextEventIds": []
+    },
+    "bookLens": {
+      "chapterIds": ["v2-zhu-qizhen-ch13", "v2-zhu-qizhen-ch14"],
+      "mingyuePerspective": "当年明月在《祸根》与《土木堡》两章中完美串联起了跨越半个世纪的因果：朱棣五征漠北时靠超人武力压住了大宁内缩的漏洞，等到不肖子孙朱祁镇带着太监王振去塞外“军事旅游”时，历史终于开出了最昂贵的罚单——幸而北京城里还有于谦站了出来。",
+      "historicalNote": "靖难第一名将张玉之子、三朝元老英国公张辅亦在土木堡随驾死难，靖难勋贵集团自此元气大伤，文官集团（以于谦力挽狂澜为标志）正式成为明代中后期朝堂主导力量。"
+    }
+  }
+]

@@ -1,0 +1,1493 @@
+{
+  "meta": {
+    "bookTitle": "明朝那些事儿",
+    "author": "当年明月",
+    "spanYears": [
+      1344,
+      1644
+    ],
+    "totalVolumes": 7,
+    "totalEmperorSections": 20,
+    "totalChapters": 157,
+    "copyrightNotice": "本文件仅包含客观章节目录结构锚点索引，不含任何原书受版权保护之正文内容。"
+  },
+  "volumes": [
+    {
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSections": [
+        "朱元璋篇",
+        "朱允炆篇"
+      ]
+    },
+    {
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSections": [
+        "朱棣篇",
+        "朱高炽篇",
+        "朱瞻基篇",
+        "朱祁镇篇",
+        "朱祁钰篇"
+      ]
+    },
+    {
+      "volumeNo": 3,
+      "volumeTitle": "叁 妖孽宫廷",
+      "emperorSections": [
+        "朱祁镇篇",
+        "朱见深篇",
+        "朱祐樘篇",
+        "朱厚照篇"
+      ]
+    },
+    {
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSections": [
+        "朱厚熜篇"
+      ]
+    },
+    {
+      "volumeNo": 5,
+      "volumeTitle": "伍 帝国飘摇",
+      "emperorSections": [
+        "朱厚熜篇",
+        "朱载垕篇",
+        "朱翊钧篇"
+      ]
+    },
+    {
+      "volumeNo": 6,
+      "volumeTitle": "陆 日暮西山",
+      "emperorSections": [
+        "朱翊钧篇",
+        "朱常洛篇",
+        "朱由校篇"
+      ]
+    },
+    {
+      "volumeNo": 7,
+      "volumeTitle": "柒 大结局",
+      "emperorSections": [
+        "朱由校篇",
+        "朱由检篇"
+      ]
+    }
+  ],
+  "chapters": [
+    {
+      "id": "v1-zhu-yuanzhang-intro",
+      "globalOrder": 1,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 0,
+      "chapterTitle": "引子"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch01",
+      "globalOrder": 2,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 1,
+      "chapterTitle": "第一章 童年"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch02",
+      "globalOrder": 3,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 2,
+      "chapterTitle": "第二章 灾难"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch03",
+      "globalOrder": 4,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 3,
+      "chapterTitle": "第三章 踏上征途"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch04",
+      "globalOrder": 5,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 4,
+      "chapterTitle": "第四章 就从这里起步"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch05",
+      "globalOrder": 6,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 5,
+      "chapterTitle": "第五章 储蓄资本"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch06",
+      "globalOrder": 7,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 6,
+      "chapterTitle": "第六章 霸业的开始"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch07",
+      "globalOrder": 8,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 7,
+      "chapterTitle": "第七章 可怕的对手"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch08",
+      "globalOrder": 9,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 8,
+      "chapterTitle": "第八章 可怕的陈友谅"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch09",
+      "globalOrder": 10,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 9,
+      "chapterTitle": "第九章 决战不可避免"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch10",
+      "globalOrder": 11,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 10,
+      "chapterTitle": "第十章 等待最好的时机"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch11",
+      "globalOrder": 12,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 11,
+      "chapterTitle": "第十一章 洪都的奇迹"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch12",
+      "globalOrder": 13,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 12,
+      "chapterTitle": "第十二章 鄱阳湖！决死战！"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch13",
+      "globalOrder": 14,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 13,
+      "chapterTitle": "第十三章 下一个目标，张士诚！"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch14",
+      "globalOrder": 15,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 14,
+      "chapterTitle": "第十四章 复仇"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch15",
+      "globalOrder": 16,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 15,
+      "chapterTitle": "第十五章 远征沙漠"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch16",
+      "globalOrder": 17,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 16,
+      "chapterTitle": "第十六章 建国"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch17",
+      "globalOrder": 18,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 17,
+      "chapterTitle": "第十七章 胡惟庸案件"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch18",
+      "globalOrder": 19,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 18,
+      "chapterTitle": "第十八章 扫除一切腐败者"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch19",
+      "globalOrder": 20,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 19,
+      "chapterTitle": "第十九章 冤案"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch20",
+      "globalOrder": 21,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 20,
+      "chapterTitle": "第二十章 最后的名将——蓝玉"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch21",
+      "globalOrder": 22,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 21,
+      "chapterTitle": "第二十一章 蓝玉的覆灭"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch22",
+      "globalOrder": 23,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 22,
+      "chapterTitle": "第二十二章 制度后的秘密"
+    },
+    {
+      "id": "v1-zhu-yuanzhang-ch23",
+      "globalOrder": 24,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱元璋篇",
+      "chapterNo": 23,
+      "chapterTitle": "第二十三章 终点，起点"
+    },
+    {
+      "id": "v1-zhu-yunwen-ch24",
+      "globalOrder": 25,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱允炆篇",
+      "chapterNo": 24,
+      "chapterTitle": "第二十四章 建文帝"
+    },
+    {
+      "id": "v1-zhu-yunwen-ch25",
+      "globalOrder": 26,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱允炆篇",
+      "chapterNo": 25,
+      "chapterTitle": "第二十五章 等待中的朱棣"
+    },
+    {
+      "id": "v1-zhu-yunwen-ch26",
+      "globalOrder": 27,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱允炆篇",
+      "chapterNo": 26,
+      "chapterTitle": "第二十六章 准备行动"
+    },
+    {
+      "id": "v1-zhu-yunwen-ch27",
+      "globalOrder": 28,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱允炆篇",
+      "chapterNo": 27,
+      "chapterTitle": "第二十七章 不得不反了！"
+    },
+    {
+      "id": "v1-zhu-yunwen-ch28",
+      "globalOrder": 29,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱允炆篇",
+      "chapterNo": 28,
+      "chapterTitle": "第二十八章 你死我活的战争"
+    },
+    {
+      "id": "v1-zhu-yunwen-ch29",
+      "globalOrder": 30,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱允炆篇",
+      "chapterNo": 29,
+      "chapterTitle": "第二十九章 朱棣的对手"
+    },
+    {
+      "id": "v1-zhu-yunwen-ch30",
+      "globalOrder": 31,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱允炆篇",
+      "chapterNo": 30,
+      "chapterTitle": "第三十章 离胜利只差一步"
+    },
+    {
+      "id": "v1-zhu-yunwen-ch31",
+      "globalOrder": 32,
+      "volumeNo": 1,
+      "volumeTitle": "壹 洪武大帝",
+      "emperorSection": "朱允炆篇",
+      "chapterNo": 31,
+      "chapterTitle": "第三十一章 殉国、疑团、残暴、软弱"
+    },
+    {
+      "id": "v2-zhu-di-ch01",
+      "globalOrder": 33,
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSection": "朱棣篇",
+      "chapterNo": 1,
+      "chapterTitle": "第一章 帝王的烦恼"
+    },
+    {
+      "id": "v2-zhu-di-ch02",
+      "globalOrder": 34,
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSection": "朱棣篇",
+      "chapterNo": 2,
+      "chapterTitle": "第二章 帝王的荣耀"
+    },
+    {
+      "id": "v2-zhu-di-ch03",
+      "globalOrder": 35,
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSection": "朱棣篇",
+      "chapterNo": 3,
+      "chapterTitle": "第三章 帝王的抉择"
+    },
+    {
+      "id": "v2-zhu-di-ch04",
+      "globalOrder": 36,
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSection": "朱棣篇",
+      "chapterNo": 4,
+      "chapterTitle": "第四章 郑和之后，再无郑和"
+    },
+    {
+      "id": "v2-zhu-di-ch05",
+      "globalOrder": 37,
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSection": "朱棣篇",
+      "chapterNo": 5,
+      "chapterTitle": "第五章 纵横天下"
+    },
+    {
+      "id": "v2-zhu-di-ch06",
+      "globalOrder": 38,
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSection": "朱棣篇",
+      "chapterNo": 6,
+      "chapterTitle": "第六章 天子守国门！"
+    },
+    {
+      "id": "v2-zhu-di-ch07",
+      "globalOrder": 39,
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSection": "朱棣篇",
+      "chapterNo": 7,
+      "chapterTitle": "第七章 逆命者必剪除之！"
+    },
+    {
+      "id": "v2-zhu-di-ch08",
+      "globalOrder": 40,
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSection": "朱棣篇",
+      "chapterNo": 8,
+      "chapterTitle": "第八章 帝王的财产"
+    },
+    {
+      "id": "v2-zhu-di-ch09",
+      "globalOrder": 41,
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSection": "朱棣篇",
+      "chapterNo": 9,
+      "chapterTitle": "第九章 生死相搏"
+    },
+    {
+      "id": "v2-zhu-di-ch10",
+      "globalOrder": 42,
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSection": "朱棣篇",
+      "chapterNo": 10,
+      "chapterTitle": "第十章 最后的秘密"
+    },
+    {
+      "id": "v2-zhu-gaochi-ch11",
+      "globalOrder": 43,
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSection": "朱高炽篇",
+      "chapterNo": 11,
+      "chapterTitle": "第十一章 朱高炽的勇气和疑团"
+    },
+    {
+      "id": "v2-zhu-zhanji-ch12",
+      "globalOrder": 44,
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSection": "朱瞻基篇",
+      "chapterNo": 12,
+      "chapterTitle": "第十二章 朱瞻基是个好同志"
+    },
+    {
+      "id": "v2-zhu-qizhen-ch13",
+      "globalOrder": 45,
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSection": "朱祁镇篇",
+      "chapterNo": 13,
+      "chapterTitle": "第十三章 祸根"
+    },
+    {
+      "id": "v2-zhu-qizhen-ch14",
+      "globalOrder": 46,
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSection": "朱祁镇篇",
+      "chapterNo": 14,
+      "chapterTitle": "第十四章 土木堡"
+    },
+    {
+      "id": "v2-zhu-qizhen-ch15",
+      "globalOrder": 47,
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSection": "朱祁镇篇",
+      "chapterNo": 15,
+      "chapterTitle": "第十五章 力挽狂澜"
+    },
+    {
+      "id": "v2-zhu-qizhen-ch16",
+      "globalOrder": 48,
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSection": "朱祁镇篇",
+      "chapterNo": 16,
+      "chapterTitle": "第十六章 决断！"
+    },
+    {
+      "id": "v2-zhu-qiyu-ch17",
+      "globalOrder": 49,
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSection": "朱祁钰篇",
+      "chapterNo": 17,
+      "chapterTitle": "第十七章 信念"
+    },
+    {
+      "id": "v2-zhu-qiyu-ch18",
+      "globalOrder": 50,
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSection": "朱祁钰篇",
+      "chapterNo": 18,
+      "chapterTitle": "第十八章 北京保卫战"
+    },
+    {
+      "id": "v2-zhu-qiyu-ch19",
+      "globalOrder": 51,
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSection": "朱祁钰篇",
+      "chapterNo": 19,
+      "chapterTitle": "第十九章 朱祁镇的奋斗"
+    },
+    {
+      "id": "v2-zhu-qiyu-ch20",
+      "globalOrder": 52,
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSection": "朱祁钰篇",
+      "chapterNo": 20,
+      "chapterTitle": "第二十章 回家"
+    },
+    {
+      "id": "v2-zhu-qiyu-ch21",
+      "globalOrder": 53,
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSection": "朱祁钰篇",
+      "chapterNo": 21,
+      "chapterTitle": "第二十一章 囚徒朱祁镇"
+    },
+    {
+      "id": "v2-zhu-qiyu-ch22",
+      "globalOrder": 54,
+      "volumeNo": 2,
+      "volumeTitle": "贰 万国来朝",
+      "emperorSection": "朱祁钰篇",
+      "chapterNo": 22,
+      "chapterTitle": "第二十二章 夺门"
+    },
+    {
+      "id": "v3-zhu-qizhen-ch01",
+      "globalOrder": 55,
+      "volumeNo": 3,
+      "volumeTitle": "叁 妖孽宫廷",
+      "emperorSection": "朱祁镇篇",
+      "chapterNo": 1,
+      "chapterTitle": "第一章 有冤报冤，有仇报仇"
+    },
+    {
+      "id": "v3-zhu-qizhen-ch02",
+      "globalOrder": 56,
+      "volumeNo": 3,
+      "volumeTitle": "叁 妖孽宫廷",
+      "emperorSection": "朱祁镇篇",
+      "chapterNo": 2,
+      "chapterTitle": "第二章 隐藏的敌人"
+    },
+    {
+      "id": "v3-zhu-qizhen-ch03",
+      "globalOrder": 57,
+      "volumeNo": 3,
+      "volumeTitle": "叁 妖孽宫廷",
+      "emperorSection": "朱祁镇篇",
+      "chapterNo": 3,
+      "chapterTitle": "第三章 公道"
+    },
+    {
+      "id": "v3-zhu-jianshen-ch04",
+      "globalOrder": 58,
+      "volumeNo": 3,
+      "volumeTitle": "叁 妖孽宫廷",
+      "emperorSection": "朱见深篇",
+      "chapterNo": 4,
+      "chapterTitle": "第四章 不伦之恋"
+    },
+    {
+      "id": "v3-zhu-jianshen-ch05",
+      "globalOrder": 59,
+      "volumeNo": 3,
+      "volumeTitle": "叁 妖孽宫廷",
+      "emperorSection": "朱见深篇",
+      "chapterNo": 5,
+      "chapterTitle": "第五章 武林大会"
+    },
+    {
+      "id": "v3-zhu-youtang-ch06",
+      "globalOrder": 60,
+      "volumeNo": 3,
+      "volumeTitle": "叁 妖孽宫廷",
+      "emperorSection": "朱祐樘篇",
+      "chapterNo": 6,
+      "chapterTitle": "第六章 明君"
+    },
+    {
+      "id": "v3-zhu-houzhao-ch07",
+      "globalOrder": 61,
+      "volumeNo": 3,
+      "volumeTitle": "叁 妖孽宫廷",
+      "emperorSection": "朱厚照篇",
+      "chapterNo": 7,
+      "chapterTitle": "第七章 斗争，还是隐忍？"
+    },
+    {
+      "id": "v3-zhu-houzhao-ch08",
+      "globalOrder": 62,
+      "volumeNo": 3,
+      "volumeTitle": "叁 妖孽宫廷",
+      "emperorSection": "朱厚照篇",
+      "chapterNo": 8,
+      "chapterTitle": "第八章 传奇就此开始"
+    },
+    {
+      "id": "v3-zhu-houzhao-ch09",
+      "globalOrder": 63,
+      "volumeNo": 3,
+      "volumeTitle": "叁 妖孽宫廷",
+      "emperorSection": "朱厚照篇",
+      "chapterNo": 9,
+      "chapterTitle": "第九章 悟道"
+    },
+    {
+      "id": "v3-zhu-houzhao-ch10",
+      "globalOrder": 64,
+      "volumeNo": 3,
+      "volumeTitle": "叁 妖孽宫廷",
+      "emperorSection": "朱厚照篇",
+      "chapterNo": 10,
+      "chapterTitle": "第十章 机会终于到来"
+    },
+    {
+      "id": "v3-zhu-houzhao-ch11",
+      "globalOrder": 65,
+      "volumeNo": 3,
+      "volumeTitle": "叁 妖孽宫廷",
+      "emperorSection": "朱厚照篇",
+      "chapterNo": 11,
+      "chapterTitle": "第十一章 必杀刘瑾"
+    },
+    {
+      "id": "v3-zhu-houzhao-ch12",
+      "globalOrder": 66,
+      "volumeNo": 3,
+      "volumeTitle": "叁 妖孽宫廷",
+      "emperorSection": "朱厚照篇",
+      "chapterNo": 12,
+      "chapterTitle": "第十二章 皇帝的幸福生活"
+    },
+    {
+      "id": "v3-zhu-houzhao-ch13",
+      "globalOrder": 67,
+      "volumeNo": 3,
+      "volumeTitle": "叁 妖孽宫廷",
+      "emperorSection": "朱厚照篇",
+      "chapterNo": 13,
+      "chapterTitle": "第十三章 无人知晓的胜利"
+    },
+    {
+      "id": "v3-zhu-houzhao-ch14",
+      "globalOrder": 68,
+      "volumeNo": 3,
+      "volumeTitle": "叁 妖孽宫廷",
+      "emperorSection": "朱厚照篇",
+      "chapterNo": 14,
+      "chapterTitle": "第十四章 东山再起"
+    },
+    {
+      "id": "v3-zhu-houzhao-ch15",
+      "globalOrder": 69,
+      "volumeNo": 3,
+      "volumeTitle": "叁 妖孽宫廷",
+      "emperorSection": "朱厚照篇",
+      "chapterNo": 15,
+      "chapterTitle": "第十五章 孤军"
+    },
+    {
+      "id": "v3-zhu-houzhao-ch16",
+      "globalOrder": 70,
+      "volumeNo": 3,
+      "volumeTitle": "叁 妖孽宫廷",
+      "emperorSection": "朱厚照篇",
+      "chapterNo": 16,
+      "chapterTitle": "第十六章 奋战"
+    },
+    {
+      "id": "v3-zhu-houzhao-ch17",
+      "globalOrder": 71,
+      "volumeNo": 3,
+      "volumeTitle": "叁 妖孽宫廷",
+      "emperorSection": "朱厚照篇",
+      "chapterNo": 17,
+      "chapterTitle": "第十七章 死亡的阴谋"
+    },
+    {
+      "id": "v3-zhu-houzhao-ch18",
+      "globalOrder": 72,
+      "volumeNo": 3,
+      "volumeTitle": "叁 妖孽宫廷",
+      "emperorSection": "朱厚照篇",
+      "chapterNo": 18,
+      "chapterTitle": "第十八章 沉默的较量"
+    },
+    {
+      "id": "v3-zhu-houzhao-ch19",
+      "globalOrder": 73,
+      "volumeNo": 3,
+      "volumeTitle": "叁 妖孽宫廷",
+      "emperorSection": "朱厚照篇",
+      "chapterNo": 19,
+      "chapterTitle": "第十九章 终结的归宿"
+    },
+    {
+      "id": "v3-zhu-houzhao-ch20",
+      "globalOrder": 74,
+      "volumeNo": 3,
+      "volumeTitle": "叁 妖孽宫廷",
+      "emperorSection": "朱厚照篇",
+      "chapterNo": 20,
+      "chapterTitle": "第二十章 新的开始"
+    },
+    {
+      "id": "v4-zhu-houcong-ch01",
+      "globalOrder": 75,
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 1,
+      "chapterTitle": "第一章 皇帝很脆弱"
+    },
+    {
+      "id": "v4-zhu-houcong-ch02",
+      "globalOrder": 76,
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 2,
+      "chapterTitle": "第二章 大臣很强悍"
+    },
+    {
+      "id": "v4-zhu-houcong-ch03",
+      "globalOrder": 77,
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 3,
+      "chapterTitle": "第三章 解脱"
+    },
+    {
+      "id": "v4-zhu-houcong-ch04",
+      "globalOrder": 78,
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 4,
+      "chapterTitle": "第四章 龙争虎斗"
+    },
+    {
+      "id": "v4-zhu-houcong-ch05",
+      "globalOrder": 79,
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 5,
+      "chapterTitle": "第五章 锋芒"
+    },
+    {
+      "id": "v4-zhu-houcong-ch06",
+      "globalOrder": 80,
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 6,
+      "chapterTitle": "第六章 最阴险的敌人"
+    },
+    {
+      "id": "v4-zhu-houcong-ch07",
+      "globalOrder": 81,
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 7,
+      "chapterTitle": "第七章 徐阶的觉醒"
+    },
+    {
+      "id": "v4-zhu-houcong-ch08",
+      "globalOrder": 82,
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 8,
+      "chapterTitle": "第八章 天下，三人而已"
+    },
+    {
+      "id": "v4-zhu-houcong-ch09",
+      "globalOrder": 83,
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 9,
+      "chapterTitle": "第九章 致命的疏漏"
+    },
+    {
+      "id": "v4-zhu-houcong-ch10",
+      "globalOrder": 84,
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 10,
+      "chapterTitle": "第十章 隐藏的精英"
+    },
+    {
+      "id": "v4-zhu-houcong-ch11",
+      "globalOrder": 85,
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 11,
+      "chapterTitle": "第十一章 勇气"
+    },
+    {
+      "id": "v4-zhu-houcong-ch12",
+      "globalOrder": 86,
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 12,
+      "chapterTitle": "第十二章 东南的奇才"
+    },
+    {
+      "id": "v4-zhu-houcong-ch13",
+      "globalOrder": 87,
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 13,
+      "chapterTitle": "第十三章 天下第一幕僚"
+    },
+    {
+      "id": "v4-zhu-houcong-ch14",
+      "globalOrder": 88,
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 14,
+      "chapterTitle": "第十四章 强敌"
+    },
+    {
+      "id": "v4-zhu-houcong-ch15",
+      "globalOrder": 89,
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 15,
+      "chapterTitle": "第十五章 天才的谋略"
+    },
+    {
+      "id": "v4-zhu-houcong-ch16",
+      "globalOrder": 90,
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 16,
+      "chapterTitle": "第十六章 战争——最后的抉择"
+    },
+    {
+      "id": "v4-zhu-houcong-ch17",
+      "globalOrder": 91,
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 17,
+      "chapterTitle": "第十七章 名将的起点"
+    },
+    {
+      "id": "v4-zhu-houcong-ch18",
+      "globalOrder": 92,
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 18,
+      "chapterTitle": "第十八章 制胜之道"
+    },
+    {
+      "id": "v4-zhu-houcong-ch19",
+      "globalOrder": 93,
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 19,
+      "chapterTitle": "第十九章 侵略者的末日"
+    },
+    {
+      "id": "v4-zhu-houcong-ch20",
+      "globalOrder": 94,
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 20,
+      "chapterTitle": "第二十章 英雄的结局"
+    },
+    {
+      "id": "v4-zhu-houcong-ch21",
+      "globalOrder": 95,
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 21,
+      "chapterTitle": "第二十一章 曙光"
+    },
+    {
+      "id": "v4-zhu-houcong-ch22",
+      "globalOrder": 96,
+      "volumeNo": 4,
+      "volumeTitle": "肆 粉饰太平",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 22,
+      "chapterTitle": "第二十二章 胜利"
+    },
+    {
+      "id": "v5-zhu-houcong-ch01",
+      "globalOrder": 97,
+      "volumeNo": 5,
+      "volumeTitle": "伍 帝国飘摇",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 1,
+      "chapterTitle": "第一章 致命的正义"
+    },
+    {
+      "id": "v5-zhu-houcong-ch02",
+      "globalOrder": 98,
+      "volumeNo": 5,
+      "volumeTitle": "伍 帝国飘摇",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 2,
+      "chapterTitle": "第二章 奇怪的人"
+    },
+    {
+      "id": "v5-zhu-houcong-ch03",
+      "globalOrder": 99,
+      "volumeNo": 5,
+      "volumeTitle": "伍 帝国飘摇",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 3,
+      "chapterTitle": "第三章 天下的对弈"
+    },
+    {
+      "id": "v5-zhu-houcong-ch04",
+      "globalOrder": 100,
+      "volumeNo": 5,
+      "volumeTitle": "伍 帝国飘摇",
+      "emperorSection": "朱厚熜篇",
+      "chapterNo": 4,
+      "chapterTitle": "第四章 成熟"
+    },
+    {
+      "id": "v5-zhu-zaihou-ch05",
+      "globalOrder": 101,
+      "volumeNo": 5,
+      "volumeTitle": "伍 帝国飘摇",
+      "emperorSection": "朱载垕篇",
+      "chapterNo": 5,
+      "chapterTitle": "第五章 最终的乱战"
+    },
+    {
+      "id": "v5-zhu-zaihou-ch06",
+      "globalOrder": 102,
+      "volumeNo": 5,
+      "volumeTitle": "伍 帝国飘摇",
+      "emperorSection": "朱载垕篇",
+      "chapterNo": 6,
+      "chapterTitle": "第六章 高拱的成就"
+    },
+    {
+      "id": "v5-zhu-zaihou-ch07",
+      "globalOrder": 103,
+      "volumeNo": 5,
+      "volumeTitle": "伍 帝国飘摇",
+      "emperorSection": "朱载垕篇",
+      "chapterNo": 7,
+      "chapterTitle": "第七章 死斗"
+    },
+    {
+      "id": "v5-zhu-yijun-ch08",
+      "globalOrder": 104,
+      "volumeNo": 5,
+      "volumeTitle": "伍 帝国飘摇",
+      "emperorSection": "朱翊钧篇",
+      "chapterNo": 8,
+      "chapterTitle": "第八章 阴谋"
+    },
+    {
+      "id": "v5-zhu-yijun-ch09",
+      "globalOrder": 105,
+      "volumeNo": 5,
+      "volumeTitle": "伍 帝国飘摇",
+      "emperorSection": "朱翊钧篇",
+      "chapterNo": 9,
+      "chapterTitle": "第九章 张居正的缺陷"
+    },
+    {
+      "id": "v5-zhu-yijun-ch10",
+      "globalOrder": 106,
+      "volumeNo": 5,
+      "volumeTitle": "伍 帝国飘摇",
+      "emperorSection": "朱翊钧篇",
+      "chapterNo": 10,
+      "chapterTitle": "第十章 敌人"
+    },
+    {
+      "id": "v5-zhu-yijun-ch11",
+      "globalOrder": 107,
+      "volumeNo": 5,
+      "volumeTitle": "伍 帝国飘摇",
+      "emperorSection": "朱翊钧篇",
+      "chapterNo": 11,
+      "chapterTitle": "第十一章 千古，唯此一人"
+    },
+    {
+      "id": "v5-zhu-yijun-ch12",
+      "globalOrder": 108,
+      "volumeNo": 5,
+      "volumeTitle": "伍 帝国飘摇",
+      "emperorSection": "朱翊钧篇",
+      "chapterNo": 12,
+      "chapterTitle": "第十二章 谜团"
+    },
+    {
+      "id": "v5-zhu-yijun-ch13",
+      "globalOrder": 109,
+      "volumeNo": 5,
+      "volumeTitle": "伍 帝国飘摇",
+      "emperorSection": "朱翊钧篇",
+      "chapterNo": 13,
+      "chapterTitle": "第十三章 野心的开始"
+    },
+    {
+      "id": "v5-zhu-yijun-ch14",
+      "globalOrder": 110,
+      "volumeNo": 5,
+      "volumeTitle": "伍 帝国飘摇",
+      "emperorSection": "朱翊钧篇",
+      "chapterNo": 14,
+      "chapterTitle": "第十四章 明朝的愤怒"
+    },
+    {
+      "id": "v5-zhu-yijun-ch15",
+      "globalOrder": 111,
+      "volumeNo": 5,
+      "volumeTitle": "伍 帝国飘摇",
+      "emperorSection": "朱翊钧篇",
+      "chapterNo": 15,
+      "chapterTitle": "第十五章 兵不厌诈"
+    },
+    {
+      "id": "v5-zhu-yijun-ch16",
+      "globalOrder": 112,
+      "volumeNo": 5,
+      "volumeTitle": "伍 帝国飘摇",
+      "emperorSection": "朱翊钧篇",
+      "chapterNo": 16,
+      "chapterTitle": "第十六章 平壤，血战"
+    },
+    {
+      "id": "v5-zhu-yijun-ch17",
+      "globalOrder": 113,
+      "volumeNo": 5,
+      "volumeTitle": "伍 帝国飘摇",
+      "emperorSection": "朱翊钧篇",
+      "chapterNo": 17,
+      "chapterTitle": "第十七章 不世出之名将"
+    },
+    {
+      "id": "v5-zhu-yijun-ch18",
+      "globalOrder": 114,
+      "volumeNo": 5,
+      "volumeTitle": "伍 帝国飘摇",
+      "emperorSection": "朱翊钧篇",
+      "chapterNo": 18,
+      "chapterTitle": "第十八章 二次摊牌"
+    },
+    {
+      "id": "v5-zhu-yijun-ch19",
+      "globalOrder": 115,
+      "volumeNo": 5,
+      "volumeTitle": "伍 帝国飘摇",
+      "emperorSection": "朱翊钧篇",
+      "chapterNo": 19,
+      "chapterTitle": "第十九章 胜算"
+    },
+    {
+      "id": "v5-zhu-yijun-ch20",
+      "globalOrder": 116,
+      "volumeNo": 5,
+      "volumeTitle": "伍 帝国飘摇",
+      "emperorSection": "朱翊钧篇",
+      "chapterNo": 20,
+      "chapterTitle": "第二十章 为了忘却的纪念"
+    },
+    {
+      "id": "v6-zhu-yijun-ch01",
+      "globalOrder": 117,
+      "volumeNo": 6,
+      "volumeTitle": "陆 日暮西山",
+      "emperorSection": "朱翊钧篇",
+      "chapterNo": 1,
+      "chapterTitle": "第一章 绝顶的官僚"
+    },
+    {
+      "id": "v6-zhu-yijun-ch02",
+      "globalOrder": 118,
+      "volumeNo": 6,
+      "volumeTitle": "陆 日暮西山",
+      "emperorSection": "朱翊钧篇",
+      "chapterNo": 2,
+      "chapterTitle": "第二章 和稀泥的艺术"
+    },
+    {
+      "id": "v6-zhu-yijun-ch03",
+      "globalOrder": 119,
+      "volumeNo": 6,
+      "volumeTitle": "陆 日暮西山",
+      "emperorSection": "朱翊钧篇",
+      "chapterNo": 3,
+      "chapterTitle": "第三章 游戏的开始"
+    },
+    {
+      "id": "v6-zhu-yijun-ch04",
+      "globalOrder": 120,
+      "volumeNo": 6,
+      "volumeTitle": "陆 日暮西山",
+      "emperorSection": "朱翊钧篇",
+      "chapterNo": 4,
+      "chapterTitle": "第四章 混战"
+    },
+    {
+      "id": "v6-zhu-yijun-ch05",
+      "globalOrder": 121,
+      "volumeNo": 6,
+      "volumeTitle": "陆 日暮西山",
+      "emperorSection": "朱翊钧篇",
+      "chapterNo": 5,
+      "chapterTitle": "第五章 东林崛起"
+    },
+    {
+      "id": "v6-zhu-yijun-ch06",
+      "globalOrder": 122,
+      "volumeNo": 6,
+      "volumeTitle": "陆 日暮西山",
+      "emperorSection": "朱翊钧篇",
+      "chapterNo": 6,
+      "chapterTitle": "第六章 谋杀"
+    },
+    {
+      "id": "v6-zhu-yijun-ch07",
+      "globalOrder": 123,
+      "volumeNo": 6,
+      "volumeTitle": "陆 日暮西山",
+      "emperorSection": "朱翊钧篇",
+      "chapterNo": 7,
+      "chapterTitle": "第七章 不起眼的敌人"
+    },
+    {
+      "id": "v6-zhu-yijun-ch08",
+      "globalOrder": 124,
+      "volumeNo": 6,
+      "volumeTitle": "陆 日暮西山",
+      "emperorSection": "朱翊钧篇",
+      "chapterNo": 8,
+      "chapterTitle": "第八章 萨尔浒"
+    },
+    {
+      "id": "v6-zhu-yijun-ch09",
+      "globalOrder": 125,
+      "volumeNo": 6,
+      "volumeTitle": "陆 日暮西山",
+      "emperorSection": "朱翊钧篇",
+      "chapterNo": 9,
+      "chapterTitle": "第九章 东林党的实力"
+    },
+    {
+      "id": "v6-zhu-changluo-ch10",
+      "globalOrder": 126,
+      "volumeNo": 6,
+      "volumeTitle": "陆 日暮西山",
+      "emperorSection": "朱常洛篇",
+      "chapterNo": 10,
+      "chapterTitle": "第十章 小人物的奋斗"
+    },
+    {
+      "id": "v6-zhu-youxiao-ch11",
+      "globalOrder": 127,
+      "volumeNo": 6,
+      "volumeTitle": "陆 日暮西山",
+      "emperorSection": "朱由校篇",
+      "chapterNo": 11,
+      "chapterTitle": "第十一章 强大，无比强大"
+    },
+    {
+      "id": "v6-zhu-youxiao-ch12",
+      "globalOrder": 128,
+      "volumeNo": 6,
+      "volumeTitle": "陆 日暮西山",
+      "emperorSection": "朱由校篇",
+      "chapterNo": 12,
+      "chapterTitle": "第十二章 天才的敌手"
+    },
+    {
+      "id": "v6-zhu-youxiao-ch13",
+      "globalOrder": 129,
+      "volumeNo": 6,
+      "volumeTitle": "陆 日暮西山",
+      "emperorSection": "朱由校篇",
+      "chapterNo": 13,
+      "chapterTitle": "第十三章 一个监狱看守"
+    },
+    {
+      "id": "v6-zhu-youxiao-ch14",
+      "globalOrder": 130,
+      "volumeNo": 6,
+      "volumeTitle": "陆 日暮西山",
+      "emperorSection": "朱由校篇",
+      "chapterNo": 14,
+      "chapterTitle": "第十四章 毁灭之路"
+    },
+    {
+      "id": "v6-zhu-youxiao-ch15",
+      "globalOrder": 131,
+      "volumeNo": 6,
+      "volumeTitle": "陆 日暮西山",
+      "emperorSection": "朱由校篇",
+      "chapterNo": 15,
+      "chapterTitle": "第十五章 道统"
+    },
+    {
+      "id": "v6-zhu-youxiao-ch16",
+      "globalOrder": 132,
+      "volumeNo": 6,
+      "volumeTitle": "陆 日暮西山",
+      "emperorSection": "朱由校篇",
+      "chapterNo": 16,
+      "chapterTitle": "第十六章 杨涟"
+    },
+    {
+      "id": "v6-zhu-youxiao-ch17",
+      "globalOrder": 133,
+      "volumeNo": 6,
+      "volumeTitle": "陆 日暮西山",
+      "emperorSection": "朱由校篇",
+      "chapterNo": 17,
+      "chapterTitle": "第十七章 殉道"
+    },
+    {
+      "id": "v6-zhu-youxiao-ch18",
+      "globalOrder": 134,
+      "volumeNo": 6,
+      "volumeTitle": "陆 日暮西山",
+      "emperorSection": "朱由校篇",
+      "chapterNo": 18,
+      "chapterTitle": "第十八章 袁崇焕"
+    },
+    {
+      "id": "v6-zhu-youxiao-ch19",
+      "globalOrder": 135,
+      "volumeNo": 6,
+      "volumeTitle": "陆 日暮西山",
+      "emperorSection": "朱由校篇",
+      "chapterNo": 19,
+      "chapterTitle": "第十九章 决心"
+    },
+    {
+      "id": "v6-zhu-youxiao-ch20",
+      "globalOrder": 136,
+      "volumeNo": 6,
+      "volumeTitle": "陆 日暮西山",
+      "emperorSection": "朱由校篇",
+      "chapterNo": 20,
+      "chapterTitle": "第二十章 胜利 结局"
+    },
+    {
+      "id": "v7-zhu-youxiao-ch01",
+      "globalOrder": 137,
+      "volumeNo": 7,
+      "volumeTitle": "柒 大结局",
+      "emperorSection": "朱由校篇",
+      "chapterNo": 1,
+      "chapterTitle": "第一章 皇太极"
+    },
+    {
+      "id": "v7-zhu-youxiao-ch02",
+      "globalOrder": 138,
+      "volumeNo": 7,
+      "volumeTitle": "柒 大结局",
+      "emperorSection": "朱由校篇",
+      "chapterNo": 2,
+      "chapterTitle": "第二章 宁远，决战"
+    },
+    {
+      "id": "v7-zhu-youjian-ch03",
+      "globalOrder": 139,
+      "volumeNo": 7,
+      "volumeTitle": "柒 大结局",
+      "emperorSection": "朱由检篇",
+      "chapterNo": 3,
+      "chapterTitle": "第三章 疑惑"
+    },
+    {
+      "id": "v7-zhu-youjian-ch04",
+      "globalOrder": 140,
+      "volumeNo": 7,
+      "volumeTitle": "柒 大结局",
+      "emperorSection": "朱由检篇",
+      "chapterNo": 4,
+      "chapterTitle": "第四章 夜半歌声"
+    },
+    {
+      "id": "v7-zhu-youjian-ch05",
+      "globalOrder": 141,
+      "volumeNo": 7,
+      "volumeTitle": "柒 大结局",
+      "emperorSection": "朱由检篇",
+      "chapterNo": 5,
+      "chapterTitle": "第五章 算账"
+    },
+    {
+      "id": "v7-zhu-youjian-ch06",
+      "globalOrder": 142,
+      "volumeNo": 7,
+      "volumeTitle": "柒 大结局",
+      "emperorSection": "朱由检篇",
+      "chapterNo": 6,
+      "chapterTitle": "第六章 复起"
+    },
+    {
+      "id": "v7-zhu-youjian-ch07",
+      "globalOrder": 143,
+      "volumeNo": 7,
+      "volumeTitle": "柒 大结局",
+      "emperorSection": "朱由检篇",
+      "chapterNo": 7,
+      "chapterTitle": "第七章 杀人"
+    },
+    {
+      "id": "v7-zhu-youjian-ch08",
+      "globalOrder": 144,
+      "volumeNo": 7,
+      "volumeTitle": "柒 大结局",
+      "emperorSection": "朱由检篇",
+      "chapterNo": 8,
+      "chapterTitle": "第八章 坚持到底的人"
+    },
+    {
+      "id": "v7-zhu-youjian-ch09",
+      "globalOrder": 145,
+      "volumeNo": 7,
+      "volumeTitle": "柒 大结局",
+      "emperorSection": "朱由检篇",
+      "chapterNo": 9,
+      "chapterTitle": "第九章 阴谋"
+    },
+    {
+      "id": "v7-zhu-youjian-ch10",
+      "globalOrder": 146,
+      "volumeNo": 7,
+      "volumeTitle": "柒 大结局",
+      "emperorSection": "朱由检篇",
+      "chapterNo": 10,
+      "chapterTitle": "第十章 斗争技术"
+    },
+    {
+      "id": "v7-zhu-youjian-ch11",
+      "globalOrder": 147,
+      "volumeNo": 7,
+      "volumeTitle": "柒 大结局",
+      "emperorSection": "朱由检篇",
+      "chapterNo": 11,
+      "chapterTitle": "第十一章 投降？"
+    },
+    {
+      "id": "v7-zhu-youjian-ch12",
+      "globalOrder": 148,
+      "volumeNo": 7,
+      "volumeTitle": "柒 大结局",
+      "emperorSection": "朱由检篇",
+      "chapterNo": 12,
+      "chapterTitle": "第十二章 纯属偶然"
+    },
+    {
+      "id": "v7-zhu-youjian-ch13",
+      "globalOrder": 149,
+      "volumeNo": 7,
+      "volumeTitle": "柒 大结局",
+      "emperorSection": "朱由检篇",
+      "chapterNo": 13,
+      "chapterTitle": "第十三章 第二个猛人"
+    },
+    {
+      "id": "v7-zhu-youjian-ch14",
+      "globalOrder": 150,
+      "volumeNo": 7,
+      "volumeTitle": "柒 大结局",
+      "emperorSection": "朱由检篇",
+      "chapterNo": 14,
+      "chapterTitle": "第十四章 突围"
+    },
+    {
+      "id": "v7-zhu-youjian-ch15",
+      "globalOrder": 151,
+      "volumeNo": 7,
+      "volumeTitle": "柒 大结局",
+      "emperorSection": "朱由检篇",
+      "chapterNo": 15,
+      "chapterTitle": "第十五章 一个文雅的人"
+    },
+    {
+      "id": "v7-zhu-youjian-ch16",
+      "globalOrder": 152,
+      "volumeNo": 7,
+      "volumeTitle": "柒 大结局",
+      "emperorSection": "朱由检篇",
+      "chapterNo": 16,
+      "chapterTitle": "第十六章 孙传庭"
+    },
+    {
+      "id": "v7-zhu-youjian-ch17",
+      "globalOrder": 153,
+      "volumeNo": 7,
+      "volumeTitle": "柒 大结局",
+      "emperorSection": "朱由检篇",
+      "chapterNo": 17,
+      "chapterTitle": "第十七章 奇迹"
+    },
+    {
+      "id": "v7-zhu-youjian-ch18",
+      "globalOrder": 154,
+      "volumeNo": 7,
+      "volumeTitle": "柒 大结局",
+      "emperorSection": "朱由检篇",
+      "chapterNo": 18,
+      "chapterTitle": "第十八章 天才的计划"
+    },
+    {
+      "id": "v7-zhu-youjian-ch19",
+      "globalOrder": 155,
+      "volumeNo": 7,
+      "volumeTitle": "柒 大结局",
+      "emperorSection": "朱由检篇",
+      "chapterNo": 19,
+      "chapterTitle": "第十九章 选择"
+    },
+    {
+      "id": "v7-zhu-youjian-ch20",
+      "globalOrder": 156,
+      "volumeNo": 7,
+      "volumeTitle": "柒 大结局",
+      "emperorSection": "朱由检篇",
+      "chapterNo": 20,
+      "chapterTitle": "第二十章 没有选择"
+    },
+    {
+      "id": "v7-zhu-youjian-ch21",
+      "globalOrder": 157,
+      "volumeNo": 7,
+      "volumeTitle": "柒 大结局",
+      "emperorSection": "朱由检篇",
+      "chapterNo": 21,
+      "chapterTitle": "第二十一章 结束了？"
+    }
+  ]
+}

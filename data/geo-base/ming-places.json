@@ -1,0 +1,362 @@
+[
+  {
+    "id": "place-yingtian",
+    "ancientName": "应天府（集庆）",
+    "aliases": ["集庆路", "南京", "京师"],
+    "modernName": "江苏南京",
+    "type": "capital",
+    "coordinates": [118.7969, 32.0603],
+    "strategicNote": "龙盘虎踞，明初国都，控扼长江下游与江南财赋中枢。"
+  },
+  {
+    "id": "place-beiping",
+    "ancientName": "北平府（顺天府）",
+    "aliases": ["元大都", "北京", "燕京"],
+    "modernName": "北京",
+    "type": "capital",
+    "coordinates": [116.4074, 39.9042],
+    "strategicNote": "背倚燕山居庸之险，南俯华北平原，元大都故址、燕王封藩及永乐迁都后之京师。"
+  },
+  {
+    "id": "place-fengyang",
+    "ancientName": "濠州（中都凤阳）",
+    "aliases": ["钟离", "临濠"],
+    "modernName": "安徽凤阳",
+    "type": "capital",
+    "coordinates": [117.5605, 32.8681],
+    "strategicNote": "朱元璋故里与投奔郭子兴红巾军起点，明初营建中都之地，扼淮河中游。"
+  },
+  {
+    "id": "place-huangjuesi",
+    "ancientName": "皇觉寺",
+    "aliases": ["於皇寺"],
+    "modernName": "安徽凤阳西南",
+    "type": "battlefield",
+    "coordinates": [117.482, 32.815],
+    "strategicNote": "朱重八十七岁孤苦出家、托钵游方三年看尽元末世态之地。"
+  },
+  {
+    "id": "place-hezhou",
+    "ancientName": "和州",
+    "aliases": ["历阳"],
+    "modernName": "安徽和县",
+    "type": "prefecture",
+    "coordinates": [118.362, 31.718],
+    "strategicNote": "朱元璋独立领军之江北桥头堡，由此收纳巢湖水师准备渡江。"
+  },
+  {
+    "id": "place-caishiji",
+    "ancientName": "采石矶",
+    "aliases": ["牛渚矶"],
+    "modernName": "安徽马鞍山采石街道",
+    "type": "pass",
+    "coordinates": [118.458, 31.662],
+    "strategicNote": "长江天险第一渡口，常遇春奋勇先登破元军水寨，打开进取集庆门户。"
+  },
+  {
+    "id": "place-taiping",
+    "ancientName": "太平府（当涂）",
+    "aliases": ["姑孰"],
+    "modernName": "安徽当涂",
+    "type": "prefecture",
+    "coordinates": [118.498, 31.571],
+    "strategicNote": "应天西南门户，1360年陈友谅曾破太平直逼南京。"
+  },
+  {
+    "id": "place-longwan",
+    "ancientName": "龙湾（龙江关）",
+    "aliases": ["秦淮河口"],
+    "modernName": "江苏南京鼓楼下关一带",
+    "type": "battlefield",
+    "coordinates": [118.732, 32.088],
+    "strategicNote": "应天西北长江登陆要冲，朱元璋在此设伏大破陈友谅东征主力。"
+  },
+  {
+    "id": "place-huizhou",
+    "ancientName": "徽州府",
+    "aliases": ["歙州"],
+    "modernName": "安徽歙县",
+    "type": "prefecture",
+    "coordinates": [118.434, 29.867],
+    "strategicNote": "朱元璋访名士朱升之地，定下“高筑墙、广积粮、缓称王”九字国策。"
+  },
+  {
+    "id": "place-anqing",
+    "ancientName": "安庆府",
+    "aliases": ["舒州"],
+    "modernName": "安徽安庆",
+    "type": "pass",
+    "coordinates": [117.043, 30.508],
+    "strategicNote": "万里长江咽喉，朱元璋与陈友谅反复拉锯的上游屏障。"
+  },
+  {
+    "id": "place-jiujiang",
+    "ancientName": "江州（九江府）",
+    "aliases": ["浔阳"],
+    "modernName": "江西九江",
+    "type": "prefecture",
+    "coordinates": [115.992, 29.719],
+    "strategicNote": "陈友谅早期都城，背靠庐山、面控长江与鄱阳湖交汇之势。"
+  },
+  {
+    "id": "place-hukou",
+    "ancientName": "湖口（泾江口）",
+    "aliases": ["鄱阳湖口"],
+    "modernName": "江西湖口县",
+    "type": "pass",
+    "coordinates": [116.218, 29.738],
+    "strategicNote": "鄱阳湖通往长江唯一水路咽喉！朱元璋封锁此处，令陈友谅数十万水军成瓮中之鳖。"
+  },
+  {
+    "id": "place-kanglangshan",
+    "ancientName": "康郎山（鄱阳湖主战场）",
+    "aliases": ["康山"],
+    "modernName": "江西余干县康山乡",
+    "type": "battlefield",
+    "coordinates": [116.405, 28.985],
+    "strategicNote": "1363年鄱阳湖决战核心水域，丁普郎等三十六将血战、东北风火烧陈友谅连环巨舰之地。"
+  },
+  {
+    "id": "place-hongdu",
+    "ancientName": "洪都府（南昌府）",
+    "aliases": ["隆兴路", "豫章"],
+    "modernName": "江西南昌",
+    "type": "prefecture",
+    "coordinates": [115.892, 28.676],
+    "strategicNote": "江西锁钥，朱文正率军血守八十五日死死拖住陈友谅六十万大军，成就明初第一守城奇迹。"
+  },
+  {
+    "id": "place-wuchang",
+    "ancientName": "武昌府（鄂州）",
+    "aliases": ["江夏"],
+    "modernName": "湖北武汉武昌",
+    "type": "capital",
+    "coordinates": [114.305, 30.546],
+    "strategicNote": "陈友谅大汉政权核心大本营，控扼长江中游与两湖粮仓。"
+  },
+  {
+    "id": "place-pingjiang",
+    "ancientName": "平江府（苏州府）",
+    "aliases": ["姑苏", "吴郡"],
+    "modernName": "江苏苏州",
+    "type": "capital",
+    "coordinates": [120.619, 31.299],
+    "strategicNote": "张士诚大周政权都城，天下最富庶之江南赋税核心。"
+  },
+  {
+    "id": "place-huzhou",
+    "ancientName": "湖州府",
+    "aliases": ["吴兴"],
+    "modernName": "浙江湖州",
+    "type": "prefecture",
+    "coordinates": [120.087, 30.894],
+    "strategicNote": "平江西南门户，徐达采用“剪除羽翼”方略先克湖州再合围苏州。"
+  },
+  {
+    "id": "place-hangzhou",
+    "ancientName": "杭州府",
+    "aliases": ["临安"],
+    "modernName": "浙江杭州",
+    "type": "prefecture",
+    "coordinates": [120.155, 30.274],
+    "strategicNote": "京杭大运河南端终点，张士诚江南重镇。"
+  },
+  {
+    "id": "place-taizhou",
+    "ancientName": "台州府（庆元）",
+    "aliases": ["浙东海防"],
+    "modernName": "浙江台州临海",
+    "type": "port",
+    "coordinates": [121.135, 28.856],
+    "strategicNote": "元末海上枭雄方国珍割据中心，后亦为明中期戚继光抗倭主战场。"
+  },
+  {
+    "id": "place-chengdu",
+    "ancientName": "成都府",
+    "aliases": ["益州", "蜀藩"],
+    "modernName": "四川成都",
+    "type": "capital",
+    "coordinates": [104.066, 30.658],
+    "strategicNote": "元末明玉珍“大夏”都城，四塞天府之国，洪武四年傅友德、汤和分水陆两路平蜀。"
+  },
+  {
+    "id": "place-yangzhou",
+    "ancientName": "扬州府",
+    "aliases": ["广陵", "维扬"],
+    "modernName": "江苏扬州",
+    "type": "prefecture",
+    "coordinates": [119.413, 32.394],
+    "strategicNote": "长江与大运河交汇枢纽，两淮盐税重地。"
+  },
+  {
+    "id": "place-huaian",
+    "ancientName": "淮安府（清口）",
+    "aliases": ["山阳", "淮阴"],
+    "modernName": "江苏淮安",
+    "type": "pass",
+    "coordinates": [119.015, 33.588],
+    "strategicNote": "明代“夺淮入海”古黄河、淮河与大运河三水交汇咽喉，漕运总督驻节地。"
+  },
+  {
+    "id": "place-xuzhou",
+    "ancientName": "徐州",
+    "aliases": ["彭城"],
+    "modernName": "江苏徐州",
+    "type": "pass",
+    "coordinates": [117.184, 34.261],
+    "strategicNote": "南北水陆咽喉，明代黄河与大运河并流要冲，北伐与靖难南下必争之地。"
+  },
+  {
+    "id": "place-lingbi",
+    "ancientName": "灵璧",
+    "aliases": ["宿州灵璧"],
+    "modernName": "安徽灵璧县",
+    "type": "battlefield",
+    "coordinates": [117.558, 33.543],
+    "strategicNote": "1402年靖难决胜之地！朱棣在此截断南军粮道，一举俘虏平安、陈晖等数十万南军主力。"
+  },
+  {
+    "id": "place-bianliang",
+    "ancientName": "开封府（汴梁）",
+    "aliases": ["东京", "大梁"],
+    "modernName": "河南开封",
+    "type": "prefecture",
+    "coordinates": [114.348, 34.797],
+    "strategicNote": "中原腹心，洪武北伐“旋师河南”核心目标，亦是建文初被削周王朱橚封地。"
+  },
+  {
+    "id": "place-luoyang",
+    "ancientName": "河南府（洛阳）",
+    "aliases": ["神都"],
+    "modernName": "河南洛阳",
+    "type": "prefecture",
+    "coordinates": [112.454, 34.619],
+    "strategicNote": "伊洛盆地重镇，西控崤函潼关，元将王保保（扩廓帖木儿）曾在此与明军博弈。"
+  },
+  {
+    "id": "place-tongguan",
+    "ancientName": "潼关卫",
+    "aliases": ["崤函之固"],
+    "modernName": "陕西潼关县",
+    "type": "pass",
+    "coordinates": [110.246, 34.544],
+    "strategicNote": "黄河大拐弯与秦岭之间的一夫当关险口，洪武北伐拔潼关以锁死关中李思齐部出路。"
+  },
+  {
+    "id": "place-jinan",
+    "ancientName": "济南府",
+    "aliases": ["历城"],
+    "modernName": "山东济南",
+    "type": "prefecture",
+    "coordinates": [117.001, 36.675],
+    "strategicNote": "山东首府，洪武北伐先取山东撤元大都南屏；靖难之役铁铉、盛庸在此死守三个月挫败朱棣。"
+  },
+  {
+    "id": "place-dongchang",
+    "ancientName": "东昌府（聊城）",
+    "aliases": ["博州"],
+    "modernName": "山东聊城",
+    "type": "battlefield",
+    "coordinates": [115.985, 36.456],
+    "strategicNote": "京杭运河重镇。1400年底东昌之战盛庸以火器劲弩合围，张玉战死，朱棣一生最凶险之败。"
+  },
+  {
+    "id": "place-linqing",
+    "ancientName": "临清州",
+    "aliases": ["会通河北口"],
+    "modernName": "山东临清",
+    "type": "port",
+    "coordinates": [115.708, 36.845],
+    "strategicNote": "卫河与会通河交汇之漕运咽喉，北伐明军在此会师北上直取大都。"
+  },
+  {
+    "id": "place-cangzhou",
+    "ancientName": "沧州",
+    "aliases": ["长芦"],
+    "modernName": "河北沧州",
+    "type": "prefecture",
+    "coordinates": [116.838, 38.304],
+    "strategicNote": "华北运河走廊要塞，朱棣声东击西强行军奇袭徐凯部之地。"
+  },
+  {
+    "id": "place-baigouhe",
+    "ancientName": "白沟河",
+    "aliases": ["拒马河下游"],
+    "modernName": "河北保定高碑店白沟镇",
+    "type": "battlefield",
+    "coordinates": [116.035, 39.132],
+    "strategicNote": "1400年白沟河大战，朱棣率朵颜三卫铁骑乘旋风大破李景隆六十万南军。"
+  },
+  {
+    "id": "place-zhending",
+    "ancientName": "真定府",
+    "aliases": ["常山", "正定"],
+    "modernName": "河北正定",
+    "type": "prefecture",
+    "coordinates": [114.571, 38.147],
+    "strategicNote": "太行山东麓军事重镇，老将耿炳文三十万大军驻防与朱棣首战之地。"
+  },
+  {
+    "id": "place-juyongguan",
+    "ancientName": "居庸关",
+    "aliases": ["天下第一雄关"],
+    "modernName": "北京昌平西北居庸关",
+    "type": "pass",
+    "coordinates": [116.074, 40.289],
+    "strategicNote": "太行与燕山交接之太行八陉第八陉，北平西北最核心的贴身险关。"
+  },
+  {
+    "id": "place-shanhaiguan",
+    "ancientName": "山海关",
+    "aliases": ["榆关"],
+    "modernName": "河北秦皇岛山海关",
+    "type": "pass",
+    "coordinates": [119.775, 40.008],
+    "strategicNote": "徐达洪武十四年筑关，燕山与渤海相夹咽喉，控扼辽西走廊。"
+  },
+  {
+    "id": "place-daning",
+    "ancientName": "大宁都司（宁王藩府）",
+    "aliases": ["大定府"],
+    "modernName": "内蒙古宁城县大明镇",
+    "type": "garrison-nine",
+    "coordinates": [119.225, 41.586],
+    "strategicNote": "燕山以北战略支点，宁王朱权带甲八万、辖朵颜三卫骑兵。朱棣夺其军内迁后，大明丧失塞外纵深缓冲区！"
+  },
+  {
+    "id": "place-kaiping",
+    "ancientName": "开平卫（元上都）",
+    "aliases": ["滦京"],
+    "modernName": "内蒙古正蓝旗上都镇",
+    "type": "garrison-nine",
+    "coordinates": [116.185, 42.358],
+    "strategicNote": "常遇春攻克元上都后设开平卫，明初深入漠南草原之前哨重镇。"
+  },
+  {
+    "id": "place-xuanfu",
+    "ancientName": "宣府镇",
+    "aliases": ["宣德府"],
+    "modernName": "河北张家口宣化",
+    "type": "garrison-nine",
+    "coordinates": [115.063, 40.609],
+    "strategicNote": "九边重镇之首，京师西北门户屏障。"
+  },
+  {
+    "id": "place-datong",
+    "ancientName": "大同镇",
+    "aliases": ["平城", "代王藩府"],
+    "modernName": "山西大同",
+    "type": "garrison-nine",
+    "coordinates": [113.300, 40.091],
+    "strategicNote": "九边核心军镇，直面漠南草原骑兵冲击的第一线盾牌。"
+  },
+  {
+    "id": "place-tumubao",
+    "ancientName": "土木堡",
+    "aliases": ["统漠镇"],
+    "modernName": "河北怀来县土木镇",
+    "type": "battlefield",
+    "coordinates": [115.606, 40.382],
+    "strategicNote": "怀来城西二十里无水高台绝地，1449年明英宗朱祁镇二十万大军在此被瓦剌也先断水覆灭。"
+  }
+]

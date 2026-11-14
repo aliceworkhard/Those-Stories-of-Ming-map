@@ -1,0 +1,30 @@
+services:
+  ming-atlas-web:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: ming-atlas-web
+    restart: unless-stopped
+    expose:
+      - "3000"
+    environment:
+      - NODE_ENV=production
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: ming-atlas-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - ming-atlas-web
+
+volumes:
+  caddy_data:
+  caddy_config:

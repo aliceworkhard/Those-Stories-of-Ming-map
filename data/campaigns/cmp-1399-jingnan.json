@@ -1,0 +1,368 @@
+{
+  "id": "cmp-1399-jingnan",
+  "title": "奉天靖难 · 燕王朱棣四载夺天下",
+  "subtitle": "一隅敌全国 · 从大宁借骑到灵璧闪电破南京（1399—1402）",
+  "yearRange": [1399, 1402],
+  "chapterIds": [
+    "v1-zhu-yunwen-ch27",
+    "v1-zhu-yunwen-ch28",
+    "v1-zhu-yunwen-ch29",
+    "v1-zhu-yunwen-ch30",
+    "v1-zhu-yunwen-ch31"
+  ],
+  "summary": "建文元年（1399）七月，燕王朱棣在北平以八百府兵夺九门起兵“靖难”。面对坐拥全国军力财力的建文朝廷，朱棣凭借奇袭大宁收编朵颜三卫骑兵、白沟河破李景隆，在济南与东昌屡遭重挫绝境之下，采纳姚广孝与丘福计策，绕开山东坚城直插灵璧、渡江破南京，上演中国古代唯一藩王造反成功的逆天翻盘。",
+  "strategicOutcome": "朱棣即位为明成祖（永乐大帝），迁都北京开启“天子守国门”；但大宁都司内迁亦埋下日后北方边防纵深收缩的伏笔。",
+  "factions": [
+    {
+      "id": "yan-army",
+      "name": "燕王靖难军",
+      "leader": "朱棣 · 姚广孝 · 张玉 · 朱能",
+      "color": "#C68B2C",
+      "badgeText": "燕"
+    },
+    {
+      "id": "jianwen-court",
+      "name": "建文朝廷讨逆南军",
+      "leader": "朱允炆 · 耿炳文 · 李景隆 · 铁铉 · 盛庸",
+      "color": "#B83B2A",
+      "badgeText": "明"
+    }
+  ],
+  "phases": [
+    {
+      "phaseNo": 1,
+      "title": "第一幕：北平夺九门与真定夜袭 · 老将耿炳文折戟",
+      "dateLabel": "1399年 七月—八月",
+      "year": 1399,
+      "narrative": "张昺、谢贵包围燕王府之际，朱棣卸下装疯伪装，与张玉、朱能设计诱杀朝廷大员，一夜夺取北平九门！建文帝派六十五岁开国老将耿炳文率十三万（号称三十万）大军驻防真定。耿炳文擅长防守，朱棣却出奇兵绕至滹沱河北岸突袭破其外营，建文帝竟临阵换帅，改派纨绔子弟李景隆接任大将军！",
+      "whyKeyPoint": "为啥建文朝廷一上来就没能摁死朱棣？洪武晚年蓝玉案将开国宿将杀戮殆尽，朝廷仅剩耿炳文能守不能攻；黄子澄更犯下兵家大忌换上纸上谈兵的李景隆，白送朱棣“五十万大礼包”！",
+      "camera": {
+        "center": [115.65, 39.15],
+        "zoom": 6.6,
+        "pitch": 45,
+        "bearing": -15
+      },
+      "strengthComparison": {
+        "leftFactionId": "yan-army",
+        "leftLabel": "燕军初起仅数万精兵",
+        "leftPower": 30,
+        "rightFactionId": "jianwen-court",
+        "rightLabel": "朝廷举国兵力绝对碾压",
+        "rightPower": 70
+      },
+      "routes": [
+        {
+          "id": "r-jn1-geng",
+          "factionId": "jianwen-court",
+          "type": "assault",
+          "label": "耿炳文十三万南军北进驻防真定",
+          "commander": "耿炳文",
+          "coordinates": [
+            [118.8, 32.06],
+            [117.18, 34.26],
+            [115.98, 36.45],
+            [114.57, 38.15]
+          ]
+        },
+        {
+          "id": "r-jn1-zhudi",
+          "factionId": "yan-army",
+          "type": "ambush",
+          "label": "朱棣自北平南下奇袭真定破敌",
+          "commander": "朱棣 · 张玉",
+          "coordinates": [
+            [116.41, 39.9],
+            [115.48, 38.85],
+            [114.57, 38.15]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-jn1-zhending",
+          "kind": "clash",
+          "label": "真定首战告捷",
+          "subLabel": "朝廷昏招临阵换上李景隆",
+          "coordinates": [114.571, 38.147],
+          "color": "#C68B2C"
+        }
+      ]
+    },
+    {
+      "phaseNo": 2,
+      "title": "第二幕：雪夜奇袭大宁 · 裹挟宁王夺朵颜三卫铁骑",
+      "dateLabel": "1399年 九月—十一月",
+      "year": 1399,
+      "narrative": "李景隆率五十万大军直扑北平，世子朱高炽凭一万守军泼水成冰死守孤城。朱棣非但不回救，反而率精骑翻越燕山松亭关小道，奇袭塞外重镇大宁！单骑入城哭诉打动十七弟宁王朱权，暗中重金收买天下最凶悍的朵颜三卫蒙古骑兵，瞬间挟持宁王与八万精锐回师北平，内外夹击击溃李景隆！",
+      "whyKeyPoint": "看三维燕山地形秒懂神来之笔：大宁位于燕山北麓喜峰口外，原本是夹击北平的背后尖刀；朱棣拔掉背后钉子并获朵颜三卫骑兵后，燕军野战冲击力暴涨三倍，但大宁弃守也让明朝永远丢掉了燕山塞外屏障！",
+      "camera": {
+        "center": [117.45, 40.55],
+        "zoom": 6.5,
+        "pitch": 52,
+        "bearing": 15
+      },
+      "strengthComparison": {
+        "leftFactionId": "yan-army",
+        "leftLabel": "收编大宁八万甲士与朵颜铁骑",
+        "leftPower": 48,
+        "rightFactionId": "jianwen-court",
+        "rightLabel": "李景隆五十万大军顿兵坚城",
+        "rightPower": 52
+      },
+      "routes": [
+        {
+          "id": "r-jn2-lijinglong",
+          "factionId": "jianwen-court",
+          "type": "assault",
+          "label": "李景隆五十万大军合围北平城",
+          "commander": "李景隆",
+          "coordinates": [
+            [115.71, 36.84],
+            [116.84, 38.3],
+            [116.41, 39.9]
+          ]
+        },
+        {
+          "id": "r-jn2-daning-raid",
+          "factionId": "yan-army",
+          "type": "ambush",
+          "label": "朱棣穿山越岭奇袭塞外大宁",
+          "commander": "朱棣",
+          "coordinates": [
+            [116.41, 39.9],
+            [117.95, 40.25],
+            [118.65, 40.95],
+            [119.23, 41.59]
+          ]
+        },
+        {
+          "id": "r-jn2-return",
+          "factionId": "yan-army",
+          "type": "assault",
+          "label": "裹挟宁王与朵颜三卫铁骑回救北平",
+          "commander": "朱棣 · 朱能",
+          "coordinates": [
+            [119.23, 41.59],
+            [117.85, 40.15],
+            [116.41, 39.9]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-jn2-beiping-ice",
+          "kind": "siege",
+          "label": "朱高炽冰城死守",
+          "subLabel": "夜间泼水结冰令南军无法登城",
+          "coordinates": [116.4074, 39.9042],
+          "color": "#B83B2A"
+        },
+        {
+          "id": "m-jn2-daning",
+          "kind": "pass",
+          "label": "夺取大宁与朵颜铁骑",
+          "subLabel": "靖难胜负天平首次逆转",
+          "coordinates": [119.225, 41.586],
+          "color": "#C68B2C"
+        }
+      ]
+    },
+    {
+      "phaseNo": 3,
+      "title": "第三幕：白沟河狂飙与济南铁壁 · 铁铉神牌退燕王",
+      "dateLabel": "1400年 四月—八月",
+      "year": 1400,
+      "narrative": "建文二年春，李景隆再集六十万大军决战白沟河。朱棣三换战马亲自冲锋，乘大风纵火大破南军，一路追杀至山东济南城下。眼看南下大门将开，山东参政铁铉会同盛庸死守济南，先设诈降千斤铁闸险些砸死朱棣，再在城头高悬朱元璋神主灵牌令燕军不敢开炮，逼得朱棣围城三月无功北返！",
+      "whyKeyPoint": "为啥济南一座城就挡住了白沟河大胜后的朱棣？济南控扼水陆咽喉，若不拔济南南下，盛庸随时可出城截断燕军北归后路；而铁铉攻心守城，彻底打乱了朱棣速胜算盘。",
+      "camera": {
+        "center": [116.45, 37.85],
+        "zoom": 6.3,
+        "pitch": 45,
+        "bearing": -10
+      },
+      "strengthComparison": {
+        "leftFactionId": "yan-army",
+        "leftLabel": "白沟河大捷后受阻济南",
+        "leftPower": 50,
+        "rightFactionId": "jianwen-court",
+        "rightLabel": "铁铉盛庸稳住山东防线",
+        "rightPower": 50
+      },
+      "routes": [
+        {
+          "id": "r-jn3-baigou",
+          "factionId": "yan-army",
+          "type": "assault",
+          "label": "白沟河大破六十万南军乘胜围济南",
+          "commander": "朱棣",
+          "coordinates": [
+            [116.41, 39.9],
+            [116.04, 39.13],
+            [116.36, 37.44],
+            [117.0, 36.68]
+          ]
+        },
+        {
+          "id": "r-jn3-retreat",
+          "factionId": "yan-army",
+          "type": "retreat",
+          "label": "久攻济南不下被迫撤回北平",
+          "commander": "朱棣",
+          "coordinates": [
+            [117.0, 36.68],
+            [116.84, 38.3],
+            [116.41, 39.9]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-jn3-baigouhe",
+          "kind": "clash",
+          "label": "白沟河决战",
+          "subLabel": "李景隆六十万大军溃败",
+          "coordinates": [116.035, 39.132],
+          "color": "#C68B2C"
+        },
+        {
+          "id": "m-jn3-jinan",
+          "kind": "siege",
+          "label": "铁铉死守济南",
+          "subLabel": "悬太祖神牌挫败朱棣",
+          "coordinates": [117.001, 36.675],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 4,
+      "title": "第四幕：东昌血劫 · 张玉战死与燕军至暗时刻",
+      "dateLabel": "1400年 十二月",
+      "year": 1400,
+      "narrative": "新任平燕将军盛庸在运河重镇东昌（聊城）严阵以待，精选火器劲弩列阵。朱棣轻敌冲阵陷入盛庸层层包围，因为建文帝曾下旨“毋使朕负杀叔父名”，南军不敢射杀朱棣本人但疯狂围捕。第一猛将张玉为救朱棣力战身亡，朱能拼死杀开血路救出朱棣。打了整整两年，燕军地盘竟只剩北平、永平、保定三府！",
+      "whyKeyPoint": "为啥朱棣百战百胜却拿不下几座城？因为燕军兵少（死一个少一个），南军背靠全国无限兵源，只要一城一池打消耗战，燕军每占一城就要分兵把守，迟早被活活耗死！",
+      "camera": {
+        "center": [116.15, 37.35],
+        "zoom": 6.6,
+        "pitch": 48,
+        "bearing": 18
+      },
+      "strengthComparison": {
+        "leftFactionId": "yan-army",
+        "leftLabel": "损兵折将仅剩北平三府",
+        "leftPower": 35,
+        "rightFactionId": "jianwen-court",
+        "rightLabel": "盛庸平安重兵封锁山东河北",
+        "rightPower": 65
+      },
+      "routes": [
+        {
+          "id": "r-jn4-attack",
+          "factionId": "yan-army",
+          "type": "assault",
+          "label": "朱棣南下进攻东昌陷入火器重围",
+          "commander": "朱棣 · 张玉",
+          "coordinates": [
+            [116.41, 39.9],
+            [116.84, 38.3],
+            [115.99, 36.46]
+          ]
+        },
+        {
+          "id": "r-jn4-retreat",
+          "factionId": "yan-army",
+          "type": "retreat",
+          "label": "张玉战死、朱能救主败退北平",
+          "commander": "朱棣 · 朱能",
+          "coordinates": [
+            [115.99, 36.46],
+            [115.71, 36.84],
+            [116.15, 38.65],
+            [116.41, 39.9]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-jn4-dongchang",
+          "kind": "clash",
+          "label": "东昌惨败张玉殉阵",
+          "subLabel": "建文“勿杀叔父”诏令反放生朱棣",
+          "coordinates": [115.985, 36.456],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 5,
+      "title": "第五幕：孤注一掷直捣南京 · 灵璧决胜一剑封喉",
+      "dateLabel": "1401年 十二月—1402年 六月",
+      "year": 1402,
+      "narrative": "姚广孝点破死局：“毋下城邑，疾趋京师！”南京宫中受罚宦官亦密报京师空虚。建文三年底朱棣破釜沉舟，彻底绕开济南、东昌所有坚城，一路向南狂飙！在宿州灵璧截断南军粮道，夜袭一举全歼平安、陈晖十万主力俘获三十七将，随即强渡淮河、扬州受降、镇江水师倒戈。六月十三日李景隆开金川门迎降，奉天殿大火中朱棣登基！",
+      "whyKeyPoint": "为啥绕开城池直扑南京就能瞬间崩盘建文帝？帝制王朝中枢高度集权于京师，山东河北几十万南军根本来不及回救；一旦灵璧机动野战兵团覆灭、水师叛投，南京便成不设防空壳！",
+      "camera": {
+        "center": [117.75, 33.85],
+        "zoom": 6.1,
+        "pitch": 46,
+        "bearing": -18
+      },
+      "strengthComparison": {
+        "leftFactionId": "yan-army",
+        "leftLabel": "千里斩首渡江入主京师",
+        "leftPower": 85,
+        "rightFactionId": "jianwen-court",
+        "rightLabel": "灵璧主力覆灭金川门开门投降",
+        "rightPower": 15
+      },
+      "routes": [
+        {
+          "id": "r-jn5-blitz",
+          "factionId": "yan-army",
+          "type": "ambush",
+          "label": "绕开山东全部坚城千里闪电南插徐宿",
+          "commander": "朱棣 · 朱能 · 丘福",
+          "coordinates": [
+            [116.41, 39.9],
+            [115.65, 38.15],
+            [115.35, 36.25],
+            [116.35, 34.75],
+            [117.18, 34.26],
+            [117.56, 33.54]
+          ]
+        },
+        {
+          "id": "r-jn5-nanjing",
+          "factionId": "yan-army",
+          "type": "assault",
+          "label": "破泗州渡淮河、下扬州渡长江入金川门",
+          "commander": "朱棣",
+          "coordinates": [
+            [117.56, 33.54],
+            [118.45, 33.02],
+            [119.41, 32.39],
+            [119.45, 32.2],
+            [118.8, 32.06]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-jn5-lingbi",
+          "kind": "clash",
+          "label": "灵璧一战乾坤定",
+          "subLabel": "生擒平安等三十七员南军名将",
+          "coordinates": [117.558, 33.543],
+          "color": "#C68B2C"
+        },
+        {
+          "id": "m-jn5-jinchuanmen",
+          "kind": "pass",
+          "label": "金川门之变入主南京",
+          "subLabel": "建文帝下落成千古之谜",
+          "coordinates": [118.7969, 32.0603],
+          "color": "#C68B2C"
+        }
+      ]
+    }
+  ]
+}
