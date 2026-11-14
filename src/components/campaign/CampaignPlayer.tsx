@@ -13,19 +13,24 @@ import {
   X,
 } from 'lucide-react';
 import { CAMPAIGN_MAP } from '@/lib/atlasData';
-import { useAtlasStore } from '@/store/useAtlasStore';
+import {
+  useAtlasStore,
+  type CampaignCameraMode,
+} from '@/store/useAtlasStore';
 
 export default function CampaignPlayer() {
   const activeCampaignId = useAtlasStore((s) => s.activeCampaignId);
   const activePhaseIndex = useAtlasStore((s) => s.activePhaseIndex);
   const isCampaignPlaying = useAtlasStore((s) => s.isCampaignPlaying);
   const campaignSpeed = useAtlasStore((s) => s.campaignSpeed);
+  const campaignCameraMode = useAtlasStore((s) => s.campaignCameraMode);
   const campaignPhaseProgress = useAtlasStore((s) => s.campaignPhaseProgress);
   const setCampaignPhase = useAtlasStore((s) => s.setCampaignPhase);
   const nextCampaignPhase = useAtlasStore((s) => s.nextCampaignPhase);
   const prevCampaignPhase = useAtlasStore((s) => s.prevCampaignPhase);
   const setCampaignPlaying = useAtlasStore((s) => s.setCampaignPlaying);
   const setCampaignSpeed = useAtlasStore((s) => s.setCampaignSpeed);
+  const setCampaignCameraMode = useAtlasStore((s) => s.setCampaignCameraMode);
   const replayCurrentPhase = useAtlasStore((s) => s.replayCurrentPhase);
   const exitCampaign = useAtlasStore((s) => s.exitCampaign);
   const theme = useAtlasStore((s) => s.theme);
@@ -64,7 +69,7 @@ export default function CampaignPlayer() {
         />
       </div>
 
-      {/* Top Bar: Campaign Title + Auto-Camera Status + Phase Pills + Exit */}
+      {/* Top Bar: Campaign Title + Camera Choreography Mode Switch + Phase Pills + Exit */}
       <div className="flex items-center justify-between gap-2 flex-wrap border-b border-current/12 pb-2.5 pt-0.5">
         <div className="flex items-center gap-2 min-w-0 flex-wrap">
           <span className="px-2 py-0.5 rounded bg-[#B83B2A] text-amber-50 text-[11px] font-bold flex items-center gap-1 shrink-0">
@@ -77,12 +82,35 @@ export default function CampaignPlayer() {
           <span className="text-xs opacity-70 hidden sm:inline">
             （{phase.dateLabel}）
           </span>
-          {isCampaignPlaying && (
-            <span className="px-2 py-0.5 rounded-full bg-emerald-600/15 border border-emerald-500/40 text-emerald-700 dark:text-emerald-300 text-[11px] font-medium flex items-center gap-1">
-              <Video className="w-3 h-3 animate-pulse" />
-              3D 自动运镜推演中
-            </span>
-          )}
+
+          {/* Explicit 3D Camera Choreography Mode Selector */}
+          <div
+            className="flex items-center gap-0.5 p-0.5 rounded-lg bg-current/8 border border-current/12 text-[11px]"
+            role="group"
+            aria-label="战役三维运镜模式"
+          >
+            <Video className="w-3 h-3 ml-1.5 mr-0.5 text-[#B83B2A] dark:text-amber-400 shrink-0" />
+            {(
+              [
+                { id: 'follow', label: '跟随行军运镜' },
+                { id: 'orbit', label: '全景环绕运镜' },
+                { id: 'free', label: '自由视角' },
+              ] as { id: CampaignCameraMode; label: string }[]
+            ).map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => setCampaignCameraMode(m.id)}
+                className={`px-2 py-0.5 rounded-md font-medium transition cursor-pointer ${
+                  campaignCameraMode === m.id
+                    ? 'bg-[#B83B2A] text-amber-50 font-bold'
+                    : 'opacity-75 hover:opacity-100'
+                }`}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="flex items-center gap-1.5">
@@ -190,7 +218,7 @@ export default function CampaignPlayer() {
             title="重播本幕行军与运镜"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">重播本幕</span>
+            <span className="hidden sm:inline">重播运镜</span>
           </button>
 
           <button
@@ -222,12 +250,12 @@ export default function CampaignPlayer() {
             {isCampaignPlaying ? (
               <>
                 <Pause className="w-3.5 h-3.5" />
-                暂停运镜
+                暂停运镜推演
               </>
             ) : (
               <>
                 <Play className="w-3.5 h-3.5" />
-                继续运镜推演
+                开启运镜推演
               </>
             )}
           </button>

@@ -1,13 +1,16 @@
 'use client';
 
 import React from 'react';
-import { Minus, Plus } from 'lucide-react';
+import { Minus, Pause, Play, Plus } from 'lucide-react';
 import { SITE_CONFIG } from '@/config/site';
 import { ALL_EVENTS } from '@/lib/atlasData';
 import { useAtlasStore } from '@/store/useAtlasStore';
 
 export default function TimelineBar() {
   const currentYear = useAtlasStore((s) => s.currentYear);
+  const isStoryTourPlaying = useAtlasStore((s) => s.isStoryTourPlaying);
+  const startStoryTour = useAtlasStore((s) => s.startStoryTour);
+  const stopStoryTour = useAtlasStore((s) => s.stopStoryTour);
   const setCurrentYear = useAtlasStore((s) => s.setCurrentYear);
   const selectEvent = useAtlasStore((s) => s.selectEvent);
   const exitCampaign = useAtlasStore((s) => s.exitCampaign);
@@ -16,21 +19,46 @@ export default function TimelineBar() {
 
   const isDark = theme === 'xuanmo';
   const minYear = SITE_CONFIG.timeline.minYear;
-  const maxYear = 1455; // Phase 1 interactive focus span (1344 - 1455, expandable to 1662 in Phase 3)
+  const maxYear = 1455;
 
   const clampedSliderYear = Math.max(minYear, Math.min(maxYear, currentYear));
 
   return (
     <footer
       aria-label="历史年份时间轴控制器"
-      className={`fixed bottom-2.5 left-3 right-3 z-30 rounded-2xl border shadow-xl backdrop-blur-md px-3.5 py-2 flex flex-col sm:flex-row items-center gap-2 sm:gap-4 ${
+      className={`fixed bottom-2.5 left-3 right-3 z-30 rounded-2xl border shadow-xl backdrop-blur-md px-3.5 py-2 flex flex-col sm:flex-row items-center gap-2 sm:gap-3 ${
         isDark
           ? 'bg-slate-950/90 border-amber-500/25 text-amber-50'
           : 'bg-[#FAF5E8]/94 border-amber-900/20 text-stone-900'
       }`}
     >
-      {/* Era Quick Jump Capsules */}
+      {/* Era Quick Jump Capsules + Direct Auto-Camera Replay Button */}
       <div className="flex items-center gap-1.5 shrink-0 overflow-x-auto max-w-full">
+        <button
+          type="button"
+          onClick={() =>
+            isStoryTourPlaying ? stopStoryTour() : startStoryTour()
+          }
+          className={`px-2.5 py-1 rounded-lg text-xs font-serif font-bold whitespace-nowrap flex items-center gap-1 shadow-xs transition cursor-pointer ${
+            isStoryTourPlaying
+              ? 'bg-amber-600 text-white'
+              : 'bg-[#B83B2A] hover:bg-[#9B2C1D] text-amber-50'
+          }`}
+          title="启动/暂停全史编年自动运镜推演"
+        >
+          {isStoryTourPlaying ? (
+            <>
+              <Pause className="w-3 h-3" />
+              <span>暂停推演</span>
+            </>
+          ) : (
+            <>
+              <Play className="w-3 h-3" />
+              <span>运镜推演</span>
+            </>
+          )}
+        </button>
+
         {SITE_CONFIG.timeline.featuredEras.map((era) => {
           const inEra =
             currentYear >= era.yearRange[0] && currentYear <= era.yearRange[1];
@@ -40,12 +68,13 @@ export default function TimelineBar() {
               type="button"
               onClick={() => {
                 exitCampaign();
+                stopStoryTour();
                 setCurrentYear(era.defaultYear);
                 flyToCamera(era.camera);
               }}
               className={`px-2.5 py-1 rounded-lg text-xs font-serif font-bold whitespace-nowrap transition cursor-pointer ${
                 inEra
-                  ? 'bg-[#B83B2A] text-amber-50 shadow-xs'
+                  ? 'bg-stone-800 text-amber-50 dark:bg-amber-500 dark:text-slate-950 shadow-xs'
                   : 'bg-current/8 hover:bg-current/15 opacity-85'
               }`}
             >

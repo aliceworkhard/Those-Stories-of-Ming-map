@@ -3,7 +3,9 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 import TopAtlasBar from '@/components/header/TopAtlasBar';
+import EventDirectoryPanel from '@/components/directory/EventDirectoryPanel';
 import EventDetailDrawer from '@/components/drawer/EventDetailDrawer';
+import StoryTourPlayer from '@/components/tour/StoryTourPlayer';
 import CampaignPlayer from '@/components/campaign/CampaignPlayer';
 import TimelineBar from '@/components/timeline/TimelineBar';
 import BookTocModal from '@/components/modals/BookTocModal';
@@ -40,7 +42,9 @@ export default function AtlasWorkspace() {
     >
       <MingMapCanvas />
       <TopAtlasBar />
+      <EventDirectoryPanel />
       <EventDetailDrawer />
+      <StoryTourPlayer />
       <CampaignPlayer />
       <TimelineBar />
       <BookTocModal />

@@ -5,6 +5,7 @@ import {
   ArrowLeft,
   ArrowRight,
   BookOpen,
+  ChevronLeft,
   ChevronRight,
   Compass,
   HelpCircle,
@@ -12,10 +13,12 @@ import {
   Mountain,
   PanelRightClose,
   PanelRightOpen,
+  Pause,
   ScrollText,
   Sparkles,
   Swords,
   Users,
+  Video,
 } from 'lucide-react';
 import {
   ALL_EVENTS,
@@ -27,58 +30,70 @@ import { useAtlasStore } from '@/store/useAtlasStore';
 
 export default function EventDetailDrawer() {
   const [lensTab, setLensTab] = useState<'mingyue' | 'history'>('mingyue');
-  const [tierFilter, setTierFilter] = useState<'all' | 'macro' | 'micro'>('all');
 
   const selectedEventId = useAtlasStore((s) => s.selectedEventId);
   const isDrawerOpen = useAtlasStore((s) => s.isDrawerOpen);
   const setDrawerOpen = useAtlasStore((s) => s.setDrawerOpen);
   const selectEvent = useAtlasStore((s) => s.selectEvent);
+  const stepStoryEvent = useAtlasStore((s) => s.stepStoryEvent);
+  const isStoryTourPlaying = useAtlasStore((s) => s.isStoryTourPlaying);
+  const storyTourProgress = useAtlasStore((s) => s.storyTourProgress);
+  const startStoryTour = useAtlasStore((s) => s.startStoryTour);
+  const setStoryTourPlaying = useAtlasStore((s) => s.setStoryTourPlaying);
   const startCampaign = useAtlasStore((s) => s.startCampaign);
   const exitCampaign = useAtlasStore((s) => s.exitCampaign);
   const activeCampaignId = useAtlasStore((s) => s.activeCampaignId);
   const flyToCamera = useAtlasStore((s) => s.flyToCamera);
   const theme = useAtlasStore((s) => s.theme);
 
+  // Keep war-room unobstructed while battle campaign player is open
+  if (activeCampaignId) return null;
+
   const isDark = theme === 'xuanmo';
-  const event = selectedEventId ? EVENT_MAP[selectedEventId] ?? ALL_EVENTS[0] : ALL_EVENTS[0];
+  const isTourHudOpen = isStoryTourPlaying || storyTourProgress > 0;
+  const event = selectedEventId
+    ? EVENT_MAP[selectedEventId] ?? ALL_EVENTS[0]
+    : ALL_EVENTS[0];
+  const eventIndex = ALL_EVENTS.findIndex((e) => e.id === event.id);
   const linkedCampaign = event?.campaignId
     ? CAMPAIGN_MAP[event.campaignId] ?? null
     : null;
-
-  const filteredEvents = ALL_EVENTS.filter((e) =>
-    tierFilter === 'all' ? true : e.tier === tierFilter
-  );
 
   if (!isDrawerOpen) {
     return (
       <button
         type="button"
         onClick={() => setDrawerOpen(true)}
-        className={`fixed right-3 top-28 z-30 px-3 py-2.5 rounded-xl border shadow-xl backdrop-blur-md flex items-center gap-1.5 text-xs font-serif font-bold cursor-pointer transition hover:scale-105 ${
+        className={`fixed right-3 top-[98px] z-25 px-3 py-2.5 rounded-xl border shadow-xl backdrop-blur-md flex items-center gap-1.5 text-xs font-serif font-bold cursor-pointer transition hover:scale-105 ${
           isDark
             ? 'bg-slate-950/90 border-amber-500/30 text-amber-100'
             : 'bg-[#FAF5E8]/95 border-amber-900/25 text-stone-900'
         }`}
-        title="展开五维历史事件卷轴面板"
+        title="展开当前选中事件的五维详情面板"
       >
         <PanelRightOpen className="w-4 h-4 text-[#B83B2A] dark:text-amber-400" />
-        <span>五维史卷</span>
+        <span>事件详情</span>
       </button>
     );
   }
 
   return (
     <aside
-      aria-label="五维历史事件与原著视角面板"
-      className={`fixed top-28 bottom-20 right-3 z-30 w-[calc(100vw-24px)] sm:w-[388px] rounded-2xl border shadow-2xl backdrop-blur-md flex flex-col overflow-hidden transition-all ${
+      aria-label="事件五维详情与原著对照面板"
+      className={`fixed top-[98px] ${
+        isTourHudOpen ? 'bottom-[168px] 2xl:bottom-20' : 'bottom-20'
+      } right-3 z-25 w-[calc(100vw-24px)] sm:w-[352px] xl:w-[380px] rounded-2xl border shadow-2xl backdrop-blur-md flex flex-col overflow-hidden transition-all ${
         isDark
           ? 'bg-slate-950/92 border-amber-500/30 text-amber-50'
           : 'bg-[#FAF5E8]/95 border-amber-900/25 text-stone-900'
       }`}
     >
       {/* Drawer Header */}
-      <div className="px-4 py-3 border-b border-current/12 flex items-center justify-between gap-2 shrink-0">
+      <div className="px-4 py-2.5 border-b border-current/12 flex items-center justify-between gap-2 shrink-0">
         <div className="flex items-center gap-2 min-w-0">
+          <span className="font-serif font-bold text-xs opacity-80 shrink-0">
+            事件详情
+          </span>
           <span
             className={`px-2 py-0.5 rounded text-[11px] font-bold shrink-0 ${
               event.tier === 'macro'
@@ -97,13 +112,13 @@ export default function EventDetailDrawer() {
           type="button"
           onClick={() => setDrawerOpen(false)}
           className="p-1 rounded-lg hover:bg-current/10 transition cursor-pointer"
-          title="收起侧边卷轴"
+          title="收起事件详情面板"
         >
           <PanelRightClose className="w-4 h-4 opacity-75" />
         </button>
       </div>
 
-      {/* Scrollable Body */}
+      {/* Scrollable Pure Event Detail Body (Separated from Event Directory!) */}
       <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
         {/* 1. Event Title, Ancient-Modern Place & Summary */}
         <section className="space-y-2">
@@ -149,20 +164,12 @@ export default function EventDetailDrawer() {
           {linkedCampaign && (
             <button
               type="button"
-              onClick={() =>
-                activeCampaignId === linkedCampaign.id
-                  ? exitCampaign()
-                  : startCampaign(linkedCampaign.id, 0)
-              }
+              onClick={() => startCampaign(linkedCampaign.id, 0)}
               className="w-full mt-1 py-2 px-3 rounded-xl bg-gradient-to-r from-[#A92B1E] to-[#C66A27] hover:brightness-110 text-amber-50 font-serif font-bold text-xs sm:text-sm shadow-md flex items-center justify-between cursor-pointer transition"
             >
               <span className="flex items-center gap-2">
                 <Swords className="w-4 h-4 shrink-0" />
-                <span>
-                  {activeCampaignId === linkedCampaign.id
-                    ? `正在推演：${linkedCampaign.title}（点击退出）`
-                    : `进入分幕行军推演：${linkedCampaign.title}`}
-                </span>
+                <span>启动战役运镜推演：{linkedCampaign.title}</span>
               </span>
               <ChevronRight className="w-4 h-4 shrink-0" />
             </button>
@@ -342,77 +349,56 @@ export default function EventDetailDrawer() {
             </div>
           )}
         </section>
+      </div>
 
-        {/* 4. Chronological Macro / Micro Event Switcher */}
-        <section className="space-y-2 pt-1">
-          <div className="flex items-center justify-between">
-            <h3 className="font-serif font-bold text-xs opacity-85">
-              编年大小事件速览（{filteredEvents.length}）
-            </h3>
-            <div className="flex gap-1 text-[11px]">
-              {(
-                [
-                  { id: 'all', label: '全部' },
-                  { id: 'macro', label: '大事件' },
-                  { id: 'micro', label: '小事件' },
-                ] as const
-              ).map((tab) => (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setTierFilter(tab.id)}
-                  className={`px-2 py-0.5 rounded cursor-pointer ${
-                    tierFilter === tab.id
-                      ? 'bg-current/15 font-bold'
-                      : 'opacity-65 hover:opacity-100'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-          </div>
+      {/* Dedicated Bottom Stepper + Start Auto-Camera Tour from Here */}
+      <div className="px-3.5 py-2.5 border-t border-current/12 flex items-center justify-between gap-1.5 shrink-0 text-xs">
+        <button
+          type="button"
+          disabled={eventIndex <= 0}
+          onClick={() => stepStoryEvent(-1)}
+          className="px-2 py-1.5 rounded-lg border border-current/20 hover:bg-current/10 disabled:opacity-35 flex items-center gap-1 cursor-pointer disabled:cursor-not-allowed"
+        >
+          <ChevronLeft className="w-3.5 h-3.5" />
+          <span>上一站</span>
+        </button>
 
-          <div className="space-y-1 max-h-52 overflow-y-auto pr-1">
-            {filteredEvents.map((item) => {
-              const active = item.id === event.id;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => {
-                    exitCampaign();
-                    selectEvent(item.id, true);
-                  }}
-                  className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between gap-2 transition cursor-pointer ${
-                    active
-                      ? 'bg-[#B83B2A] text-amber-50 font-semibold shadow-xs'
-                      : 'hover:bg-current/8'
-                  }`}
-                >
-                  <span className="truncate flex items-center gap-1.5">
-                    <span
-                      className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                        active
-                          ? 'bg-amber-200'
-                          : item.tier === 'macro'
-                          ? 'bg-[#B83B2A]'
-                          : 'bg-amber-500'
-                      }`}
-                    />
-                    <span className="tabular-nums opacity-75">
-                      {item.time.year}
-                    </span>
-                    <span className="truncate">{item.title}</span>
-                  </span>
-                  {item.campaignId && (
-                    <Swords className="w-3 h-3 shrink-0 opacity-80" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </section>
+        <button
+          type="button"
+          onClick={() =>
+            isStoryTourPlaying
+              ? setStoryTourPlaying(false)
+              : startStoryTour(event.id)
+          }
+          className={`px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 shadow-xs cursor-pointer transition ${
+            isStoryTourPlaying
+              ? 'bg-amber-600 hover:bg-amber-700 text-white'
+              : 'bg-[#B83B2A] hover:bg-[#9B2C1D] text-amber-50'
+          }`}
+          title="从当前事件开启 3D 全史自动运镜巡礼推演"
+        >
+          {isStoryTourPlaying ? (
+            <>
+              <Pause className="w-3.5 h-3.5" />
+              <span>暂停运镜推演</span>
+            </>
+          ) : (
+            <>
+              <Video className="w-3.5 h-3.5" />
+              <span>从此开启运镜推演</span>
+            </>
+          )}
+        </button>
+
+        <button
+          type="button"
+          disabled={eventIndex >= ALL_EVENTS.length - 1}
+          onClick={() => stepStoryEvent(1)}
+          className="px-2 py-1.5 rounded-lg border border-current/20 hover:bg-current/10 disabled:opacity-35 flex items-center gap-1 cursor-pointer disabled:cursor-not-allowed"
+        >
+          <span>下一站</span>
+          <ChevronRight className="w-3.5 h-3.5" />
+        </button>
       </div>
     </aside>
   );
