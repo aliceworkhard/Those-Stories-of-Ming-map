@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import TopAtlasBar from '@/components/header/TopAtlasBar';
 import EventDirectoryPanel from '@/components/directory/EventDirectoryPanel';
@@ -35,8 +35,13 @@ export default function AtlasWorkspace() {
   const theme = useAtlasStore((s) => s.theme);
   const isDrawerOpen = useAtlasStore((s) => s.isDrawerOpen);
   const activeCampaignId = useAtlasStore((s) => s.activeCampaignId);
+  const hydrateFromStorage = useAtlasStore((s) => s.hydrateFromStorage);
   const isDark = theme === 'xuanmo';
   const drawerTakesRight = isDrawerOpen && !activeCampaignId;
+
+  useEffect(() => {
+    hydrateFromStorage();
+  }, [hydrateFromStorage]);
 
   return (
     <main

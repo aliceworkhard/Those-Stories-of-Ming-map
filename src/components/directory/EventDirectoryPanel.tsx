@@ -5,6 +5,7 @@ import {
   ListOrdered,
   MapPin,
   PanelLeftClose,
+  RotateCcw,
   Search,
   Swords,
   X,
@@ -27,6 +28,7 @@ export default function EventDirectoryPanel() {
   const setDirectoryOpen = useAtlasStore((s) => s.setDirectoryOpen);
   const selectEvent = useAtlasStore((s) => s.selectEvent);
   const exitCampaign = useAtlasStore((s) => s.exitCampaign);
+  const resetToStoryBeginning = useAtlasStore((s) => s.resetToStoryBeginning);
   const theme = useAtlasStore((s) => s.theme);
 
   const isDark = theme === 'xuanmo';
@@ -118,14 +120,34 @@ export default function EventDirectoryPanel() {
           </span>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setDirectoryOpen(false)}
-          className="p-1 rounded-lg hover:bg-current/10 transition cursor-pointer"
-          title="收起事件目录"
-        >
-          <PanelLeftClose className="w-4 h-4 opacity-75" />
-        </button>
+        <div className="flex items-center gap-1 shrink-0">
+          <button
+            type="button"
+            onClick={() => {
+              setQuery('');
+              setFilter('all');
+              resetToStoryBeginning();
+            }}
+            className={`px-1.5 py-0.5 rounded-md border text-[11px] font-medium flex items-center gap-1 transition cursor-pointer ${
+              isDark
+                ? 'border-amber-500/30 hover:bg-amber-500/15 text-amber-200'
+                : 'border-amber-900/20 hover:bg-amber-900/8 text-[#9E2318]'
+            }`}
+            title="回到故事最开始的地方（1344年 · 濠州钟离黄河决堤开篇）并重置进度缓存"
+          >
+            <RotateCcw className="w-3 h-3" />
+            <span>开篇</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setDirectoryOpen(false)}
+            className="p-1 rounded-lg hover:bg-current/10 transition cursor-pointer"
+            title="收起事件目录"
+          >
+            <PanelLeftClose className="w-4 h-4 opacity-75" />
+          </button>
+        </div>
       </div>
 
       {/* Search + Category Filter Strip */}

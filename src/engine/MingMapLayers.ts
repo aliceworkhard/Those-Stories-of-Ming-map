@@ -28,6 +28,9 @@ const EMPTY_FC: GeoJSON.FeatureCollection = {
 
 export interface PreparedRouteCurve {
   id: string;
+  stepNo: number;
+  startAt: number;
+  endAt: number;
   color: string;
   tactic: string;
   label: string;
@@ -36,6 +39,22 @@ export interface PreparedRouteCurve {
   startPoint: LngLat;
   endPoint: LngLat;
   midPoint: LngLat;
+}
+
+export function computeSequentialRouteWindows(
+  count: number
+): Array<{ startAt: number; endAt: number }> {
+  if (count <= 0) return [];
+  if (count === 1) return [{ startAt: 0, endAt: 1 }];
+  const gap = 0.06;
+  const span = (1 - gap * (count - 1)) / count;
+  return Array.from({ length: count }, (_, idx) => {
+    const startAt = idx * (span + gap);
+    return {
+      startAt,
+      endAt: Math.min(1, startAt + span),
+    };
+  });
 }
 
 /**
@@ -153,14 +172,27 @@ export function mountHistoricalLayers(
   const beforeWaterId = map.getLayer('vector-water-fill')
     ? 'vector-water-fill'
     : undefined;
+  const beforeTerrainShadeId = map.getLayer('mountain-hillshade')
+    ? 'mountain-hillshade'
+    : beforeWaterId;
 
   // =========================================================================
-  // 1. Sovereign Territories (3-Layer "Inner-Vignette + Dual-Border" Styling)
+  // 1. Sovereign Territories + Victory Brush Paint-Over Layer Stack
+  //    Placed BELOW `mountain-hillshade` & `vector-water-fill` so victorious
+  //    regimes cleanly paint/erase defeated territories while preserving 3D
+  //    mountain relief, lakes, coastlines & rivers on top!
   // =========================================================================
   if (!map.getSource('ming-territories')) {
     map.addSource('ming-territories', {
       type: 'geojson',
       data: initialTerritories,
+    });
+  }
+
+  if (!map.getSource('ming-territory-wipe')) {
+    map.addSource('ming-territory-wipe', {
+      type: 'geojson',
+      data: EMPTY_FC,
     });
   }
 
@@ -172,7 +204,7 @@ export function mountHistoricalLayers(
   }
 
   if (!map.getLayer('ming-territories-fill')) {
-    // Interior wash placed UNDER vector lakes & oceans for razor-sharp coastlines
+    // Interior wash
     map.addLayer(
       {
         id: 'ming-territories-fill',
@@ -185,15 +217,15 @@ export function mountHistoricalLayers(
             'match',
             ['get', 'controlType'],
             'tributary-garrison',
-            isDark ? 0.13 : 0.11,
-            isDark ? 0.22 : 0.17,
+            isDark ? 0.14 : 0.12,
+            isDark ? 0.24 : 0.19,
           ],
         },
       },
-      beforeWaterId
+      beforeTerrainShadeId
     );
 
-    // Grand-Strategy Inner Frontier Band (rich depth along borders while keeping center breathable!)
+    // Grand-Strategy Inner Frontier Band
     map.addLayer(
       {
         id: 'ming-territories-frontier-band',
@@ -226,56 +258,158 @@ export function mountHistoricalLayers(
           'line-blur': 3.5,
         },
       },
-      beforeWaterId
+      beforeTerrainShadeId
+    );
+
+    // Crisp dark/parchment contrast casing on landward borders
+    map.addLayer(
+      {
+        id: 'ming-territories-outline-casing',
+        type: 'line',
+        source: 'ming-territories',
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round',
+        },
+        paint: {
+          'line-color': isDark
+            ? 'rgba(6, 10, 16, 0.75)'
+            : 'rgba(253, 249, 240, 0.72)',
+          'line-width': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            3.5,
+            2.8,
+            7,
+            4.2,
+            10,
+            5.5,
+          ],
+          'line-opacity': 0.75,
+        },
+      },
+      beforeTerrainShadeId
+    );
+
+    map.addLayer(
+      {
+        id: 'ming-territories-outline',
+        type: 'line',
+        source: 'ming-territories',
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round',
+        },
+        paint: {
+          'line-color': ['coalesce', ['get', 'borderColor'], ['get', 'color']],
+          'line-width': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            3.5,
+            ['match', ['get', 'controlType'], 'tributary-garrison', 1.1, 1.8],
+            7,
+            ['match', ['get', 'controlType'], 'tributary-garrison', 1.6, 2.7],
+            10,
+            ['match', ['get', 'controlType'], 'tributary-garrison', 2.2, 3.6],
+          ],
+          'line-dasharray': [
+            'match',
+            ['get', 'controlType'],
+            'tributary-garrison',
+            ['literal', [3, 2]],
+            ['literal', [1, 0]],
+          ],
+          'line-opacity': isDark ? 0.94 : 0.9,
+        },
+      },
+      beforeTerrainShadeId
+    );
+
+    // --- VICTORY BRUSH PAINT-OVER ("胜利方版图涂抹覆盖层") ---
+    // Step A: Opaque base coat erases the defeated regime's color & old internal borders cleanly
+    map.addLayer(
+      {
+        id: 'ming-territory-wipe-eraser',
+        type: 'fill',
+        source: 'ming-territory-wipe',
+        paint: {
+          'fill-antialias': true,
+          'fill-color': isDark ? '#0F141D' : '#EFE6D4',
+          'fill-opacity': 1.0,
+        },
+      },
+      beforeTerrainShadeId
+    );
+
+    // Step B: Victor's sovereign wash painted over the conquered land
+    map.addLayer(
+      {
+        id: 'ming-territory-wipe-fill',
+        type: 'fill',
+        source: 'ming-territory-wipe',
+        paint: {
+          'fill-antialias': true,
+          'fill-color': ['get', 'color'],
+          'fill-opacity': [
+            'match',
+            ['get', 'controlType'],
+            'tributary-garrison',
+            isDark ? 0.16 : 0.14,
+            isDark ? 0.28 : 0.23,
+          ],
+        },
+      },
+      beforeTerrainShadeId
+    );
+
+    // Step C: Victor's inner frontier band & sovereign border
+    map.addLayer(
+      {
+        id: 'ming-territory-wipe-band',
+        type: 'line',
+        source: 'ming-territory-wipe',
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 7, 8, 13],
+          'line-opacity': isDark ? 0.42 : 0.34,
+          'line-blur': 3.5,
+        },
+      },
+      beforeTerrainShadeId
+    );
+
+    map.addLayer(
+      {
+        id: 'ming-territory-wipe-outline',
+        type: 'line',
+        source: 'ming-territory-wipe',
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 2.0, 8, 3.2],
+          'line-opacity': 0.94,
+        },
+      },
+      beforeTerrainShadeId
     );
   }
 
-  if (!map.getLayer('ming-territories-outline')) {
-    // Crisp dark/parchment contrast casing on landward borders
+  if (!map.getLayer('ming-territories-hover')) {
+    // Advancing Brush Rim Glow (visible above water/terrain while actively sweeping!)
     map.addLayer({
-      id: 'ming-territories-outline-casing',
+      id: 'ming-territory-wipe-front',
       type: 'line',
-      source: 'ming-territories',
-      layout: {
-        'line-join': 'round',
-        'line-cap': 'round',
-      },
+      source: 'ming-territory-wipe',
+      filter: ['==', ['get', 'isActivelyWiping'], 1],
+      layout: { 'line-join': 'round', 'line-cap': 'round' },
       paint: {
-        'line-color': isDark ? 'rgba(6, 10, 16, 0.75)' : 'rgba(253, 249, 240, 0.72)',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 2.8, 7, 4.2, 10, 5.5],
-        'line-opacity': 0.75,
-      },
-    });
-
-    map.addLayer({
-      id: 'ming-territories-outline',
-      type: 'line',
-      source: 'ming-territories',
-      layout: {
-        'line-join': 'round',
-        'line-cap': 'round',
-      },
-      paint: {
-        'line-color': ['coalesce', ['get', 'borderColor'], ['get', 'color']],
-        'line-width': [
-          'interpolate',
-          ['linear'],
-          ['zoom'],
-          3.5,
-          ['match', ['get', 'controlType'], 'tributary-garrison', 1.1, 1.8],
-          7,
-          ['match', ['get', 'controlType'], 'tributary-garrison', 1.6, 2.7],
-          10,
-          ['match', ['get', 'controlType'], 'tributary-garrison', 2.2, 3.6],
-        ],
-        'line-dasharray': [
-          'match',
-          ['get', 'controlType'],
-          'tributary-garrison',
-          ['literal', [3, 2]],
-          ['literal', [1, 0]],
-        ],
-        'line-opacity': isDark ? 0.94 : 0.9,
+        'line-color': ['coalesce', ['get', 'frontColor'], '#F59E0B'],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 3.2, 8, 5.4],
+        'line-opacity': 0.88,
+        'line-blur': 1.2,
       },
     });
 
@@ -970,6 +1104,15 @@ export function updateCausalArcsOnMap(
   src.setData(visible ? buildCausalArcGeoJSON(selectedEvent) : EMPTY_FC);
 }
 
+export function updateTerritoryWipeOnMap(
+  map: maplibregl.Map,
+  wipeGeoJSON: GeoJSON.FeatureCollection | null
+): void {
+  const src = map.getSource('ming-territory-wipe') as GeoJSONSource | undefined;
+  if (!src) return;
+  src.setData(wipeGeoJSON ?? EMPTY_FC);
+}
+
 export function syncLayerVisibility(
   map: maplibregl.Map,
   layers: LayerVisibility
@@ -984,6 +1127,11 @@ export function syncLayerVisibility(
   setVis('ming-territories-frontier-band', layers.territories);
   setVis('ming-territories-outline-casing', layers.territories);
   setVis('ming-territories-outline', layers.territories);
+  setVis('ming-territory-wipe-eraser', layers.territories);
+  setVis('ming-territory-wipe-fill', layers.territories);
+  setVis('ming-territory-wipe-band', layers.territories);
+  setVis('ming-territory-wipe-outline', layers.territories);
+  setVis('ming-territory-wipe-front', layers.territories);
   setVis('ming-territories-hover', layers.territories);
   setVis('ming-polity-labels', layers.territories);
 
@@ -1025,10 +1173,18 @@ export function buildPhaseRouteFeatures(
     campaign.factions.map((f) => [f.id, f.color])
   );
 
+  // Strictly sort routes by explicit chronological `order` (fallback to array index)
+  const sortedRoutes = [...phase.routes]
+    .map((r, idx) => ({ r, sortOrder: r.order ?? idx + 1 }))
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+
+  const windows = computeSequentialRouteWindows(sortedRoutes.length);
   const features: GeoJSON.Feature[] = [];
   const preparedCurves: PreparedRouteCurve[] = [];
 
-  for (const route of phase.routes) {
+  sortedRoutes.forEach(({ r: route }, idx) => {
+    const stepNo = idx + 1;
+    const win = windows[idx] ?? { startAt: 0, endAt: 1 };
     const color =
       route.type === 'supply'
         ? '#D69E2E'
@@ -1040,6 +1196,7 @@ export function buildPhaseRouteFeatures(
       type: 'Feature',
       properties: {
         id: route.id,
+        stepNo,
         color,
         tactic: route.type,
         label: route.label,
@@ -1052,6 +1209,9 @@ export function buildPhaseRouteFeatures(
 
     preparedCurves.push({
       id: route.id,
+      stepNo,
+      startAt: win.startAt,
+      endAt: win.endAt,
       color,
       tactic: route.type,
       label: route.label,
@@ -1061,7 +1221,7 @@ export function buildPhaseRouteFeatures(
       endPoint: curved[curved.length - 1],
       midPoint: midSample.coordinates,
     });
-  }
+  });
 
   return {
     featureCollection: {
@@ -1073,9 +1233,10 @@ export function buildPhaseRouteFeatures(
 }
 
 /**
- * Hardware-friendly Route & Spearhead Frame Updater:
- * - If `skipRouteGeometryUpdate` is true (once `growProgress >= 1`), skips `routeSrc.setData()`
- *   completely so MapLibre NEVER re-tessellates line geometry needlessly!
+ * Strictly Sequential Step-by-Step Route & Spearhead Updater (`① -> ② -> ③`):
+ * - Arrow `k` does NOT appear until `growProgress >= curve.startAt`!
+ * - Arrow `k` advances `0% -> 100%` during `[curve.startAt, curve.endAt]` led by its spearhead.
+ * - Completed arrows stay solidly rendered at `100%` while subsequent arrows advance in turn!
  */
 export function updateCampaignAnimationFrame(
   map: maplibregl.Map,
@@ -1096,28 +1257,33 @@ export function updateCampaignAnimationFrame(
     return;
   }
 
-  const isGrowing = growProgress < 0.999;
-  const maxStagger = Math.min(0.32, Math.max(0, (curves.length - 1) * 0.08));
+  const allFinished = growProgress >= 0.999;
   const routeFeatures: GeoJSON.Feature[] = [];
   const vanguardFeatures: GeoJSON.Feature[] = [];
 
   curves.forEach((curve, idx) => {
-    const delay =
-      curves.length > 1 ? (idx / (curves.length - 1)) * maxStagger : 0;
-    const localGrow = isGrowing
-      ? Math.max(0.02, Math.min(1, (growProgress - delay) / (1 - maxStagger)))
-      : 1;
+    // 1. Not started yet: keep completely hidden so chronological order is 100% clear!
+    if (!allFinished && growProgress < curve.startAt + 0.002) {
+      return;
+    }
+
+    const span = Math.max(0.01, curve.endAt - curve.startAt);
+    const rawStep = allFinished
+      ? 1
+      : Math.max(0, Math.min(1, (growProgress - curve.startAt) / span));
+    const localGrow = allFinished ? 1 : 1 - Math.pow(1 - rawStep, 2.0);
 
     if (!skipRouteGeometryUpdate) {
       const { sliced, headCoord, headBearing } = sliceCurveByProgress(
         curve.coords,
-        localGrow
+        Math.max(0.025, localGrow)
       );
 
       routeFeatures.push({
         type: 'Feature',
         properties: {
           id: curve.id,
+          stepNo: curve.stepNo,
           color: curve.color,
           tactic: curve.tactic,
           label: curve.label,
@@ -1128,7 +1294,8 @@ export function updateCampaignAnimationFrame(
         },
       });
 
-      if (localGrow < 0.999) {
+      if (localGrow < 0.998) {
+        // Active advancing arrow gets its leading vanguard spearhead at the tip!
         vanguardFeatures.push({
           type: 'Feature',
           properties: {
@@ -1145,23 +1312,41 @@ export function updateCampaignAnimationFrame(
       }
     }
 
-    const staggeredPulse = (pulseProgress + idx * 0.19) % 1;
-    const { coordinates, bearing } = sampleAlongPath(
-      curve.coords,
-      staggeredPulse
-    );
-    vanguardFeatures.push({
-      type: 'Feature',
-      properties: {
-        id: curve.id,
-        color: curve.color,
-        bearing,
-      },
-      geometry: {
-        type: 'Point',
-        coordinates,
-      },
-    });
+    // Completed arrow: once all steps finish (or while next step runs), keep subtle flow spearhead
+    if (allFinished) {
+      const staggeredPulse = (pulseProgress + idx * 0.27) % 1;
+      const { coordinates, bearing } = sampleAlongPath(
+        curve.coords,
+        staggeredPulse
+      );
+      vanguardFeatures.push({
+        type: 'Feature',
+        properties: {
+          id: curve.id,
+          color: curve.color,
+          bearing,
+        },
+        geometry: {
+          type: 'Point',
+          coordinates,
+        },
+      });
+    } else {
+      // Pin spearhead cleanly at the destination of finished earlier step while step k+1 grows!
+      const { coordinates, bearing } = sampleAlongPath(curve.coords, 0.995);
+      vanguardFeatures.push({
+        type: 'Feature',
+        properties: {
+          id: curve.id,
+          color: curve.color,
+          bearing,
+        },
+        geometry: {
+          type: 'Point',
+          coordinates,
+        },
+      });
+    }
   });
 
   if (!skipRouteGeometryUpdate) {

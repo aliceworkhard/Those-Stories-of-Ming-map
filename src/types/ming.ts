@@ -148,6 +148,8 @@ export interface CampaignFaction {
 
 export interface CampaignRoute {
   id: string;
+  /** 1-based chronological execution order within the phase (①, ②, ③...) */
+  order?: number;
   factionId: string;
   type: RouteTacticType;
   label: string;

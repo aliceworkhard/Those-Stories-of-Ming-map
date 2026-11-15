@@ -1,118 +1,357 @@
 'use client';
 
-import React from 'react';
-import { getSnapshotForYear } from '@/lib/atlasData';
+import React, { useState } from 'react';
+import { Brush, ChevronDown, ChevronUp, Map as MapIcon } from 'lucide-react';
+import { CAMPAIGN_MAP, getSnapshotForYear } from '@/lib/atlasData';
+import { buildCampaignTerritoryFrame } from '@/engine/territoryWipe';
 import { useAtlasStore } from '@/store/useAtlasStore';
+import type { TerritoryPolityProps } from '@/types/ming';
 
 export default function TerritoryLegendCard() {
+  const [collapsed, setCollapsed] = useState(false);
+  const [pinnedPolity, setPinnedPolity] = useState<TerritoryPolityProps | null>(
+    null
+  );
+
   const currentYear = useAtlasStore((s) => s.currentYear);
   const hoveredPolity = useAtlasStore((s) => s.hoveredPolity);
+  const activeWipeCaption = useAtlasStore((s) => s.activeWipeCaption);
   const activeCampaignId = useAtlasStore((s) => s.activeCampaignId);
+  const activePhaseIndex = useAtlasStore((s) => s.activePhaseIndex);
+  const isDirectoryOpen = useAtlasStore((s) => s.isDirectoryOpen);
   const isStoryTourPlaying = useAtlasStore((s) => s.isStoryTourPlaying);
   const storyTourProgress = useAtlasStore((s) => s.storyTourProgress);
-  const showTerritories = useAtlasStore((s) => s.layers.territories);
+  const isImmersionMode = useAtlasStore((s) => s.isImmersionMode);
   const theme = useAtlasStore((s) => s.theme);
 
-  if (
-    !showTerritories ||
-    activeCampaignId ||
-    isStoryTourPlaying ||
-    storyTourProgress > 0
-  ) {
-    return null;
-  }
-
-  const snapshot = getSnapshotForYear(currentYear);
   const isDark = theme === 'xuanmo';
+  const snapshot = getSnapshotForYear(currentYear);
 
-  // Deduplicate polities by polityId ( keeping direct before tributary )
+  // Use campaign base territories when in Campaign mode so legend always matches map colors!
+  const sourceGeoJSON = activeCampaignId
+    ? buildCampaignTerritoryFrame(activeCampaignId, activePhaseIndex, 0)
+        .baseGeoJSON
+    : snapshot.geojson;
+
+  const activeCampaign = activeCampaignId
+    ? CAMPAIGN_MAP[activeCampaignId] ?? null
+    : null;
+
+  // Collect ALL distinct polities on the current map (zero truncation!)
   const seen = new Set<string>();
-  const polities: Array<{
-    id: string;
-    label: string;
-    color: string;
-    isTributary: boolean;
-  }> = [];
+  const polities: TerritoryPolityProps[] = [];
 
-  for (const f of snapshot.geojson.features) {
+  for (const f of sourceGeoJSON.features) {
     const p = (f.properties ?? {}) as Record<string, unknown>;
     const id = String(p.polityId ?? '');
     if (!id || seen.has(id)) continue;
     seen.add(id);
     polities.push({
-      id,
-      label: String(p.shortLabel || p.polityName || ''),
+      polityId: id,
+      polityName: String(p.polityName || p.shortLabel || id),
+      shortLabel: String(p.shortLabel || p.polityName || id),
+      ruler: String(p.ruler || ''),
+      controlType:
+        p.controlType === 'tributary-garrison'
+          ? 'tributary-garrison'
+          : 'direct',
       color: String(p.color || '#B83B2A'),
-      isTributary: p.controlType === 'tributary-garrison',
+      labelCoord: [0, 0],
+      capitalName: String(p.capitalName || ''),
+      changeReason: String(p.changeReason || ''),
     });
   }
+
+  // Also append any campaign faction whose color isn't in `polities` (e.g. Yan army / Zhang Zhou)
+  if (activeCampaign) {
+    for (const fac of activeCampaign.factions) {
+      const alreadyHasColor = polities.some(
+        (p) => p.color.toLowerCase() === fac.color.toLowerCase()
+      );
+      if (!alreadyHasColor) {
+        polities.unshift({
+          polityId: fac.id,
+          polityName: fac.name,
+          shortLabel: fac.name,
+          ruler: fac.leader,
+          controlType: 'direct',
+          color: fac.color,
+          labelCoord: [0, 0],
+          capitalName: '战役参战主力',
+          changeReason: activeCampaign.summary,
+        });
+      }
+    }
+  }
+
+  const inspectedPolity = hoveredPolity ?? pinnedPolity;
 
   const cardSurface = isDark
     ? 'bg-[#0D131D]/96 border-amber-500/30 text-amber-50'
     : 'bg-[#FAF5E8]/96 border-amber-900/25 text-stone-900';
 
+  const isTourHudOpen =
+    !activeCampaignId && (isStoryTourPlaying || storyTourProgress > 0);
+
+  // Position smartly so it NEVER overlaps sidebars, CampaignPlayer, or StoryTourPlayer!
+  const positionClass = activeCampaignId
+    ? 'top-[58px] right-3 max-w-[300px] sm:max-w-[330px]'
+    : `${
+        isTourHudOpen ? 'bottom-[152px] xl:bottom-[62px]' : 'bottom-[62px]'
+      } ${
+        isDirectoryOpen && !isImmersionMode
+          ? 'left-3 sm:left-[286px] xl:left-[300px]'
+          : 'left-3'
+      } max-w-[calc(100vw-24px)] sm:max-w-[330px] xl:max-w-[365px]`;
+
   return (
-    <div className="pointer-events-none fixed bottom-[66px] left-1/2 -translate-x-1/2 z-20 hidden lg:flex flex-col items-center gap-1.5 max-w-[440px] xl:max-w-[560px]">
-      {/* Hovered Polity Classical Cartouche (Only appears when cursor hovers a regime on map!) */}
-      {hoveredPolity && (
-        <div
-          className={`w-full px-3.5 py-2 rounded-xl border shadow-xl text-xs transition-opacity ${cardSurface}`}
-        >
-          <div className="flex items-center justify-between gap-2 mb-0.5">
-            <span
-              className="font-serif font-bold text-sm flex items-center gap-1.5"
-              style={{ color: hoveredPolity.color }}
-            >
-              <span
-                className="w-2.5 h-2.5 rounded-xs inline-block"
-                style={{ backgroundColor: hoveredPolity.color }}
-              />
-              {hoveredPolity.polityName}
-              {hoveredPolity.controlType === 'tributary-garrison' && (
-                <span className="text-[10px] px-1 py-0.2 rounded border border-current/40 opacity-80">
-                  羁縻都司卫所
-                </span>
-              )}
-            </span>
-            <span className="text-[11px] opacity-75 shrink-0">
-              主帅/君主：{hoveredPolity.ruler} · 治所：{hoveredPolity.capitalName}
-            </span>
-          </div>
-          <p className="text-[11px] leading-relaxed opacity-90">
-            <span className="font-semibold">版图考据：</span>
-            {hoveredPolity.changeReason}
-          </p>
+    <aside
+      aria-label="舆图势力与地理军事图例"
+      className={`pointer-events-auto fixed z-22 flex flex-col gap-1.5 transition-all ${positionClass}`}
+    >
+      {/* 1. Live Victory Paint-Over Banner (when territory is actively being painted by victor) */}
+      {activeWipeCaption && (
+        <div className="px-3 py-1.5 rounded-xl border border-amber-400/70 bg-[#9E2318] text-amber-50 shadow-lg text-[11px] font-serif font-bold flex items-center gap-1.5">
+          <Brush className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+          <span className="leading-snug">{activeWipeCaption}</span>
         </div>
       )}
 
-      {/* Compact Cartographic Swatch Strip */}
-      <div
-        className={`px-3 py-1 rounded-full border shadow-md flex items-center gap-2.5 flex-wrap justify-center text-[11px] ${cardSurface}`}
-      >
-        {polities.slice(0, 5).map((pol) => (
-          <span key={pol.id} className="flex items-center gap-1 whitespace-nowrap">
+      {/* 2. Hovered or Clicked Polity Historical Detail Cartouche */}
+      {inspectedPolity && !collapsed && (
+        <div
+          className={`px-3 py-2 rounded-xl border shadow-xl text-xs ${cardSurface}`}
+        >
+          <div className="flex items-center justify-between gap-2 mb-0.5">
             <span
-              className={`w-2.5 h-2.5 inline-block rounded-[2px] ${
-                pol.isTributary ? 'border border-dashed' : ''
-              }`}
-              style={{
-                backgroundColor: `${pol.color}${pol.isTributary ? '55' : 'CC'}`,
-                borderColor: pol.color,
-              }}
-            />
-            <span className="font-serif font-semibold">{pol.label}</span>
+              className="font-serif font-bold text-xs sm:text-sm flex items-center gap-1.5"
+              style={{ color: inspectedPolity.color }}
+            >
+              <span
+                className="w-2.5 h-2.5 rounded-[2px] inline-block shrink-0"
+                style={{ backgroundColor: inspectedPolity.color }}
+              />
+              <span className="truncate">{inspectedPolity.polityName}</span>
+            </span>
+            {inspectedPolity.controlType === 'tributary-garrison' && (
+              <span className="text-[10px] px-1.5 py-0.2 rounded border border-current/35 opacity-80 shrink-0">
+                羁縻卫所
+              </span>
+            )}
+          </div>
+          {(inspectedPolity.ruler || inspectedPolity.capitalName) && (
+            <div className="text-[11px] opacity-75 mb-0.5">
+              {inspectedPolity.ruler && `主帅/君主：${inspectedPolity.ruler}`}
+              {inspectedPolity.capitalName &&
+                ` · 治所：${inspectedPolity.capitalName}`}
+            </div>
+          )}
+          {inspectedPolity.changeReason && (
+            <p className="text-[11px] leading-relaxed opacity-90 line-clamp-2">
+              <span className="font-semibold">考据：</span>
+              {inspectedPolity.changeReason}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* 3. Main Classical Cartographic Legend Box (《舆图图例》) */}
+      <div className={`rounded-xl border shadow-lg overflow-hidden ${cardSurface}`}>
+        <button
+          type="button"
+          onClick={() => setCollapsed((v) => !v)}
+          className="w-full px-3 py-1.5 flex items-center justify-between gap-2 text-xs font-serif font-bold border-b border-current/10 hover:bg-current/5 cursor-pointer"
+        >
+          <span className="flex items-center gap-1.5">
+            <MapIcon className="w-3.5 h-3.5 text-[#B83B2A] dark:text-amber-400" />
+            <span>舆图图例 · 势力与山河防线</span>
+            <span className="text-[10px] font-sans font-normal opacity-70 tabular-nums">
+              ({currentYear}年)
+            </span>
           </span>
-        ))}
-        <span className="opacity-30">|</span>
-        <span className="flex items-center gap-1 whitespace-nowrap opacity-85">
-          <span className="w-3 h-0.5 bg-[#B97316] inline-block" />
-          夺淮故黄河
-        </span>
-        <span className="flex items-center gap-1 whitespace-nowrap opacity-85">
-          <span className="w-3 h-0.5 bg-[#0B7D72] inline-block" />
-          大运河
-        </span>
+          {collapsed ? (
+            <ChevronUp className="w-3.5 h-3.5 opacity-70" />
+          ) : (
+            <ChevronDown className="w-3.5 h-3.5 opacity-70" />
+          )}
+        </button>
+
+        {!collapsed && (
+          <div className="px-3 py-2 space-y-2 text-[11px]">
+            {/* Part A: Faction / Polity Territory Color Swatches */}
+            <div>
+              <div className="text-[10px] font-semibold opacity-65 mb-1 flex items-center justify-between">
+                <span>割据/王朝势力色块（悬停查看考据）</span>
+                <span>实控 / 虚线羁縻</span>
+              </div>
+              <div className="flex flex-wrap gap-x-2.5 gap-y-1">
+                {polities.map((pol) => {
+                  const isTributary = pol.controlType === 'tributary-garrison';
+                  return (
+                    <button
+                      key={pol.polityId}
+                      type="button"
+                      onMouseEnter={() => setPinnedPolity(pol)}
+                      onMouseLeave={() => setPinnedPolity(null)}
+                      onClick={() =>
+                        setPinnedPolity((prev) =>
+                          prev?.polityId === pol.polityId ? null : pol
+                        )
+                      }
+                      className="flex items-center gap-1.5 py-0.5 hover:opacity-100 opacity-92 cursor-pointer text-left"
+                    >
+                      <span
+                        className={`w-3.5 h-2.5 inline-block rounded-[2px] shrink-0 ${
+                          isTributary ? 'border border-dashed' : 'border'
+                        }`}
+                        style={{
+                          backgroundColor: `${pol.color}${
+                            isTributary ? '40' : 'BF'
+                          }`,
+                          borderColor: pol.color,
+                        }}
+                      />
+                      <span className="font-serif font-semibold whitespace-nowrap">
+                        {pol.shortLabel}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Part B: Great Wall, Grand Canal, Yellow River & Military Arrows Legend */}
+            <div className="pt-1.5 border-t border-current/12">
+              <div className="text-[10px] font-semibold opacity-65 mb-1">
+                边防城垣 · 水道 · 战役箭矢图例
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-2.5 gap-y-1">
+                {/* 1. Ming Great Wall (Crenellated Battlement Sample) */}
+                <span className="flex items-center gap-1.5 whitespace-nowrap">
+                  <svg
+                    width="22"
+                    height="8"
+                    viewBox="0 0 22 8"
+                    className="shrink-0"
+                    aria-hidden="true"
+                  >
+                    <line
+                      x1="0"
+                      y1="6"
+                      x2="22"
+                      y2="6"
+                      stroke={isDark ? '#94A3B8' : '#6B5344'}
+                      strokeWidth="2"
+                    />
+                    <line
+                      x1="1"
+                      y1="3.5"
+                      x2="21"
+                      y2="3.5"
+                      stroke={isDark ? '#E2E8F0' : '#3E2E24'}
+                      strokeWidth="3"
+                      strokeDasharray="3 3"
+                    />
+                  </svg>
+                  <span>明长城九边</span>
+                </span>
+
+                {/* 2. 1194-1855 Duohuai Yellow River */}
+                <span className="flex items-center gap-1.5 whitespace-nowrap">
+                  <svg
+                    width="22"
+                    height="8"
+                    viewBox="0 0 22 8"
+                    className="shrink-0"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M0 4 Q 6 1.5, 11 4 T 22 4"
+                      fill="none"
+                      stroke={isDark ? '#EAB338' : '#B97316'}
+                      strokeWidth="2.4"
+                    />
+                  </svg>
+                  <span>夺淮故黄河</span>
+                </span>
+
+                {/* 3. Beijing-Hangzhou Grand Canal */}
+                <span className="flex items-center gap-1.5 whitespace-nowrap">
+                  <svg
+                    width="22"
+                    height="8"
+                    viewBox="0 0 22 8"
+                    className="shrink-0"
+                    aria-hidden="true"
+                  >
+                    <line
+                      x1="0"
+                      y1="4"
+                      x2="22"
+                      y2="4"
+                      stroke={isDark ? '#38C6BD' : '#0B7D72'}
+                      strokeWidth="2.2"
+                      strokeDasharray="4 2.5"
+                    />
+                  </svg>
+                  <span>京杭大运河</span>
+                </span>
+
+                {/* 4. Main Assault / Naval Solid Arrow */}
+                <span className="flex items-center gap-1.5 whitespace-nowrap">
+                  <svg
+                    width="22"
+                    height="10"
+                    viewBox="0 0 22 10"
+                    className="shrink-0"
+                    aria-hidden="true"
+                  >
+                    <line
+                      x1="0"
+                      y1="5"
+                      x2="16"
+                      y2="5"
+                      stroke="#B83B2A"
+                      strokeWidth="2.6"
+                    />
+                    <polygon points="15,1.5 22,5 15,8.5" fill="#B83B2A" />
+                  </svg>
+                  <span>主力/水师箭</span>
+                </span>
+
+                {/* 5. Ambush / Raid / Supply Dashed Arrow */}
+                <span className="flex items-center gap-1.5 whitespace-nowrap">
+                  <svg
+                    width="22"
+                    height="10"
+                    viewBox="0 0 22 10"
+                    className="shrink-0"
+                    aria-hidden="true"
+                  >
+                    <line
+                      x1="0"
+                      y1="5"
+                      x2="16"
+                      y2="5"
+                      stroke="#D97706"
+                      strokeWidth="2.2"
+                      strokeDasharray="3.5 2"
+                    />
+                    <polygon points="15,1.5 22,5 15,8.5" fill="#D97706" />
+                  </svg>
+                  <span>奇袭/粮道箭</span>
+                </span>
+
+                {/* 6. Victory Territory Paint-Over */}
+                <span className="flex items-center gap-1.5 whitespace-nowrap">
+                  <span className="w-4 h-2.5 rounded-[2px] bg-gradient-to-r from-[#B83B2A] to-amber-400 border border-amber-500 inline-block shrink-0" />
+                  <span>胜方版图涂抹</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-    </div>
+    </aside>
   );
 }

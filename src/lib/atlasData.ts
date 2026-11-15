@@ -52,6 +52,21 @@ const TERRITORY_DATA_BY_FILE: Record<string, GeoJSON.FeatureCollection> = {
   'ter-1402.json': ter1402 as unknown as GeoJSON.FeatureCollection,
 };
 
+export const TERRITORY_SNAPSHOT_BY_ID: Record<
+  string,
+  { meta: TerritorySnapshotMeta; geojson: GeoJSON.FeatureCollection }
+> = Object.fromEntries(
+  TERRITORY_INDEX.map((meta) => [
+    meta.snapshotId,
+    {
+      meta,
+      geojson:
+        TERRITORY_DATA_BY_FILE[meta.file] ??
+        TERRITORY_DATA_BY_FILE['ter-1356.json'],
+    },
+  ])
+);
+
 export const ALL_EVENTS: HistoricalEvent[] = [
   ...(eventsFoundingJson as unknown as HistoricalEvent[]),
   ...(eventsJingnanJson as unknown as HistoricalEvent[]),

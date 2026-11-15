@@ -212,9 +212,9 @@
       "whyKeyPoint": "为啥巨舰反成催命符？陈友谅为求船阵稳固将大船连锁，而鄱阳湖夏季浅水航道狭窄，大型楼船转向极慢；朱元璋吃水浅的轻舟配合火攻船顺风突击，瞬间逆转装备代差！",
       "camera": {
         "center": [116.38, 29.02],
-        "zoom": 8.4,
-        "pitch": 55,
-        "bearing": 25
+        "zoom": 8.2,
+        "pitch": 45,
+        "bearing": 0
       },
       "strengthComparison": {
         "leftFactionId": "zhu-wu",
@@ -226,27 +226,29 @@
       },
       "routes": [
         {
-          "id": "r-p4-fire-ships",
-          "factionId": "zhu-wu",
-          "type": "ambush",
-          "label": "敢死七火船乘东北风突袭连环舰",
-          "commander": "常遇春 · 俞通海 · 丁普郎",
-          "coordinates": [
-            [116.58, 29.15],
-            [116.48, 29.06],
-            [116.405, 28.985]
-          ]
-        },
-        {
           "id": "r-p4-chen-line",
+          "order": 1,
           "factionId": "chen-han",
           "type": "naval",
-          "label": "陈友谅铁索巨舰横阵受困",
+          "label": "陈友谅铁索连舟结巨舰横阵",
           "commander": "陈友谅",
           "coordinates": [
             [116.28, 28.95],
             [116.405, 28.985],
             [116.46, 28.92]
+          ]
+        },
+        {
+          "id": "r-p4-fire-ships",
+          "order": 2,
+          "factionId": "zhu-wu",
+          "type": "ambush",
+          "label": "敢死七火船乘东北风突袭焚舰",
+          "commander": "常遇春 · 俞通海 · 丁普郎",
+          "coordinates": [
+            [116.58, 29.15],
+            [116.48, 29.06],
+            [116.405, 28.985]
           ]
         }
       ],

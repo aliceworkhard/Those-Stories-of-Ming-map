@@ -58,7 +58,7 @@ export default function StoryTourPlayer() {
         <div className="flex items-center gap-2">
           <span className="px-2 py-0.5 rounded-full bg-[#9E2318] text-amber-50 text-[11px] font-bold flex items-center gap-1">
             <Video className="w-3 h-3" />
-            3D 全史自动运镜推演
+            全史编年自动推演
           </span>
           <span className="text-xs font-bold tabular-nums opacity-80">
             第 {idx + 1} / {ALL_EVENTS.length} 站
@@ -93,7 +93,7 @@ export default function StoryTourPlayer() {
             {evt.time.year}年 · {evt.title}
           </div>
           <div className="text-[11px] opacity-75 truncate">
-            {evt.location.ancientName}（今{evt.location.modernName}） · 正在执行 3D 山川环绕跟拍
+            {evt.location.ancientName}（今{evt.location.modernName}） · 平稳飞跃巡览 · 跨期自动演示胜方版图涂抹
           </div>
         </div>
 

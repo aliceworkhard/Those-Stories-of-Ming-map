@@ -9,6 +9,29 @@ import type {
   TerritoryPolityProps,
 } from '@/types/ming';
 
+export const ATLAS_PROGRESS_CACHE_KEY = 'ming_story_atlas_progress_v1';
+
+interface PersistedAtlasProgress {
+  currentYear: number;
+  selectedEventId: string | null;
+  theme: MapVisualTheme;
+  perfMode: PerformanceMode;
+  is3D: boolean;
+  placeNameMode: PlaceNameMode;
+}
+
+function saveProgressToCache(partial: PersistedAtlasProgress): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(
+      ATLAS_PROGRESS_CACHE_KEY,
+      JSON.stringify(partial)
+    );
+  } catch {
+    // Ignore storage quota / private mode restrictions gracefully
+  }
+}
+
 export interface LayerVisibility {
   territories: boolean;
   waterways: boolean;
@@ -20,20 +43,24 @@ export interface LayerVisibility {
   showAllMicroEvents: boolean;
 }
 
-export type CampaignCameraMode = 'follow' | 'orbit' | 'free';
+export type CampaignCameraMode = 'follow' | 'free';
+
+const STORY_OPENING_EVENT = ALL_EVENTS[0];
 
 interface AtlasState {
+  hasHydratedCache: boolean;
   currentYear: number;
   yearFilterMode: 'era-window' | 'all';
   selectedEventId: string | null;
   hoveredPolity: TerritoryPolityProps | null;
+  activeWipeCaption: string | null;
 
   // Separated Left Directory vs Right Detail Panels + Pure Map Immersion Mode
   isDirectoryOpen: boolean;
   isDrawerOpen: boolean;
   isImmersionMode: boolean;
 
-  // Chronological Full-History Auto-Camera Tour ("全史运镜推演")
+  // Chronological Full-History Auto-Camera Tour ("全史运镜推演" — steady fly, NO spinning!)
   isStoryTourPlaying: boolean;
   storyTourSpeed: 1 | 1.5;
   storyTourProgress: number;
@@ -56,11 +83,16 @@ interface AtlasState {
   layers: LayerVisibility;
   cameraCommand: { pose: CameraPose; seq: number } | null;
 
-  // Actions
+  // Cache & Story Start Actions
+  hydrateFromStorage: () => void;
+  resetToStoryBeginning: () => void;
+
+  // Core Actions
   setCurrentYear: (year: number) => void;
   setYearFilterMode: (mode: 'era-window' | 'all') => void;
   selectEvent: (eventId: string | null, fly?: boolean) => void;
   setHoveredPolity: (polity: TerritoryPolityProps | null) => void;
+  setActiveWipeCaption: (caption: string | null) => void;
   stepStoryEvent: (delta: 1 | -1) => void;
   setDirectoryOpen: (open: boolean) => void;
   setDrawerOpen: (open: boolean) => void;
@@ -94,11 +126,25 @@ interface AtlasState {
   flyToCamera: (pose: CameraPose) => void;
 }
 
+const persistSnapshot = (s: AtlasState) => {
+  saveProgressToCache({
+    currentYear: s.currentYear,
+    selectedEventId: s.selectedEventId,
+    theme: s.theme,
+    perfMode: s.perfMode,
+    is3D: s.is3D,
+    placeNameMode: s.placeNameMode,
+  });
+};
+
 export const useAtlasStore = create<AtlasState>((set, get) => ({
-  currentYear: SITE_CONFIG.timeline.defaultYear,
+  hasHydratedCache: false,
+  // Uncached default: ALWAYS start at the very beginning of 《明朝那些事儿》 (1344 Chapter 1)!
+  currentYear: STORY_OPENING_EVENT?.time.year ?? SITE_CONFIG.timeline.minYear,
   yearFilterMode: 'all',
-  selectedEventId: 'evt-1363-poyang-decisive',
+  selectedEventId: STORY_OPENING_EVENT?.id ?? null,
   hoveredPolity: null,
+  activeWipeCaption: null,
 
   isDirectoryOpen: true,
   isDrawerOpen: true,
@@ -134,19 +180,126 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   },
   cameraCommand: null,
 
-  setCurrentYear: (year) =>
+  hydrateFromStorage: () => {
+    if (typeof window === 'undefined' || get().hasHydratedCache) return;
+    const prevSeq = get().cameraCommand?.seq ?? 0;
+
+    try {
+      const raw = window.localStorage.getItem(ATLAS_PROGRESS_CACHE_KEY);
+      if (!raw) {
+        // No cache -> Start right at the opening chapter of the story!
+        const startEvt = STORY_OPENING_EVENT;
+        set({
+          hasHydratedCache: true,
+          currentYear: startEvt.time.year,
+          selectedEventId: startEvt.id,
+          cameraCommand: {
+            pose: { ...startEvt.camera, bearing: 0 },
+            seq: prevSeq + 1,
+          },
+        });
+        return;
+      }
+
+      const parsed = JSON.parse(raw) as Partial<PersistedAtlasProgress>;
+      const validEvt =
+        parsed.selectedEventId && EVENT_MAP[parsed.selectedEventId]
+          ? EVENT_MAP[parsed.selectedEventId]
+          : null;
+      const validYear =
+        typeof parsed.currentYear === 'number' &&
+        parsed.currentYear >= SITE_CONFIG.timeline.minYear &&
+        parsed.currentYear <= SITE_CONFIG.timeline.extendedMaxYear
+          ? parsed.currentYear
+          : validEvt?.time.year ?? STORY_OPENING_EVENT.time.year;
+
+      const nextTheme: MapVisualTheme =
+        parsed.theme === 'xuanmo' ? 'xuanmo' : 'xuanzhi';
+      const nextPerf: PerformanceMode =
+        parsed.perfMode === 'eco' || parsed.perfMode === 'ultra'
+          ? parsed.perfMode
+          : 'balanced';
+      const next3D =
+        nextPerf === 'eco'
+          ? false
+          : typeof parsed.is3D === 'boolean'
+          ? parsed.is3D
+          : true;
+      const nextPlaceMode: PlaceNameMode =
+        parsed.placeNameMode === 'ancient' || parsed.placeNameMode === 'modern'
+          ? parsed.placeNameMode
+          : 'both';
+
+      const targetEvt = validEvt ?? STORY_OPENING_EVENT;
+      set({
+        hasHydratedCache: true,
+        currentYear: validYear,
+        selectedEventId: targetEvt.id,
+        theme: nextTheme,
+        perfMode: nextPerf,
+        is3D: next3D,
+        placeNameMode: nextPlaceMode,
+        cameraCommand: {
+          pose: { ...targetEvt.camera, bearing: 0 },
+          seq: prevSeq + 1,
+        },
+      });
+    } catch {
+      const startEvt = STORY_OPENING_EVENT;
+      set({
+        hasHydratedCache: true,
+        currentYear: startEvt.time.year,
+        selectedEventId: startEvt.id,
+        cameraCommand: {
+          pose: { ...startEvt.camera, bearing: 0 },
+          seq: prevSeq + 1,
+        },
+      });
+    }
+  },
+
+  resetToStoryBeginning: () => {
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.removeItem(ATLAS_PROGRESS_CACHE_KEY);
+      } catch {
+        // ignore
+      }
+    }
+    const startEvt = STORY_OPENING_EVENT;
+    const prevSeq = get().cameraCommand?.seq ?? 0;
     set({
-      currentYear: Math.max(
-        SITE_CONFIG.timeline.minYear,
-        Math.min(SITE_CONFIG.timeline.extendedMaxYear, Math.round(year))
-      ),
-    }),
+      activeCampaignId: null,
+      isCampaignPlaying: false,
+      isStoryTourPlaying: false,
+      storyTourProgress: 0,
+      isImmersionMode: false,
+      isDirectoryOpen: true,
+      isDrawerOpen: true,
+      currentYear: startEvt.time.year,
+      selectedEventId: startEvt.id,
+      cameraCommand: {
+        pose: { ...startEvt.camera, bearing: 0 },
+        seq: prevSeq + 1,
+      },
+    });
+  },
+
+  setCurrentYear: (year) => {
+    const clamped = Math.max(
+      SITE_CONFIG.timeline.minYear,
+      Math.min(SITE_CONFIG.timeline.extendedMaxYear, Math.round(year))
+    );
+    set({ currentYear: clamped });
+    persistSnapshot(get());
+  },
 
   setYearFilterMode: (mode) => set({ yearFilterMode: mode }),
 
   selectEvent: (eventId, fly = true) => {
     if (!eventId) {
       set({ selectedEventId: null });
+      persistSnapshot(get());
       return;
     }
     const evt = EVENT_MAP[eventId];
@@ -159,12 +312,14 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
       storyTourProgress: 0,
       storyTourNonce: state.storyTourNonce + 1,
       cameraCommand: fly
-        ? { pose: evt.camera, seq: prevSeq + 1 }
+        ? { pose: { ...evt.camera, bearing: 0 }, seq: prevSeq + 1 }
         : state.cameraCommand,
     }));
+    persistSnapshot(get());
   },
 
   setHoveredPolity: (polity) => set({ hoveredPolity: polity }),
+  setActiveWipeCaption: (caption) => set({ activeWipeCaption: caption }),
 
   stepStoryEvent: (delta) => {
     const { selectedEventId, isStoryTourPlaying } = get();
@@ -231,13 +386,14 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
       cameraCommand: {
         pose: {
           center: evt.camera.center,
-          zoom: Math.max(6.2, evt.camera.zoom),
-          pitch: use3D ? Math.min(46, evt.camera.pitch ?? 44) : 0,
-          bearing: use3D ? (evt.camera.bearing ?? -12) : 0,
+          zoom: Math.max(6.0, evt.camera.zoom),
+          pitch: use3D ? Math.min(42, evt.camera.pitch ?? 38) : 0,
+          bearing: 0,
         },
         seq: prevSeq + 1,
       },
     });
+    persistSnapshot(get());
   },
 
   stopStoryTour: () =>
@@ -283,6 +439,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
       activePhaseIndex: 0,
       isCampaignPlaying: false,
       campaignPhaseProgress: 0,
+      activeWipeCaption: null,
       isDirectoryOpen: !state.isImmersionMode,
       isDrawerOpen: !state.isImmersionMode,
     })),
@@ -341,7 +498,10 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     })),
 
   setTocModalOpen: (open) => set({ isTocModalOpen: open }),
-  setTheme: (theme) => set({ theme }),
+  setTheme: (theme) => {
+    set({ theme });
+    persistSnapshot(get());
+  },
 
   setPerfMode: (mode) => {
     const next3D = mode !== 'eco';
@@ -354,12 +514,13 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
           center:
             state.cameraCommand?.pose.center ?? SITE_CONFIG.defaultCamera.center,
           zoom: state.cameraCommand?.pose.zoom ?? SITE_CONFIG.defaultCamera.zoom,
-          pitch: next3D ? 38 : 0,
-          bearing: next3D ? -8 : 0,
+          pitch: next3D ? 36 : 0,
+          bearing: 0,
         },
         seq: prevSeq + 1,
       },
     }));
+    persistSnapshot(get());
   },
 
   toggle3D: () => {
@@ -372,15 +533,19 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
           center:
             state.cameraCommand?.pose.center ?? SITE_CONFIG.defaultCamera.center,
           zoom: state.cameraCommand?.pose.zoom ?? SITE_CONFIG.defaultCamera.zoom,
-          pitch: next3D ? 42 : 0,
-          bearing: next3D ? -8 : 0,
+          pitch: next3D ? 38 : 0,
+          bearing: 0,
         },
         seq: prevSeq + 1,
       },
     }));
+    persistSnapshot(get());
   },
 
-  setPlaceNameMode: (mode) => set({ placeNameMode: mode }),
+  setPlaceNameMode: (mode) => {
+    set({ placeNameMode: mode });
+    persistSnapshot(get());
+  },
 
   toggleLayer: (key) =>
     set((state) => ({
@@ -393,7 +558,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   flyToCamera: (pose) =>
     set((state) => ({
       cameraCommand: {
-        pose,
+        pose: { ...pose, bearing: 0 },
         seq: (state.cameraCommand?.seq ?? 0) + 1,
       },
     })),

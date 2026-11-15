@@ -2,6 +2,7 @@
 
 import React from 'react';
 import {
+  ArrowRight,
   ChevronLeft,
   ChevronRight,
   HelpCircle,
@@ -13,10 +14,13 @@ import {
   X,
 } from 'lucide-react';
 import { CAMPAIGN_MAP } from '@/lib/atlasData';
+import { computeSequentialRouteWindows } from '@/engine/MingMapLayers';
 import {
   useAtlasStore,
   type CampaignCameraMode,
 } from '@/store/useAtlasStore';
+
+const CIRCLED_NUMS = ['①', '②', '③', '④', '⑤', '⑥'];
 
 export default function CampaignPlayer() {
   const activeCampaignId = useAtlasStore((s) => s.activeCampaignId);
@@ -52,6 +56,19 @@ export default function CampaignPlayer() {
     (f) => f.id === strength?.rightFactionId
   );
 
+  const factionColorMap: Record<string, string> = Object.fromEntries(
+    campaign.factions.map((f) => [f.id, f.color])
+  );
+
+  // Ordered sequential routes (`① -> ② -> ③`)
+  const orderedRoutes = [...phase.routes]
+    .map((r, idx) => ({ r, sortOrder: r.order ?? idx + 1 }))
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .map((x) => x.r);
+  const windows = computeSequentialRouteWindows(orderedRoutes.length);
+  // Route growth occupies roughly the first 62% of total phase duration
+  const approxGrowRatio = Math.min(1, (campaignPhaseProgress / 100) / 0.62);
+
   return (
     <section
       aria-label="战役分幕行军推演控制台"
@@ -69,7 +86,7 @@ export default function CampaignPlayer() {
         />
       </div>
 
-      {/* Top Bar: Campaign Title + Camera Choreography Mode Switch + Phase Pills + Exit */}
+      {/* Top Bar: Campaign Title + Steady Camera Mode Switch (NO spinning!) + Phase Pills + Exit */}
       <div className="flex items-center justify-between gap-2 flex-wrap border-b border-current/12 pb-2.5 pt-0.5">
         <div className="flex items-center gap-2 min-w-0 flex-wrap">
           <span className="px-2 py-0.5 rounded bg-[#B83B2A] text-amber-50 text-[11px] font-bold flex items-center gap-1 shrink-0">
@@ -83,17 +100,16 @@ export default function CampaignPlayer() {
             （{phase.dateLabel}）
           </span>
 
-          {/* Explicit 3D Camera Choreography Mode Selector */}
+          {/* Steady Camera Mode Selector ("跟随进军" vs "自由视角", zero circular orbit!) */}
           <div
             className="flex items-center gap-0.5 p-0.5 rounded-lg bg-current/8 border border-current/12 text-[11px]"
             role="group"
-            aria-label="战役三维运镜模式"
+            aria-label="战役镜头视角模式"
           >
             <Video className="w-3 h-3 ml-1.5 mr-0.5 text-[#B83B2A] dark:text-amber-400 shrink-0" />
             {(
               [
-                { id: 'follow', label: '跟随行军运镜' },
-                { id: 'orbit', label: '全景环绕运镜' },
+                { id: 'follow', label: '跟随进军' },
                 { id: 'free', label: '自由视角' },
               ] as { id: CampaignCameraMode; label: string }[]
             ).map((m) => (
@@ -144,13 +160,63 @@ export default function CampaignPlayer() {
         </div>
       </div>
 
-      {/* Middle: Phase Title, Narrative & "WHY Key Point" */}
+      {/* Middle: Phase Title, Narrative, Sequential Arrow Step Bar (`① -> ② -> ③`) & "WHY Key Point" */}
       <div className="mt-2.5 grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
-        <div className="md:col-span-7 space-y-1.5">
+        <div className="md:col-span-7 space-y-2">
           <div className="font-serif font-bold text-sm sm:text-base text-[#B83B2A] dark:text-amber-300">
             {phase.title}
           </div>
           <p className="text-xs leading-relaxed opacity-90">{phase.narrative}</p>
+
+          {/* Explicit Chronological Arrow Order Strip (`行军先后次序：① -> ② -> ③`) */}
+          {orderedRoutes.length > 0 && (
+            <div className="pt-1 flex items-center gap-1.5 flex-wrap text-[11px]">
+              <span className="font-serif font-bold opacity-70 shrink-0">
+                箭矢先后次序：
+              </span>
+              {orderedRoutes.map((rt, idx) => {
+                const win = windows[idx] ?? { startAt: 0, endAt: 1 };
+                const started =
+                  campaignPhaseProgress === 0
+                    ? idx === 0
+                    : approxGrowRatio >= win.startAt;
+                const activeNow =
+                  isCampaignPlaying &&
+                  approxGrowRatio >= win.startAt &&
+                  approxGrowRatio <= win.endAt + 0.04;
+                const c =
+                  rt.type === 'supply'
+                    ? '#D69E2E'
+                    : factionColorMap[rt.factionId] ?? '#B83B2A';
+
+                return (
+                  <React.Fragment key={rt.id}>
+                    {idx > 0 && (
+                      <ArrowRight className="w-3 h-3 opacity-45 shrink-0" />
+                    )}
+                    <span
+                      className={`px-2 py-0.5 rounded-full border flex items-center gap-1 transition-opacity ${
+                        activeNow
+                          ? 'ring-2 ring-amber-400 font-bold opacity-100'
+                          : started
+                          ? 'opacity-95 font-medium'
+                          : 'opacity-45'
+                      }`}
+                      style={{ borderColor: c }}
+                    >
+                      <span
+                        className="w-2 h-2 rounded-full inline-block shrink-0"
+                        style={{ backgroundColor: c }}
+                      />
+                      <span>
+                        {CIRCLED_NUMS[idx] ?? idx + 1} {rt.label}
+                      </span>
+                    </span>
+                  </React.Fragment>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         <div
@@ -170,7 +236,7 @@ export default function CampaignPlayer() {
         </div>
       </div>
 
-      {/* Bottom: Faction Strength Bar + Playback & Camera Speed Controls */}
+      {/* Bottom: Faction Strength Bar + Playback & Speed Controls */}
       <div className="mt-3 pt-2 border-t border-current/10 flex flex-wrap items-center justify-between gap-3">
         {strength && (
           <div className="flex-1 min-w-[200px]">
@@ -206,7 +272,7 @@ export default function CampaignPlayer() {
             type="button"
             onClick={() => setCampaignSpeed(campaignSpeed === 1 ? 1.5 : 1)}
             className="px-2 py-1.5 rounded-lg border border-current/20 text-xs font-bold tabular-nums hover:bg-current/10 cursor-pointer"
-            title="切换自动运镜推演倍速"
+            title="切换推演倍速"
           >
             {campaignSpeed}x
           </button>
@@ -215,10 +281,10 @@ export default function CampaignPlayer() {
             type="button"
             onClick={replayCurrentPhase}
             className="px-2 py-1.5 rounded-lg border border-current/20 text-xs font-medium flex items-center gap-1 hover:bg-current/10 cursor-pointer"
-            title="重播本幕行军与运镜"
+            title="重播本幕分步进军与版图涂抹"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">重播运镜</span>
+            <span className="hidden sm:inline">重播本幕</span>
           </button>
 
           <button
@@ -250,12 +316,12 @@ export default function CampaignPlayer() {
             {isCampaignPlaying ? (
               <>
                 <Pause className="w-3.5 h-3.5" />
-                暂停运镜推演
+                暂停推演
               </>
             ) : (
               <>
                 <Play className="w-3.5 h-3.5" />
-                开启运镜推演
+                继续推演
               </>
             )}
           </button>

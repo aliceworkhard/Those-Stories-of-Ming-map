@@ -54,9 +54,10 @@
       "routes": [
         {
           "id": "r-ne1-huzhou",
+          "order": 1,
           "factionId": "ming-army",
           "type": "assault",
-          "label": "徐达先克湖州、杭州剪除羽翼",
+          "label": "徐达先克湖州、杭州剪除南翼",
           "commander": "徐达 · 常遇春",
           "coordinates": [
             [118.8, 32.06],
@@ -66,25 +67,27 @@
           ]
         },
         {
-          "id": "r-ne1-suzhou",
-          "factionId": "ming-army",
-          "type": "assault",
-          "label": "南北合围攻破平江（苏州）",
-          "commander": "徐达",
-          "coordinates": [
-            [120.09, 30.89],
-            [120.62, 31.3]
-          ]
-        },
-        {
           "id": "r-ne1-north-pincer",
+          "order": 2,
           "factionId": "ming-army",
           "type": "assault",
-          "label": "江北军渡江封锁常熟昆山",
+          "label": "江北军渡江取常熟昆山锁死北翼",
           "commander": "常遇春",
           "coordinates": [
             [119.41, 32.39],
             [120.3, 31.82],
+            [120.62, 31.3]
+          ]
+        },
+        {
+          "id": "r-ne1-suzhou",
+          "order": 3,
+          "factionId": "ming-army",
+          "type": "assault",
+          "label": "诸军南北合围攻破平江（苏州）",
+          "commander": "徐达",
+          "coordinates": [
+            [120.09, 30.89],
             [120.62, 31.3]
           ]
         }

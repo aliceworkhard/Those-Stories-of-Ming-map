@@ -9,6 +9,7 @@ import {
   ALL_EVENTS,
   CAMPAIGN_MAP,
   EVENT_MAP,
+  TERRITORY_SNAPSHOT_BY_ID,
   getSnapshotForYear,
 } from '@/lib/atlasData';
 import {
@@ -24,8 +25,15 @@ import {
   syncLayerVisibility,
   updateCampaignAnimationFrame,
   updateCausalArcsOnMap,
+  updateTerritoryWipeOnMap,
   type PreparedRouteCurve,
 } from '@/engine/MingMapLayers';
+import {
+  buildCampaignTerritoryFrame,
+  buildEraWipeOverlayGeoJSON,
+  getEraWipePlan,
+  type EraWipePlan,
+} from '@/engine/territoryWipe';
 import { sampleAlongPath } from '@/lib/curve';
 import { useAtlasStore } from '@/store/useAtlasStore';
 import type {
@@ -37,12 +45,26 @@ import type {
   TerritoryPolityProps,
 } from '@/types/ming';
 
-const BASE_PHASE_DURATION_MS = 7800;
-const ROUTE_GROW_DURATION_MS = 3000;
-const OPENING_FLY_DURATION_MS = 1350;
+const OPENING_FLY_DURATION_MS = 1200;
+const STORY_STOP_DURATION_MS = 5800;
+const ERA_WIPE_DURATION_MS = 2050;
+const CAMPAIGN_WIPE_DURATION_MS = 2100;
+const CIRCLED_STEPS = ['①', '②', '③', '④', '⑤', '⑥'];
 
-const STORY_STOP_DURATION_MS = 6200;
-const STORY_FLY_DURATION_MS = 1400;
+function getRouteGrowDurationMs(routeCount: number): number {
+  if (routeCount <= 1) return 2300;
+  if (routeCount === 2) return 4100;
+  return 5800;
+}
+
+function getPhaseTotalDurationMs(
+  routeCount: number,
+  hasWipeInPhase: boolean
+): number {
+  return (
+    getRouteGrowDurationMs(routeCount) + (hasWipeInPhase ? 3500 : 2500)
+  );
+}
 
 interface ScreenBox {
   x1: number;
@@ -101,6 +123,9 @@ interface EventMarkerRecord {
 
 interface CampaignCalloutRecord {
   coord: LngLat;
+  stepNo: number;
+  startAt: number;
+  root: HTMLDivElement;
   marker: maplibregl.Marker;
   wrapEl: HTMLDivElement;
   widthPx: number;
@@ -196,15 +221,27 @@ export default function MingMapCanvas() {
   const phaseElapsedMsRef = useRef(0);
   const routeGrowElapsedMsRef = useRef(0);
   const routeGrowFinishedRef = useRef(false);
+  const campaignWipeElapsedMsRef = useRef(0);
+  const campaignHasWipeRef = useRef(false);
+  const lastCampaignWipePushMsRef = useRef(0);
   const lastWebglFrameMsRef = useRef(0);
   const storyElapsedMsRef = useRef(0);
   const lastFrameTimeRef = useRef<number | null>(null);
   const lastProgressReportMsRef = useRef(0);
   const userInteractedInPhaseRef = useRef(false);
-  const storyUserInteractedRef = useRef(false);
   const activePhaseRef = useRef<CampaignPhase | null>(null);
   const is3DRef = useRef(true);
   const hoveredPolityIdRef = useRef<string | null>(null);
+
+  // Era-to-Era Victory Brush Paint-Over State
+  const displayedSnapshotIdRef = useRef<string | null>(null);
+  const lastEraWipePushMsRef = useRef(0);
+  const eraWipeRef = useRef<{
+    fromId: string;
+    toId: string;
+    plan: EraWipePlan;
+    elapsedMs: number;
+  } | null>(null);
 
   // Lightweight Marker Registries (Places & Polity Seals now live 100% on GPU!)
   const eventMarkerMapRef = useRef<Map<string, EventMarkerRecord>>(new Map());
@@ -575,15 +612,63 @@ export default function MingMapCanvas() {
     const terSource = map.getSource('ming-territories') as
       | maplibregl.GeoJSONSource
       | undefined;
-    if (terSource) {
-      terSource.setData(currentSnapshot.geojson);
-    }
-
     const polPtSource = map.getSource('ming-polity-points') as
       | maplibregl.GeoJSONSource
       | undefined;
-    if (polPtSource) {
-      polPtSource.setData(buildPolityLabelGeoJSON(currentSnapshot.geojson));
+
+    if (st.activeCampaignId) {
+      // In Campaign mode: territory starts at pre-battle state and progressively paints victory!
+      eraWipeRef.current = null;
+      const cmpFrame = buildCampaignTerritoryFrame(
+        st.activeCampaignId,
+        st.activePhaseIndex,
+        0
+      );
+      campaignHasWipeRef.current = cmpFrame.hasWipeInPhase;
+      if (terSource) terSource.setData(cmpFrame.baseGeoJSON);
+      if (polPtSource) {
+        polPtSource.setData(buildPolityLabelGeoJSON(cmpFrame.baseGeoJSON));
+      }
+      updateTerritoryWipeOnMap(map, cmpFrame.wipeOverlayGeoJSON);
+      st.setActiveWipeCaption(cmpFrame.caption);
+      displayedSnapshotIdRef.current = null;
+    } else {
+      campaignHasWipeRef.current = false;
+      const nextSnapId = currentSnapshot.meta.snapshotId;
+      const prevSnapId = displayedSnapshotIdRef.current;
+
+      if (
+        prevSnapId &&
+        prevSnapId !== nextSnapId &&
+        TERRITORY_SNAPSHOT_BY_ID[prevSnapId] &&
+        st.layers.territories
+      ) {
+        // Trigger smooth Victory Brush Paint-Over from previous era snapshot to next era snapshot!
+        const prevGeo = TERRITORY_SNAPSHOT_BY_ID[prevSnapId].geojson;
+        const plan = getEraWipePlan(prevSnapId, nextSnapId);
+        eraWipeRef.current = {
+          fromId: prevSnapId,
+          toId: nextSnapId,
+          plan,
+          elapsedMs: 0,
+        };
+        if (terSource) terSource.setData(prevGeo);
+        if (polPtSource) {
+          polPtSource.setData(buildPolityLabelGeoJSON(currentSnapshot.geojson));
+        }
+        updateTerritoryWipeOnMap(map, null);
+        st.setActiveWipeCaption(plan.caption);
+        startDirectorLoopRef.current();
+      } else if (!eraWipeRef.current || eraWipeRef.current.toId !== nextSnapId) {
+        eraWipeRef.current = null;
+        displayedSnapshotIdRef.current = nextSnapId;
+        if (terSource) terSource.setData(currentSnapshot.geojson);
+        if (polPtSource) {
+          polPtSource.setData(buildPolityLabelGeoJSON(currentSnapshot.geojson));
+        }
+        updateTerritoryWipeOnMap(map, null);
+        st.setActiveWipeCaption(null);
+      }
     }
 
     const activeEvt = st.selectedEventId ? EVENT_MAP[st.selectedEventId] : null;
@@ -837,7 +922,14 @@ export default function MingMapCanvas() {
   // 1. Initialize MapLibre GL & On-Demand Hardware-Friendly Director Loop
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
+    useAtlasStore.getState().hydrateFromStorage();
     const initState = useAtlasStore.getState();
+    const initialPose =
+      initState.cameraCommand?.pose ??
+      (initState.selectedEventId
+        ? EVENT_MAP[initState.selectedEventId]?.camera
+        : null) ??
+      SITE_CONFIG.defaultCamera;
 
     const map = new maplibregl.Map({
       container: containerRef.current,
@@ -846,13 +938,13 @@ export default function MingMapCanvas() {
         initState.is3D,
         initState.perfMode
       ),
-      center: SITE_CONFIG.defaultCamera.center,
-      zoom: SITE_CONFIG.defaultCamera.zoom,
+      center: initialPose.center,
+      zoom: initialPose.zoom,
       pitch:
         initState.is3D && initState.perfMode !== 'eco'
-          ? SITE_CONFIG.defaultCamera.pitch
+          ? Math.min(44, initialPose.pitch ?? SITE_CONFIG.defaultCamera.pitch)
           : 0,
-      bearing: SITE_CONFIG.defaultCamera.bearing,
+      bearing: 0,
       pixelRatio: getTargetPixelRatio(initState.perfMode),
       maxTileCacheSize: initState.perfMode === 'eco' ? 48 : 96,
       maxPitch: 54,
@@ -877,7 +969,6 @@ export default function MingMapCanvas() {
       if (!e.originalEvent) return;
       const st = useAtlasStore.getState();
       if (st.activeCampaignId) userInteractedInPhaseRef.current = true;
-      if (st.isStoryTourPlaying) storyUserInteractedRef.current = true;
     };
     map.on('mousedown', onManualInput);
     map.on('touchstart', onManualInput);
@@ -980,13 +1071,20 @@ export default function MingMapCanvas() {
     const shouldKeepRunning = (): boolean => {
       if (typeof document !== 'undefined' && document.hidden) return false;
       const st = useAtlasStore.getState();
-      const growTotalMs = ROUTE_GROW_DURATION_MS / st.campaignSpeed;
+      const routeCount = activeCurvesRef.current.length;
+      const growTotalMs = getRouteGrowDurationMs(routeCount) / st.campaignSpeed;
+      const campaignWipePending =
+        campaignHasWipeRef.current &&
+        campaignWipeElapsedMsRef.current < CAMPAIGN_WIPE_DURATION_MS;
       const campaignNeedsFrames =
         Boolean(st.activeCampaignId) &&
-        activeCurvesRef.current.length > 0 &&
-        (st.isCampaignPlaying || routeGrowElapsedMsRef.current < growTotalMs);
+        routeCount > 0 &&
+        (st.isCampaignPlaying ||
+          routeGrowElapsedMsRef.current < growTotalMs ||
+          campaignWipePending);
       const tourNeedsFrames = !st.activeCampaignId && st.isStoryTourPlaying;
-      return campaignNeedsFrames || tourNeedsFrames;
+      const eraWipeNeedsFrames = eraWipeRef.current !== null;
+      return campaignNeedsFrames || tourNeedsFrames || eraWipeNeedsFrames;
     };
 
     const tick = (now: number) => {
@@ -1002,9 +1100,41 @@ export default function MingMapCanvas() {
 
       const store = useAtlasStore.getState();
       const currentMap = mapRef.current;
-      const minWebglInterval = store.perfMode === 'ultra' ? 20 : 33;
+      const minWebglInterval = store.perfMode === 'ultra' ? 24 : 34;
 
-      // --- MODE A: Active Battlefield Campaign Replay ---
+      // --- MODE C: Era-to-Era Victory Brush Paint-Over (2.05s smooth sweep, then sleeps!) ---
+      if (
+        currentMap &&
+        styleReadyRef.current &&
+        !store.activeCampaignId &&
+        eraWipeRef.current
+      ) {
+        const wipe = eraWipeRef.current;
+        wipe.elapsedMs += dt;
+        const rawWipe = Math.min(1, wipe.elapsedMs / ERA_WIPE_DURATION_MS);
+
+        if (rawWipe >= 1) {
+          const destSnap = TERRITORY_SNAPSHOT_BY_ID[wipe.toId];
+          const terSrc = currentMap.getSource('ming-territories') as
+            | maplibregl.GeoJSONSource
+            | undefined;
+          if (terSrc && destSnap) terSrc.setData(destSnap.geojson);
+          updateTerritoryWipeOnMap(currentMap, null);
+          displayedSnapshotIdRef.current = wipe.toId;
+          eraWipeRef.current = null;
+          store.setActiveWipeCaption(null);
+        } else if (now - lastEraWipePushMsRef.current >= 42) {
+          lastEraWipePushMsRef.current = now;
+          const overlay = buildEraWipeOverlayGeoJSON(
+            wipe.toId,
+            wipe.plan,
+            rawWipe
+          );
+          updateTerritoryWipeOnMap(currentMap, overlay);
+        }
+      }
+
+      // --- MODE A: Active Battlefield Campaign Replay (Strict ①->②->③ Order + Victory Wipe!) ---
       if (
         currentMap &&
         styleReadyRef.current &&
@@ -1012,8 +1142,11 @@ export default function MingMapCanvas() {
         activeCurvesRef.current.length > 0
       ) {
         const speed = store.campaignSpeed;
-        const phaseTotalMs = BASE_PHASE_DURATION_MS / speed;
-        const growTotalMs = ROUTE_GROW_DURATION_MS / speed;
+        const curves = activeCurvesRef.current;
+        const growTotalMs = getRouteGrowDurationMs(curves.length) / speed;
+        const phaseTotalMs =
+          getPhaseTotalDurationMs(curves.length, campaignHasWipeRef.current) /
+          speed;
 
         routeGrowElapsedMsRef.current = Math.min(
           growTotalMs,
@@ -1023,8 +1156,48 @@ export default function MingMapCanvas() {
           1,
           routeGrowElapsedMsRef.current / growTotalMs
         );
-        const easedGrow = 1 - Math.pow(1 - rawGrow, 2.2);
-        const pulseProgress = (now % 3200) / 3200;
+        const pulseProgress = (now % 3400) / 3400;
+
+        // Reveal numbered route callout pills (`①`, `②`, `③`) strictly as each arrow starts!
+        let calloutVisibilityChanged = false;
+        for (const co of campaignCalloutsRef.current) {
+          const shouldShow = rawGrow >= co.startAt - 0.005;
+          const curHidden = co.root.style.display === 'none';
+          if (shouldShow && curHidden) {
+            co.root.style.display = 'block';
+            calloutVisibilityChanged = true;
+          }
+        }
+        if (calloutVisibilityChanged) {
+          scheduleScreenLayout(false);
+        }
+
+        // Progressive Victory Territory Paint-Over once attacking arrows strike (>= 62% of route progression)
+        if (campaignHasWipeRef.current && rawGrow >= 0.62) {
+          campaignWipeElapsedMsRef.current = Math.min(
+            CAMPAIGN_WIPE_DURATION_MS,
+            campaignWipeElapsedMsRef.current + dt * speed
+          );
+          const wipeRatio = Math.min(
+            1,
+            campaignWipeElapsedMsRef.current / CAMPAIGN_WIPE_DURATION_MS
+          );
+          if (
+            now - lastCampaignWipePushMsRef.current >= 44 ||
+            wipeRatio >= 0.999
+          ) {
+            lastCampaignWipePushMsRef.current = now;
+            const cmpFrame = buildCampaignTerritoryFrame(
+              store.activeCampaignId,
+              store.activePhaseIndex,
+              wipeRatio
+            );
+            updateTerritoryWipeOnMap(currentMap, cmpFrame.wipeOverlayGeoJSON);
+            if (store.activeWipeCaption !== cmpFrame.caption) {
+              store.setActiveWipeCaption(cmpFrame.caption);
+            }
+          }
+        }
 
         // Throttle GeoJSONSource updates to ~30fps, and freeze line geometry once grown!
         if (now - lastWebglFrameMsRef.current >= minWebglInterval) {
@@ -1036,8 +1209,8 @@ export default function MingMapCanvas() {
           if (!(store.perfMode === 'eco' && skipLineUpdate)) {
             updateCampaignAnimationFrame(
               currentMap,
-              activeCurvesRef.current,
-              easedGrow,
+              curves,
+              rawGrow,
               pulseProgress,
               skipLineUpdate
             );
@@ -1056,49 +1229,39 @@ export default function MingMapCanvas() {
             store.setCampaignPhaseProgress(pct);
           }
 
+          // Steady North-Up Follow Camera (ZERO circular spinning / "转圈圈"!)
           if (
             store.perfMode !== 'eco' &&
             phaseElapsedMsRef.current >= OPENING_FLY_DURATION_MS &&
             !userInteractedInPhaseRef.current &&
-            store.campaignCameraMode !== 'free' &&
+            store.campaignCameraMode === 'follow' &&
             activePhaseRef.current
           ) {
             const phase = activePhaseRef.current;
-            const postFlyRatio = Math.min(
-              1,
-              (phaseElapsedMsRef.current - OPENING_FLY_DURATION_MS) /
-                Math.max(1, phaseTotalMs - OPENING_FLY_DURATION_MS)
-            );
-            const smoothRatio =
-              postFlyRatio * postFlyRatio * (3 - 2 * postFlyRatio);
+            // Find the currently advancing sequential arrow `k`
+            const activeCurve =
+              curves.find(
+                (c) => rawGrow >= c.startAt && rawGrow <= c.endAt + 0.02
+              ) ?? curves[curves.length - 1];
 
-            const primaryCurve = activeCurvesRef.current[0];
-            const baseBearing = phase.camera.bearing ?? -10;
-            const basePitch = Math.min(48, phase.camera.pitch ?? 44);
-
-            if (store.campaignCameraMode === 'follow' && primaryCurve) {
-              const routeT = Math.min(0.95, 0.14 + smoothRatio * 0.81);
-              const { coordinates: vanguardPt } = sampleAlongPath(
-                primaryCurve.coords,
-                routeT
+            if (activeCurve) {
+              const span = Math.max(0.01, activeCurve.endAt - activeCurve.startAt);
+              const localT = Math.max(
+                0,
+                Math.min(1, (rawGrow - activeCurve.startAt) / span)
               );
+              const { coordinates: vanguardPt } = sampleAlongPath(
+                activeCurve.coords,
+                Math.min(0.95, 0.12 + localT * 0.83)
+              );
+              const basePitch = Math.min(44, phase.camera.pitch ?? 40);
               currentMap.jumpTo({
                 center: [
-                  vanguardPt[0] * 0.54 + phase.camera.center[0] * 0.46,
-                  vanguardPt[1] * 0.54 + phase.camera.center[1] * 0.46,
+                  vanguardPt[0] * 0.42 + phase.camera.center[0] * 0.58,
+                  vanguardPt[1] * 0.42 + phase.camera.center[1] * 0.58,
                 ],
-                zoom: Math.min(
-                  8.8,
-                  phase.camera.zoom + 0.14 + smoothRatio * 0.36
-                ),
-                bearing: is3DRef.current ? baseBearing + smoothRatio * 22 : 0,
-                pitch: is3DRef.current ? basePitch : 0,
-              });
-            } else if (store.campaignCameraMode === 'orbit') {
-              currentMap.jumpTo({
-                center: phase.camera.center,
-                zoom: phase.camera.zoom + smoothRatio * 0.18,
-                bearing: is3DRef.current ? baseBearing + smoothRatio * 28 : 0,
+                zoom: phase.camera.zoom,
+                bearing: 0,
                 pitch: is3DRef.current ? basePitch : 0,
               });
             }
@@ -1111,7 +1274,7 @@ export default function MingMapCanvas() {
         }
       }
 
-      // --- MODE B: Chronological Full-History Story Tour ---
+      // --- MODE B: Chronological Full-History Story Tour (Rock-Steady View, ZERO Spinning!) ---
       if (
         currentMap &&
         styleReadyRef.current &&
@@ -1129,31 +1292,6 @@ export default function MingMapCanvas() {
         if (now - lastProgressReportMsRef.current > 85) {
           lastProgressReportMsRef.current = now;
           store.setStoryTourProgress(pct);
-        }
-
-        if (
-          store.perfMode !== 'eco' &&
-          storyElapsedMsRef.current >= STORY_FLY_DURATION_MS &&
-          !storyUserInteractedRef.current
-        ) {
-          const evt = store.selectedEventId
-            ? EVENT_MAP[store.selectedEventId]
-            : ALL_EVENTS[0];
-          if (evt) {
-            const orbitRatio = Math.min(
-              1,
-              (storyElapsedMsRef.current - STORY_FLY_DURATION_MS) /
-                Math.max(1, stopTotalMs - STORY_FLY_DURATION_MS)
-            );
-            const baseBearing = evt.camera.bearing ?? -12;
-            const baseZoom = Math.max(6.2, evt.camera.zoom);
-            currentMap.jumpTo({
-              center: evt.location.coordinates,
-              zoom: baseZoom + orbitRatio * 0.24,
-              pitch: is3DRef.current ? Math.min(46, evt.camera.pitch ?? 44) : 0,
-              bearing: is3DRef.current ? baseBearing + orbitRatio * 24 : 0,
-            });
-          }
         }
 
         if (storyElapsedMsRef.current >= stopTotalMs) {
@@ -1274,7 +1412,6 @@ export default function MingMapCanvas() {
   // 5. Reset Story Tour Clock on Event Change
   useEffect(() => {
     storyElapsedMsRef.current = 0;
-    storyUserInteractedRef.current = false;
     startDirectorLoopRef.current();
   }, [selectedEventId, storyTourNonce, isStoryTourPlaying]);
 
@@ -1286,6 +1423,7 @@ export default function MingMapCanvas() {
     phaseElapsedMsRef.current = 0;
     routeGrowElapsedMsRef.current = 0;
     routeGrowFinishedRef.current = false;
+    campaignWipeElapsedMsRef.current = 0;
     userInteractedInPhaseRef.current = false;
 
     const { preparedCurves } = buildPhaseRouteFeatures(
@@ -1297,8 +1435,8 @@ export default function MingMapCanvas() {
     const startCenter: LngLat =
       campaignCameraMode === 'follow' && firstCurve
         ? [
-            firstCurve.startPoint[0] * 0.52 + activePhase.camera.center[0] * 0.48,
-            firstCurve.startPoint[1] * 0.52 + activePhase.camera.center[1] * 0.48,
+            firstCurve.startPoint[0] * 0.42 + activePhase.camera.center[0] * 0.58,
+            firstCurve.startPoint[1] * 0.42 + activePhase.camera.center[1] * 0.58,
           ]
         : activePhase.camera.center;
 
@@ -1306,8 +1444,8 @@ export default function MingMapCanvas() {
     map.flyTo({
       center: startCenter,
       zoom: activePhase.camera.zoom,
-      pitch: use3D ? Math.min(46, activePhase.camera.pitch ?? 44) : 0,
-      bearing: use3D ? (activePhase.camera.bearing ?? -10) : 0,
+      pitch: use3D ? Math.min(44, activePhase.camera.pitch ?? 40) : 0,
+      bearing: 0,
       duration: OPENING_FLY_DURATION_MS,
       essential: true,
     });
@@ -1323,7 +1461,7 @@ export default function MingMapCanvas() {
     }
   }, [isCampaignPlaying]);
 
-  // 7. Execute Declarative Camera FlyTo Commands
+  // 7. Execute Declarative Camera FlyTo Commands (Steady North-Up `bearing: 0`)
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !cameraCommand) return;
@@ -1332,9 +1470,9 @@ export default function MingMapCanvas() {
     map.flyTo({
       center: pose.center,
       zoom: pose.zoom,
-      pitch: use3D ? Math.min(46, pose.pitch ?? 42) : 0,
-      bearing: use3D ? (pose.bearing ?? -8) : 0,
-      duration: 1200,
+      pitch: use3D ? Math.min(44, pose.pitch ?? 38) : 0,
+      bearing: pose.bearing ?? 0,
+      duration: 1150,
       essential: true,
     });
   }, [cameraCommand, is3D, perfMode]);
@@ -1383,16 +1521,20 @@ export default function MingMapCanvas() {
     for (const curve of preparedCurves) {
       const root = createImmutableMarkerRoot('28');
       root.style.pointerEvents = 'none';
+      // Hide callouts for Step ②, ③ until their sequential arrow turn arrives!
+      root.style.display = curve.stepNo === 1 ? 'block' : 'none';
+      const stepSymbol =
+        CIRCLED_STEPS[curve.stepNo - 1] ?? `(${curve.stepNo})`;
       const tacticBadge =
         curve.tactic === 'ambush'
-          ? '奇袭'
+          ? `${stepSymbol} 奇袭`
           : curve.tactic === 'naval'
-          ? '水师'
+          ? `${stepSymbol} 水师`
           : curve.tactic === 'retreat'
-          ? '败退'
+          ? `${stepSymbol} 败退`
           : curve.tactic === 'supply'
-          ? '粮道'
-          : '主力';
+          ? `${stepSymbol} 粮道`
+          : `${stepSymbol} 主力`;
 
       const wrapEl = document.createElement('div');
       wrapEl.style.position = 'absolute';
@@ -1417,9 +1559,12 @@ export default function MingMapCanvas() {
 
       campaignCalloutsRef.current.push({
         coord: curve.midPoint,
+        stepNo: curve.stepNo,
+        startAt: curve.startAt,
+        root,
         marker: m,
         wrapEl,
-        widthPx: estimateLabelWidthPx(`${tacticBadge}${curve.label}`, 11, 30),
+        widthPx: estimateLabelWidthPx(`${tacticBadge}${curve.label}`, 11, 32),
         heightPx: 24,
       });
     }
