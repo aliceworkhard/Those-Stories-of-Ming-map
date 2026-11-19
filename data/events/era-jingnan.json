@@ -350,7 +350,12 @@
         "bearing": -20
       },
       "prevEventIds": ["evt-1400-dongchang-trap"],
-      "nextEventIds": ["evt-1402-fangxiaoru-ten-clans", "evt-1421-yongle-beijing-capital"]
+      "nextEventIds": [
+        "evt-1402-fangxiaoru-ten-clans",
+        "evt-1403-yongle-encyclopedia",
+        "evt-1405-zhenghe-first-voyage",
+        "evt-1421-yongle-beijing-capital"
+      ]
     },
     "bookLens": {
       "chapterIds": ["v1-zhu-yunwen-ch31"],
@@ -430,56 +435,18 @@
         "pitch": 55,
         "bearing": -15
       },
-      "prevEventIds": ["evt-1402-lingbi-nanjing", "evt-1402-fangxiaoru-ten-clans"],
-      "nextEventIds": ["evt-1449-tumubao-echo"]
+      "prevEventIds": [
+        "evt-1402-lingbi-nanjing",
+        "evt-1402-fangxiaoru-ten-clans",
+        "evt-1403-yongle-encyclopedia",
+        "evt-1411-huitong-canal-reopen"
+      ],
+      "nextEventIds": ["evt-1424-yumuchuan-death", "evt-1449-tumubao-echo"]
     },
     "bookLens": {
       "chapterIds": ["v2-zhu-di-ch06"],
       "mingyuePerspective": "《第六章 天子守国门！》是全书最具家国气魄的华章之一：南宋偏安杭州苟且偷安，而大明把皇帝宝座直接搬到了离长城居庸关只有几十公里的前线战壕里——不和亲、不赔款、不割地、不纳贡，天子守国门，君王死社稷！",
       "historicalNote": "迁都北京得以站稳脚跟的真正命脉是永乐九年工部尚书宋礼采纳民间水利专家白英“南旺分水”绝技疏通山东会通河，每年经大运河北运漕粮高达四百万石以上。"
-    }
-  },
-  {
-    "id": "evt-1449-tumubao-echo",
-    "title": "【远期因果回响】土木堡之变：大宁弃守四十七年后的惊雷",
-    "tier": "macro",
-    "category": "war",
-    "time": {
-      "year": 1449,
-      "month": 8,
-      "display": "正统十四年（1449年）八月十五日",
-      "reignTitle": "正统十四年"
-    },
-    "location": {
-      "placeId": "place-tumubao",
-      "ancientName": "土木堡（怀来西）",
-      "modernName": "河北怀来县土木镇",
-      "coordinates": [115.606, 40.382]
-    },
-    "camera": {
-      "center": [115.606, 40.382],
-      "zoom": 7.6,
-      "pitch": 56,
-      "bearing": -20
-    },
-    "summary": "大宁内迁与宣宗弃守开平卫后，北京西北防线退缩至宣府、大同与居庸关一线。正统十四年（1449），明英宗朱祁镇听信宦官王振怂恿，草率亲征瓦剌太师也先，撤退途中被王振强留于距怀来水城仅二十里的无水高台——土木堡。也先铁骑切断南面桑干河水源四面围杀，二十万大明精锐与五十余名英国公张辅等勋臣覆没，皇帝本人被俘，大明盛极转衰！（Phase 3 将展开完整北京保卫战推演）",
-    "actors": ["朱祁镇", "王振", "也先", "张辅", "于谦"],
-    "why": {
-      "geoFactor": "在 3D 地形下俯瞰怀来盆地清晰可见：土木堡北倚群山、南临洋河（桑干河）低谷，本身地势高亢掘井两丈无水！王振为等自己一千辆辎重车拒绝进怀来城，等于亲手把二十万饥渴明军送上了无水无险的活棺材！",
-      "systemFactor": "从 1399 年朱棣腾空大宁丧失塞外纵深，到 1449 年宦官专权乱政、京营卫所腐化，四十七年前靖难之役种下的边防与集权隐患在此刻集中引爆。",
-      "terrainCamera": {
-        "center": [115.65, 40.38],
-        "zoom": 8.5,
-        "pitch": 60,
-        "bearing": -15
-      },
-      "prevEventIds": ["evt-1399-daning-raid", "evt-1421-yongle-beijing-capital"],
-      "nextEventIds": []
-    },
-    "bookLens": {
-      "chapterIds": ["v2-zhu-qizhen-ch13", "v2-zhu-qizhen-ch14"],
-      "mingyuePerspective": "当年明月在《祸根》与《土木堡》两章中完美串联起了跨越半个世纪的因果：朱棣五征漠北时靠超人武力压住了大宁内缩的漏洞，等到不肖子孙朱祁镇带着太监王振去塞外“军事旅游”时，历史终于开出了最昂贵的罚单——幸而北京城里还有于谦站了出来。",
-      "historicalNote": "靖难第一名将张玉之子、三朝元老英国公张辅亦在土木堡随驾死难，靖难勋贵集团自此元气大伤，文官集团（以于谦力挽狂澜为标志）正式成为明代中后期朝堂主导力量。"
     }
   }
 ]

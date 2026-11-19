@@ -2,17 +2,27 @@ import tocJson from '@data/chapters/toc.json';
 import placesJson from '@data/geo-base/ming-places.json';
 import waterwaysGeoJson from '@data/geo-base/ming-waterways.json';
 import landformsGeoJson from '@data/geo-base/ming-landforms.json';
+import landMaskGeoJson from '@data/geo-base/land-mask-east-asia.json';
 import territoriesIndexJson from '@data/territories/index.json';
 import ter1356 from '@data/territories/ter-1356.json';
 import ter1363 from '@data/territories/ter-1363.json';
 import ter1368 from '@data/territories/ter-1368.json';
+import ter1388 from '@data/territories/ter-1388.json';
 import ter1399 from '@data/territories/ter-1399.json';
 import ter1402 from '@data/territories/ter-1402.json';
+import ter1415 from '@data/territories/ter-1415.json';
+import ter1435 from '@data/territories/ter-1435.json';
+import ter1449 from '@data/territories/ter-1449.json';
 import eventsFoundingJson from '@data/events/era-founding.json';
 import eventsJingnanJson from '@data/events/era-jingnan.json';
+import eventsYongleRenxuanJson from '@data/events/era-yongle-renxuan.json';
+import eventsTumuJingtaiJson from '@data/events/era-tumu-jingtai.json';
 import cmpPoyangJson from '@data/campaigns/cmp-1363-poyang.json';
 import cmpNorthJson from '@data/campaigns/cmp-1367-northern-expedition.json';
+import cmpBuyurJson from '@data/campaigns/cmp-1387-buyur-lake.json';
 import cmpJingnanJson from '@data/campaigns/cmp-1399-jingnan.json';
+import cmpZhengheJson from '@data/campaigns/cmp-1405-zhenghe-voyages.json';
+import cmpTumuJson from '@data/campaigns/cmp-1449-tumu-beijing.json';
 
 import type {
   BookTocIndex,
@@ -41,6 +51,9 @@ export const MING_WATERWAYS_GEOJSON =
 export const MING_LANDFORMS_GEOJSON =
   landformsGeoJson as unknown as GeoJSON.FeatureCollection;
 
+export const EAST_ASIA_LAND_MASK_GEOJSON =
+  landMaskGeoJson as unknown as GeoJSON.FeatureCollection;
+
 export const TERRITORY_INDEX =
   territoriesIndexJson as unknown as TerritorySnapshotMeta[];
 
@@ -48,8 +61,12 @@ const TERRITORY_DATA_BY_FILE: Record<string, GeoJSON.FeatureCollection> = {
   'ter-1356.json': ter1356 as unknown as GeoJSON.FeatureCollection,
   'ter-1363.json': ter1363 as unknown as GeoJSON.FeatureCollection,
   'ter-1368.json': ter1368 as unknown as GeoJSON.FeatureCollection,
+  'ter-1388.json': ter1388 as unknown as GeoJSON.FeatureCollection,
   'ter-1399.json': ter1399 as unknown as GeoJSON.FeatureCollection,
   'ter-1402.json': ter1402 as unknown as GeoJSON.FeatureCollection,
+  'ter-1415.json': ter1415 as unknown as GeoJSON.FeatureCollection,
+  'ter-1435.json': ter1435 as unknown as GeoJSON.FeatureCollection,
+  'ter-1449.json': ter1449 as unknown as GeoJSON.FeatureCollection,
 };
 
 export const TERRITORY_SNAPSHOT_BY_ID: Record<
@@ -70,8 +87,11 @@ export const TERRITORY_SNAPSHOT_BY_ID: Record<
 export const ALL_EVENTS: HistoricalEvent[] = [
   ...(eventsFoundingJson as unknown as HistoricalEvent[]),
   ...(eventsJingnanJson as unknown as HistoricalEvent[]),
+  ...(eventsYongleRenxuanJson as unknown as HistoricalEvent[]),
+  ...(eventsTumuJingtaiJson as unknown as HistoricalEvent[]),
 ].sort(
-  (a, b) => a.time.year - b.time.year || (a.time.month ?? 1) - (b.time.month ?? 1)
+  (a, b) =>
+    a.time.year - b.time.year || (a.time.month ?? 1) - (b.time.month ?? 1)
 );
 
 export const EVENT_MAP: Record<string, HistoricalEvent> = Object.fromEntries(
@@ -81,7 +101,10 @@ export const EVENT_MAP: Record<string, HistoricalEvent> = Object.fromEntries(
 export const ALL_CAMPAIGNS: Campaign[] = [
   cmpPoyangJson as unknown as Campaign,
   cmpNorthJson as unknown as Campaign,
+  cmpBuyurJson as unknown as Campaign,
   cmpJingnanJson as unknown as Campaign,
+  cmpZhengheJson as unknown as Campaign,
+  cmpTumuJson as unknown as Campaign,
 ];
 
 export const CAMPAIGN_MAP: Record<string, Campaign> = Object.fromEntries(
@@ -103,7 +126,8 @@ export function getSnapshotForYear(year: number): {
   return {
     meta: matched,
     geojson:
-      TERRITORY_DATA_BY_FILE[matched.file] ?? TERRITORY_DATA_BY_FILE['ter-1363.json'],
+      TERRITORY_DATA_BY_FILE[matched.file] ??
+      TERRITORY_DATA_BY_FILE['ter-1363.json'],
   };
 }
 
@@ -114,7 +138,7 @@ export function formatPlaceDisplay(
 ): string {
   const shortAncient = ancientName.replace(/（.+?）/g, '');
   const shortModern = modernName.replace(
-    /^(江苏|安徽|江西|湖北|浙江|山东|河南|河北|陕西|四川|内蒙古)/,
+    /^(江苏|安徽|江西|湖北|浙江|山东|河南|河北|陕西|四川|福建|广东|广西|云南|贵州|辽宁|吉林|黑龙江|新疆|内蒙古)/,
     ''
   );
   if (mode === 'ancient') return shortAncient;
@@ -124,7 +148,7 @@ export function formatPlaceDisplay(
 }
 
 /**
- * Pre-computed GPU GeoJSON FeatureCollection for all 40 strategic places so MapLibre
+ * Pre-computed GPU GeoJSON FeatureCollection for all strategic places so MapLibre
  * renders & collision-tests them in C++/WebGL with 0 HTML DOM overhead!
  */
 export const PLACES_GEOJSON: GeoJSON.FeatureCollection = {

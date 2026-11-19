@@ -1,0 +1,300 @@
+{
+  "id": "cmp-1387-buyur-lake",
+  "title": "纳哈出降明与捕鱼儿海犁庭决战",
+  "subtitle": "扫清辽东金山二十万众 · 十五万铁骑风雪奇袭北元王庭（1387—1388）",
+  "yearRange": [1387, 1388],
+  "chapterIds": [
+    "v1-zhu-yuanzhang-ch15",
+    "v1-zhu-yuanzhang-ch20",
+    "v1-zhu-yuanzhang-ch21"
+  ],
+  "summary": "洪武二十年至二十一年，朱元璋为彻底解除北元复辟威胁，先命宋国公冯胜、永昌侯蓝玉出松亭关筑大宁四城，步步为营迫降盘踞辽东金山二十万大军的元太尉纳哈出；次年春，拜蓝玉为大将军统十五万精兵孤军深入大漠两千里，于狂风黄沙掩护下奇袭捕鱼儿海（贝尔湖），一战端掉北元脱古思帖木儿汗廷，完成洪武开国最后一战！",
+  "strategicOutcome": "俘北元皇子、妃嫔、王公官属七万七千余人及传国玉玺、驼马十五万匹；脱古思帖木儿西逃被弑，北元正式碎裂为鞑靼与瓦剌，但也因蓝玉恃功骄横埋下“蓝玉案”大清洗伏笔。",
+  "factions": [
+    {
+      "id": "ming-cavalry",
+      "name": "大明征虏北伐铁骑",
+      "leader": "永昌侯蓝玉 · 宋国公冯胜 · 王弼",
+      "color": "#B83B2A",
+      "badgeText": "明"
+    },
+    {
+      "id": "northern-yuan",
+      "name": "北元汗廷与金山纳哈出部",
+      "leader": "脱古思帖木儿 · 太尉纳哈出",
+      "color": "#4A5568",
+      "badgeText": "元"
+    }
+  ],
+  "phases": [
+    {
+      "phaseNo": 1,
+      "title": "第一幕：筑城困兽 · 冯胜蓝玉出松亭关迫降金山纳哈出",
+      "dateLabel": "洪武二十年（1387）正月—六月",
+      "year": 1387,
+      "narrative": "北元太尉纳哈出拥兵二十万屯驻辽东金山，与漠北汗廷互为掎角。冯胜、蓝玉率二十万大军出松亭关，不急于野战，而是连筑大宁、宽河、会州、富峪四座坚城囤积粮草，蓝玉先率轻骑冒雪奇袭庆州杀北元平章，再三面合围金山切断归路，迫使纳哈出携二十万军民解甲归降！",
+      "whyKeyPoint": "为啥打漠北前必须先拔辽东金山？若明军主力孤军北上草原，盘踞辽东的纳哈出二十万骑兵随时可南下山海关截断明军退路；先筑四城锁死辽河曲，东北侧翼方才高枕无忧。",
+      "camera": {
+        "center": [120.8, 41.8],
+        "zoom": 5.8,
+        "pitch": 38,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-cavalry",
+        "leftLabel": "冯胜蓝玉 20 万筑城步骑",
+        "leftPower": 64,
+        "rightFactionId": "northern-yuan",
+        "rightLabel": "纳哈出金山 20 万部众",
+        "rightPower": 36
+      },
+      "routes": [
+        {
+          "id": "r-by1-daning-forts",
+          "order": 1,
+          "factionId": "ming-cavalry",
+          "type": "assault",
+          "label": "冯胜主力出喜峰口连筑大宁四城",
+          "commander": "冯胜 · 傅友德",
+          "coordinates": [
+            [116.41, 39.9],
+            [118.34, 40.42],
+            [119.23, 41.59]
+          ]
+        },
+        {
+          "id": "r-by1-qingzhou-raid",
+          "order": 2,
+          "factionId": "ming-cavalry",
+          "type": "ambush",
+          "label": "蓝玉轻骑冒大雪奇袭庆州断其北援",
+          "commander": "蓝玉",
+          "coordinates": [
+            [119.23, 41.59],
+            [118.95, 42.95],
+            [118.75, 44.08]
+          ]
+        },
+        {
+          "id": "r-by1-jinshan-encircle",
+          "order": 3,
+          "factionId": "ming-cavalry",
+          "type": "assault",
+          "label": "大军东进辽河合围金山迫降纳哈出",
+          "commander": "冯胜 · 蓝玉",
+          "coordinates": [
+            [119.23, 41.59],
+            [121.45, 42.35],
+            [123.75, 43.19]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-by1-daning",
+          "kind": "camp",
+          "label": "筑大宁四城囤粮",
+          "subLabel": "稳扎稳打锁死塞外交通",
+          "coordinates": [119.23, 41.59],
+          "color": "#B83B2A"
+        },
+        {
+          "id": "m-by1-jinshan",
+          "kind": "siege",
+          "label": "辽东金山受降",
+          "subLabel": "纳哈出二十万众归附大明",
+          "coordinates": [123.75, 43.19],
+          "color": "#D97706"
+        }
+      ]
+    },
+    {
+      "phaseNo": 2,
+      "title": "第二幕：百眼井抉择 · 十五万大军孤悬瀚海不空返",
+      "dateLabel": "洪武二十一年（1388）三月",
+      "year": 1388,
+      "narrative": "扫清辽东后，朱元璋拜蓝玉为大将军，率十五万精骑出大宁直扑庆州。探马回报北元汗廷已北撤捕鱼儿海，大军兼程追至百眼井（离捕鱼儿海尚有四十余里）却不见一骑敌踪，粮水将尽。蓝玉一度动念班师，定远侯王弼力谏：“十余万众深入漠北无所得而归，何以复命太祖？”蓝玉遂拍板死战到底！",
+      "whyKeyPoint": "为啥王保保当年能诱歼明军，而此次蓝玉敢孤军再进？因明军此番全系精选轻骑且已拔除辽东侧患，更采取“穴地而爨，毋见烟火”的静默隐蔽行军，彻底骗过了草原游骑侦察。",
+      "camera": {
+        "center": [118.4, 44.8],
+        "zoom": 5.5,
+        "pitch": 36,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-cavalry",
+        "leftLabel": "蓝玉 15 万静默潜行铁骑",
+        "leftPower": 60,
+        "rightFactionId": "northern-yuan",
+        "rightLabel": "脱古思帖木儿王庭主力",
+        "rightPower": 40
+      },
+      "routes": [
+        {
+          "id": "r-by2-north-march",
+          "order": 1,
+          "factionId": "ming-cavalry",
+          "type": "assault",
+          "label": "蓝玉十五万精骑出大宁疾趋庆州",
+          "commander": "蓝玉 · 唐胜宗 · 郭英",
+          "coordinates": [
+            [119.23, 41.59],
+            [118.92, 43.12],
+            [118.65, 44.25]
+          ]
+        },
+        {
+          "id": "r-by2-baiyanjing",
+          "order": 2,
+          "factionId": "ming-cavalry",
+          "type": "ambush",
+          "label": "王弼力劝不退，穴地作灶静默奔袭百眼井",
+          "commander": "蓝玉 · 王弼",
+          "coordinates": [
+            [118.65, 44.25],
+            [118.18, 45.85],
+            [117.85, 47.28]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-by2-baiyanjing",
+          "kind": "camp",
+          "label": "百眼井定策夜进",
+          "subLabel": "穴地作灶，不见寸缕炊烟",
+          "coordinates": [117.85, 47.28],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 3,
+      "title": "第三幕：黄沙天助 · 捕鱼儿海神兵天降犁庭扫穴",
+      "dateLabel": "洪武二十一年（1388）四月十二日",
+      "year": 1388,
+      "narrative": "四月十二日黎明，明军进抵捕鱼儿海南岸。天刮狂风、黄沙蔽日，白昼晦冥如黑夜！北元后主脱古思帖木儿以为明军绝不可能跨越千里无水瀚海，毫无戒备。前锋王弼率铁骑借狂风呼啸掩盖马蹄声直插敌营，斩太尉蛮子，十五万明军排山倒海掩杀，俘获北元次子地保奴、嫔妃公主百余人、官属七万七千余人及历代传国宝玺！",
+      "whyKeyPoint": "为啥捕鱼儿海一战能彻底打断北元脊梁？游牧帝国最核心的合法性在于黄金家族汗廷与部族贵胄；蓝玉一举端掉整个移动朝廷与十五万牲畜辎重，使蒙古再无号令全漠北的共主。",
+      "camera": {
+        "center": [116.5, 47.6],
+        "zoom": 6.1,
+        "pitch": 40,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-cavalry",
+        "leftLabel": "蓝玉王弼乘风突击铁骑",
+        "leftPower": 85,
+        "rightFactionId": "northern-yuan",
+        "rightLabel": "猝不及防之北元汗廷",
+        "rightPower": 15
+      },
+      "routes": [
+        {
+          "id": "r-by3-storm-charge",
+          "order": 1,
+          "factionId": "ming-cavalry",
+          "type": "assault",
+          "label": "王弼前锋乘狂风黄沙突袭捕鱼儿海大营",
+          "commander": "王弼 · 蓝玉",
+          "coordinates": [
+            [117.85, 47.28],
+            [117.78, 47.58],
+            [117.72, 47.83]
+          ]
+        },
+        {
+          "id": "r-by3-khan-flee",
+          "order": 2,
+          "factionId": "northern-yuan",
+          "type": "retreat",
+          "label": "脱古思帖木儿仅携数十骑西逃土拉河被弑",
+          "commander": "脱古思帖木儿",
+          "coordinates": [
+            [117.72, 47.83],
+            [114.2, 47.95],
+            [108.5, 47.85]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-by3-buyur",
+          "kind": "clash",
+          "label": "捕鱼儿海犁庭大捷",
+          "subLabel": "俘七万七千余人、获传国宝玺",
+          "coordinates": [117.72, 47.83],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 4,
+      "title": "第四幕：凯旋毁关 · 喜峰口破门与功高震主的阴影",
+      "dateLabel": "洪武二十一年（1388）秋",
+      "year": 1388,
+      "narrative": "朱元璋闻捷狂喜，在诏书中将蓝玉比作卫青、李靖，改封凉国公。然而凯旋大军行至燕山长城喜峰口时，守关官吏因天黑按律盘查未及时开门，居功自傲的蓝玉竟下令大军用火炮攻破自家边关大门长驱而入！消息传回应天，朱元璋脸上的笑容渐渐凝固，洪武末年最惨烈的“蓝玉案”倒计时就此敲响。",
+      "whyKeyPoint": "为啥喜峰口一桩小事让朱元璋动了杀机？太子朱标仁厚、皇太孙朱允炆年幼，一个能统率十五万精骑连破自家边关而将士唯命是从的骄横统帅，在老皇帝眼中已是幼主无法驾驭的致命威胁。",
+      "camera": {
+        "center": [118.2, 38.6],
+        "zoom": 5.4,
+        "pitch": 34,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-cavalry",
+        "leftLabel": "凯旋骄兵悍将集团",
+        "leftPower": 78,
+        "rightFactionId": "northern-yuan",
+        "rightLabel": "漠北残余游骑",
+        "rightPower": 22
+      },
+      "routes": [
+        {
+          "id": "r-by4-xifengkou",
+          "order": 1,
+          "factionId": "ming-cavalry",
+          "type": "assault",
+          "label": "蓝玉班师夜抵喜峰口，纵兵毁关门而入",
+          "commander": "蓝玉",
+          "coordinates": [
+            [117.72, 47.83],
+            [118.85, 43.2],
+            [118.34, 40.42]
+          ]
+        },
+        {
+          "id": "r-by4-return-nanjing",
+          "order": 2,
+          "factionId": "ming-cavalry",
+          "type": "supply",
+          "label": "大军押解战俘宝玺南归应天献俘封凉国公",
+          "commander": "蓝玉",
+          "coordinates": [
+            [118.34, 40.42],
+            [117.18, 34.26],
+            [118.8, 32.06]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-by4-xifengkou",
+          "kind": "pass",
+          "label": "喜峰口纵兵毁关",
+          "subLabel": "恃功骄横，种下蓝玉案祸根",
+          "coordinates": [118.34, 40.42],
+          "color": "#D97706"
+        },
+        {
+          "id": "m-by4-nanjing",
+          "kind": "camp",
+          "label": "应天献俘封凉国公",
+          "subLabel": "开国武功巅峰与宿将悲歌前夜",
+          "coordinates": [118.8, 32.06],
+          "color": "#B83B2A"
+        }
+      ]
+    }
+  ]
+}

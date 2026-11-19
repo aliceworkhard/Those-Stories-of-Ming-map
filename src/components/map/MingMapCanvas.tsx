@@ -948,7 +948,7 @@ export default function MingMapCanvas() {
       pixelRatio: getTargetPixelRatio(initState.perfMode),
       maxTileCacheSize: initState.perfMode === 'eco' ? 48 : 96,
       maxPitch: 54,
-      minZoom: 3.2,
+      minZoom: 2.5,
       maxZoom: 13.0,
       fadeDuration: 160,
       attributionControl: false,

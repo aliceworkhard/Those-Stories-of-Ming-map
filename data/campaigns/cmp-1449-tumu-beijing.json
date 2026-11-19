@@ -1,0 +1,389 @@
+{
+  "id": "cmp-1449-tumu-beijing",
+  "title": "土木堡大溃败与于谦北京九门保卫战",
+  "subtitle": "二十万精锐覆没天子蒙尘 · 救时宰相背城死战力挽狂澜（1449）",
+  "yearRange": [1449, 1449],
+  "chapterIds": [
+    "v2-zhu-qizhen-ch14",
+    "v2-zhu-qizhen-ch15",
+    "v2-zhu-qizhen-ch16",
+    "v2-zhu-qiyu-ch17",
+    "v2-zhu-qiyu-ch18"
+  ],
+  "summary": "正统十四年（1449）七月，瓦剌太师也先借朝贡马价纠纷四路犯边。司礼监太监王振怂恿二十二岁的明英宗朱祁镇仓促集结二十万大军冒雨亲征大同；回师途中王振为护蔚州私宅庄稼朝令夕改，最终将二十万大军带入怀来城西二十里无水绝地——土木堡，全军覆没、六十六位勋臣战死、皇帝沦为战俘！绝境之下，兵部尚书于谦痛斥南迁、拥立景泰帝朱祁钰，急调二十二万勤王军于北京九门外背城血战五日，击溃瓦剌大军，挽救大明于倾覆瞬间！",
+  "strategicOutcome": "明初开国靖难积攒的三大营精锐与英国公张辅等勋贵集团一朝丧尽，大明由攻转守；但于谦北京保卫战的胜利粉碎了“靖康之耻”重演，使大明国祚得以再延续近两百年。",
+  "factions": [
+    {
+      "id": "ming-defense",
+      "name": "大明京营与于谦勤王军",
+      "leader": "兵部尚书于谦 · 景泰帝 · 石亨 · 孙镗",
+      "color": "#B83B2A",
+      "badgeText": "明"
+    },
+    {
+      "id": "oirat-cavalry",
+      "name": "瓦剌太师也先主力铁骑",
+      "leader": "太师也先 · 伯颜帖木儿 · 孛罗平章",
+      "color": "#374151",
+      "badgeText": "瓦"
+    }
+  ],
+  "phases": [
+    {
+      "phaseNo": 1,
+      "title": "第一幕：轻狂出塞 · 王振挟英宗二十万大军冒雨趋大同",
+      "dateLabel": "正统十四年（1449）七月十六—八月初二",
+      "year": 1449,
+      "narrative": "瓦剌也先攻破大同阳和口，前锋全军覆没。不懂半点兵法的太监王振梦想复制永乐北伐威名，仅用两天便逼迫二十万京营大军冒连绵秋雨出居庸关经宣府西进大同。沿途粮饷断绝、饿殍枕藉；刚到大同城，得知也先诱敌深入的王振顿时吓破了胆，一箭未发便下令全军掉头东逃！",
+      "whyKeyPoint": "为啥同样是二十万大军出塞，朱棣百战百胜而朱祁镇未战先乱？永乐北伐每次筹粮半年以上且皇帝亲掌军机；正统亲征仅准备两天，兵部尚书邝埜与英国公张辅全被王振剥夺指挥权。",
+      "camera": {
+        "center": [114.8, 40.25],
+        "zoom": 6.6,
+        "pitch": 40,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-defense",
+        "leftLabel": "王振瞎指挥之 20 万疲军",
+        "leftPower": 42,
+        "rightFactionId": "oirat-cavalry",
+        "rightLabel": "也先以逸待劳精锐铁骑",
+        "rightPower": 58
+      },
+      "routes": [
+        {
+          "id": "r-tm1-esen-raid",
+          "order": 1,
+          "factionId": "oirat-cavalry",
+          "type": "assault",
+          "label": "瓦剌太师也先主力南下攻破大同阳和口诱敌深入",
+          "commander": "太师也先",
+          "coordinates": [
+            [113.15, 41.65],
+            [113.55, 40.55],
+            [113.3, 40.09]
+          ]
+        },
+        {
+          "id": "r-tm1-ming-march",
+          "order": 2,
+          "factionId": "ming-defense",
+          "type": "assault",
+          "label": "王振挟明英宗率二十万大军冒雨出居庸关、经宣府抵大同",
+          "commander": "明英宗 · 王振 · 张辅",
+          "coordinates": [
+            [116.41, 39.9],
+            [116.07, 40.29],
+            [115.06, 40.61],
+            [113.3, 40.09]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-tm1-juyong",
+          "kind": "pass",
+          "label": "冒雨仓促出居庸关",
+          "subLabel": "两天成军，粮草军令一片混乱",
+          "coordinates": [116.07, 40.29],
+          "color": "#B83B2A"
+        },
+        {
+          "id": "m-tm1-datong",
+          "kind": "cutoff",
+          "label": "大同惊魂未战先撤",
+          "subLabel": "见尸横遍野，王振连夜下令东逃",
+          "coordinates": [113.3, 40.09],
+          "color": "#374151"
+        }
+      ]
+    },
+    {
+      "phaseNo": 2,
+      "title": "第二幕：护田改道 · 蔚州折返与鹞儿岭四万殿后军覆没",
+      "dateLabel": "正统十四年（1449）八月初三—十三日",
+      "year": 1449,
+      "narrative": "撤退之初，王振本欲邀皇帝绕道其老家蔚州“衣锦还乡”（走紫荆关入保定实为安全捷径）；行出四十里后，王振突然担心二十万大军踩坏自己田庄里快熟的庄稼，竟又下令掉头折返宣府原路！这一致命折返白白浪费数日，也先追兵死咬尾后，恭顺侯吴克忠于鸡鸣山战死，成国公朱勇率四万骑兵救援于鹞儿岭中伏全军覆没！",
+      "whyKeyPoint": "为啥蔚州改道是生死分水岭？若直走蔚州入紫荆关，明军两天即可进入太行山险关掩护；折返宣府不仅在开阔河川暴露给蒙古骑兵，更把宝贵的逃生时间耗尽在路上。",
+      "camera": {
+        "center": [114.75, 40.2],
+        "zoom": 6.9,
+        "pitch": 42,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-defense",
+        "leftLabel": "朝令夕改溃退明军",
+        "leftPower": 28,
+        "rightFactionId": "oirat-cavalry",
+        "rightLabel": "也先疾驰追击铁骑",
+        "rightPower": 72
+      },
+      "routes": [
+        {
+          "id": "r-tm2-yuzhou-detour",
+          "order": 1,
+          "factionId": "ming-defense",
+          "type": "retreat",
+          "label": "王振欲回蔚州炫耀又怕踩坏庄稼，半途折返宣府大路",
+          "commander": "王振",
+          "coordinates": [
+            [113.3, 40.09],
+            [114.56, 39.84],
+            [115.06, 40.61]
+          ]
+        },
+        {
+          "id": "r-tm2-oirat-ambush",
+          "order": 2,
+          "factionId": "oirat-cavalry",
+          "type": "ambush",
+          "label": "瓦剌铁骑疾追宣府，于鹞儿岭设伏全歼朱勇四万殿后军",
+          "commander": "也先 · 伯颜帖木儿",
+          "coordinates": [
+            [113.3, 40.09],
+            [114.42, 40.48],
+            [115.22, 40.52]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-tm2-yuzhou",
+          "kind": "cutoff",
+          "label": "蔚州“护庄稼”致命改道",
+          "subLabel": "错失紫荆关生路，延误逃命战机",
+          "coordinates": [114.56, 39.84],
+          "color": "#D97706"
+        },
+        {
+          "id": "m-tm2-yaoerling",
+          "kind": "clash",
+          "label": "鹞儿岭四万殿后军覆没",
+          "subLabel": "吴克忠、朱勇相继阵亡",
+          "coordinates": [115.22, 40.52],
+          "color": "#374151"
+        }
+      ]
+    },
+    {
+      "phaseNo": 3,
+      "title": "第三幕：断水绝地 · 土木堡二十万精锐覆没与天子被俘",
+      "dateLabel": "正统十四年（1449）八月十四—十五日",
+      "year": 1449,
+      "narrative": "八月十四日，大军距坚城怀来仅剩二十里，兵部尚书邝埜泣血跪请疾驰入城，王振却因自己一千多辆装载私财的辎重车未到，强令全军驻扎在缺水高岗——土木堡！掘井两丈无水，南面桑干河被也先铁骑死死截断。十五日也先假意议和后撤诱明军争相奔河抢水，阵型大乱之际瓦剌铁骑四面合围高呼“解甲投刀者不杀”，二十万大军崩溃，张辅、邝埜殉国，护卫将军樊忠一锤砸死王振，英宗端坐地上被俘！",
+      "whyKeyPoint": "为啥二十里外的怀来城成了永远走不到的彼岸？冷兵器行军最忌驻扎于孤立无水高地（马陵、街亭皆然）；一旦人马渴极失控奔水，再精锐的军阵也会瞬间瓦解为待宰羔羊。",
+      "camera": {
+        "center": [115.65, 40.38],
+        "zoom": 7.6,
+        "pitch": 44,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-defense",
+        "leftLabel": "断水绝粮崩溃之师",
+        "leftPower": 12,
+        "rightFactionId": "oirat-cavalry",
+        "rightLabel": "四面合围瓦剌铁骑",
+        "rightPower": 88
+      },
+      "routes": [
+        {
+          "id": "r-tm3-stop-tumu",
+          "order": 1,
+          "factionId": "ming-defense",
+          "type": "retreat",
+          "label": "距怀来仅二十里，王振强令驻扎无水高地土木堡等辎重",
+          "commander": "王振",
+          "coordinates": [
+            [115.06, 40.61],
+            [115.38, 40.46],
+            [115.61, 40.38]
+          ]
+        },
+        {
+          "id": "r-tm3-cut-river",
+          "order": 2,
+          "factionId": "oirat-cavalry",
+          "type": "assault",
+          "label": "也先抢占城南河道断水，假意议和四面合围屠戮溃军",
+          "commander": "太师也先",
+          "coordinates": [
+            [115.22, 40.52],
+            [115.58, 40.31],
+            [115.61, 40.38]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-tm3-tumubao",
+          "kind": "siege",
+          "label": "土木堡二十万大军覆没",
+          "subLabel": "樊忠怒杀王振，英宗朱祁镇被俘",
+          "coordinates": [115.61, 40.38],
+          "color": "#374151"
+        },
+        {
+          "id": "m-tm3-huailai",
+          "kind": "pass",
+          "label": "怀来卫（咫尺二十里）",
+          "subLabel": "有水坚城却因千辆私车失之交臂",
+          "coordinates": [115.73, 40.4],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 4,
+      "title": "第四幕：力挽狂澜 · 于谦立新君调勤王军与也先破紫荆关",
+      "dateLabel": "正统十四年（1449）八月下旬—十月初九",
+      "year": 1449,
+      "narrative": "败讯传回北京，京师老弱残兵不足十万，侍讲徐有贞夜观星象倡议南迁南京。于谦厉声怒喝：“言南迁者，可斩也！京师天下根本，一动则大事去矣，独不见宋南渡事乎！”于谦辅佐孙太后拥立郕王朱祁钰即位（景泰帝），废掉也先手中“皇帝人质”筹码，星夜调集两京、河南、山东备倭操粮军入卫；十月初，也先挟英宗绕开居庸关，猛攻突破紫荆关直扑北京！",
+      "whyKeyPoint": "为啥也先不攻居庸关而绕走紫荆关？居庸关山狭城坚正面难破；也先重演当年成吉思汗破金国故智，南绕大同经蔚州攻破防御较薄的太行紫荆关，从西南平原直插北京腹背！",
+      "camera": {
+        "center": [115.85, 39.25],
+        "zoom": 6.4,
+        "pitch": 38,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-defense",
+        "leftLabel": "于谦紧急集结 22 万勤王军",
+        "leftPower": 55,
+        "rightFactionId": "oirat-cavalry",
+        "rightLabel": "破紫荆关直逼北京之瓦剌军",
+        "rightPower": 45
+      },
+      "routes": [
+        {
+          "id": "r-tm4-relief-south",
+          "order": 1,
+          "factionId": "ming-defense",
+          "type": "supply",
+          "label": "于谦急调山东河南及备倭操粮勤王大军昼夜驰援北京",
+          "commander": "于谦（兵部总督军务）",
+          "coordinates": [
+            [115.71, 36.85],
+            [116.15, 38.25],
+            [116.41, 39.9]
+          ]
+        },
+        {
+          "id": "r-tm4-zijingguan-breach",
+          "order": 2,
+          "factionId": "oirat-cavalry",
+          "type": "assault",
+          "label": "也先挟英宗自大同经蔚州猛攻突破紫荆关，直扑北京西郊",
+          "commander": "太师也先",
+          "coordinates": [
+            [113.3, 40.09],
+            [114.56, 39.84],
+            [115.17, 39.42],
+            [116.18, 39.88]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-tm4-zijing",
+          "kind": "pass",
+          "label": "紫荆关血战失守",
+          "subLabel": "守臣孙祥殉国，北京门户洞开",
+          "coordinates": [115.17, 39.42],
+          "color": "#374151"
+        },
+        {
+          "id": "m-tm4-beijing-prep",
+          "kind": "camp",
+          "label": "通州运粮入京备战",
+          "subLabel": "令官军自取通州仓粮，一举解决运力与缺粮",
+          "coordinates": [116.65, 39.91],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 5,
+      "title": "第五幕：九门死战 · 德胜门关门背水血战击溃瓦剌！",
+      "dateLabel": "正统十四年（1449）十月十一—十五日",
+      "year": 1449,
+      "narrative": "十月十一日也先兵临北京城下，于谦拒不退守城墙，而是分遣二十二万大军列阵九门城外，自己与石亨亲率主力驻守最凶险的北门——德胜门，并下死令：“临阵将不顾军先退者，斩其将；军不顾将先退者，后队斩前队！”随即关死城门断绝退路！石亨伏兵民房诱瓦剌铁骑入巷，神机营火铳齐发当场轰毙也先亲弟孛罗平章；西直门孙镗、彰义门援军浴血拼杀，连战五日斩敌万余，也先见北京固若金汤且勤王军四集，连夜仓皇北遁出塞！",
+      "whyKeyPoint": "为啥于谦敢把二十二万大军摆在城外并关死城门？若缩入城内，也先便可肆意劫掠京畿并围困断粮；背城列阵配合神机营火器与街巷伏兵，既废掉蒙古骑兵冲锋空间，又激发出明军“置之死地而后生”的决死战力！",
+      "camera": {
+        "center": [115.95, 40.05],
+        "zoom": 7.1,
+        "pitch": 42,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-defense",
+        "leftLabel": "于谦九门背城死战明军",
+        "leftPower": 76,
+        "rightFactionId": "oirat-cavalry",
+        "rightLabel": "受挫丧胆之也先大军",
+        "rightPower": 24
+      },
+      "routes": [
+        {
+          "id": "r-tm5-deshengmen-ambush",
+          "order": 1,
+          "factionId": "ming-defense",
+          "type": "assault",
+          "label": "于谦石亨背守德胜门，神机营火炮伏兵夹击轰毙孛罗平章",
+          "commander": "于谦 · 石亨 · 范广",
+          "coordinates": [
+            [116.41, 39.9],
+            [116.38, 39.95],
+            [116.31, 40.02]
+          ]
+        },
+        {
+          "id": "r-tm5-juyong-pincer",
+          "order": 2,
+          "factionId": "ming-defense",
+          "type": "ambush",
+          "label": "居庸关罗通与宣府杨洪侧翼截击，威胁瓦剌塞北归路",
+          "commander": "罗通 · 杨洪",
+          "coordinates": [
+            [116.07, 40.29],
+            [115.65, 40.15],
+            [115.25, 39.95]
+          ]
+        },
+        {
+          "id": "r-tm5-esen-retreat",
+          "order": 3,
+          "factionId": "oirat-cavalry",
+          "type": "retreat",
+          "label": "也先五日猛攻损兵折将，挟英宗经紫荆关狼狈逃归漠北",
+          "commander": "太师也先",
+          "coordinates": [
+            [116.31, 40.02],
+            [115.17, 39.42],
+            [114.2, 40.35],
+            [113.1, 41.5]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-tm5-deshengmen",
+          "kind": "clash",
+          "label": "德胜门背城大捷",
+          "subLabel": "关死城门，火器轰毙也先弟孛罗平章",
+          "coordinates": [116.38, 39.95],
+          "color": "#B83B2A"
+        },
+        {
+          "id": "m-tm5-victory",
+          "kind": "siege",
+          "label": "保住大明两百年国祚",
+          "subLabel": "粉碎“南宋靖康之耻”重演危机",
+          "coordinates": [116.41, 39.9],
+          "color": "#D97706"
+        }
+      ]
+    }
+  ]
+}

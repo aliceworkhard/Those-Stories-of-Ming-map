@@ -19,7 +19,7 @@ export default function TimelineBar() {
 
   const isDark = theme === 'xuanmo';
   const minYear = SITE_CONFIG.timeline.minYear;
-  const maxYear = 1455;
+  const maxYear = 1460;
 
   const clampedSliderYear = Math.max(minYear, Math.min(maxYear, currentYear));
 

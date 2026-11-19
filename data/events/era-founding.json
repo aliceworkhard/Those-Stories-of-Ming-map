@@ -505,7 +505,13 @@
         "bearing": -12
       },
       "prevEventIds": ["evt-1367-suzhou-zhang-fall"],
-      "nextEventIds": ["evt-1368-dadu-discipline", "evt-1376-feudal-princes", "evt-1393-lanyu-purge"]
+      "nextEventIds": [
+        "evt-1368-dadu-discipline",
+        "evt-1371-conquer-sichuan",
+        "evt-1372-wangbaobao-lingbei",
+        "evt-1376-feudal-princes",
+        "evt-1380-huweiyong-abolish-pm"
+      ]
     },
     "bookLens": {
       "chapterIds": ["v1-zhu-yuanzhang-ch14", "v1-zhu-yuanzhang-ch16"],
@@ -579,13 +585,319 @@
     "why": {
       "geoFactor": "南京朝廷中枢名将虽被杀光，但北方边境为了抵御蒙古残元，燕王朱棣、宁王朱权等塞王手中却保留着百战边军精锐——形成了极其致命的“内轻外重、京师无名将而塞外有强藩”空间失衡！",
       "systemFactor": "废除丞相（胡惟庸案）加上诛尽开国宿将（蓝玉案），朱元璋以为替孙子扫平了所有荆棘，殊不知把朝廷保护太孙的盾牌也一并砸碎了。",
-      "prevEventIds": ["evt-1368-ming-founding"],
-      "nextEventIds": ["evt-1398-jianwen-abolish-princes"]
+      "prevEventIds": [
+        "evt-1380-huweiyong-abolish-pm",
+        "evt-1388-buyur-lake-victory"
+      ],
+      "nextEventIds": [
+        "evt-1398-hongwu-death-legacy",
+        "evt-1398-jianwen-abolish-princes"
+      ]
     },
     "bookLens": {
       "chapterIds": ["v1-zhu-yuanzhang-ch20", "v1-zhu-yuanzhang-ch21", "v1-zhu-yunwen-ch24"],
       "mingyuePerspective": "当年明月引用了著名的“荆棘杖”隐喻：朱元璋心疼孙子怕荆棘扎手，帮他把刺全削光了，结果六年后燕王朱棣杀过来时，朱允炆翻遍满朝武将，竟然只能找出六十五岁的耿炳文和草包李景隆！",
       "historicalNote": "洪武二十六年刊布《逆臣录》，列举蓝玉同党口供，开国功臣集团仅余汤和（早早交兵权善终）、耿炳文、郭英寥寥数人。"
+    }
+  },
+  {
+    "id": "evt-1371-conquer-sichuan",
+    "title": "水陆奇兵平巴蜀：汤和破瞿塘峡铁锁、傅友德翻秦岭取成都",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1371,
+      "month": 6,
+      "display": "洪武四年（1371年）正月出师 · 六月克重庆成都",
+      "reignTitle": "洪武四年"
+    },
+    "location": {
+      "placeId": "place-qutangxia",
+      "ancientName": "夔州瞿塘峡 -> 重庆 -> 成都",
+      "modernName": "重庆奉节 · 四川成都",
+      "coordinates": [109.528, 31.042]
+    },
+    "camera": {
+      "center": [106.8, 30.5],
+      "zoom": 6.1,
+      "pitch": 42,
+      "bearing": 0
+    },
+    "summary": "大夏幼主明升与丞相戴寿自恃“蜀道难”，将全部主力集结于长江三峡东口瞿塘峡，横江架设粗大铁索飞桥与火筒木栅阻击汤和、廖永忠水师。不料北路副将傅友德自陕西阶州、文州翻越摩天岭奇袭江油、绵州，并在涪江上游削木牌数千块写满捷报顺流漂出三峡！守峡夏军见木牌惊恐后院失火军心崩溃，廖永忠以铁皮火船烧断铁索破夔门，汤和水师直抵重庆迫降明升，巴蜀平定！",
+    "actors": ["傅友德", "汤和", "廖永忠", "明升"],
+    "why": {
+      "geoFactor": "巴蜀盆地东有夔门三峡急流、北有秦巴剑门绝壁，单一方向强攻必损兵折将；明军水陆两路钳形夹击并用涪江顺水漂木牌传递敌后突破情报，堪称古典军事地理心理战范本！",
+      "systemFactor": "平蜀后朱元璋对降主明升优礼封归义侯（后徙高丽善终），并因傅友德功高不居赏赐第一，稳定了西南大后方。",
+      "prevEventIds": ["evt-1368-ming-founding"],
+      "nextEventIds": ["evt-1381-conquer-yunnan"]
+    },
+    "bookLens": {
+      "chapterIds": ["v1-zhu-yuanzhang-ch15", "v1-zhu-yuanzhang-ch16"],
+      "mingyuePerspective": "在没有无线电报的十四世纪，傅友德往江水里扔下几千块刻字木板，顺着嘉陵江流过重庆直漂瞿塘峡——守峡敌军捞起木板一看成都老家都没了，防线瞬间不战自溃，智慧比蛮力锋利百倍。",
+      "historicalNote": "朱元璋亲作《平西蜀文》盛赞“傅氏第一，廖氏次之”，傅友德由此跻身洪武中期第一征伐统帅。"
+    }
+  },
+  {
+    "id": "evt-1372-wangbaobao-lingbei",
+    "title": "岭北之战与“天下奇男子”：王保保挫徐达中路军保住北元火种",
+    "tier": "micro",
+    "category": "war",
+    "time": {
+      "year": 1372,
+      "month": 5,
+      "display": "洪武五年（1372年）正月—六月",
+      "reignTitle": "洪武五年"
+    },
+    "location": {
+      "placeId": "place-karakorum",
+      "ancientName": "岭北土剌河与和林",
+      "modernName": "蒙古国前杭爱省哈拉和林",
+      "coordinates": [102.842, 47.198]
+    },
+    "camera": {
+      "center": [106.5, 45.2],
+      "zoom": 5.0,
+      "pitch": 36,
+      "bearing": 0
+    },
+    "summary": "洪武五年朱元璋发十五万大军三路远征漠北：西路冯胜大胜河西直抵敦煌，东路李文忠血战阿鲁浑河全身而退；唯中路大将军徐达轻敌冒进，前锋蓝玉在土剌河初胜后，扩廓帖木儿（王保保）与贺宗哲设诱敌口袋阵于和林以北突袭明军，明军伤亡万余人！幸赖徐达临危沉着筑垒敛兵稳住阵脚安全撤回塞内，自此明廷十年不再轻言深入漠北。",
+    "actors": ["王保保", "徐达", "李文忠", "冯胜", "朱元璋"],
+    "why": {
+      "geoFactor": "外蒙古杭爱山与土拉河距雁门关逾三千里，明军步骑越过无水戈壁已是强弩之末，而王保保以逸待劳利用草原纵深诱敌拉长补给线，将游牧弹性防御发挥到极致。",
+      "systemFactor": "此役令朱元璋深刻认识到草原骑兵难以毕其功于一役，转而确立“筑九边卫所、封塞王屯田”的长期消耗方略。",
+      "prevEventIds": ["evt-1368-ming-founding"],
+      "nextEventIds": ["evt-1376-feudal-princes", "evt-1388-buyur-lake-victory"]
+    },
+    "bookLens": {
+      "chapterIds": ["v1-zhu-yuanzhang-ch15"],
+      "mingyuePerspective": "当年明月写下了朱元璋在朝堂上那句经典感叹：问群臣天下谁是奇男子？众人皆道常遇春，朱元璋摇头笑道：“常遇春虽人杰，吾得而臣之；吾不能臣王保保，其人奇男子也！”英雄惜英雄，莫过于此。",
+      "historicalNote": "洪武八年王保保病逝于哈剌那海，北元再无能与徐达正面对决之帅才；其妹观音奴嫁朱元璋次子秦王朱樉。"
+    }
+  },
+  {
+    "id": "evt-1380-huweiyong-abolish-pm",
+    "title": "胡惟庸案与废除中书省丞相：延续千六百年的相权彻底终结",
+    "tier": "macro",
+    "category": "institution",
+    "time": {
+      "year": 1380,
+      "month": 1,
+      "display": "洪武十三年（1380年）正月",
+      "reignTitle": "洪武十三年"
+    },
+    "location": {
+      "placeId": "place-yingtian",
+      "ancientName": "应天府中书省衙署",
+      "modernName": "江苏南京",
+      "coordinates": [118.806, 32.045]
+    },
+    "camera": {
+      "center": [118.806, 32.045],
+      "zoom": 7.4,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "左丞相胡惟庸独揽中书省生杀升降大权七年，内外诸司奏章先关白丞相再奏皇帝，门生故吏遍布朝野。洪武十三年正月，朱元璋借“涂节告变与云奇指宅”闪电逮捕处死胡惟庸，前后追查十年株连三万余人！更重要的是，朱元璋趁势永久罢中书省、废丞相官职，将权力拆散归于吏户礼兵刑工六部直接对皇帝负责，并立严旨：后世子孙敢议重设丞相者，群臣即时凌迟处死！",
+    "actors": ["朱元璋", "胡惟庸", "李善长", "宋濂"],
+    "why": {
+      "geoFactor": "帝国定都南京总揽全国十三布政使司政令，废相之后全国每日数百封奏折潮水般直涌奉天门，使皇城奉天殿成为空前高度集中的单点行政大脑。",
+      "systemFactor": "废除秦汉以来延续一千六百年的丞相制虽根绝了权相篡位，却制造出一个超级难题：一个皇帝每天要批阅四百多件公文，一旦后世皇帝精力不济或怠政，就必然衍生出“内阁大学士票拟 + 司礼监太监批红”的畸形双轨政治！",
+      "prevEventIds": ["evt-1368-ming-founding"],
+      "nextEventIds": [
+        "evt-1382-jinyiwei-anticorruption",
+        "evt-1393-lanyu-purge"
+      ]
+    },
+    "bookLens": {
+      "chapterIds": ["v1-zhu-yuanzhang-ch17", "v1-zhu-yuanzhang-ch22"],
+      "mingyuePerspective": "《第十七章》与《制度后的秘密》抽丝剥茧：胡惟庸是不是真的勾结日本和蒙古造反根本不重要，重要的是“丞相”这个职位本身挡了皇权的路。朱元璋精力旺盛可以一个人干十个人的活，却把后代子孙累进了内阁与太监的博弈漩涡里。",
+      "historicalNote": "据《明太祖实录》统计，洪武十七年九月十四日至二十一日仅八天内，朱元璋亲自批阅内外诸司奏札1,660件、处理国事3,391件。"
+    }
+  },
+  {
+    "id": "evt-1381-conquer-yunnan",
+    "title": "白石江雾战平云南：傅友德蓝玉沐英扫灭元梁王，沐氏镇滇三百年",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1381,
+      "month": 12,
+      "display": "洪武十四年（1381年）九月出师 · 十二月克昆明",
+      "reignTitle": "洪武十四年"
+    },
+    "location": {
+      "placeId": "place-qujing",
+      "ancientName": "曲靖白石江 -> 云南府（昆明）",
+      "modernName": "云南曲靖 · 昆明",
+      "coordinates": [103.796, 25.49]
+    },
+    "camera": {
+      "center": [103.3, 25.3],
+      "zoom": 6.4,
+      "pitch": 42,
+      "bearing": 0
+    },
+    "summary": "元宗室梁王把匝剌瓦尔密盘踞云南，屡杀大明招谕使臣王祎、吴云。洪武十四年秋，朱元璋亲授万里行军方略，命傅友德为帅、蓝玉与义子沐英为副，统三十万大军由湖广入贵州奇袭曲靖。十二月白石江大雾弥漫，沐英遣善泳勇士从下游偷渡绕至元军背后吹响铜角，正面铁骑涉江猛冲，生擒元司徒达里麻十万精兵，梁王投滇池自尽，大理段氏亦被攻克，西南全境归入大明版图！",
+    "actors": ["傅友德", "沐英", "蓝玉", "朱元璋"],
+    "why": {
+      "geoFactor": "朱元璋精准看破乌撒山路险狭而辰沅—贵阳—曲靖驿道可容大兵团疾进：先分五万偏师赴四川永宁虚张声势吸引元军北防，二十五万主力由贵阳闪电破曲靖门户，堪称最高统帅远程沙盘指挥典范！",
+      "systemFactor": "平滇后朱元璋留义子西平侯沐英率数万江南军户世镇云南屯田兴学，改土归流与土司羁縻并行，使云贵高原自元明以降彻底融入中华一体。",
+      "prevEventIds": ["evt-1371-conquer-sichuan"],
+      "nextEventIds": ["evt-1388-buyur-lake-victory"]
+    },
+    "bookLens": {
+      "chapterIds": ["v1-zhu-yuanzhang-ch16", "v1-zhu-yuanzhang-ch20"],
+      "mingyuePerspective": "书中动情书写了朱元璋与孤儿义子沐英的父子深情：沐英在云南兴修水利、建学校，百姓爱戴如父母；后来太子朱标去世，沐英在云南闻讯痛哭吐血而卒，沐氏家族世代守护大明西南直至南明永历最后一滴血。",
+      "historicalNote": "明代“黔宁王”沐英家族镇守云南长达280年，与大明国运相始终。"
+    }
+  },
+  {
+    "id": "evt-1382-jinyiwei-anticorruption",
+    "title": "设锦衣卫与空印案、郭桓案：铁腕肃贪“剥皮揎草”震慑官场",
+    "tier": "macro",
+    "category": "institution",
+    "time": {
+      "year": 1382,
+      "month": 4,
+      "display": "洪武十五年（1382年）设锦衣卫—洪武十八年郭桓案",
+      "reignTitle": "洪武十五年"
+    },
+    "location": {
+      "placeId": "place-yingtian",
+      "ancientName": "应天府北镇抚司诏狱",
+      "modernName": "江苏南京",
+      "coordinates": [118.79, 32.038]
+    },
+    "camera": {
+      "center": [118.79, 32.038],
+      "zoom": 7.5,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "幼年父母兄长死于元末贪官灾荒的朱元璋，对贪官污吏怀有刻骨仇恨：洪武十五年改仪鸾司设立直接听命于天子的特务机构“锦衣卫”及镇抚司诏狱；针对地方核账预盖空白官印发动“空印案”，针对户部侍郎郭桓侵吞秋粮七百万石发动“郭桓案”，定下贪污六十两白银即斩首剥皮、塞入稻草置于公堂旁“皮场庙”的旷世酷法，六部侍郎以下官员死狱者数万人！",
+    "actors": ["朱元璋", "毛骧", "郭桓"],
+    "why": {
+      "geoFactor": "明初各省至京师路途动辄数千里，钱粮文册核对若有丝毫差错便须耗时数月往返重印（此即“空印”潜规则的地理成因），被多疑的朱元璋视作上下串通舞弊而痛下杀手。",
+      "systemFactor": "明初官员俸禄极低（正七品知县年俸仅约九十石米）且严刑绕过正常司法（锦衣卫诏狱），虽在洪武年间杀得京城衙门一度靠戴枷囚官办公，却无法从制度薪俸根源上消除腐败再生。",
+      "prevEventIds": ["evt-1344-yellow-river-famine", "evt-1380-huweiyong-abolish-pm"],
+      "nextEventIds": ["evt-1385-dagao-handbook"]
+    },
+    "bookLens": {
+      "chapterIds": ["v1-zhu-yuanzhang-ch18", "v1-zhu-yuanzhang-ch19"],
+      "mingyuePerspective": "《扫除一切腐败者》写出了朱元璋极其孤独悲凉的晚年叹息：“我本想除尽天下贪官，奈何朝杀而暮犯！”——因为那个放牛娃皇帝始终坚持站在底层饥民一边，哪怕与整个官僚士大夫阶层为敌也绝不手软。",
+      "historicalNote": "洪武二十年朱元璋察觉锦衣卫指挥毛骧滥权罗织，曾下令焚毁锦衣卫刑具废止诏狱，直至朱棣靖难夺位后全面恢复强化。"
+    }
+  },
+  {
+    "id": "evt-1385-dagao-handbook",
+    "title": "御制《大诰》颁行天下：“户户藏书减罪一等”与民拿贪官特权",
+    "tier": "micro",
+    "category": "institution",
+    "time": {
+      "year": 1385,
+      "month": 10,
+      "display": "洪武十八年至二十年（1385—1387年）",
+      "reignTitle": "洪武十八年"
+    },
+    "location": {
+      "placeId": "place-fengyang",
+      "ancientName": "中都凤阳及两京十三省乡里",
+      "modernName": "安徽凤阳",
+      "coordinates": [117.5605, 32.8681]
+    },
+    "camera": {
+      "center": [117.5605, 32.8681],
+      "zoom": 7.0,
+      "pitch": 36,
+      "bearing": 0
+    },
+    "summary": "为了让天下百姓看懂律法监督贪官，朱元璋亲自动笔用大白话编写了四编反腐典型案例集——《御制大诰》，规定全国每户人家必须备有一本（科举必考，犯死罪以下的百姓若家中藏有《大诰》当场减刑一等，反之加刑一等！），更赋予百姓惊世骇俗的特权：凡遇贪官胥吏下乡害民，普通老百姓可直接将其绑架押送京城面见皇帝，沿途关津敢阻拦者灭族！",
+    "actors": ["朱元璋"],
+    "why": {
+      "geoFactor": "在疆域辽阔、皇权难以下沉至县以下乡村（“皇权不下县”）的农耕帝国，朱元璋试图越过州县衙门屏障，建立一条从田间茅屋直通南京通政司的超短监督走廊。",
+      "systemFactor": "中国古代唯一一部鼓励草民绑架地方官进京上访的皇室法典，随着朱元璋驾崩，《大诰》很快被文官集团束之高阁沦为一纸具文。",
+      "prevEventIds": ["evt-1382-jinyiwei-anticorruption"],
+      "nextEventIds": ["evt-1398-hongwu-death-legacy"]
+    },
+    "bookLens": {
+      "chapterIds": ["v1-zhu-yuanzhang-ch18"],
+      "mingyuePerspective": "当年明月感叹《大诰》可能是人类历史上发行量最大的普法畅销书——全中国老百姓家里都摆着皇帝亲手写的反腐白话故事会，甚至真有常熟老百姓陈寿六把贪官绑到南京领赏，除了乞丐出身的朱重八，历史上再无第二位皇帝敢这么干！",
+      "historicalNote": "《御制大诰》含初编、续编、三编及《大诰武臣》共236条目，是研究明初基层社会与严刑峻法的第一手史料。"
+    }
+  },
+  {
+    "id": "evt-1388-buyur-lake-victory",
+    "title": "捕鱼儿海犁庭大捷：蓝玉十五万铁骑风沙奇袭打碎北元汗廷",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1388,
+      "month": 4,
+      "display": "洪武二十年降纳哈出 · 二十一年（1388年）四月大捷",
+      "reignTitle": "洪武二十一年"
+    },
+    "location": {
+      "placeId": "place-buyur-lake",
+      "ancientName": "捕鱼儿海（贝尔湖）",
+      "modernName": "呼伦贝尔中蒙交界贝尔湖",
+      "coordinates": [117.718, 47.825]
+    },
+    "camera": {
+      "center": [118.2, 45.2],
+      "zoom": 5.3,
+      "pitch": 40,
+      "bearing": 0
+    },
+    "summary": "冯胜、蓝玉于1387年迫降辽东金山二十万残元纳哈出后，洪武二十一年春，大将军蓝玉统十五万精骑出大宁孤军北进两千余里，采王弼计“穴地作灶不见烟火”，于四月十二日借漫天沙尘暴突袭捕鱼儿海南岸北元大营！斩太尉蛮子，俘北元次子地保奴、皇妃公主百余人、王公官属七万七千余人及历代传国玉玺、牲畜十五万头，脱古思帖木儿仅数十骑逃脱旋被部下弑杀，北元帝国彻底瓦解！",
+    "actors": ["蓝玉", "王弼", "冯胜", "纳哈出", "脱古思帖木儿"],
+    "why": {
+      "geoFactor": "捕鱼儿海与呼伦湖构成呼伦贝尔草原最丰美的水草核心，北元自恃瀚海沙碛隔绝毫无防备；明军利用春季蒙古高原强沙尘暴做天然烟幕，创下冷兵器时代长途奔袭巅峰纪录。",
+      "systemFactor": "此战彻底消除了蒙元重返中原的复辟可能，但也使主帅蓝玉养成蓄养数千义子、夜毁喜峰口关门的骄横之气，直接触发五年后的“蓝玉案”。",
+      "prevEventIds": ["evt-1372-wangbaobao-lingbei", "evt-1381-conquer-yunnan"],
+      "nextEventIds": ["evt-1393-lanyu-purge"]
+    },
+    "bookLens": {
+      "chapterIds": ["v1-zhu-yuanzhang-ch15", "v1-zhu-yuanzhang-ch20"],
+      "mingyuePerspective": "《第二十章 最后的名将——蓝玉》盛赞此役堪比霍去病封狼居胥：徐达、常遇春、李文忠相继谢世后，小舅子蓝玉用这一仗向天下证明了自己配得上大明军神的接力棒，可惜他也亲手掘好了自己的坟墓。",
+      "historicalNote": "《明史》评价此役后“元裔日微”，鬼力赤去大元国号称可汗，明人始称东蒙古为鞑靼、西蒙古为瓦剌。"
+    },
+    "campaignId": "cmp-1387-buyur-lake"
+  },
+  {
+    "id": "evt-1398-hongwu-death-legacy",
+    "title": "洪武大帝驾崩钟山孝陵：从濠州破碗乞丐到开国太祖的传奇谢幕",
+    "tier": "macro",
+    "category": "politics",
+    "time": {
+      "year": 1398,
+      "month": 5,
+      "display": "洪武三十一年（1398年）闰五月初十",
+      "reignTitle": "洪武三十一年"
+    },
+    "location": {
+      "placeId": "place-yingtian",
+      "ancientName": "应天府西宫 / 钟山明孝陵",
+      "modernName": "江苏南京钟山明孝陵",
+      "coordinates": [118.843, 32.059]
+    },
+    "camera": {
+      "center": [118.82, 32.055],
+      "zoom": 7.0,
+      "pitch": 40,
+      "bearing": 0
+    },
+    "summary": "洪武三十一年闰五月初十，七十一岁的明太祖朱元璋在南京皇宫走完了波澜壮阔的一生，葬于钟山孝陵；遗诏令诸王各留封国不许奔丧，二十一岁的皇太孙朱允炆即位，改次年为建文元年。从1344年濠州钟离父母饿死连块坟地都没有的放牛娃朱重八，到驱逐胡虏恢复中华、编订《大明律》与鱼鳞黄册、开创二百七十六年大明基业的洪武大帝，一段空前绝后的草根帝王史诗落下帷幕。",
+    "actors": ["朱元璋", "朱允炆", "朱棣"],
+    "why": {
+      "geoFactor": "遗诏严禁驻守北平、大宁、大同、西安的诸塞王进南京奔丧（燕王朱棣行至淮安即被齐泰敕令勒回北平），南京朝廷与北方强藩之间的地理与军事裂痕在太祖棺椁未寒时便已公开化。",
+      "systemFactor": "朱元璋留下了无比稳固的里甲赋役、卫所军户与六部体制，却同时留下了“无丞相缓冲”与“无宿将统兵镇藩”两大权力真空，靖难风暴一触即发。",
+      "prevEventIds": ["evt-1385-dagao-handbook", "evt-1393-lanyu-purge"],
+      "nextEventIds": ["evt-1398-jianwen-abolish-princes"]
+    },
+    "bookLens": {
+      "chapterIds": ["v1-zhu-yuanzhang-ch23"],
+      "mingyuePerspective": "当年明月在《朱元璋篇》结尾写下了令无数读者动容的总结：开局一个碗，结局一个国。无论后人如何评说他的多疑与嗜杀，在元末那片人间地狱里，是这个叫朱重八的草根硬汉一步步杀出重围，重新挺起了华夏民族的尊严。",
+      "historicalNote": "康熙帝五次南巡拜谒明孝陵，亲题“治隆唐宋”四字碑额，评价洪武制度与开国功业远迈前代。"
     }
   }
 ]

@@ -1,0 +1,610 @@
+[
+  {
+    "id": "evt-1403-yongle-encyclopedia",
+    "title": "修纂《永乐大典》：三千文臣汇天下古今图书于一炉",
+    "tier": "macro",
+    "category": "culture",
+    "time": {
+      "year": 1403,
+      "month": 7,
+      "display": "永乐元年七月诏修—永乐六年（1408年）成书",
+      "reignTitle": "永乐元年"
+    },
+    "location": {
+      "placeId": "place-yingtian",
+      "ancientName": "应天府文渊阁",
+      "modernName": "江苏南京",
+      "coordinates": [118.812, 32.042]
+    },
+    "camera": {
+      "center": [118.812, 32.042],
+      "zoom": 7.2,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "朱棣即位之初，命翰林侍读解缙、姚广孝等总纂大型类书，要求“凡书契以来经史子集百家之书，至于天文、地志、阴阳、医卜、僧道、技艺之言，备辑为一书，毋厌浩繁！”动用两千一百余名学者历时五年编成《永乐大典》两万两千八百七十七卷、三亿七千万字，且坚持一字不改完整保存先秦至明初八千余种珍贵古籍原貌！",
+    "actors": ["朱棣", "解缙", "姚广孝"],
+    "why": {
+      "geoFactor": "明初江南南京汇聚了元末以来保存最完好的官私藏书楼与全国顶尖科举饱学之士，唯有在应天文渊阁方能调动如此庞大的文献与人力。",
+      "systemFactor": "方孝孺血案后江南读书人心怀抵触，朱棣急需一场震古烁今的文化盛举既吸纳笼络天下士子，又向后世证明自己并非只会弯弓杀伐的马上武夫。",
+      "prevEventIds": ["evt-1402-lingbi-nanjing", "evt-1402-fangxiaoru-ten-clans"],
+      "nextEventIds": ["evt-1421-yongle-beijing-capital"]
+    },
+    "bookLens": {
+      "chapterIds": ["v2-zhu-di-ch02"],
+      "mingyuePerspective": "当年明月在《帝王的荣耀》中盛赞《永乐大典》与清代《四库全书》的本质天壤之别：朱棣修书只抄不删，哪怕异端杂学也原封不动留给后人；乾隆修书却是借编书之名行阉割焚毁之实。",
+      "historicalNote": "《永乐大典》正本不知所踪（学界多推测毁于明亡或殉葬永陵），嘉靖重录副本则在咸丰英法联军与庚子八国联军劫掠焚毁下仅存八百余卷散落全球。"
+    }
+  },
+  {
+    "id": "evt-1405-zhenghe-first-voyage",
+    "title": "郑和首下西洋：二万七千将士与大宝船开启大航海盛世",
+    "tier": "macro",
+    "category": "voyage",
+    "time": {
+      "year": 1405,
+      "month": 7,
+      "display": "永乐三年（1405年）六月命使 · 七月起航",
+      "reignTitle": "永乐三年"
+    },
+    "location": {
+      "placeId": "place-liujiagang",
+      "ancientName": "太仓刘家港（龙江宝船厂出江）",
+      "modernName": "江苏苏州太仓浏河镇",
+      "coordinates": [121.268, 31.512]
+    },
+    "camera": {
+      "center": [117.5, 24.5],
+      "zoom": 4.6,
+      "pitch": 36,
+      "bearing": 0
+    },
+    "summary": "永乐三年六月，朱棣命靖难功臣内官监太监郑和（原姓马，小字三保，云南昆阳人）、王景弘率官兵水手两万七千八百余人，驾大号宝船六十二艘（总计二百余艘海船），满载丝绸、青花瓷器与金银钱币自南京龙江出太仓刘家港，经长乐候风扬帆西洋，拉开二十八年七下西洋壮举序幕！",
+    "actors": ["郑和", "朱棣", "王景弘", "马欢", "费信"],
+    "why": {
+      "geoFactor": "南京龙江关临江水深且盛产江南桐油麻丝木材，太仓刘家港扼长江入东海咽喉，福建长乐五虎门正对冬季东北信风走廊，三大港口构成完美的造船—编队—候风出洋地理链条。",
+      "systemFactor": "洪武海禁切断民间海外贸易后，朱棣试图由国家垄断构建“厚往薄来、万国朝贡”的官方海洋秩序，同时宣扬永乐新朝正统威仪并暗访海外动向。",
+      "prevEventIds": ["evt-1402-lingbi-nanjing"],
+      "nextEventIds": [
+        "evt-1407-palembang-chenzuyi",
+        "evt-1414-giraffe-tribute",
+        "evt-1433-zhenghe-final-calicut"
+      ]
+    },
+    "bookLens": {
+      "chapterIds": ["v2-zhu-di-ch04"],
+      "mingyuePerspective": "《第四章 郑和之后，再无郑和》感叹：当哥伦布八十七年后带着三艘百吨小帆船撞上美洲时，郑和早已带着两万七千人的超级特混舰队把太平洋到非洲东海岸走了整整七遍——而且带去的不是火剑屠杀，而是瓷器与和平。",
+      "historicalNote": "据《明史·郑和传》与长乐《天妃灵应之记》碑，郑和船队拥有严密的罗盘“针路”与观北极星高度的“过洋牵星术”，代表十五世纪初世界最高航海科技。"
+    },
+    "campaignId": "cmp-1405-zhenghe-voyages"
+  },
+  {
+    "id": "evt-1407-palembang-chenzuyi",
+    "title": "旧港火攻擒贼王：郑和夜破大海盗陈祖义设旧港宣慰司",
+    "tier": "micro",
+    "category": "voyage",
+    "time": {
+      "year": 1407,
+      "month": 6,
+      "display": "永乐五年（1407年）返航途中",
+      "reignTitle": "永乐五年"
+    },
+    "location": {
+      "placeId": "place-palembang",
+      "ancientName": "三佛齐旧港",
+      "modernName": "印尼苏门答腊巨港",
+      "coordinates": [104.756, -2.991]
+    },
+    "camera": {
+      "center": [104.756, -2.991],
+      "zoom": 5.8,
+      "pitch": 36,
+      "bearing": 0
+    },
+    "summary": "广东潮州籍大海盗陈祖义盘踞三佛齐旧港十余年，拥战船百艘横行马六甲与爪哇海面。郑和首航归途招抚，陈祖义表面诈降实欲夜袭夺取宝船财宝；广东侨领施进卿密报郑和，郑和连夜布下火船火炮口袋阵，焚敌船十余艘、斩五千余级，生擒陈祖义押赴南京枭首，并奏设大明“旧港宣慰司”！",
+    "actors": ["郑和", "陈祖义", "施进卿"],
+    "why": {
+      "geoFactor": "旧港位于苏门答腊东南部穆西河口，紧邻邦加海峡与马六甲海峡南口，海盗据守于此便可掐断中国通往印度洋的全部商路。",
+      "systemFactor": "郑和船队并非单纯外交使团，而是配备两万余名百战京卫精兵与神机火器的远洋武装力量，“以武护商、怀柔远人”双管齐下。",
+      "prevEventIds": ["evt-1405-zhenghe-first-voyage"],
+      "nextEventIds": ["evt-1414-giraffe-tribute"]
+    },
+    "bookLens": {
+      "chapterIds": ["v2-zhu-di-ch04"],
+      "mingyuePerspective": "当年明月调侃陈祖义简直是利令智昏：也不打听打听郑和是谁带出来的兵——敢去抢靖难沙场老将的两万七千正规军，纯属硬往火铳口上撞！",
+      "historicalNote": "永乐五年九月郑和献俘南京，明成祖命任施进卿为大明旧港宣慰使，这是明代在南洋群岛设立的最重要海外行政羁縻机构。"
+    },
+    "campaignId": "cmp-1405-zhenghe-voyages"
+  },
+  {
+    "id": "evt-1407-annam-jiaozhi-province",
+    "title": "张辅平定安南：设交趾承宣布政使司（大明第十四省）",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1407,
+      "month": 6,
+      "display": "永乐四年出师—永乐五年（1407年）六月设省",
+      "reignTitle": "永乐五年"
+    },
+    "location": {
+      "placeId": "place-jiaozhi",
+      "ancientName": "交趾东关城（升龙）",
+      "modernName": "越南河内",
+      "coordinates": [105.8342, 21.0278]
+    },
+    "camera": {
+      "center": [106.2, 20.8],
+      "zoom": 6.0,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "安南权臣胡季犛篡夺陈朝王位，并于芹站伏杀护送陈天平归国的明军使团。朱棣勃然大怒（“逆命者必剪除之”），命成国公朱能、新城侯张辅率大军南征。朱能病逝军中后，张辅用火铳破安南象兵、攻克多邦城生擒胡季犛父子，因陈氏宗族已被杀绝，永乐五年六月诏改安南为“交趾承宣布政使司”，纳入大明两京十四省直辖版图！",
+    "actors": ["朱棣", "张辅", "沐晟", "胡季犛"],
+    "why": {
+      "geoFactor": "红河平原北隔十万大山与镇南关、云南蒙自相连，易攻难守；明军凭火器优势能迅速打穿红河三角洲，但热带雨林瘴疠与漫长山地补给线使长期驻守成本高昂。",
+      "systemFactor": "唐末五代以后交趾脱离中原已近五百年，本土民族意识已然成型；加上后来派往交趾的宦官马骐贪暴激变，使第十四省成为吞噬明军钱粮的泥潭。",
+      "prevEventIds": ["evt-1402-lingbi-nanjing"],
+      "nextEventIds": ["evt-1427-abandon-jiaozhi"]
+    },
+    "bookLens": {
+      "chapterIds": ["v2-zhu-di-ch05", "v2-zhu-di-ch07"],
+      "mingyuePerspective": "书中精彩还原了张玉之子张辅虎父无犬子的用兵天才：面对安南引以为傲的重甲战象阵，张辅用画狮蒙马与神机火铳齐射，受惊狂奔的大象掉头把安南自家大军踩得人仰马翻！",
+      "historicalNote": "张辅前后四平交趾威震西南，进封英国公；交趾布政使司下辖十五府、四十一州、二百零八县，维持直辖统治二十年（1407—1427）。"
+    }
+  },
+  {
+    "id": "evt-1409-qiufu-kerulen-defeat",
+    "title": "丘福胪朐河覆没：十万轻骑冒进中伏激起天子亲征",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1409,
+      "month": 8,
+      "display": "永乐七年（1409年）八月",
+      "reignTitle": "永乐七年"
+    },
+    "location": {
+      "placeId": "place-kerulen",
+      "ancientName": "胪朐河（克鲁伦河）",
+      "modernName": "蒙古国东方省克鲁伦河畔",
+      "coordinates": [113.52, 47.72]
+    },
+    "camera": {
+      "center": [113.52, 47.72],
+      "zoom": 5.6,
+      "pitch": 36,
+      "bearing": 0
+    },
+    "summary": "鞑靼本雅失里汗与太师阿鲁台斩杀明使郭骥，朱棣命靖难功臣淇国公丘福挂帅统十万精骑北征，临行千叮万嘱“兵未集切勿轻进”。孰料丘福违抗圣旨，轻信敌军诈败俘虏之言，仅率千余骑抢渡胪朐河孤军深入，结果遭阿鲁台铁骑四面合围，丘福与武城侯王聪、同安侯火真等五位勋臣及前锋精骑全军覆没！",
+    "actors": ["丘福", "本雅失里", "阿鲁台", "朱棣"],
+    "why": {
+      "geoFactor": "胪朐河（克鲁伦河）远离塞内补给基地两千余里，河谷北岸丘陵起伏极易藏兵；骑兵未待步炮大营跟进便孤军渡河，一旦背水被围绝无幸理。",
+      "systemFactor": "靖难第一名将张玉早死于东昌，余下老将丘福勇而无谋；此役惨败让朱棣痛感“诸将无足任者”，从此开启皇帝御驾亲征漠北的先河！",
+      "prevEventIds": ["evt-1399-daning-raid"],
+      "nextEventIds": ["evt-1410-onon-first-expedition"]
+    },
+    "bookLens": {
+      "chapterIds": ["v2-zhu-di-ch06", "v2-zhu-di-ch07"],
+      "mingyuePerspective": "当年明月写道：朱棣气得差点吐血——自己叮嘱了八百遍别追别追，丘福偏要立头功往口袋阵里钻！既然手下没人会打大兵团草原战，那好，天下第一名将朱棣决定亲自披挂上阵！",
+      "historicalNote": "战后朱棣追夺丘福淇国公爵位，徙其家属于海南琼州；并立即筹集三十万石粮草与五十五万大军准备次年首次御驾亲征。"
+    }
+  },
+  {
+    "id": "evt-1410-onon-first-expedition",
+    "title": "永乐首次北伐：成吉思汗龙兴地斡难河大破鞑靼汗廷",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1410,
+      "month": 5,
+      "display": "永乐八年（1410年）二月出师 · 五月斡难河大捷",
+      "reignTitle": "永乐八年"
+    },
+    "location": {
+      "placeId": "place-onon",
+      "ancientName": "斡难河（鄂嫩河）",
+      "modernName": "蒙古国肯特省鄂嫩河流域",
+      "coordinates": [110.85, 48.62]
+    },
+    "camera": {
+      "center": [112.2, 47.6],
+      "zoom": 5.3,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "永乐八年二月，五十岁的朱棣亲率五十万大军出塞北伐，行至胪朐河将其改名“饮马河”。本雅失里与阿鲁台分道逃窜，朱棣亲选轻骑携二十日干粮昼夜兼程追至蒙古帝国发源地——斡难河，身先士卒冲破敌阵，本雅失里仅以七骑西逃；班师途中又于静虏镇（飞鱼岭）设伏大破拒降的阿鲁台主力！",
+    "actors": ["朱棣", "张辅", "柳升", "本雅失里", "阿鲁台"],
+    "why": {
+      "geoFactor": "斡难河位于外蒙古肯特山东麓高寒森林草原交界带，距北京近三千里，明军武刚车营与长途驼马后勤实现了农耕王朝罕见的极远距离机动打击。",
+      "systemFactor": "朱棣采取“扶弱抑强”草原均势战略：打垮东蒙古鞑靼后，本雅失里逃往西蒙古被瓦剌首领马哈木袭杀，却又直接催生了瓦剌的新一轮坐大。",
+      "prevEventIds": ["evt-1409-qiufu-kerulen-defeat"],
+      "nextEventIds": ["evt-1414-hulanhushiwun-oirat"]
+    },
+    "bookLens": {
+      "chapterIds": ["v2-zhu-di-ch07"],
+      "mingyuePerspective": "书中满怀豪情地描写了朱棣的沙场本色：这位五十岁的皇帝在塞外与普通士兵吃一样的风干牛肉干粮，冲锋时永远骑在最前头——草原才是朱棣真正的灵魂归宿。",
+      "historicalNote": "阿鲁台战败后遣使献马请降，永乐十一年朱棣封阿鲁台为“和宁王”，转而集中兵力对付日益骄横的瓦剌马哈木。"
+    }
+  },
+  {
+    "id": "evt-1411-huitong-canal-reopen",
+    "title": "白英献策筑戴村坝：重开山东会通河贯通南北漕运大动脉",
+    "tier": "macro",
+    "category": "institution",
+    "time": {
+      "year": 1411,
+      "month": 6,
+      "display": "永乐九年（1411年）二月动工 · 六月完工",
+      "reignTitle": "永乐九年"
+    },
+    "location": {
+      "placeId": "place-daicunba",
+      "ancientName": "山东汶上南旺与戴村坝",
+      "modernName": "山东泰安东平与济宁汶上",
+      "coordinates": [116.435, 35.915]
+    },
+    "camera": {
+      "center": [116.55, 35.85],
+      "zoom": 6.8,
+      "pitch": 40,
+      "bearing": 0
+    },
+    "summary": "洪武二十四年黄河决口淤塞山东会通河后，北方粮饷只能靠险象环生的海运或陆路翻运。为筹备迁都北京，工部尚书宋礼走访民间，拜山东汶上老人白英为师，精准测出南旺乃运河地势最高“水脊”，于东平筑戴村坝拦大汶河水引入南旺，实现“七分朝天子，三分下江南”的水利奇迹，三十万民夫百日疏通会通河，永罢海运！",
+    "actors": ["宋礼", "白英", "陈瑄", "朱棣"],
+    "why": {
+      "geoFactor": "鲁西南济宁—临清段地势中间隆起如驼峰，历代运河常因水源枯竭断航；引大汶河自最高点南旺南北分流並辅以数十座船闸节水，彻底攻克了大运河咽喉瓶颈。",
+      "systemFactor": "没有会通河与平江伯陈瑄疏浚淮安清江浦，江南每年四百万石漕粮根本无法低成本运抵北京——这道人工水脉直接托起了永乐迁都与后世两百年的北方京师！",
+      "prevEventIds": ["evt-1402-lingbi-nanjing"],
+      "nextEventIds": ["evt-1421-yongle-beijing-capital"]
+    },
+    "bookLens": {
+      "chapterIds": ["v2-zhu-di-ch06", "v2-zhu-di-ch08"],
+      "mingyuePerspective": "当年明月特别致敬了宋礼和普通农民水利家白英：历史不只是王侯将相砍砍杀杀，正是这一座戴村坝和一条流淌不息的运河，真正喂饱了北京城百万军民与九边将士。",
+      "historicalNote": "白英卒后被明廷追封为“功漕神”立祠祭祀；永乐十三年陈瑄再开淮安清江浦避开淮河风涛，明代京杭大运河全线定型。"
+    }
+  },
+  {
+    "id": "evt-1413-nurgan-yongning-stele",
+    "title": "亦失哈巡视黑龙江口：奴儿干都司特林建永宁寺立碑",
+    "tier": "macro",
+    "category": "institution",
+    "time": {
+      "year": 1413,
+      "month": 9,
+      "display": "永乐十一年（1413年）秋立碑",
+      "reignTitle": "永乐十一年"
+    },
+    "location": {
+      "placeId": "place-nurgan",
+      "ancientName": "奴儿干都指挥使司（特林）",
+      "modernName": "俄罗斯阿穆尔河口尼古拉耶夫斯克特林",
+      "coordinates": [139.79, 52.94]
+    },
+    "camera": {
+      "center": [132.5, 49.5],
+      "zoom": 4.4,
+      "pitch": 32,
+      "bearing": 0
+    },
+    "summary": "永乐七年设置奴儿干都指挥使司后，女真出身的海西内官亦失哈前后十次率千人巨舰船队自吉林松花江造船顺流北下黑龙江，直抵入海口绝崖——特林（奴儿干城），抚恤吉列迷与苦夷（库页岛）部族，并于永乐十一年与宣德八年两建永宁寺，立汉、女真、蒙、藏四体文字石碑铭刻大明主权与羁縻统辖！",
+    "actors": ["亦失哈", "朱棣", "康旺"],
+    "why": {
+      "geoFactor": "松花江—黑龙江水系是深入严寒北亚针叶林带的天然水上高速公路，明军在吉林船厂造巨船顺江而下，使政令直抵北纬53度鄂霍次克海岸与库页岛。",
+      "systemFactor": "通过册封三百八十四卫、赐印授官与马市互市（“以夷制夷”），明初以极低行政成本稳定了整个外东北与女真诸部。",
+      "prevEventIds": ["evt-1402-lingbi-nanjing"],
+      "nextEventIds": ["evt-1424-yumuchuan-death"]
+    },
+    "bookLens": {
+      "chapterIds": ["v2-zhu-di-ch05"],
+      "mingyuePerspective": "如果说南方的郑和代表了大明走向热带大洋的胸怀，北方的亦失哈则驾驶战船劈开黑龙江冰河，把大明的石碑立到了冰雪皑皑的苦夷（库页岛）对面。",
+      "historicalNote": "两通珍贵的明代《永宁寺碑》（1413《敕修奴儿干永宁寺记》与1433《重建永宁寺记》）原立于特林崖上，清末被沙俄移藏于符拉迪沃斯托克博物馆，铁证如山。"
+    }
+  },
+  {
+    "id": "evt-1414-hulanhushiwun-oirat",
+    "title": "忽兰忽失温血战：朱棣带皇太孙朱瞻基与神机营重创瓦剌",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1414,
+      "month": 6,
+      "display": "永乐十二年（1414年）六月初七",
+      "reignTitle": "永乐十二年"
+    },
+    "location": {
+      "placeId": "place-hulanhushiwun",
+      "ancientName": "忽兰忽失温",
+      "modernName": "蒙古国乌兰巴托东南",
+      "coordinates": [107.18, 47.68]
+    },
+    "camera": {
+      "center": [108.5, 46.8],
+      "zoom": 5.5,
+      "pitch": 40,
+      "bearing": 0
+    },
+    "summary": "瓦剌首领马哈木弑本雅失里后饮马胪朐河挑衅大明。永乐十二年三月，朱棣特意带上十五岁的皇太孙朱瞻基同行，率五十万大军第二次北伐。六月在忽兰忽失温遭遇瓦剌三万精锐铁骑据山死战，宁阳侯陈懋、安远侯柳升以神机营火铳连环齐射轰乱敌阵，朱棣亲率铁骑冲锋从午时杀至黄昏，斩瓦剌王子十余人，马哈木乘夜仓皇北逃！",
+    "actors": ["朱棣", "朱瞻基", "柳升", "陈懋", "马哈木"],
+    "why": {
+      "geoFactor": "瓦剌铁骑抢占忽兰忽失温高坡居高临下俯冲，常规步骑难以仰攻；明军成建制投入新组建的“神机营”火铳火炮轰击山头，首次在漠北野战验证了“步、车、火器、骑兵”协同战法。",
+      "systemFactor": "朱棣携皇太孙朱瞻基亲历枪林箭雨，既是培养储君尚武胆略，也替体胖多病的太子朱高炽锁定了不可动摇的隔代皇位继承权。",
+      "prevEventIds": ["evt-1410-onon-first-expedition"],
+      "nextEventIds": ["evt-1424-yumuchuan-death"]
+    },
+    "bookLens": {
+      "chapterIds": ["v2-zhu-di-ch07"],
+      "mingyuePerspective": "当年明月写得惊心动魄：瓦剌铁骑比鞑靼凶悍得多，大明都指挥满都战死，结果五十四岁的老爷爷朱棣带着十五岁的孙子朱瞻基亲自拔刀往前冲，硬是用火铳和铁骑把马哈木打服了——可惜朱棣没料到，三十五年后马哈木的孙子也先会向朱瞻基的儿子讨还这笔债。",
+      "historicalNote": "此役为永乐五征漠北中最激烈的一场硬仗，次年马哈木遣使贡马谢罪；而马哈木之子脱欢、孙也先正是日后土木堡之变的瓦剌统帅。"
+    }
+  },
+  {
+    "id": "evt-1414-giraffe-tribute",
+    "title": "东非麻林与榜葛剌献“麒麟”：长颈鹿踏入南京奉天门",
+    "tier": "micro",
+    "category": "anecdote",
+    "time": {
+      "year": 1414,
+      "month": 9,
+      "display": "永乐十二年（1414年）九月",
+      "reignTitle": "永乐十二年"
+    },
+    "location": {
+      "placeId": "place-malindi",
+      "ancientName": "麻林国（万里跨海入贡南京）",
+      "modernName": "肯尼亚马林迪",
+      "coordinates": [40.1169, -3.2192]
+    },
+    "camera": {
+      "center": [62.5, 8.5],
+      "zoom": 3.5,
+      "pitch": 26,
+      "bearing": 0
+    },
+    "summary": "永乐十二年与十三年，榜葛剌（孟加拉转口自东非）与东非麻林国（今肯尼亚马林迪）、木骨都束使团随郑和分船队远渡重洋来到南京，献上脖子修长、鹿身牛尾的奇兽——索马里语称“Geri”，音译恰合中国传说中唯圣王治世方才降临的仁兽“麒麟”！满朝百官狂喜上《瑞应麒麟颂》，翰林沈度绘《瑞应麒麟图》传世。",
+    "actors": ["郑和", "朱棣", "沈度"],
+    "why": {
+      "geoFactor": "从东非赤道草原跨越季风印度洋、穿马六甲海峡、过南海入长江，活体大型动物跨海航程逾两万华里而安然存活，足见大宝船水密隔舱与淡水饲草保障能力之惊人。",
+      "systemFactor": "索马里语“Geri”与汉语“麒麟”的神奇谐音巧合，完美契合了朱棣急需祥瑞天命来洗刷靖难夺位争议的政治心理，礼部请贺却被清醒的朱棣微笑婉拒。",
+      "prevEventIds": ["evt-1405-zhenghe-first-voyage", "evt-1407-palembang-chenzuyi"],
+      "nextEventIds": ["evt-1433-zhenghe-final-calicut"]
+    },
+    "bookLens": {
+      "chapterIds": ["v2-zhu-di-ch04", "v2-zhu-di-ch05"],
+      "mingyuePerspective": "书中风趣地揭秘了这桩跨文化历史幽默：大臣们对着长颈鹿激动得热泪盈眶高呼圣主仁德感召麒麟下凡，朱棣心里明镜似的——什么神仙瑞兽，这可是老子花大价钱造宝船从非洲运回来的！",
+      "historicalNote": "台北故宫博物院今藏明永乐十二年翰林院修撰沈度所绘《瑞应麒麟图》真迹，画中“麒麟”即形态逼真的非洲网纹长颈鹿。"
+    },
+    "campaignId": "cmp-1405-zhenghe-voyages"
+  },
+  {
+    "id": "evt-1420-dongchang-secret-police",
+    "title": "东缉事厂设立与凌迟纪纲：宦官制衡锦衣卫的特务双轨",
+    "tier": "micro",
+    "category": "institution",
+    "time": {
+      "year": 1420,
+      "month": 8,
+      "display": "永乐十四年诛纪纲—永乐十八年（1420年）设东厂",
+      "reignTitle": "永乐十八年"
+    },
+    "location": {
+      "placeId": "place-beiping",
+      "ancientName": "北京东安门北（东厂胡同）",
+      "modernName": "北京东城区东厂胡同",
+      "coordinates": [116.412, 39.918]
+    },
+    "camera": {
+      "center": [116.412, 39.918],
+      "zoom": 8.0,
+      "pitch": 40,
+      "bearing": 0
+    },
+    "summary": "朱棣重用靖难旧部纪纲执掌锦衣卫镇压异己，谁知纪纲权倾朝野竟敢私蓄甲兵、在端午射柳现场“指鹿为马”试探群臣！朱棣果断将纪纲凌迟处死，但深感外朝武官锦衣卫不可独信，遂于迁都北京之际在东安门北设立“东缉事厂”，打破洪武祖训启用亲信宦官提督缉拿谋逆并直接监督锦衣卫！",
+    "actors": ["朱棣", "纪纲"],
+    "why": {
+      "geoFactor": "东厂衙署紧贴紫禁城东华门/东安门咫尺之遥，厂公太监出入宫禁向皇帝密奏只需一刻钟，完全绕开内阁六部外廷耳目。",
+      "systemFactor": "废丞相后皇权既要监控百官又要防范锦衣卫坐大，朱棣打开了“重用宦官参政掌特务”的潘多拉魔盒，直接埋下日后王振、汪直、刘瑾、魏忠贤乱政的制度总病根！",
+      "prevEventIds": ["evt-1402-fangxiaoru-ten-clans"],
+      "nextEventIds": ["evt-1435-san-yang-wangzhen"]
+    },
+    "bookLens": {
+      "chapterIds": ["v2-zhu-di-ch08"],
+      "mingyuePerspective": "当年明月一针见血：朱元璋在宫门口立三尺铁牌写着“内臣不得干预政事，预者斩”，结果儿子朱棣因为靖难时得了太监内应甜头，亲手拆了爹的铁牌建起东厂——出来混，迟早是要还的。",
+      "historicalNote": "《明史·刑法志》载：“永乐十八年，始立东厂，命内臣主之，缉访谋逆妖言大奸恶等，与锦衣卫均权势。”"
+    }
+  },
+  {
+    "id": "evt-1424-yumuchuan-death",
+    "title": "榆木川绝唱：永乐大帝五出漠北崩于归途，杨荣秘不发丧",
+    "tier": "macro",
+    "category": "politics",
+    "time": {
+      "year": 1424,
+      "month": 7,
+      "display": "永乐二十二年（1424年）七月十八日",
+      "reignTitle": "永乐二十二年"
+    },
+    "location": {
+      "placeId": "place-yumuchuan",
+      "ancientName": "榆木川（开平卫南）",
+      "modernName": "内蒙古锡林郭勒多伦县西北",
+      "coordinates": [116.12, 42.18]
+    },
+    "camera": {
+      "center": [116.25, 41.35],
+      "zoom": 6.2,
+      "pitch": 40,
+      "bearing": 0
+    },
+    "summary": "不顾户部尚书夏原吉拼死谏阻，六十五岁高龄且身患风疾的永乐大帝朱棣毅然发动第五次漠北亲征。大军深入答兰纳木儿河不见阿鲁台踪影，班师行至塞外苍凉的榆木川时，这位马背皇帝油尽灯枯崩于行营！内阁大学士杨荣、金幼孜与张辅果断封锁消息，熔军中锡器制成密闭锡椑盛敛遗体，每日照常进膳奏事，杨荣单骑飞奔北京报信，化解了汉王朱高煦乘虚夺位危机！",
+    "actors": ["朱棣", "杨荣", "金幼孜", "张辅", "夏原吉"],
+    "why": {
+      "geoFactor": "榆木川位于滦河上游坝上高原，距居庸关尚有五百余里；三十万大军孤悬塞外而北京城内仅太子朱高炽监国、虎视眈眈的汉王与赵王近在咫尺，一旦军心哗变或消息走漏后果不堪设想。",
+      "systemFactor": "永乐晚年连年北伐与下西洋已令国库见底（夏原吉为此入狱三年），朱棣之死标志着大明狂飙突进的武功扩张时代正式画上句号。",
+      "prevEventIds": [
+        "evt-1413-nurgan-yongning-stele",
+        "evt-1414-hulanhushiwun-oirat",
+        "evt-1421-yongle-beijing-capital"
+      ],
+      "nextEventIds": ["evt-1424-hongxi-benevolence"]
+    },
+    "bookLens": {
+      "chapterIds": ["v2-zhu-di-ch09", "v2-zhu-di-ch10"],
+      "mingyuePerspective": "《第十章 最后的秘密》写尽了英雄迟暮的悲壮：朱棣这一生对不起建文帝、对不起方孝孺，但他修《大典》、派郑和、迁北京、五征漠北最终死在塞外行军帐里——他用整整二十二年的殚精竭虑，兑现了“天子守国门”的誓言。",
+      "historicalNote": "军中将所有的锡器收集熔铸成锡棺，并杀掉了知情锡匠以防泄密；皇太孙朱瞻基出居庸关迎丧后方才发丧，庙号太宗（嘉靖朝改尊成祖）。"
+    }
+  },
+  {
+    "id": "evt-1424-hongxi-benevolence",
+    "title": "洪熙十月仁政：放出夏原吉、停罢西洋宝船与平反建文冤狱",
+    "tier": "macro",
+    "category": "politics",
+    "time": {
+      "year": 1424,
+      "month": 8,
+      "display": "永乐二十二年八月即位—洪熙元年（1425年）五月崩",
+      "reignTitle": "洪熙元年"
+    },
+    "location": {
+      "placeId": "place-beiping",
+      "ancientName": "北京顺天府皇城",
+      "modernName": "北京",
+      "coordinates": [116.397, 39.916]
+    },
+    "camera": {
+      "center": [116.397, 39.916],
+      "zoom": 7.0,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "苦熬二十年太子生涯的明仁宗朱高炽登基当日，第一件事便是把被父亲关在牢里的户部尚书夏原吉放出来恢复原职，当即下诏停止下西洋宝船、停止营建与西北采办、赦免流放二十余年的建文忠臣遗孤（称方孝孺等“皆忠臣也”），重用“三杨”（杨士奇、杨荣、杨溥）与蹇义，把紧绷欲断的大明弓弦温柔地松了下来——虽在位仅十个月暴卒，却奠定了“仁宣之治”基石！",
+    "actors": ["朱高炽", "夏原吉", "杨士奇", "李时勉"],
+    "why": {
+      "geoFactor": "仁宗曾一度动议将国都迁回赋税富庶的南京（改北京复称行在），只因洪熙元年五月猝然驾崩而未果，但江南减赋与赈灾政令迅速恢复了南北民生元气。",
+      "systemFactor": "历史节奏的一张一弛：若朱棣之后再出一位穷兵黩武的猛主，大明极可能步秦隋二世而亡后尘；体弱仁厚的朱高炽恰如一场及时春雨救活了疲敝的帝国财政。",
+      "prevEventIds": ["evt-1424-yumuchuan-death"],
+      "nextEventIds": ["evt-1426-lean-gaoxu-rebellion"]
+    },
+    "bookLens": {
+      "chapterIds": ["v2-zhu-gaochi-ch11"],
+      "mingyuePerspective": "当年明月对这位连走路都要两个太监搀扶的大胖子皇帝充满了温情：在朱棣和朱高煦的刀光剑影里忍辱负重二十年，一朝大权在握却没有报复任何人，连把他骂得狗血淋头的言官李时勉最后都保住了性命。",
+      "historicalNote": "仁宗在位虽仅十月，但提升内阁大学士兼领尚书衔，使文官内阁制正式走向成熟。"
+    }
+  },
+  {
+    "id": "evt-1426-lean-gaoxu-rebellion",
+    "title": "宣宗闪电亲征乐安州：不血刃生擒皇叔汉王朱高煦",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1426,
+      "month": 8,
+      "display": "宣德元年（1426年）八月",
+      "reignTitle": "宣德元年"
+    },
+    "location": {
+      "placeId": "place-lean",
+      "ancientName": "山东乐安州",
+      "modernName": "山东滨州惠民县",
+      "coordinates": [117.512, 37.489]
+    },
+    "camera": {
+      "center": [117.15, 38.35],
+      "zoom": 6.4,
+      "pitch": 40,
+      "bearing": 0
+    },
+    "summary": "曾在靖难白沟河与浦子口数救朱棣性命的汉王朱高煦，自恃勇武看不起侄子宣宗朱瞻基，于山东封地乐安州起兵造反，妄想复刻父亲“靖难之役”。谁知从小随朱棣征战漠北的朱瞻基听从杨荣建议，拒绝派庸将送人头，亲统五万大军昼夜疾驰兵临乐安城下，万炮齐轰震慑全城！众叛亲离的朱高煦被迫出城投降，后因探监时伸脚绊倒皇帝被罩入三百斤大铜缸用炭火活活炙死！",
+    "actors": ["朱瞻基", "朱高煦", "杨荣", "张辅"],
+    "why": {
+      "geoFactor": "乐安州（今山东惠民）地处鲁北一马平川之腹地，既无北平背靠燕山居庸的险隘，距北京顺天府更只有五六百里平路，朝发夕至根本无险可守！",
+      "systemFactor": "朱瞻基不是建文帝朱允炆，杨荣也不是黄子澄——皇帝御驾亲征直接瓦解了叛军“清君侧”口号，也彻底终结了明初藩王武力夺位的历史。",
+      "prevEventIds": ["evt-1424-hongxi-benevolence"],
+      "nextEventIds": ["evt-1427-abandon-jiaozhi"]
+    },
+    "bookLens": {
+      "chapterIds": ["v2-zhu-zhanji-ch12"],
+      "mingyuePerspective": "《朱瞻基是个好同志》把这场叔侄对决写得妙趣横生：朱高煦以为侄子是个书呆子，结果侄子三天就把五万大军和神机火炮拉到了他家门口；明明已经被饶了一命关在西安门内，非要伸一脚把皇帝侄子绊个狗啃泥，最终成就了“烤汉王”的惨烈结局。",
+      "historicalNote": "平定乐安后，宣宗并未株连赵王朱高燧，而是出示群臣弹劾奏章令赵王主动交出护卫兵权，和平完成了明代削藩收尾。"
+    }
+  },
+  {
+    "id": "evt-1427-abandon-jiaozhi",
+    "title": "倒马坡之败与罢交趾布政使司：宣宗与三杨的务实止损决断",
+    "tier": "macro",
+    "category": "politics",
+    "time": {
+      "year": 1427,
+      "month": 10,
+      "display": "宣德二年（1427年）九月柳升阵亡 · 十月罢省撤军",
+      "reignTitle": "宣德二年"
+    },
+    "location": {
+      "placeId": "place-jiaozhi",
+      "ancientName": "交趾支棱关倒马坡 / 东关城",
+      "modernName": "越南谅山支棱至河内",
+      "coordinates": [106.55, 21.62]
+    },
+    "camera": {
+      "center": [106.4, 21.5],
+      "zoom": 6.1,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "安南蓝山豪族黎利掀起长达十年的反明游击战，成山侯王通被困东关（河内）。宣德二年安远侯柳升率七万援军入镇南关，因连胜轻敌仅率百骑过桥追至支棱倒马坡泥沼，中伏身亡，副帅崔聚、兵部尚书李庆尽殁！尽管张辅力请再发十万兵死战，宣宗朱瞻基与杨士奇、杨荣算清国库账本后顶住“弃祖宗之地”骂名，借黎利奉表请立陈氏后人之台阶，诏罢交趾承宣布政使司，撤回八万六千军民官吏！",
+    "actors": ["朱瞻基", "杨士奇", "杨荣", "柳升", "王通", "黎利"],
+    "why": {
+      "geoFactor": "支棱关（鬼门关）山高林密、水毒泥深，北方重骑兵与火器车营在亚热带丛林泥沼中寸步难行，万里运粮十石难致一石。",
+      "systemFactor": "治大国最难的不是开疆而是及时止损：交趾每年赋税远不够驻军粮饷之十一，宣宗果断砍掉失血伤口，才换来了宣德十年天下仓廪充盈的“仁宣盛世”巅峰。",
+      "prevEventIds": ["evt-1407-annam-jiaozhi-province", "evt-1426-lean-gaoxu-rebellion"],
+      "nextEventIds": ["evt-1433-zhenghe-final-calicut", "evt-1435-san-yang-wangzhen"]
+    },
+    "bookLens": {
+      "chapterIds": ["v2-zhu-zhanji-ch12"],
+      "mingyuePerspective": "当年明月高度评价了朱瞻基的政治勇气：好面子的皇帝最怕背“丧权弃地”的锅，宁可把老百姓骨髓抽干也要硬撑；而好同志朱瞻基敢于承认这块地守不住也不划算，替大明省下了无数白骨与银两。",
+      "historicalNote": "撤出交趾三年后（宣德五年），明廷又因塞外运粮艰难将孤悬漠南的开平卫南迁独石，大明战略态势全面转入长城内线守御。"
+    }
+  },
+  {
+    "id": "evt-1433-zhenghe-final-calicut",
+    "title": "郑和魂归古里与“促织天子”余晖：大航海绝响与盛世隐忧",
+    "tier": "micro",
+    "category": "voyage",
+    "time": {
+      "year": 1433,
+      "month": 4,
+      "display": "宣德八年（1433年）四月",
+      "reignTitle": "宣德八年"
+    },
+    "location": {
+      "placeId": "place-calicut",
+      "ancientName": "西洋古里国",
+      "modernName": "印度喀拉拉邦科泽科德",
+      "coordinates": [75.7804, 11.2588]
+    },
+    "camera": {
+      "center": [82.5, 12.5],
+      "zoom": 4.2,
+      "pitch": 30,
+      "bearing": 0
+    },
+    "summary": "宣德五年，朱瞻基念祖父遗风命六旬老帅郑和第七次下西洋。宣德八年四月返航途经印度古里，驰骋沧海二十八载的三保太监郑和油尽灯枯病逝船上，遗体归葬南京牛首山；与此同时，太平盛世里的宣宗迷上斗蟋蟀（“促织”）并为司礼监设“内书堂”教小太监读书识字——大航海的帆影落幕之际，宦官专权的阴影正悄悄推开宫门。",
+    "actors": ["郑和", "王景弘", "朱瞻基"],
+    "why": {
+      "geoFactor": "古里背靠西高止山脉、面朝阿拉伯海季风转换带，既是郑和生前最熟悉的西洋总港，也成了这位伟大航海家永远瞭望故国的终点。",
+      "systemFactor": "宣宗打破太祖“内臣不许识字”铁律设立内书堂，初衷虽是让太监帮忙批红跑腿，却无意间赋予了司礼监批红代理皇权的制度核武器——内书堂第一批优秀教师，正是王振！",
+      "prevEventIds": [
+        "evt-1405-zhenghe-first-voyage",
+        "evt-1414-giraffe-tribute",
+        "evt-1427-abandon-jiaozhi"
+      ],
+      "nextEventIds": ["evt-1435-san-yang-wangzhen"]
+    },
+    "bookLens": {
+      "chapterIds": ["v2-zhu-di-ch04", "v2-zhu-zhanji-ch12", "v2-zhu-qizhen-ch13"],
+      "mingyuePerspective": "书中将郑和之死与后来兵部尚书刘大夏藏匿焚毁《郑和航海图》连在一起感叹：历史给了中国领先世界一个世纪的海洋入场券，而我们自己把它撕碎扔进了火盆。",
+      "historicalNote": "宣德十年（1435）正月，年仅三十八岁的明宣宗朱瞻基英年早逝，九岁幼子朱祁镇登基，仁宣盛世落幕。"
+    },
+    "campaignId": "cmp-1405-zhenghe-voyages"
+  }
+]

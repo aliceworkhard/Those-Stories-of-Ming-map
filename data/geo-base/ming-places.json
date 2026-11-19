@@ -358,5 +358,293 @@
     "type": "battlefield",
     "coordinates": [115.606, 40.382],
     "strategicNote": "怀来城西二十里无水高台绝地，1449年明英宗朱祁镇二十万大军在此被瓦剌也先断水覆灭。"
+  },
+  {
+    "id": "place-chongqing",
+    "ancientName": "重庆府（巴县）",
+    "aliases": ["渝州", "明夏国都"],
+    "modernName": "重庆",
+    "type": "capital",
+    "coordinates": [106.5516, 29.563],
+    "strategicNote": "嘉陵江与长江交汇山城，元末明玉珍“大夏”国都，1371年汤和突破瞿塘峡铁锁攻克重庆。"
+  },
+  {
+    "id": "place-qutangxia",
+    "ancientName": "瞿塘峡（夔州奉节）",
+    "aliases": ["夔门天险"],
+    "modernName": "重庆奉节瞿塘峡",
+    "type": "pass",
+    "coordinates": [109.528, 31.042],
+    "strategicNote": "巴蜀东大门长江三峡咽喉，夏丞相戴寿横江架铁索飞桥阻挡汤和水师之地。"
+  },
+  {
+    "id": "place-kunming",
+    "ancientName": "云南府（中庆路）",
+    "aliases": ["昆明", "滇池"],
+    "modernName": "云南昆明",
+    "type": "capital",
+    "coordinates": [102.7123, 25.0406],
+    "strategicNote": "元梁王割据核心，洪武十四年傅友德、蓝玉、沐英平滇后沐氏世镇云南近三百年。"
+  },
+  {
+    "id": "place-qujing",
+    "ancientName": "曲靖府（白石江）",
+    "aliases": ["南宁州"],
+    "modernName": "云南曲靖",
+    "type": "battlefield",
+    "coordinates": [103.796, 25.49],
+    "strategicNote": "入滇第一门户，沐英乘大雾奇袭白石江生擒元司徒达里麻十万主力，一战定云南！"
+  },
+  {
+    "id": "place-karakorum",
+    "ancientName": "和林（哈拉和林）",
+    "aliases": ["岭北行省治所"],
+    "modernName": "蒙古国前杭爱省哈拉和林",
+    "type": "capital",
+    "coordinates": [102.842, 47.198],
+    "strategicNote": "大蒙古国与北元草原旧都，1372年徐达岭北之战与王保保决战目标。"
+  },
+  {
+    "id": "place-jinshan",
+    "ancientName": "辽东金山",
+    "aliases": ["双城子西金山"],
+    "modernName": "吉林双辽至辽宁昌图辽河曲",
+    "type": "battlefield",
+    "coordinates": [123.752, 43.185],
+    "strategicNote": "元太尉纳哈出拥兵二十万屯驻之地，1387年冯胜、蓝玉筑四城逼围迫使其举众降明。"
+  },
+  {
+    "id": "place-buyur-lake",
+    "ancientName": "捕鱼儿海",
+    "aliases": ["贝尔湖"],
+    "modernName": "中蒙交界呼伦贝尔贝尔湖",
+    "type": "battlefield",
+    "coordinates": [117.718, 47.825],
+    "strategicNote": "1388年四月蓝玉率十五万铁骑借狂风黄沙掩护奇袭此地，一举端掉北元脱古思帖木儿汗廷！"
+  },
+  {
+    "id": "place-xifengkou",
+    "ancientName": "喜峰口",
+    "aliases": ["松亭关道"],
+    "modernName": "河北唐山迁西与宽城交界",
+    "type": "pass",
+    "coordinates": [118.338, 40.422],
+    "strategicNote": "燕山长城咽喉要塞，蓝玉北伐凯旋夜叩关门、纵兵毁关埋下杀身祸根之地。"
+  },
+  {
+    "id": "place-liujiagang",
+    "ancientName": "太仓刘家港",
+    "aliases": ["六国码头"],
+    "modernName": "江苏苏州太仓浏河镇",
+    "type": "port",
+    "coordinates": [121.268, 31.512],
+    "strategicNote": "长江入海口深水巨港，郑和七下西洋二百余艘海船编队集结祭祀天妃起航总锚地。"
+  },
+  {
+    "id": "place-changle",
+    "ancientName": "长乐太平港（五虎门）",
+    "aliases": ["三峰塔锚地"],
+    "modernName": "福建福州长乐区",
+    "type": "port",
+    "coordinates": [119.526, 25.963],
+    "strategicNote": "闽江口避风良港，郑和船队每次出洋前均驻泊于此等候冬春东北信风南下西洋。"
+  },
+  {
+    "id": "place-champa",
+    "ancientName": "占城国（新州港）",
+    "aliases": ["尸毗奈港"],
+    "modernName": "越南平定省归仁",
+    "type": "port",
+    "coordinates": [109.219, 13.782],
+    "strategicNote": "下西洋顺风十昼夜首站枢纽，控扼南海西岸航路。"
+  },
+  {
+    "id": "place-palembang",
+    "ancientName": "三佛齐旧港（旧港宣慰司）",
+    "aliases": ["巨港", "勃淋邦"],
+    "modernName": "印尼苏门答腊巨港",
+    "type": "port",
+    "coordinates": [104.756, -2.991],
+    "strategicNote": "1407年郑和在此火烧贼船五千众、生擒大海盗陈祖义，并设大明旧港宣慰司！"
+  },
+  {
+    "id": "place-malacca",
+    "ancientName": "满剌加（官厂重镇）",
+    "aliases": ["麻六甲"],
+    "modernName": "马来西亚马六甲",
+    "type": "port",
+    "coordinates": [102.2501, 2.1896],
+    "strategicNote": "太平洋与印度洋咽喉锁钥！郑和在此建城栅立“官厂”仓储钱粮，作为远航印度洋与东非的大本营。"
+  },
+  {
+    "id": "place-ceylon",
+    "ancientName": "锡兰山（科伦坡/加勒）",
+    "aliases": ["狮子国"],
+    "modernName": "斯里兰卡科伦坡",
+    "type": "battlefield",
+    "coordinates": [79.8612, 6.9271],
+    "strategicNote": "南亚海上十字路口，1411年国王亚烈苦奈儿诱劫宝船，郑和亲率两千精兵奇袭破其王城生擒国王！"
+  },
+  {
+    "id": "place-calicut",
+    "ancientName": "古里国（西洋大国）",
+    "aliases": ["卡利卡特"],
+    "modernName": "印度喀拉拉邦科泽科德",
+    "type": "port",
+    "coordinates": [75.7804, 11.2588],
+    "strategicNote": "印度洋胡椒香料贸易中心与分航波斯湾/东非枢纽，1433年郑和第七次下西洋返航病逝于此。"
+  },
+  {
+    "id": "place-hormuz",
+    "ancientName": "忽鲁谟斯",
+    "aliases": ["霍尔木兹"],
+    "modernName": "伊朗霍尔木兹岛",
+    "type": "port",
+    "coordinates": [56.4608, 27.0594],
+    "strategicNote": "波斯湾咽喉贸易王城，郑和主船队西航极远终点之一，奇珍宝石荟萃之地。"
+  },
+  {
+    "id": "place-mecca",
+    "ancientName": "天方（麦加/吉达港）",
+    "aliases": ["默伽"],
+    "modernName": "沙特阿拉伯吉达/麦加",
+    "type": "port",
+    "coordinates": [39.1925, 21.4858],
+    "strategicNote": "红海东岸圣城门户，宣德年间郑和派遣分船队洪保、马欢远抵天方绘《天方图》。"
+  },
+  {
+    "id": "place-mogadishu",
+    "ancientName": "木骨都束",
+    "aliases": ["摩加迪沙"],
+    "modernName": "索马里摩加迪沙",
+    "type": "port",
+    "coordinates": [45.3438, 2.0469],
+    "strategicNote": "东非印度洋岸重镇，郑和分船队横跨印度洋抵达非洲之角的重要邦交国。"
+  },
+  {
+    "id": "place-malindi",
+    "ancientName": "麻林国（慢八撒）",
+    "aliases": ["马林迪"],
+    "modernName": "肯尼亚马林迪",
+    "type": "port",
+    "coordinates": [40.1169, -3.2192],
+    "strategicNote": "郑和船队南下东非极远航点，永乐年间遣使跨海万里向大明进献“麒麟”（非洲长颈鹿）！"
+  },
+  {
+    "id": "place-jiaozhi",
+    "ancientName": "交趾布政使司（东关/升龙）",
+    "aliases": ["交州府", "安南国都"],
+    "modernName": "越南河内",
+    "type": "capital",
+    "coordinates": [105.8342, 21.0278],
+    "strategicNote": "永乐五年张辅平胡朝设交趾布政使司治所（大明第十四省），宣德二年柳升败亡后罢布政司撤军。"
+  },
+  {
+    "id": "place-kerulen",
+    "ancientName": "胪朐河（饮马河）",
+    "aliases": ["克鲁伦河"],
+    "modernName": "蒙古国东方省克鲁伦河流域",
+    "type": "battlefield",
+    "coordinates": [113.52, 47.72],
+    "strategicNote": "1409年淇国公丘福十万轻骑冒进覆没处，次年朱棣亲征抵达此河赐名“饮马河”。"
+  },
+  {
+    "id": "place-onon",
+    "ancientName": "斡难河",
+    "aliases": ["鄂嫩河"],
+    "modernName": "蒙古国肯特省鄂嫩河畔",
+    "type": "battlefield",
+    "coordinates": [110.85, 48.62],
+    "strategicNote": "成吉思汗龙兴之地！1410年永乐大帝首次亲征漠北奔袭至此，大破鞑靼本雅失里汗。"
+  },
+  {
+    "id": "place-hulanhushiwun",
+    "ancientName": "忽兰忽失温",
+    "aliases": ["乌兰巴托东南宗莫德"],
+    "modernName": "蒙古国乌兰巴托东南",
+    "type": "battlefield",
+    "coordinates": [107.18, 47.68],
+    "strategicNote": "1414年永乐第二次北伐决战地，朱棣亲率铁骑与神机营火铳冲阵，重创瓦剌马哈木主力！"
+  },
+  {
+    "id": "place-nurgan",
+    "ancientName": "奴儿干都司（特林永宁寺）",
+    "aliases": ["黑龙江口"],
+    "modernName": "俄罗斯阿穆尔河畔尼古拉耶夫斯克特林",
+    "type": "garrison-nine",
+    "coordinates": [139.79, 52.94],
+    "strategicNote": "黑龙江入海口绝崖，永乐十一年与宣德八年太监亦失哈两次在此建永宁寺立碑宣示统辖！"
+  },
+  {
+    "id": "place-daicunba",
+    "ancientName": "会通河（汶上戴村坝）",
+    "aliases": ["南旺分水脊"],
+    "modernName": "山东泰安东平与济宁汶上",
+    "type": "pass",
+    "coordinates": [116.435, 35.915],
+    "strategicNote": "1411年工部尚书宋礼用白英老人计引汶济运，彻底打通京杭大运河水脊咽喉，支撑北京百万漕粮！"
+  },
+  {
+    "id": "place-yumuchuan",
+    "ancientName": "榆木川",
+    "aliases": ["多伦西北"],
+    "modernName": "内蒙古锡林郭勒多伦县西北",
+    "type": "battlefield",
+    "coordinates": [116.12, 42.18],
+    "strategicNote": "1424年七月六十五岁的永乐大帝朱棣第五次北伐班师途中崩逝于此，实现了“天子守国门”的宿命。"
+  },
+  {
+    "id": "place-lean",
+    "ancientName": "乐安州（汉王藩府）",
+    "aliases": ["武定州"],
+    "modernName": "山东滨州惠民县",
+    "type": "prefecture",
+    "coordinates": [117.512, 37.489],
+    "strategicNote": "汉王朱高煦封地，1426年宣宗朱瞻基御驾亲征兵临城下，不血刃瓦解汉王叛乱。"
+  },
+  {
+    "id": "place-luchuan",
+    "ancientName": "麓川平缅宣慰司",
+    "aliases": ["瑞丽江畔"],
+    "modernName": "云南德宏瑞丽与陇川",
+    "type": "battlefield",
+    "coordinates": [97.852, 24.012],
+    "strategicNote": "正统年间王振力主“三征麓川”，王骥统十五万大军虽破思任发，却耗尽国库精兵，为土木堡惨败埋下伏笔。"
+  },
+  {
+    "id": "place-zijingguan",
+    "ancientName": "紫荆关",
+    "aliases": ["太行蒲阴陉"],
+    "modernName": "河北保定易县紫荆关镇",
+    "type": "pass",
+    "coordinates": [115.174, 39.423],
+    "strategicNote": "内三关核心锁钥！1449年王振拒走紫荆关致土木堡覆没；十月瓦剌也先由大同破紫荆关南侧迂回直逼北京城！"
+  },
+  {
+    "id": "place-huailai",
+    "ancientName": "怀来卫",
+    "aliases": ["妫州"],
+    "modernName": "河北张家口怀来县桑园镇周边",
+    "type": "pass",
+    "coordinates": [115.728, 40.398],
+    "strategicNote": "距土木堡仅二十里之坚城水源地，王振贪恋千辆辎重拒不入城，葬送二十万明军性命。"
+  },
+  {
+    "id": "place-deshengmen",
+    "ancientName": "北京德胜门（九门主战场）",
+    "aliases": ["京师北门"],
+    "modernName": "北京西城区德胜门",
+    "type": "battlefield",
+    "coordinates": [116.3785, 39.9488],
+    "strategicNote": "1449年十月北京保卫战核心决战点！于谦亲披甲胄背城列阵、下令关死城门，神机营火炮轰毙也先弟孛罗平章！"
+  },
+  {
+    "id": "place-hami",
+    "ancientName": "哈密卫",
+    "aliases": ["关西七卫门户"],
+    "modernName": "新疆哈密",
+    "type": "garrison-nine",
+    "coordinates": [93.515, 42.819],
+    "strategicNote": "大明经略西域咽喉前哨，正统年间被瓦剌也先攻破挟持，成为瓦剌控制西域朝贡商路与挑起边衅的导火索。"
   }
 ]

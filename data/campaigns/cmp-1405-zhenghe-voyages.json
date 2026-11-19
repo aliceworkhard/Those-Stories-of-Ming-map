@@ -1,0 +1,415 @@
+{
+  "id": "cmp-1405-zhenghe-voyages",
+  "title": "郑和七下西洋远洋宝船海航推演",
+  "subtitle": "云帆高张昼夜星驰 · 纵横南海印度洋远达波斯湾与东非海岸（1405—1433）",
+  "yearRange": [1405, 1433],
+  "chapterIds": [
+    "v2-zhu-di-ch04",
+    "v2-zhu-di-ch05",
+    "v2-zhu-zhanji-ch12"
+  ],
+  "summary": "永乐三年（1405）至宣德八年（1433），三保太监郑和与王景弘奉命七度统率两万七千余名官兵、二百余艘海船组成的庞大混合舰队，自南京龙江与太仓刘家港扬帆，候福建长乐东北信风下西洋。二十八年间肃清南洋海盗陈祖义、锡兰山奇袭擒王、建满剌加官厂中转枢纽，航迹遍及三十余国，最远抵达波斯湾忽鲁谟斯、红海天方与东非木骨都束、麻林，比哥伦布早八十七年开创人类大航海史巅峰！",
+  "strategicOutcome": "确立大明在南海与印度洋的和平朝贡贸易秩序（“万国来朝”）；宣德八年郑和病逝于古里返航途中，此后明廷焚毁海图停罢宝船，海洋时代的大门悄然合拢。",
+  "factions": [
+    {
+      "id": "ming-fleet",
+      "name": "大明西洋宝船特混舰队",
+      "leader": "正使太监郑和 · 副使王景弘 · 洪保",
+      "color": "#B83B2A",
+      "badgeText": "明"
+    },
+    {
+      "id": "pirates-hostiles",
+      "name": "旧港海盗陈祖义与锡兰山敌军",
+      "leader": "陈祖义 · 亚烈苦奈儿",
+      "color": "#1E5F74",
+      "badgeText": "敌"
+    }
+  ],
+  "phases": [
+    {
+      "phaseNo": 1,
+      "title": "第一幕：宝船耀世 · 龙江出江集结刘家港候风下占城",
+      "dateLabel": "永乐三年（1405）七月—冬",
+      "year": 1405,
+      "narrative": "永乐三年夏，长四十四丈、宽十八丈的巨型宝船自南京龙江宝船厂驶出，两万七千八百余名将士、水手、医官、通事于苏州太仓刘家港编队祭海，随后南下福建长乐太平港驻泊，静候冬春强劲的东北季风，扬起十二面硬帆十昼夜直抵占城新州港，再南下爪哇！",
+      "whyKeyPoint": "为啥每次下西洋都必须在福建长乐停泊数月？帆船时代远航完全受制于季风规律：冬季东北信风送宝船顺风南下南海与印度洋，夏季西南季风再送舰队满载返航，半点违背不得。",
+      "camera": {
+        "center": [116.5, 22.8],
+        "zoom": 4.5,
+        "pitch": 34,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-fleet",
+        "leftLabel": "郑和 27,800 人 · 62 艘大宝船",
+        "leftPower": 90,
+        "rightFactionId": "pirates-hostiles",
+        "rightLabel": "南洋割据海盗势力",
+        "rightPower": 10
+      },
+      "routes": [
+        {
+          "id": "r-zh1-yangtze-fujian",
+          "order": 1,
+          "factionId": "ming-fleet",
+          "type": "naval",
+          "label": "宝船队出南京龙江至刘家港集结，南驻长乐候风",
+          "commander": "郑和 · 王景弘",
+          "coordinates": [
+            [118.73, 32.09],
+            [121.27, 31.51],
+            [122.15, 29.85],
+            [120.65, 27.35],
+            [119.53, 25.96]
+          ]
+        },
+        {
+          "id": "r-zh1-champa",
+          "order": 2,
+          "factionId": "ming-fleet",
+          "type": "naval",
+          "label": "乘冬季东北季风出五虎门，十昼夜直航占城新州港",
+          "commander": "郑和",
+          "coordinates": [
+            [119.53, 25.96],
+            [117.2, 21.8],
+            [113.2, 17.5],
+            [109.22, 13.78]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-zh1-liujiagang",
+          "kind": "camp",
+          "label": "太仓刘家港祭天妃起航",
+          "subLabel": "二百余艘海船千帆竞发",
+          "coordinates": [121.27, 31.51],
+          "color": "#B83B2A"
+        },
+        {
+          "id": "m-zh1-changle",
+          "kind": "pass",
+          "label": "长乐太平港候东北信风",
+          "subLabel": "观星牵星术与针路罗盘校核",
+          "coordinates": [119.53, 25.96],
+          "color": "#D97706"
+        }
+      ]
+    },
+    {
+      "phaseNo": 2,
+      "title": "第二幕：旧港擒贼 · 火烧陈祖义五千众与建满剌加官厂",
+      "dateLabel": "永乐五年（1407）",
+      "year": 1407,
+      "narrative": "盘踞三佛齐旧港（今印尼巨港）的广东海盗王陈祖义拥战船百艘、部众万余，表面诈降企图夜劫宝船。郑和接获华侨施进卿密报后将计就计，暗备火船火铳设伏，一夜焚毁敌船十余艘、毙敌五千余人，生擒陈祖义押回南京斩首！同时在马六甲海峡北岸扶植满剌加建城立“官厂”，彻底打通两洋咽喉！",
+      "whyKeyPoint": "为啥郑和最重视满剌加（马六甲）？马六甲海峡是连接南海与印度洋的唯一黄金水道；在此建木城仓储粮饷并铲除旧港海盗，大明舰队才拥有了跨洋远征的前进基地。",
+      "camera": {
+        "center": [105.5, 4.5],
+        "zoom": 4.6,
+        "pitch": 34,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-fleet",
+        "leftLabel": "郑和火器水师主力",
+        "leftPower": 82,
+        "rightFactionId": "pirates-hostiles",
+        "rightLabel": "大海盗陈祖义万余众",
+        "rightPower": 18
+      },
+      "routes": [
+        {
+          "id": "r-zh2-palembang",
+          "order": 1,
+          "factionId": "ming-fleet",
+          "type": "naval",
+          "label": "自占城南航三佛齐旧港，设伏火攻生擒海盗王陈祖义",
+          "commander": "郑和",
+          "coordinates": [
+            [109.22, 13.78],
+            [107.8, 7.2],
+            [105.9, 1.2],
+            [104.76, -2.99]
+          ]
+        },
+        {
+          "id": "r-zh2-malacca",
+          "order": 2,
+          "factionId": "ming-fleet",
+          "type": "naval",
+          "label": "北折马六甲海峡建立满剌加官厂总枢纽",
+          "commander": "郑和 · 王景弘",
+          "coordinates": [
+            [104.76, -2.99],
+            [104.1, 0.85],
+            [102.25, 2.19]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-zh2-palembang",
+          "kind": "clash",
+          "label": "旧港夜战生擒陈祖义",
+          "subLabel": "毙敌五千，设大明旧港宣慰司",
+          "coordinates": [104.76, -2.99],
+          "color": "#B83B2A"
+        },
+        {
+          "id": "m-zh2-malacca",
+          "kind": "camp",
+          "label": "满剌加官厂水寨",
+          "subLabel": "两洋咽喉仓储转运大本营",
+          "coordinates": [102.25, 2.19],
+          "color": "#D97706"
+        }
+      ]
+    },
+    {
+      "phaseNo": 3,
+      "title": "第三幕：横渡西洋 · 锡兰山两千精兵奇袭王城与古里立碑",
+      "dateLabel": "永乐七年至九年（1409—1411）",
+      "year": 1411,
+      "narrative": "舰队出马六甲经苏门答腊横渡孟加拉湾抵锡兰山（斯里兰卡）与西洋大国古里（印度卡利卡特）。锡兰山国王亚烈苦奈儿发五万兵砍木塞道，企图围劫海岸宝船。靖难名将出身的郑和临危不乱，侦知敌国都城空虚，亲率两千精兵抄小路突袭攻破王城，生擒亚烈苦奈儿及家眷，在五万回援敌军重围中杀开血路全身而退！",
+      "whyKeyPoint": "为啥郑和能以两千人反杀五万敌军？郑和绝非寻常内官，他早在靖难北平郑村坝之战便是冲锋陷阵的沙场宿将，“攻敌所必救”正是朱棣靖难军最拿手的斩首战术！",
+      "camera": {
+        "center": [88.5, 8.2],
+        "zoom": 4.3,
+        "pitch": 32,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-fleet",
+        "leftLabel": "郑和亲率 2,000 斩首精兵",
+        "leftPower": 68,
+        "rightFactionId": "pirates-hostiles",
+        "rightLabel": "亚烈苦奈儿 50,000 围港军",
+        "rightPower": 32
+      },
+      "routes": [
+        {
+          "id": "r-zh3-ceylon",
+          "order": 1,
+          "factionId": "ming-fleet",
+          "type": "naval",
+          "label": "自满剌加西出苏门答腊，牵星横渡孟加拉湾抵锡兰山",
+          "commander": "郑和",
+          "coordinates": [
+            [102.25, 2.19],
+            [95.3, 5.8],
+            [86.5, 6.4],
+            [79.86, 6.93]
+          ]
+        },
+        {
+          "id": "r-zh3-ceylon-raid",
+          "order": 2,
+          "factionId": "ming-fleet",
+          "type": "ambush",
+          "label": "郑和率两千精兵绕道奇袭攻破锡兰王城生擒国王",
+          "commander": "郑和",
+          "coordinates": [
+            [79.86, 6.93],
+            [80.22, 7.18],
+            [79.92, 6.88]
+          ]
+        },
+        {
+          "id": "r-zh3-calicut",
+          "order": 3,
+          "factionId": "ming-fleet",
+          "type": "naval",
+          "label": "北航印度西南海岸古里国，立碑册封赏赐西洋诸邦",
+          "commander": "郑和 · 王景弘",
+          "coordinates": [
+            [79.86, 6.93],
+            [77.2, 8.1],
+            [75.78, 11.26]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-zh3-ceylon",
+          "kind": "clash",
+          "label": "锡兰山奇袭擒王",
+          "subLabel": "两千精锐攻破王城，威震南亚",
+          "coordinates": [79.86, 6.93],
+          "color": "#B83B2A"
+        },
+        {
+          "id": "m-zh3-calicut",
+          "kind": "camp",
+          "label": "古里国（西洋总枢纽）",
+          "subLabel": "立碑纪念，分航波斯湾与东非",
+          "coordinates": [75.78, 11.26],
+          "color": "#D97706"
+        }
+      ]
+    },
+    {
+      "phaseNo": 4,
+      "title": "第四幕：极远天涯 · 抵波斯湾忽鲁谟斯、红海天方与东非麻林",
+      "dateLabel": "永乐十一年至二十年（1413—1422）",
+      "year": 1415,
+      "narrative": "第四至第六次下西洋将人类木帆船远航推向极致：主船队自古里西北航抵波斯湾口贸易王城忽鲁谟斯；分船队一组西入红海抵圣城门户天方（吉达/麦加），另一组横跨阿拉伯海直抵东非索马里木骨都束、肯尼亚麻林国！当麻林使团将非洲长颈鹿（“麒麟”）运抵南京奉天门时，举国沸腾，成就“万国来朝”盛景。",
+      "whyKeyPoint": "为啥郑和船队比欧洲早近百年却未沦为殖民掠夺？明初国力鼎盛且自给自足，朱棣下西洋旨在宣示正统威德、构建以厚往薄来与海道安全为核心的朝贡贸易圈，而非武力据地。",
+      "camera": {
+        "center": [58.5, 11.5],
+        "zoom": 3.6,
+        "pitch": 28,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-fleet",
+        "leftLabel": "大明分遣远洋宝船队",
+        "leftPower": 95,
+        "rightFactionId": "pirates-hostiles",
+        "rightLabel": "远洋风浪与险滩",
+        "rightPower": 5
+      },
+      "routes": [
+        {
+          "id": "r-zh4-hormuz",
+          "order": 1,
+          "factionId": "ming-fleet",
+          "type": "naval",
+          "label": "主航线：自古里西北横越阿拉伯海直达波斯湾忽鲁谟斯",
+          "commander": "郑和",
+          "coordinates": [
+            [75.78, 11.26],
+            [67.5, 18.8],
+            [60.2, 24.5],
+            [56.46, 27.06]
+          ]
+        },
+        {
+          "id": "r-zh4-mecca",
+          "order": 2,
+          "factionId": "ming-fleet",
+          "type": "naval",
+          "label": "红海分航线：经亚丁湾驶入红海抵天方（吉达/麦加）",
+          "commander": "洪保 · 马欢",
+          "coordinates": [
+            [75.78, 11.26],
+            [58.5, 15.2],
+            [45.0, 12.6],
+            [39.19, 21.49]
+          ]
+        },
+        {
+          "id": "r-zh4-africa",
+          "order": 3,
+          "factionId": "ming-fleet",
+          "type": "naval",
+          "label": "东非分航线：跨印度洋南抵木骨都束与麻林国（迎麒麟归明）",
+          "commander": "分遣宝船队",
+          "coordinates": [
+            [75.78, 11.26],
+            [59.5, 7.2],
+            [45.34, 2.05],
+            [40.12, -3.22]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-zh4-hormuz",
+          "kind": "camp",
+          "label": "波斯湾忽鲁谟斯",
+          "subLabel": "东西方珠宝香料贸易交汇顶峰",
+          "coordinates": [56.46, 27.06],
+          "color": "#B83B2A"
+        },
+        {
+          "id": "m-zh4-mecca",
+          "kind": "camp",
+          "label": "红海天方（吉达/麦加）",
+          "subLabel": "马欢著《瀛涯胜览》实录",
+          "coordinates": [39.19, 21.49],
+          "color": "#D97706"
+        },
+        {
+          "id": "m-zh4-malindi",
+          "kind": "camp",
+          "label": "东非麻林国与木骨都束",
+          "subLabel": "万里进献瑞兽“麒麟”（长颈鹿）",
+          "coordinates": [40.12, -3.22],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 5,
+      "title": "第五幕：绝响古里 · 宣德末航星陨印度洋与大国锁海",
+      "dateLabel": "宣德六年至八年（1431—1433）",
+      "year": 1433,
+      "narrative": "仁宗停航六年后，宣宗朱瞻基批准年已六旬的郑和执行第七次、也是最后一次下西洋。宣德八年（1433）四月，耗尽毕生心血的郑和在返航途经印度古里时溘然长逝，副使王景弘护灵船归葬南京牛首山。此后文官集团以“耗费钱粮无数”焚毁《郑和航海图》档案，“片板不许下海”，五十年后葡萄牙船队绕过好望角驶入同一片海洋。",
+      "whyKeyPoint": "为啥辉煌的下西洋会戛然而止？北方瓦剌蒙古军事压力复燃、迁都北京后漕运与九边军费吞噬国库，加上不计商业回报的官方朝贡贸易缺乏财政自造血机制，使大陆帝国最终背向海洋。",
+      "camera": {
+        "center": [98.5, 16.5],
+        "zoom": 3.9,
+        "pitch": 30,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-fleet",
+        "leftLabel": "王景弘护灵归航宝船队",
+        "leftPower": 80,
+        "rightFactionId": "pirates-hostiles",
+        "rightLabel": "朝堂禁海守成声浪",
+        "rightPower": 20
+      },
+      "routes": [
+        {
+          "id": "r-zh5-return-malacca",
+          "order": 1,
+          "factionId": "ming-fleet",
+          "type": "naval",
+          "label": "郑和病逝古里，王景弘统率船队东返满剌加",
+          "commander": "王景弘",
+          "coordinates": [
+            [75.78, 11.26],
+            [80.2, 6.2],
+            [95.5, 5.9],
+            [102.25, 2.19]
+          ]
+        },
+        {
+          "id": "r-zh5-return-nanjing",
+          "order": 2,
+          "factionId": "ming-fleet",
+          "type": "supply",
+          "label": "乘夏季西南季风北归太仓与南京，大明远洋时代谢幕",
+          "commander": "王景弘",
+          "coordinates": [
+            [102.25, 2.19],
+            [110.5, 13.5],
+            [121.27, 31.51],
+            [118.73, 32.09]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-zh5-calicut",
+          "kind": "cutoff",
+          "label": "郑和星陨古里",
+          "subLabel": "宣德八年四月逝于七下西洋归途",
+          "coordinates": [75.78, 11.26],
+          "color": "#B83B2A"
+        },
+        {
+          "id": "m-zh5-nanjing",
+          "kind": "camp",
+          "label": "归葬南京牛首山",
+          "subLabel": "“郑和之后，再无郑和”",
+          "coordinates": [118.8, 32.06],
+          "color": "#4A5568"
+        }
+      ]
+    }
+  ]
+}

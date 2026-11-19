@@ -146,6 +146,44 @@
       "type": "Feature",
       "properties": { "id": "lf-guanzhong-region", "name": "关 中 形 胜", "kind": "region" },
       "geometry": { "type": "Point", "coordinates": [108.85, 34.55] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-daxinganling", "name": "大 兴 安 岭", "kind": "mountain-major" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[118.45, 43.85], [120.15, 46.25], [121.65, 48.85], [122.85, 50.85]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-buyur-lake", "name": "捕鱼儿海（贝尔湖）", "kind": "lake" },
+      "geometry": { "type": "Point", "coordinates": [117.72, 47.82] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-nanhai-sea", "name": "南  海（下西洋海道）", "kind": "sea" },
+      "geometry": { "type": "Point", "coordinates": [114.2, 16.5] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-indian-ocean", "name": "西  洋（印 度 洋）", "kind": "sea" },
+      "geometry": { "type": "Point", "coordinates": [84.5, 9.5] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-arabian-sea", "name": "大 食 海（阿 拉 伯 海）", "kind": "sea" },
+      "geometry": { "type": "Point", "coordinates": [63.5, 16.5] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-gobi-desert", "name": "瀚 海 大 漠", "kind": "region" },
+      "geometry": { "type": "Point", "coordinates": [106.5, 43.2] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lf-yungui-plateau", "name": "云 贵 高 原", "kind": "region" },
+      "geometry": { "type": "Point", "coordinates": [104.2, 25.8] }
     }
   ]
 }

@@ -191,9 +191,39 @@ export function getEraWipePlan(
     };
   }
 
-  if (key === 'ter-1368->ter-1399') {
+  if (key === 'ter-1368->ter-1388' || key === 'ter-1363->ter-1388') {
     return {
-      caption: '版图涂抹演进：洪武扫平巴蜀云南辽东 · 建文元年燕王朱棣北平起兵靖难！',
+      caption:
+        '胜利方版图涂抹：平定巴蜀明夏、征南灭元梁王、迫降辽东纳哈出，蓝玉奇袭捕鱼儿海一统洪武疆域！',
+      targets: [
+        {
+          polityId: 'ming-hongwu-unified',
+          origin: [115.2, 31.8],
+          maxRx: 21.0,
+          maxRy: 17.5,
+          frontColor: '#F59E0B',
+        },
+        {
+          polityId: 'liaodong-jurchen-tributary',
+          origin: [122.5, 42.2],
+          maxRx: 14.5,
+          maxRy: 12.0,
+          frontColor: '#9C4221',
+        },
+        {
+          polityId: 'usang-hami-hongwu',
+          origin: [102.5, 30.5],
+          maxRx: 20.0,
+          maxRy: 14.0,
+          frontColor: '#B7791F',
+        },
+      ],
+    };
+  }
+
+  if (key === 'ter-1368->ter-1399' || key === 'ter-1388->ter-1399') {
+    return {
+      caption: '版图涂抹演进：建文强行削藩激变 · 燕王朱棣北平誓师靖难并奇袭大宁！',
       targets: [
         {
           polityId: 'ming-jianwen',
@@ -237,6 +267,82 @@ export function getEraWipePlan(
           maxRx: 20.0,
           maxRy: 14.0,
           frontColor: '#B7791F',
+        },
+      ],
+    };
+  }
+
+  if (key === 'ter-1402->ter-1415' || key === 'ter-1399->ter-1415') {
+    return {
+      caption:
+        '胜利方版图涂抹：张辅平定安南设交趾布政使司（第十四省），亦失哈立碑特林达永乐极盛疆域！',
+      targets: [
+        {
+          polityId: 'ming-yongle-zenith',
+          origin: [108.5, 23.5],
+          maxRx: 18.0,
+          maxRy: 19.0,
+          frontColor: '#F59E0B',
+        },
+        {
+          polityId: 'nurgan-zenith',
+          origin: [126.5, 44.5],
+          maxRx: 22.0,
+          maxRy: 16.0,
+          frontColor: '#9C4221',
+        },
+      ],
+    };
+  }
+
+  if (key === 'ter-1415->ter-1435') {
+    return {
+      caption:
+        '版图演进涂抹：宣德罢交趾布政使司改封藩属、开平卫内迁独石；漠北瓦剌脱欢兼并鞑靼崛起！',
+      targets: [
+        {
+          polityId: 'dai-viet-le',
+          origin: [105.84, 21.03],
+          maxRx: 6.5,
+          maxRy: 6.5,
+          frontColor: '#2F855A',
+        },
+        {
+          polityId: 'oirat-toghon',
+          origin: [102.8, 47.2],
+          maxRx: 22.0,
+          maxRy: 12.0,
+          frontColor: '#4A5568',
+        },
+        {
+          polityId: 'ming-renxuan',
+          origin: [116.41, 39.9],
+          maxRx: 21.0,
+          maxRy: 19.0,
+          frontColor: '#B83B2A',
+        },
+      ],
+    };
+  }
+
+  if (key === 'ter-1435->ter-1449' || key === 'ter-1415->ter-1449') {
+    return {
+      caption:
+        '版图演进涂抹：瓦剌太师也先西破哈密东胁三卫南逼宣大；于谦拥立景泰帝死守北京九门！',
+      targets: [
+        {
+          polityId: 'oirat-esen',
+          origin: [106.5, 46.5],
+          maxRx: 25.0,
+          maxRy: 14.0,
+          frontColor: '#374151',
+        },
+        {
+          polityId: 'ming-jingtai-defense',
+          origin: [116.41, 39.9],
+          maxRx: 21.0,
+          maxRy: 19.0,
+          frontColor: '#B83B2A',
         },
       ],
     };
@@ -687,6 +793,228 @@ export function buildCampaignTerritoryFrame(
           ? '胜利方版图涂抹：燕军破灵璧渡长江入主金川门，自北向南席卷建文疆域！'
           : '版图已更新：朱棣奉天靖难功成登基，开启永乐盛世',
       hasWipeInPhase: true,
+    };
+  }
+
+  // 4. 1387-1388 Nagachu Surrender & Buyur Lake Decisive Campaign
+  if (campaignId === 'cmp-1387-buyur-lake') {
+    const base1368 = TERRITORY_SNAPSHOT_BY_ID['ter-1368'].geojson;
+    const base1388 = TERRITORY_SNAPSHOT_BY_ID['ter-1388'].geojson;
+
+    if (phaseIndex === 0) {
+      // Phase 1: Feng Sheng & Lan Yu force Nagachu's 200k army in Liaodong to surrender!
+      const { mp: ming1388Mp } = findFeatureMultiPoly(
+        'ter-1388',
+        'ming-hongwu-unified'
+      );
+      const liaodongSlice = polygonClipping.intersection(
+        ming1388Mp,
+        boxMultiPolygon(118.2, 38.6, 126.2, 43.9)
+      );
+      const clipped =
+        eased <= 0.01
+          ? []
+          : eased >= 0.995
+          ? liaodongSlice
+          : polygonClipping.intersection(
+              liaodongSlice,
+              buildOrganicBrushMask(
+                [119.23, 41.59],
+                Math.max(0.3, 7.2 * eased),
+                Math.max(0.3, 5.2 * eased),
+                eased * 1.4
+              )
+            );
+      const feat = mpToFeature(clipped, {
+        polityId: 'ming-hongwu-unified',
+        polityName: '大明辽东都司与大宁防区（纳哈出二十万众降明）',
+        shortLabel: '大明 · 辽东大宁',
+        controlType: 'direct',
+        color: '#B83B2A',
+        frontColor: '#F59E0B',
+        isActivelyWiping: eased < 0.99 ? 1 : 0,
+      });
+
+      return {
+        baseGeoJSON: base1368,
+        wipeOverlayGeoJSON: feat
+          ? { type: 'FeatureCollection', features: [feat] }
+          : EMPTY_FC,
+        caption:
+          eased > 0.01
+            ? '胜利方版图涂抹：冯胜蓝玉迫降金山纳哈出二十万众，辽东全境归入大明！'
+            : null,
+        hasWipeInPhase: true,
+      };
+    }
+
+    if (phaseIndex === 2) {
+      // Phase 3: Lan Yu smashes Northern Yuan royal court at Buyur Lake!
+      const { mp: yuanMp } = findFeatureMultiPoly(
+        'ter-1388',
+        'shattered-northern-yuan'
+      );
+      const buyurFrontier = polygonClipping.intersection(
+        yuanMp,
+        boxMultiPolygon(114.2, 44.5, 121.5, 50.2)
+      );
+      const clipped =
+        eased <= 0.01
+          ? []
+          : eased >= 0.995
+          ? buyurFrontier
+          : polygonClipping.intersection(
+              buyurFrontier,
+              buildOrganicBrushMask(
+                [117.72, 47.83],
+                Math.max(0.25, 4.5 * eased),
+                Math.max(0.25, 3.8 * eased),
+                eased * 1.5
+              )
+            );
+      const feat = mpToFeature(clipped, {
+        polityId: 'ming-buyur-sweep',
+        polityName: '蓝玉捕鱼儿海犁庭扫穴锋区',
+        shortLabel: '明军犁庭锋区',
+        controlType: 'tributary-garrison',
+        color: '#B83B2A',
+        frontColor: '#F59E0B',
+        isActivelyWiping: eased < 0.99 ? 1 : 0,
+      });
+      return {
+        baseGeoJSON: base1388,
+        wipeOverlayGeoJSON: feat
+          ? { type: 'FeatureCollection', features: [feat] }
+          : EMPTY_FC,
+        caption:
+          eased > 0.01
+            ? '胜利方版图涂抹：蓝玉奇袭捕鱼儿海端掉北元汗廷，漠北王庭彻底瓦解！'
+            : null,
+        hasWipeInPhase: true,
+      };
+    }
+
+    return {
+      baseGeoJSON: base1388,
+      wipeOverlayGeoJSON: EMPTY_FC,
+      caption: null,
+      hasWipeInPhase: false,
+    };
+  }
+
+  // 5. 1405-1433 Zheng He's Seven Voyages to the Western Ocean
+  if (campaignId === 'cmp-1405-zhenghe-voyages') {
+    const base =
+      phaseIndex <= 3
+        ? TERRITORY_SNAPSHOT_BY_ID['ter-1415'].geojson
+        : TERRITORY_SNAPSHOT_BY_ID['ter-1435'].geojson;
+    return {
+      baseGeoJSON: base,
+      wipeOverlayGeoJSON: EMPTY_FC,
+      caption: null,
+      hasWipeInPhase: false,
+    };
+  }
+
+  // 6. 1449 Tumu Crisis & Yu Qian's Defense of Beijing
+  if (campaignId === 'cmp-1449-tumu-beijing') {
+    const base1435 = TERRITORY_SNAPSHOT_BY_ID['ter-1435'].geojson;
+    const base1449 = TERRITORY_SNAPSHOT_BY_ID['ter-1449'].geojson;
+
+    if (phaseIndex === 2) {
+      // Phase 3: Tumu catastrophe -> Esen's Oirat cavalry sweeps across Xuan-Da frontier!
+      const { mp: esenMp } = findFeatureMultiPoly('ter-1449', 'oirat-esen');
+      const southPush = polygonClipping.intersection(
+        esenMp,
+        boxMultiPolygon(108.0, 39.2, 121.0, 44.8)
+      );
+      const clipped =
+        eased <= 0.01
+          ? []
+          : eased >= 0.995
+          ? southPush
+          : polygonClipping.intersection(
+              southPush,
+              buildOrganicBrushMask(
+                [114.2, 41.5],
+                Math.max(0.3, 7.5 * eased),
+                Math.max(0.3, 4.5 * eased),
+                eased
+              )
+            );
+      const feat = mpToFeature(clipped, {
+        polityId: 'oirat-esen',
+        polityName: '瓦剌太师也先南侵控制区',
+        shortLabel: '瓦剌铁骑逼境',
+        controlType: 'direct',
+        color: '#374151',
+        frontColor: '#EF4444',
+        isActivelyWiping: eased < 0.99 ? 1 : 0,
+      });
+      return {
+        baseGeoJSON: base1435,
+        wipeOverlayGeoJSON: feat
+          ? { type: 'FeatureCollection', features: [feat] }
+          : EMPTY_FC,
+        caption:
+          eased > 0.01
+            ? '战局突变涂抹：土木堡二十万明军覆没，瓦剌铁骑席卷漠南直逼紫荆关与北京！'
+            : null,
+        hasWipeInPhase: true,
+      };
+    }
+
+    if (phaseIndex === 4) {
+      // Phase 5: Yu Qian defeats Esen at Beijing's Nine Gates -> sweeps Ming crimson back over Juyong-Xuan-Da!
+      const { mp: mingMp } = findFeatureMultiPoly(
+        'ter-1449',
+        'ming-jingtai-defense'
+      );
+      const northShield = polygonClipping.intersection(
+        mingMp,
+        boxMultiPolygon(111.8, 38.2, 119.8, 41.3)
+      );
+      const clipped =
+        eased <= 0.01
+          ? []
+          : eased >= 0.995
+          ? northShield
+          : polygonClipping.intersection(
+              northShield,
+              buildOrganicBrushMask(
+                [116.38, 39.95],
+                Math.max(0.25, 5.5 * eased),
+                Math.max(0.25, 3.2 * eased),
+                eased * 1.4
+              )
+            );
+      const feat = mpToFeature(clipped, {
+        polityId: 'ming-jingtai-defense',
+        polityName: '于谦收复巩固京畿宣大紫荆防线',
+        shortLabel: '大明收复京畿九边',
+        controlType: 'direct',
+        color: '#B83B2A',
+        frontColor: '#F59E0B',
+        isActivelyWiping: eased < 0.99 ? 1 : 0,
+      });
+      return {
+        baseGeoJSON: base1449,
+        wipeOverlayGeoJSON: feat
+          ? { type: 'FeatureCollection', features: [feat] }
+          : EMPTY_FC,
+        caption:
+          eased > 0.01
+            ? '胜利方版图涂抹：于谦德胜门背城大破瓦剌，收复紫荆关稳固京畿九边防线！'
+            : null,
+        hasWipeInPhase: true,
+      };
+    }
+
+    return {
+      baseGeoJSON: phaseIndex < 2 ? base1435 : base1449,
+      wipeOverlayGeoJSON: EMPTY_FC,
+      caption: null,
+      hasWipeInPhase: false,
     };
   }
 

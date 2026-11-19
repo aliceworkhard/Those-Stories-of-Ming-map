@@ -13,9 +13,9 @@ export const SITE_CONFIG = {
     featuredEras: [
       {
         id: 'era-founding',
-        label: '元末群雄与开国',
-        subLabel: '壹 · 洪武大帝',
-        yearRange: [1344, 1368] as [number, number],
+        label: '洪武开国',
+        subLabel: '壹 · 朱元璋篇',
+        yearRange: [1344, 1397] as [number, number],
         defaultYear: 1344,
         camera: {
           center: [117.15, 33.15] as [number, number],
@@ -26,14 +26,40 @@ export const SITE_CONFIG = {
       },
       {
         id: 'era-jingnan',
-        label: '削藩与靖难之役',
-        subLabel: '壹~贰 · 建文永乐',
+        label: '削藩靖难',
+        subLabel: '壹 · 建文靖难',
         yearRange: [1398, 1402] as [number, number],
         defaultYear: 1399,
         camera: {
           center: [117.2, 36.2] as [number, number],
           zoom: 5.6,
           pitch: 38,
+          bearing: 0,
+        },
+      },
+      {
+        id: 'era-yongle-renxuan',
+        label: '永乐仁宣',
+        subLabel: '贰 · 万国来朝',
+        yearRange: [1403, 1435] as [number, number],
+        defaultYear: 1415,
+        camera: {
+          center: [113.5, 34.2] as [number, number],
+          zoom: 4.3,
+          pitch: 34,
+          bearing: 0,
+        },
+      },
+      {
+        id: 'era-tumu-jingtai',
+        label: '土木与景泰',
+        subLabel: '贰 · 北京保卫战',
+        yearRange: [1436, 1457] as [number, number],
+        defaultYear: 1449,
+        camera: {
+          center: [115.6, 40.15] as [number, number],
+          zoom: 6.3,
+          pitch: 40,
           bearing: 0,
         },
       },

@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import {
   BookOpen,
+  Brush,
   ChevronDown,
   Compass,
   Eye,
@@ -265,6 +267,20 @@ export default function TopAtlasBar() {
           <BookOpen className="w-3.5 h-3.5" />
           <span className="hidden lg:inline">原著目录</span>
         </button>
+
+        {/* 3b. Open-Source Territory Painter Studio Entry */}
+        <Link
+          href="/dev/territory-painter"
+          className={`hidden md:flex px-2.5 py-1.5 rounded-lg border text-xs font-medium items-center gap-1 shrink-0 transition cursor-pointer ${
+            isDark
+              ? 'border-amber-500/35 hover:bg-amber-500/15 text-amber-200'
+              : 'border-amber-900/25 hover:bg-amber-950/10 text-[#9E2318]'
+          }`}
+          title="打开内置开源制图工具「舆图画笔擦写工坊」：海岸线自动锁边、布尔涂抹擦除与 TopoJSON 导出"
+        >
+          <Brush className="w-3.5 h-3.5" />
+          <span className="hidden xl:inline">擦写工坊</span>
+        </Link>
 
         {/* 4. GitHub Repo Jump & ★ Star CTA Badge */}
         <a
