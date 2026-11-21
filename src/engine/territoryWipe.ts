@@ -11,20 +11,20 @@ const EMPTY_FC: GeoJSON.FeatureCollection = {
 };
 
 // ============================================================================
-// High-Speed Geometry Cache & Sweep Simplifier (< 0.2ms per frame on CPU!)
+// High-Speed Local-Delta Geometry Engine ("仅让发生变化的边境或势力区域变化")
 // ============================================================================
-// During an active 1.6s Victory Brush Paint-Over, OpenMapTiles `vector-water-fill`
-// renders ABOVE `ming-territory-wipe-*`, keeping coastlines 100% razor-sharp.
-// Simplifying ONLY the transient sweep target from ~5,800 vertices -> ~320 vertices
-// cuts `polygonClipping.intersection` from ~9.5ms down to ~0.18ms (50x speedup)
-// and shrinks WebGL worker `setData()` payloads by 94%! Once `progress >= 1`,
-// `ming-territories` locks in the full-resolution 5,800-vertex GeoJSON snapshot.
+// Instead of wiping or repainting whole empires globally, we compute & cache ONLY
+// the exact boolean difference (`deltaMp = destMp - unchangedSameRegimeMp`) for
+// both Era-to-Era transitions and all 12 Campaign phases! Unchanged provinces
+// never blink, never erase, and never repaint.
 
 const simplifiedSnapshotPolityCache = new Map<
   string,
   { mp: PcMultiPolygon; props: Record<string, unknown> }
 >();
+const computedEraDeltaCache = new Map<string, EraWipePlan>();
 const customCampaignSliceCache = new Map<string, PcMultiPolygon>();
+const customCampaignBaseCache = new Map<string, GeoJSON.FeatureCollection>();
 
 function sqSegDist(
   px: number,
@@ -97,7 +97,7 @@ function simplifyDpRing(ring: PcRing, sqTol: number): PcRing {
   return out.length >= 4 ? out : ring;
 }
 
-function ringBboxArea(ring: PcRing): number {
+function ringBbox(ring: PcRing): [number, number, number, number] {
   let minX = Infinity;
   let minY = Infinity;
   let maxX = -Infinity;
@@ -109,12 +109,47 @@ function ringBboxArea(ring: PcRing): number {
     if (y < minY) minY = y;
     if (y > maxY) maxY = y;
   }
+  return [minX, minY, maxX, maxY];
+}
+
+function ringBboxArea(ring: PcRing): number {
+  const [minX, minY, maxX, maxY] = ringBbox(ring);
   return Math.max(0, maxX - minX) * Math.max(0, maxY - minY);
+}
+
+function multiPolyBbox(
+  mp: PcMultiPolygon
+): [number, number, number, number] | null {
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  for (const poly of mp) {
+    if (!poly?.[0]?.length) continue;
+    const [x1, y1, x2, y2] = ringBbox(poly[0] as unknown as PcRing);
+    if (x1 < minX) minX = x1;
+    if (y1 < minY) minY = y1;
+    if (x2 > maxX) maxX = x2;
+    if (y2 > maxY) maxY = y2;
+  }
+  if (!Number.isFinite(minX)) return null;
+  return [minX, minY, maxX, maxY];
+}
+
+function cleanDeltaMultiPolygon(
+  mp: PcMultiPolygon,
+  minAreaSqDeg = 0.045
+): PcMultiPolygon {
+  return mp.filter((poly) => {
+    const outer = poly?.[0] as unknown as PcRing | undefined;
+    if (!outer || outer.length < 4) return false;
+    return ringBboxArea(outer) >= minAreaSqDeg;
+  });
 }
 
 function simplifyMultiPolygonForSweep(
   mp: PcMultiPolygon,
-  toleranceDeg = 0.085
+  toleranceDeg = 0.075
 ): PcMultiPolygon {
   const sqTol = toleranceDeg * toleranceDeg;
   const result: PcMultiPolygon = [];
@@ -122,13 +157,12 @@ function simplifyMultiPolygonForSweep(
   for (const poly of mp) {
     if (!poly || poly.length === 0) continue;
     const outer = poly[0] as unknown as PcRing;
-    // Skip tiny offshore islets (< 0.06 sq deg) during transient 1.6s wipe animation
-    if (mp.length > 1 && ringBboxArea(outer) < 0.06) continue;
+    if (mp.length > 1 && ringBboxArea(outer) < 0.05) continue;
 
     const simplifiedPoly: polygonClipping.Polygon = [];
     for (let r = 0; r < poly.length; r++) {
       const ring = poly[r] as unknown as PcRing;
-      if (r > 0 && ringBboxArea(ring) < 0.05) continue;
+      if (r > 0 && ringBboxArea(ring) < 0.04) continue;
       simplifiedPoly.push(simplifyDpRing(ring, sqTol));
     }
     if (simplifiedPoly.length > 0) {
@@ -216,9 +250,38 @@ function getCachedBoxSlice(
 }
 
 /**
- * Generates an organic ink-brush wavefront polygon expanding from `origin` (`[lng, lat]`)
- * using 20 crisp vertices for < 0.2ms boolean clipping speed.
+ * Generates a modified base FeatureCollection where a local contested slice `zoneMp`
+ * is carved out of existing regimes and colored as the pre-battle opposing force,
+ * so ONLY `zoneMp` changes color when conquered!
  */
+function getCarvedContestedBase(
+  cacheKey: string,
+  baseFc: GeoJSON.FeatureCollection,
+  zoneMp: PcMultiPolygon,
+  contestedProps: Record<string, unknown>
+): GeoJSON.FeatureCollection {
+  const hit = customCampaignBaseCache.get(cacheKey);
+  if (hit) return hit;
+
+  const nextFeatures: GeoJSON.Feature[] = [];
+  for (const f of baseFc.features) {
+    const mp = toPcMultiPolygon(f.geometry);
+    if (mp.length === 0) continue;
+    const rem = polygonClipping.difference(mp, zoneMp);
+    const remFeat = mpToFeature(rem, (f.properties ?? {}) as Record<string, unknown>);
+    if (remFeat) nextFeatures.push(remFeat);
+  }
+  const zoneFeat = mpToFeature(zoneMp, contestedProps);
+  if (zoneFeat) nextFeatures.push(zoneFeat);
+
+  const built: GeoJSON.FeatureCollection = {
+    type: 'FeatureCollection',
+    features: nextFeatures,
+  };
+  customCampaignBaseCache.set(cacheKey, built);
+  return built;
+}
+
 function buildOrganicBrushMask(
   origin: LngLat,
   rx: number,
@@ -264,462 +327,231 @@ function easeInOutCubic(t: number): number {
 }
 
 // ============================================================================
-// PART 1: Era-to-Era Snapshot Victory Paint-Over (`全史运镜` & 时间轴跨朝代涂抹)
+// PART 1: Strictly Local-Delta Era-to-Era Snapshot Paint-Over
+//         (Unchanged provinces & frontiers NEVER blink or repaint!)
 // ============================================================================
 
-interface EraBrushTarget {
-  polityId: string;
+interface EraDeltaTarget {
+  deltaMp: PcMultiPolygon;
+  props: Record<string, unknown>;
   origin: LngLat;
   maxRx: number;
   maxRy: number;
-  frontColor?: string;
+  frontColor: string;
+  isEraserOnly?: boolean;
 }
 
 export interface EraWipePlan {
   caption: string;
-  targets: EraBrushTarget[];
+  targets: EraDeltaTarget[];
 }
+
+/**
+ * Maps polities that represent the SAME continuous sovereignty & color family
+ * across snapshots so unchanged core provinces subtract out to ZERO!
+ */
+function getRegimeContinuityKey(props: Record<string, unknown>): string {
+  const id = String(props.polityId ?? '');
+  const color = String(props.color ?? '').toLowerCase();
+  const ctrl = String(props.controlType ?? 'direct');
+
+  // Direct Ming imperial court / Zhu Yuanzhang's Wu / Southern Ming continuity
+  if (color === '#b83b2a' && ctrl === 'direct') {
+    return 'ming-imperial-direct';
+  }
+  // Northeast Jurchen / Nurgan tributary garrisons
+  if (
+    ctrl === 'tributary-garrison' &&
+    (id.includes('nurgan') || id.includes('jurchen') || color === '#9c4221')
+  ) {
+    return 'ming-northeast-tributary';
+  }
+  // Western Usang / Guanxi / Tibet tributary garrisons
+  if (
+    ctrl === 'tributary-garrison' &&
+    (id.includes('usang') || id.includes('guanxi') || color === '#b7791f')
+  ) {
+    return 'ming-western-tributary';
+  }
+  // Outer Mongolian Steppe continuity (Northern Yuan / Oirat / Dayan / Chahar / Khalkha)
+  if (
+    id.includes('yuan') ||
+    id.includes('oirat') ||
+    id.includes('dayan') ||
+    id.includes('mongol') ||
+    id.includes('chahar') ||
+    id.includes('khalkha') ||
+    color === '#4a5568' ||
+    color === '#374151'
+  ) {
+    return `steppe-continuity::${ctrl}`;
+  }
+
+  return `${color}::${ctrl}`;
+}
+
+const ERA_TRANSITION_CAPTIONS: Record<string, string> = {
+  'ter-1356->ter-1363':
+    '局部边境演变：陈友谅据湖广称汉、朱元璋拓江南、明玉珍据蜀',
+  'ter-1363->ter-1368':
+    '局部疆域推进：平陈汉灭张吴，徐达北伐收复中原与元大都（原江南腹地保持静止）',
+  'ter-1368->ter-1388':
+    '局部边疆拓展：平蜀明夏、克云南梁王、纳辽东与设乌思藏（中原江南保持静止）',
+  'ter-1388->ter-1399':
+    '局部裂变：仅北平与大宁变为燕王靖难军防区，其余各省保持静止',
+  'ter-1399->ter-1402':
+    '局部归并：燕藩防区重归大明一统，并拓展奴儿干都司（南方各省保持静止）',
+  'ter-1402->ter-1415':
+    '局部拓疆：仅安南新设交趾布政使司与奴儿干外兴安岭扩张（两京十三省保持静止）',
+  'ter-1415->ter-1435':
+    '局部收缩：仅交趾罢布政使司改封藩属（大明两京十三省保持静止）',
+  'ter-1435->ter-1449':
+    '局部边患：仅漠南宣大外围受瓦剌也先南侵推进（关内各省保持静止）',
+  'ter-1449->ter-1479':
+    '局部边防变化：仅河套地区入驻达延汗、延绥筑墙锁边（大明内地保持静止）',
+  'ter-1479->ter-1582':
+    '局部封贡互市：仅归化城河套设为俺答顺义王封贡区（大明全境保持静止）',
+  'ter-1582->ter-1621':
+    '局部失地：仅辽东沈辽地区变为努尔哈赤后金控制（山海关内全境保持静止）',
+  'ter-1621->ter-1642':
+    '局部战局演变：仅锦州塞外归清、河南入李自成、湖广入张献忠（其余省域保持静止）',
+  'ter-1642->ter-1644':
+    '局部巨变：仅华北入清、秦陇入大顺、巴蜀入大西（江南腹地保持静止）',
+  'ter-1644->ter-1652':
+    '局部推进：清军南下江南，郑成功收复台湾与李定国守西南（华北保持静止）',
+};
 
 export function getEraWipePlan(
   fromSnapshotId: string,
   toSnapshotId: string
 ): EraWipePlan {
   const key = `${fromSnapshotId}->${toSnapshotId}`;
+  const cached = computedEraDeltaCache.get(key);
+  if (cached) return cached;
 
-  if (key === 'ter-1356->ter-1363') {
-    return {
-      caption: '版图涂抹演进：陈友谅尽据湖广称汉 · 朱元璋拓地江南与陈汉隔江对峙',
-      targets: [
-        {
-          polityId: 'chen-han',
-          origin: [114.31, 30.55],
-          maxRx: 9.5,
-          maxRy: 7.5,
-          frontColor: '#1E5F74',
-        },
-        {
-          polityId: 'zhu-wu',
-          origin: [118.8, 32.06],
-          maxRx: 6.5,
-          maxRy: 5.5,
-          frontColor: '#B83B2A',
-        },
-        {
-          polityId: 'ming-xia',
-          origin: [106.55, 29.56],
-          maxRx: 7.5,
-          maxRy: 6.5,
-          frontColor: '#805AD5',
-        },
-        {
-          polityId: 'zhang-zhou',
-          origin: [120.62, 31.3],
-          maxRx: 4.5,
-          maxRy: 4.5,
-          frontColor: '#5B7A3E',
-        },
-      ],
-    };
-  }
-
-  if (key === 'ter-1363->ter-1368') {
-    return {
-      caption: '胜利方版图涂抹：朱元璋平汉灭吴，徐达北伐席卷中原克复元大都！',
-      targets: [
-        {
-          polityId: 'ming-empire',
-          origin: [118.8, 32.06],
-          maxRx: 17.5,
-          maxRy: 14.5,
-          frontColor: '#D97706',
-        },
-        {
-          polityId: 'northern-yuan',
-          origin: [112.5, 44.5],
-          maxRx: 22.0,
-          maxRy: 12.0,
-          frontColor: '#4A5568',
-        },
-        {
-          polityId: 'yunnan-liang',
-          origin: [102.7, 25.05],
-          maxRx: 7.0,
-          maxRy: 6.0,
-          frontColor: '#6B46C1',
-        },
-      ],
-    };
-  }
-
-  if (key === 'ter-1368->ter-1388' || key === 'ter-1363->ter-1388') {
-    return {
-      caption:
-        '胜利方版图涂抹：平定巴蜀明夏、征南灭元梁王、迫降辽东纳哈出，蓝玉奇袭捕鱼儿海一统洪武疆域！',
-      targets: [
-        {
-          polityId: 'ming-hongwu-unified',
-          origin: [115.2, 31.8],
-          maxRx: 21.0,
-          maxRy: 17.5,
-          frontColor: '#F59E0B',
-        },
-        {
-          polityId: 'liaodong-jurchen-tributary',
-          origin: [122.5, 42.2],
-          maxRx: 14.5,
-          maxRy: 12.0,
-          frontColor: '#9C4221',
-        },
-        {
-          polityId: 'usang-hami-hongwu',
-          origin: [102.5, 30.5],
-          maxRx: 20.0,
-          maxRy: 14.0,
-          frontColor: '#B7791F',
-        },
-      ],
-    };
-  }
-
-  if (key === 'ter-1368->ter-1399' || key === 'ter-1388->ter-1399') {
-    return {
-      caption: '版图涂抹演进：建文强行削藩激变 · 燕王朱棣北平誓师靖难并奇袭大宁！',
-      targets: [
-        {
-          polityId: 'ming-jianwen',
-          origin: [114.2, 31.5],
-          maxRx: 20.0,
-          maxRy: 16.0,
-          frontColor: '#B83B2A',
-        },
-        {
-          polityId: 'yan-rebels',
-          origin: [116.41, 39.9],
-          maxRx: 7.5,
-          maxRy: 5.5,
-          frontColor: '#F59E0B',
-        },
-      ],
-    };
-  }
-
-  if (key === 'ter-1399->ter-1402') {
-    return {
-      caption: '胜利方版图涂抹：朱棣靖难南下入主南京，永乐盛世拓开奴儿干与关西羁縻宏图！',
-      targets: [
-        {
-          polityId: 'ming-yongle',
-          origin: [116.41, 39.9],
-          maxRx: 22.0,
-          maxRy: 22.0,
-          frontColor: '#D97706',
-        },
-        {
-          polityId: 'nurgan-urankhai',
-          origin: [123.5, 42.2],
-          maxRx: 19.0,
-          maxRy: 15.0,
-          frontColor: '#9C4221',
-        },
-        {
-          polityId: 'guanxi-usang',
-          origin: [101.8, 36.6],
-          maxRx: 20.0,
-          maxRy: 14.0,
-          frontColor: '#B7791F',
-        },
-      ],
-    };
-  }
-
-  if (key === 'ter-1402->ter-1415' || key === 'ter-1399->ter-1415') {
-    return {
-      caption:
-        '胜利方版图涂抹：张辅平定安南设交趾布政使司（第十四省），亦失哈立碑特林达永乐极盛疆域！',
-      targets: [
-        {
-          polityId: 'ming-yongle-zenith',
-          origin: [108.5, 23.5],
-          maxRx: 18.0,
-          maxRy: 19.0,
-          frontColor: '#F59E0B',
-        },
-        {
-          polityId: 'nurgan-zenith',
-          origin: [126.5, 44.5],
-          maxRx: 22.0,
-          maxRy: 16.0,
-          frontColor: '#9C4221',
-        },
-      ],
-    };
-  }
-
-  if (key === 'ter-1415->ter-1435') {
-    return {
-      caption:
-        '版图演进涂抹：宣德罢交趾布政使司改封藩属、开平卫内迁独石；漠北瓦剌脱欢兼并鞑靼崛起！',
-      targets: [
-        {
-          polityId: 'dai-viet-le',
-          origin: [105.84, 21.03],
-          maxRx: 6.5,
-          maxRy: 6.5,
-          frontColor: '#2F855A',
-        },
-        {
-          polityId: 'oirat-toghon',
-          origin: [102.8, 47.2],
-          maxRx: 22.0,
-          maxRy: 12.0,
-          frontColor: '#4A5568',
-        },
-        {
-          polityId: 'ming-renxuan',
-          origin: [116.41, 39.9],
-          maxRx: 21.0,
-          maxRy: 19.0,
-          frontColor: '#B83B2A',
-        },
-      ],
-    };
-  }
-
-  if (key === 'ter-1435->ter-1449' || key === 'ter-1415->ter-1449') {
-    return {
-      caption:
-        '版图演进涂抹：瓦剌太师也先西破哈密东胁三卫南逼宣大；于谦拥立景泰帝死守北京九门！',
-      targets: [
-        {
-          polityId: 'oirat-esen',
-          origin: [106.5, 46.5],
-          maxRx: 25.0,
-          maxRy: 14.0,
-          frontColor: '#374151',
-        },
-        {
-          polityId: 'ming-jingtai-defense',
-          origin: [116.41, 39.9],
-          maxRx: 21.0,
-          maxRy: 19.0,
-          frontColor: '#B83B2A',
-        },
-      ],
-    };
-  }
-
-  if (key === 'ter-1449->ter-1479') {
-    return {
-      caption:
-        '版图演进涂抹：成化犁庭震慑建州女真 · 余子俊筑延绥长城锁死河套达延汗！',
-      targets: [
-        {
-          polityId: 'dayan-khan-mongols',
-          origin: [108.5, 43.5],
-          maxRx: 22.0,
-          maxRy: 12.0,
-          frontColor: '#4A5568',
-        },
-        {
-          polityId: 'ming-chenghua-hongzhi',
-          origin: [114.2, 34.5],
-          maxRx: 21.0,
-          maxRy: 18.5,
-          frontColor: '#B83B2A',
-        },
-      ],
-    };
-  }
-
-  if (key === 'ter-1479->ter-1582') {
-    return {
-      caption:
-        '版图演进涂抹：隆庆俺答封贡归化城开市、戚继光荡倭镇蓟门、张居正变法中兴！',
-      targets: [
-        {
-          polityId: 'altan-khan-shunyi',
-          origin: [111.67, 40.82],
-          maxRx: 9.5,
-          maxRy: 6.5,
-          frontColor: '#2B6CB0',
-        },
-        {
-          polityId: 'ming-wanli-revival',
-          origin: [116.41, 39.9],
-          maxRx: 21.0,
-          maxRy: 19.5,
-          frontColor: '#F59E0B',
-        },
-      ],
-    };
-  }
-
-  if (key === 'ter-1582->ter-1621') {
-    return {
-      caption:
-        '战局突变涂抹：萨尔浒惨败后努尔哈赤后金席卷沈阳辽阳，孙承宗袁崇焕死守关宁防线！',
-      targets: [
-        {
-          polityId: 'later-jin-nurhaci',
-          origin: [124.83, 41.68],
-          maxRx: 14.5,
-          maxRy: 12.5,
-          frontColor: '#EF4444',
-        },
-        {
-          polityId: 'ming-tianqi-guanning',
-          origin: [120.73, 40.62],
-          maxRx: 22.0,
-          maxRy: 20.0,
-          frontColor: '#B83B2A',
-        },
-      ],
-    };
-  }
-
-  if (key === 'ter-1621->ter-1642') {
-    return {
-      caption:
-        '帝国崩裂涂抹：皇太极吞漠南赢松锦直抵山海关，李自成卷秦豫、张献忠破楚，大明南北腰斩！',
-      targets: [
-        {
-          polityId: 'qing-hongtaiji',
-          origin: [123.43, 41.81],
-          maxRx: 24.0,
-          maxRy: 14.5,
-          frontColor: '#1E3A8A',
-        },
-        {
-          polityId: 'shun-lizicheng-1642',
-          origin: [112.45, 34.62],
-          maxRx: 6.5,
-          maxRy: 5.5,
-          frontColor: '#F59E0B',
-        },
-        {
-          polityId: 'xi-zhangxianzhong-1642',
-          origin: [114.31, 30.55],
-          maxRx: 4.5,
-          maxRy: 4.0,
-          frontColor: '#7C3AED',
-        },
-      ],
-    };
-  }
-
-  if (key === 'ter-1642->ter-1644') {
-    return {
-      caption:
-        '甲申巨变涂抹：吴三桂开关引清军一片石破李自成入主北京，南明弘光偏安江南、大西入蜀！',
-      targets: [
-        {
-          polityId: 'qing-dorgon-1644',
-          origin: [119.78, 40.01],
-          maxRx: 16.5,
-          maxRy: 13.5,
-          frontColor: '#1E3A8A',
-        },
-        {
-          polityId: 'great-shun-lizicheng',
-          origin: [108.94, 34.34],
-          maxRx: 12.5,
-          maxRy: 9.0,
-          frontColor: '#D97706',
-        },
-        {
-          polityId: 'great-xi-zhangxianzhong',
-          origin: [104.07, 30.66],
-          maxRx: 6.5,
-          maxRy: 5.5,
-          frontColor: '#7C3AED',
-        },
-        {
-          polityId: 'southern-ming-hongguang',
-          origin: [118.8, 32.06],
-          maxRx: 16.0,
-          maxRy: 12.5,
-          frontColor: '#B83B2A',
-        },
-      ],
-    };
-  }
-
-  if (key === 'ter-1644->ter-1652') {
-    return {
-      caption:
-        '落日余晖涂抹：清军南下席卷江南，李定国西南两蹶名王、郑成功横渡鹿耳门收复台湾！',
-      targets: [
-        {
-          polityId: 'qing-empire-1652',
-          origin: [116.41, 39.9],
-          maxRx: 24.0,
-          maxRy: 21.0,
-          frontColor: '#1E3A8A',
-        },
-        {
-          polityId: 'southern-ming-yongli-koxinga',
-          origin: [106.5, 25.5],
-          maxRx: 17.5,
-          maxRy: 10.5,
-          frontColor: '#F59E0B',
-        },
-      ],
-    };
-  }
-
+  const fromSnap = TERRITORY_SNAPSHOT_BY_ID[fromSnapshotId];
   const destSnap = TERRITORY_SNAPSHOT_BY_ID[toSnapshotId];
-  const fallbackTargets: EraBrushTarget[] = (destSnap?.geojson.features ?? []).map(
-    (f) => {
-      const p = (f.properties ?? {}) as Record<string, unknown>;
-      const coord = (p.labelCoord as LngLat | undefined) ?? [116.5, 33.5];
-      return {
-        polityId: String(p.polityId ?? ''),
-        origin: coord,
-        maxRx: 26,
-        maxRy: 22,
-        frontColor: String(p.color ?? '#B83B2A'),
-      };
-    }
-  );
+  if (!fromSnap || !destSnap || fromSnapshotId === toSnapshotId) {
+    return { caption: '', targets: [] };
+  }
 
-  return {
-    caption: `版图涂抹切换：${destSnap?.meta.title ?? toSnapshotId}`,
-    targets: fallbackTargets,
+  // 1. Group simplified polygons of `fromSnapshot` by continuity key
+  const prevByGroup = new Map<string, PcMultiPolygon>();
+  let prevAllLand: PcMultiPolygon = [];
+
+  for (const f of fromSnap.geojson.features) {
+    const props = (f.properties ?? {}) as Record<string, unknown>;
+    const pid = String(props.polityId ?? '');
+    const { mp } = findFeatureMultiPoly(fromSnapshotId, pid, true);
+    if (mp.length === 0) continue;
+
+    const gKey = getRegimeContinuityKey(props);
+    const existing = prevByGroup.get(gKey);
+    prevByGroup.set(
+      gKey,
+      existing && existing.length > 0 ? polygonClipping.union(existing, mp) : mp
+    );
+    prevAllLand =
+      prevAllLand.length > 0 ? polygonClipping.union(prevAllLand, mp) : mp;
+  }
+
+  // 2. For each destination polity, subtract unchanged territory -> ONLY local delta!
+  const targets: EraDeltaTarget[] = [];
+  let destAllLand: PcMultiPolygon = [];
+
+  for (const df of destSnap.geojson.features) {
+    const props = (df.properties ?? {}) as Record<string, unknown>;
+    const pid = String(props.polityId ?? '');
+    const { mp: destMp } = findFeatureMultiPoly(toSnapshotId, pid, true);
+    if (destMp.length === 0) continue;
+
+    destAllLand =
+      destAllLand.length > 0 ? polygonClipping.union(destAllLand, destMp) : destMp;
+
+    const gKey = getRegimeContinuityKey(props);
+    const samePrev = prevByGroup.get(gKey);
+    const rawDiff =
+      samePrev && samePrev.length > 0
+        ? polygonClipping.difference(destMp, samePrev)
+        : destMp;
+
+    const deltaMp = cleanDeltaMultiPolygon(rawDiff, 0.05);
+    const bbox = multiPolyBbox(deltaMp);
+    if (!bbox) continue;
+
+    const [minX, minY, maxX, maxY] = bbox;
+    const center: LngLat = [(minX + maxX) / 2, (minY + maxY) / 2];
+    const maxRx = Math.max(0.8, (maxX - minX) * 0.68);
+    const maxRy = Math.max(0.8, (maxY - minY) * 0.68);
+
+    targets.push({
+      deltaMp,
+      props,
+      origin: center,
+      maxRx,
+      maxRy,
+      frontColor: String(props.color ?? '#D97706'),
+    });
+  }
+
+  // 3. Also check if any frontier strip retreated to unclaimed neutral land
+  if (prevAllLand.length > 0 && destAllLand.length > 0) {
+    const retreatedRaw = polygonClipping.difference(prevAllLand, destAllLand);
+    const retreatedMp = cleanDeltaMultiPolygon(retreatedRaw, 0.08);
+    const bbox = multiPolyBbox(retreatedMp);
+    if (bbox) {
+      const [minX, minY, maxX, maxY] = bbox;
+      targets.push({
+        deltaMp: retreatedMp,
+        props: { polityId: '__retreat_eraser__', color: '#EFE6D4' },
+        origin: [(minX + maxX) / 2, (minY + maxY) / 2],
+        maxRx: Math.max(0.8, (maxX - minX) * 0.68),
+        maxRy: Math.max(0.8, (maxY - minY) * 0.68),
+        frontColor: '#94A3B8',
+        isEraserOnly: true,
+      });
+    }
+  }
+
+  const plan: EraWipePlan = {
+    caption:
+      ERA_TRANSITION_CAPTIONS[key] ??
+      `局部边境涂抹演进：${destSnap.meta.title}`,
+    targets,
   };
+  computedEraDeltaCache.set(key, plan);
+  return plan;
 }
 
 export function buildEraWipeOverlayGeoJSON(
-  toSnapshotId: string,
+  _toSnapshotId: string,
   plan: EraWipePlan,
   rawProgress: number
 ): GeoJSON.FeatureCollection {
-  const destSnap = TERRITORY_SNAPSHOT_BY_ID[toSnapshotId];
-  if (!destSnap || rawProgress <= 0.005) return EMPTY_FC;
+  if (plan.targets.length === 0 || rawProgress <= 0.005) return EMPTY_FC;
 
   const eased = easeInOutCubic(rawProgress);
   const features: GeoJSON.Feature[] = [];
 
   for (let i = 0; i < plan.targets.length; i++) {
     const tgt = plan.targets[i];
-    const { mp: targetMp, props } = findFeatureMultiPoly(
-      toSnapshotId,
-      tgt.polityId,
-      true
-    );
-    if (targetMp.length === 0) continue;
+    if (tgt.deltaMp.length === 0) continue;
 
     const brush = buildOrganicBrushMask(
       tgt.origin,
-      Math.max(0.35, tgt.maxRx * eased * 1.18),
-      Math.max(0.35, tgt.maxRy * eased * 1.18),
-      i * 1.3 + eased * 1.6
+      Math.max(0.25, tgt.maxRx * eased * 1.25),
+      Math.max(0.25, tgt.maxRy * eased * 1.25),
+      i * 1.3 + eased * 1.4
     );
 
     const clipped =
-      eased >= 0.995 ? targetMp : polygonClipping.intersection(targetMp, brush);
+      eased >= 0.995
+        ? tgt.deltaMp
+        : polygonClipping.intersection(tgt.deltaMp, brush);
     const feat = mpToFeature(clipped, {
-      ...props,
-      frontColor: tgt.frontColor ?? props.color ?? '#D97706',
+      ...tgt.props,
+      frontColor: tgt.frontColor,
+      isEraserOnly: tgt.isEraserOnly ? 1 : 0,
       isActivelyWiping: eased < 0.99 ? 1 : 0,
     });
     if (feat) features.push(feat);
@@ -729,7 +561,7 @@ export function buildEraWipeOverlayGeoJSON(
 }
 
 // ============================================================================
-// PART 2: Live Battlefield Campaign Conquest Paint-Over (`战役分幕胜利涂抹`)
+// PART 2: Strictly Local-Delta Battlefield Campaign Conquest Paint-Over
 // ============================================================================
 
 interface CachedNorthernSlices {
@@ -737,11 +569,11 @@ interface CachedNorthernSlices {
   jiangnanMp: PcMultiPolygon;
   shandongMp: PcMultiPolygon;
   henanMp: PcMultiPolygon;
-  ming1368Mp: PcMultiPolygon;
+  hebeiShanxiMp: PcMultiPolygon;
   chenHanMp: PcMultiPolygon;
   daningMp: PcMultiPolygon;
   baseJingnanPhase1: GeoJSON.FeatureCollection;
-  jianwenMp: PcMultiPolygon;
+  jingnanCorridorMp: PcMultiPolygon;
 }
 
 let cachedSlices: CachedNorthernSlices | null = null;
@@ -752,6 +584,7 @@ function getCampaignGeoCache(): CachedNorthernSlices {
   const ter1363 = TERRITORY_SNAPSHOT_BY_ID['ter-1363'].geojson;
   const ter1399 = TERRITORY_SNAPSHOT_BY_ID['ter-1399'].geojson;
 
+  const { mp: zhuWuMp } = findFeatureMultiPoly('ter-1363', 'zhu-wu', true);
   const { mp: chenHanMp } = findFeatureMultiPoly('ter-1363', 'chen-han', true);
   const { mp: zhangMp } = findFeatureMultiPoly('ter-1363', 'zhang-zhou', true);
   const { mp: fangMp } = findFeatureMultiPoly('ter-1363', 'fang-zhedong', true);
@@ -781,6 +614,25 @@ function getCampaignGeoCache(): CachedNorthernSlices {
     boxMultiPolygon(109.7, 31.8, 116.75, 36.35)
   );
 
+  // ONLY the newly conquered North China (Hebei Dadu & Shanxi) for Phase 4 — South China stays 100% still!
+  const alreadyMingBeforePhase4 = polygonClipping.union(
+    zhuWuMp,
+    chenHanMp,
+    jiangnanMp,
+    shandongMp,
+    henanMp
+  );
+  const hebeiShanxiMp = cleanDeltaMultiPolygon(
+    polygonClipping.difference(
+      polygonClipping.intersection(
+        ming1368Mp,
+        boxMultiPolygon(110.0, 34.5, 121.0, 42.5)
+      ),
+      alreadyMingBeforePhase4
+    ),
+    0.04
+  );
+
   const basePostPoyang: GeoJSON.FeatureCollection = {
     type: 'FeatureCollection',
     features: ter1363.features.map((f) => {
@@ -806,6 +658,12 @@ function getCampaignGeoCache(): CachedNorthernSlices {
   const daningFullMp = polygonClipping.intersection(yan1399FullMp, daningBox);
   const daningMp = simplifyMultiPolygonForSweep(daningFullMp);
   const beipingOnlyMp = polygonClipping.difference(yan1399FullMp, daningBox);
+
+  // Local Jianghuai–Nanjing decisive campaign corridor for Jingnan Phase 5 (never repaints Yunnan/Sichuan!)
+  const jingnanCorridorMp = polygonClipping.intersection(
+    jianwenMp,
+    boxMultiPolygon(115.6, 30.4, 121.6, 36.6)
+  );
 
   const baseJingnanPhase1: GeoJSON.FeatureCollection = {
     type: 'FeatureCollection',
@@ -856,11 +714,11 @@ function getCampaignGeoCache(): CachedNorthernSlices {
     jiangnanMp,
     shandongMp,
     henanMp,
-    ming1368Mp,
+    hebeiShanxiMp,
     chenHanMp,
     daningMp,
     baseJingnanPhase1,
-    jianwenMp,
+    jingnanCorridorMp,
   };
   return cachedSlices;
 }
@@ -907,6 +765,7 @@ function buildSweepResponse(
 
   const feat = mpToFeature(clipped, {
     ...props,
+    isEraserOnly: 0,
     isActivelyWiping: eased < 0.99 ? 1 : 0,
   });
 
@@ -920,10 +779,6 @@ function buildSweepResponse(
   };
 }
 
-/**
- * Computes the base territory & progressive victory paint-over overlay for any Campaign Phase!
- * All static slices are 100% memoized, running in < 0.2ms per frame.
- */
 export function buildCampaignTerritoryFrame(
   campaignId: string,
   phaseIndex: number,
@@ -932,7 +787,7 @@ export function buildCampaignTerritoryFrame(
   const cache = getCampaignGeoCache();
   const eased = easeInOutCubic(wipeProgress);
 
-  // 1. 1363 Poyang Lake Campaign
+  // 1. 1363 Poyang Lake Campaign (ONLY Chen Han's Huguang/Jiangxi changes!)
   if (campaignId === 'cmp-1363-poyang') {
     const base = TERRITORY_SNAPSHOT_BY_ID['ter-1363'].geojson;
     if (phaseIndex < 4) {
@@ -961,21 +816,22 @@ export function buildCampaignTerritoryFrame(
         frontColor: '#F59E0B',
       },
       eased < 0.99
-        ? '胜利方版图涂抹：陈友谅毙命泾江口，朱元璋乘胜席卷江西与武昌湖广！'
-        : '版图已更新：朱元璋尽并陈汉故地，雄踞江南中上游'
+        ? '局部疆域涂抹：陈友谅毙命泾江口，仅陈汉故地并入朱元璋版图！'
+        : '版图已更新：朱元璋收并陈汉故地'
     );
   }
 
-  // 2. 1366-1368 Flat Wu & Hongwu Northern Expedition
+  // 2. 1366-1368 Northern Expedition (Each phase paints ONLY that phase's conquered province!)
   if (campaignId === 'cmp-1367-northern-expedition') {
     const base = cache.basePostPoyang;
     const mingProps = {
       polityId: 'ming-empire',
-      polityName: '大明北伐克复疆域',
+      polityName: '大明北伐新克疆域',
       shortLabel: '大明帝国',
       controlType: 'direct',
       color: '#B83B2A',
       frontColor: '#F59E0B',
+      isEraserOnly: 0,
     };
 
     const features: GeoJSON.Feature[] = [];
@@ -1009,23 +865,23 @@ export function buildCampaignTerritoryFrame(
 
     let caption = '';
     if (phaseIndex === 0) {
-      addSweeping(cache.jiangnanMp, [119.55, 31.2], 5.2, 5.2);
-      caption = '胜利方版图涂抹：徐达攻破平江灭张士诚，大明一统吴越江南！';
+      addSweeping(cache.jiangnanMp, [119.55, 31.2], 4.8, 4.8);
+      caption = '局部疆域涂抹：徐达破平江灭张士诚，仅平江浙东并入大明！';
     } else if (phaseIndex === 1) {
       addStatic(cache.jiangnanMp);
-      addSweeping(cache.shandongMp, [117.18, 34.26], 7.2, 5.2);
-      caption = '胜利方版图涂抹：北伐大军攻克济南，平定山东全境！';
+      addSweeping(cache.shandongMp, [117.18, 34.26], 6.8, 4.6);
+      caption = '局部疆域涂抹：北伐大军攻克济南，仅山东全境变更为大明！';
     } else if (phaseIndex === 2) {
       addStatic(cache.jiangnanMp);
       addStatic(cache.shandongMp);
-      addSweeping(cache.henanMp, [116.59, 35.41], 8.2, 5.0);
-      caption = '胜利方版图涂抹：旋师西进克复汴梁、洛阳，夺占潼关天险！';
+      addSweeping(cache.henanMp, [116.59, 35.41], 7.5, 4.5);
+      caption = '局部疆域涂抹：旋师西进克复汴梁洛阳，仅河南潼关变更为大明！';
     } else {
       addStatic(cache.jiangnanMp);
       addStatic(cache.shandongMp);
       addStatic(cache.henanMp);
-      addSweeping(cache.ming1368Mp, [115.71, 36.84], 12.5, 10.5);
-      caption = '胜利方版图涂抹：徐达攻克元大都改北平府，燕云十六州重归汉家版图！';
+      addSweeping(cache.hebeiShanxiMp, [116.39, 38.2], 6.8, 6.2);
+      caption = '局部疆域涂抹：徐达攻克元大都改北平府，仅河北山西燕云之地变更为大明！';
     }
 
     return {
@@ -1036,7 +892,7 @@ export function buildCampaignTerritoryFrame(
     };
   }
 
-  // 3. 1399-1402 Jingnan Campaign
+  // 3. 1399-1402 Jingnan Campaign (ONLY Daning in Phase 2 & Jianghuai-Nanjing Corridor in Phase 5!)
   if (campaignId === 'cmp-1399-jingnan') {
     if (phaseIndex === 0) {
       return {
@@ -1053,8 +909,8 @@ export function buildCampaignTerritoryFrame(
         cache.daningMp,
         eased,
         [116.41, 39.9],
-        6.8,
-        4.8,
+        6.2,
+        4.5,
         eased,
         {
           polityId: 'yan-rebels',
@@ -1064,7 +920,7 @@ export function buildCampaignTerritoryFrame(
           color: '#C68B2C',
           frontColor: '#FDE68A',
         },
-        '胜利方版图涂抹：朱棣奇袭塞外大宁，收编宁王防区与朵颜三卫铁骑！'
+        '局部疆域涂抹：朱棣奇袭塞外大宁，仅大宁防区并入燕军！'
       );
     }
 
@@ -1080,27 +936,27 @@ export function buildCampaignTerritoryFrame(
 
     return buildSweepResponse(
       base1399,
-      cache.jianwenMp,
+      cache.jingnanCorridorMp,
       eased,
-      [116.41, 39.9],
-      21.0,
-      22.0,
-      eased * 1.5,
+      [117.2, 34.3],
+      5.2,
+      4.8,
+      eased * 1.4,
       {
         polityId: 'yan-victory',
-        polityName: '朱棣奉天靖难入主南京（永乐改元）',
-        shortLabel: '大明 · 永乐大帝朱棣',
+        polityName: '燕军南渡长江直取南京京畿走廊',
+        shortLabel: '燕军克复江淮应天',
         controlType: 'direct',
         color: '#C68B2C',
         frontColor: '#FEF08A',
       },
       eased < 0.99
-        ? '胜利方版图涂抹：燕军破灵璧渡长江入主金川门，自北向南席卷建文疆域！'
-        : '版图已更新：朱棣奉天靖难功成登基，开启永乐盛世'
+        ? '局部疆域涂抹：燕军破灵璧渡江入主金川门，仅江淮至应天决战走廊变更！'
+        : '版图已更新：朱棣攻占南京京畿，奉天靖难功成'
     );
   }
 
-  // 4. 1387-1388 Nagachu Surrender & Buyur Lake Decisive Campaign
+  // 4. 1387-1388 Nagachu Surrender & Buyur Lake
   if (campaignId === 'cmp-1387-buyur-lake') {
     const base1368 = TERRITORY_SNAPSHOT_BY_ID['ter-1368'].geojson;
     const base1388 = TERRITORY_SNAPSHOT_BY_ID['ter-1388'].geojson;
@@ -1117,18 +973,18 @@ export function buildCampaignTerritoryFrame(
         liaodongSlice,
         eased,
         [119.23, 41.59],
-        7.2,
-        5.2,
+        6.8,
+        4.8,
         eased * 1.4,
         {
           polityId: 'ming-hongwu-unified',
-          polityName: '大明辽东都司与大宁防区（纳哈出二十万众降明）',
-          shortLabel: '大明 · 辽东大宁',
+          polityName: '大明辽东都司（纳哈出降明）',
+          shortLabel: '大明 · 辽东',
           controlType: 'direct',
           color: '#B83B2A',
           frontColor: '#F59E0B',
         },
-        '胜利方版图涂抹：冯胜蓝玉迫降金山纳哈出二十万众，辽东全境归入大明！'
+        '局部疆域涂抹：迫降金山纳哈出二十万众，仅辽东地区并入大明！'
       );
     }
 
@@ -1137,25 +993,25 @@ export function buildCampaignTerritoryFrame(
         'buyur-yuan-court',
         'ter-1388',
         'shattered-northern-yuan',
-        [114.2, 44.5, 121.5, 50.2]
+        [115.0, 45.2, 120.8, 49.8]
       );
       return buildSweepResponse(
         base1388,
         buyurFrontier,
         eased,
         [117.72, 47.83],
-        4.5,
-        3.8,
+        3.5,
+        2.8,
         eased * 1.5,
         {
           polityId: 'ming-buyur-sweep',
-          polityName: '蓝玉捕鱼儿海犁庭扫穴锋区',
-          shortLabel: '明军犁庭锋区',
+          polityName: '蓝玉捕鱼儿海犁庭锋区',
+          shortLabel: '捕鱼儿海扫穴区',
           controlType: 'tributary-garrison',
           color: '#B83B2A',
           frontColor: '#F59E0B',
         },
-        '胜利方版图涂抹：蓝玉奇袭捕鱼儿海端掉北元汗廷，漠北王庭彻底瓦解！'
+        '局部战区涂抹：蓝玉奇袭捕鱼儿海，仅漠北汗廷驻地瓦解！'
       );
     }
 
@@ -1186,57 +1042,73 @@ export function buildCampaignTerritoryFrame(
     const base1435 = TERRITORY_SNAPSHOT_BY_ID['ter-1435'].geojson;
     const base1449 = TERRITORY_SNAPSHOT_BY_ID['ter-1449'].geojson;
 
+    const xuanDaBorderSlice = getCachedBoxSlice(
+      'tumu-xuanda-border',
+      'ter-1449',
+      'oirat-esen',
+      [111.5, 39.6, 118.5, 43.2]
+    );
+
     if (phaseIndex === 2) {
-      const southPush = getCachedBoxSlice(
-        'tumu-esen-push',
-        'ter-1449',
-        'oirat-esen',
-        [108.0, 39.2, 121.0, 44.8]
-      );
       return buildSweepResponse(
         base1435,
-        southPush,
+        xuanDaBorderSlice,
         eased,
-        [114.2, 41.5],
-        7.5,
-        4.5,
+        [115.2, 41.2],
+        4.2,
+        2.6,
         eased,
         {
           polityId: 'oirat-esen',
-          polityName: '瓦剌太师也先南侵控制区',
-          shortLabel: '瓦剌铁骑逼境',
+          polityName: '瓦剌南侵宣大边塞区',
+          shortLabel: '瓦剌逼近宣大',
           controlType: 'direct',
           color: '#374151',
           frontColor: '#EF4444',
         },
-        '战局突变涂抹：土木堡二十万明军覆没，瓦剌铁骑席卷漠南直逼紫荆关与北京！'
+        '局部边境涂抹：土木堡兵败后，仅宣大塞外防区被瓦剌推进控制！'
       );
     }
 
     if (phaseIndex === 4) {
-      const northShield = getCachedBoxSlice(
-        'tumu-yuqian-shield',
+      const contestedJuyongSlice = getCachedBoxSlice(
+        'tumu-juyong-contested',
         'ter-1449',
         'ming-jingtai-defense',
-        [111.8, 38.2, 119.8, 41.3]
+        [113.2, 39.1, 117.4, 41.1]
       );
-      return buildSweepResponse(
+      const baseWithOiratIncursion = getCarvedContestedBase(
+        'tumu-phase5-base',
         base1449,
-        northShield,
+        contestedJuyongSlice,
+        {
+          polityId: 'oirat-incursion-gate',
+          polityName: '瓦剌进逼紫荆关京西前线',
+          shortLabel: '瓦剌叩关前线',
+          ruler: '也先',
+          controlType: 'direct',
+          color: '#374151',
+          labelCoord: [115.1, 40.1],
+        }
+      );
+
+      return buildSweepResponse(
+        baseWithOiratIncursion,
+        contestedJuyongSlice,
         eased,
         [116.38, 39.95],
-        5.5,
-        3.2,
+        3.6,
+        2.0,
         eased * 1.4,
         {
           polityId: 'ming-jingtai-defense',
-          polityName: '于谦收复巩固京畿宣大紫荆防线',
-          shortLabel: '大明收复京畿九边',
+          polityName: '于谦收复紫荆居庸京畿防线',
+          shortLabel: '大明收复京畿关隘',
           controlType: 'direct',
           color: '#B83B2A',
           frontColor: '#F59E0B',
         },
-        '胜利方版图涂抹：于谦德胜门背城大破瓦剌，收复紫荆关稳固京畿九边防线！'
+        '局部边境涂抹：于谦北京九门大破也先，仅京西紫荆居庸前线复归大明！'
       );
     }
 
@@ -1248,35 +1120,60 @@ export function buildCampaignTerritoryFrame(
     };
   }
 
-  // 7. 1519 Wang Yangming's 35-Day Suppression of Prince Ning
+  // 7. 1519 Wang Yangming vs Prince Ning (ONLY Nanchang-Poyang Rebel Zone changes!)
   if (campaignId === 'cmp-1519-ning-rebellion') {
     const base1479 = TERRITORY_SNAPSHOT_BY_ID['ter-1479'].geojson;
+    const ningRebelZone = getCachedBoxSlice(
+      'ning-rebel-zone',
+      'ter-1479',
+      'ming-chenghua-hongzhi',
+      [115.1, 28.1, 117.2, 30.3]
+    );
+    const baseWithRebel = getCarvedContestedBase(
+      'ning-rebel-base',
+      base1479,
+      ningRebelZone,
+      {
+        polityId: 'prince-ning-rebels',
+        polityName: '宁王朱宸濠叛军控制区（南昌 · 九江）',
+        shortLabel: '宁王叛军',
+        ruler: '朱宸濠',
+        controlType: 'direct',
+        color: '#7C3AED',
+        labelCoord: [115.9, 29.0],
+      }
+    );
+
+    if (phaseIndex <= 1) {
+      return {
+        baseGeoJSON: baseWithRebel,
+        wipeOverlayGeoJSON: EMPTY_FC,
+        caption: null,
+        hasWipeInPhase: false,
+      };
+    }
+
     if (phaseIndex === 2) {
-      const jiangxiBox = getCachedBoxSlice(
-        'ning-jiangxi',
-        'ter-1479',
-        'ming-chenghua-hongzhi',
-        [114.2, 27.2, 117.4, 30.2]
-      );
       return buildSweepResponse(
-        base1479,
-        jiangxiBox,
+        baseWithRebel,
+        ningRebelZone,
         eased,
         [115.89, 28.68],
-        2.8,
-        2.4,
+        2.2,
+        2.0,
         eased * 1.4,
         {
-          polityId: 'ming-yangming-victory',
-          polityName: '王阳明三十五日光复江西北境平定宁藩',
-          shortLabel: '大明平定江西宁藩',
+          polityId: 'ming-chenghua-hongzhi',
+          polityName: '王阳明平定南昌鄱阳湖叛区',
+          shortLabel: '大明平定宁藩',
           controlType: 'direct',
           color: '#B83B2A',
           frontColor: '#F59E0B',
         },
-        '胜利方版图涂抹：王阳明鄱阳湖火攻生擒宁王朱宸濠，江西乱局三十五日荡平！'
+        '局部平叛涂抹：王阳明火攻生擒朱宸濠，仅南昌九江叛区复归大明！'
       );
     }
+
     return {
       baseGeoJSON: base1479,
       wipeOverlayGeoJSON: EMPTY_FC,
@@ -1285,41 +1182,57 @@ export function buildCampaignTerritoryFrame(
     };
   }
 
-  // 8. 1559-1563 Qi Jiguang's Anti-Wokou Coastal Sweep
+  // 8. 1559-1563 Qi Jiguang Anti-Wokou (ONLY Zhejiang-Fujian raided coastal strip changes!)
   if (campaignId === 'cmp-1561-qijiguang-wokou') {
     const base1582 = TERRITORY_SNAPSHOT_BY_ID['ter-1582'].geojson;
-    if (phaseIndex === 3) {
-      const coastSlice = getCachedBoxSlice(
-        'wokou-coast',
-        'ter-1582',
-        'ming-wanli-revival',
-        [117.2, 23.8, 122.4, 30.2]
-      );
-      return buildSweepResponse(
-        base1582,
-        coastSlice,
-        eased,
-        [119.17, 25.24],
-        4.8,
-        5.5,
-        eased * 1.4,
-        {
-          polityId: 'ming-coastal-peace',
-          polityName: '戚继光俞大猷荡平浙闽倭患海防区',
-          shortLabel: '大明肃清东南海疆',
-          controlType: 'direct',
-          color: '#B83B2A',
-          frontColor: '#F59E0B',
-        },
-        '胜利方版图涂抹：平海卫三路大捷，戚继光俞大猷彻底扫清浙闽沿海倭患！'
-      );
+    const wokouCoastZone = getCachedBoxSlice(
+      'wokou-raided-coast',
+      'ter-1582',
+      'ming-wanli-revival',
+      [118.6, 24.7, 122.2, 29.4]
+    );
+    const baseWithWokou = getCarvedContestedBase(
+      'wokou-coast-base',
+      base1582,
+      wokouCoastZone,
+      {
+        polityId: 'wokou-raided-zone',
+        polityName: '倭寇侵扰浙闽沿海卫所区',
+        shortLabel: '倭患侵扰海疆',
+        ruler: '倭寇集团',
+        controlType: 'direct',
+        color: '#6B46C1',
+        labelCoord: [120.8, 27.2],
+      }
+    );
+
+    if (phaseIndex < 3) {
+      return {
+        baseGeoJSON: baseWithWokou,
+        wipeOverlayGeoJSON: EMPTY_FC,
+        caption: null,
+        hasWipeInPhase: false,
+      };
     }
-    return {
-      baseGeoJSON: base1582,
-      wipeOverlayGeoJSON: EMPTY_FC,
-      caption: null,
-      hasWipeInPhase: false,
-    };
+
+    return buildSweepResponse(
+      baseWithWokou,
+      wokouCoastZone,
+      eased,
+      [119.17, 25.24],
+      3.8,
+      4.8,
+      eased * 1.4,
+      {
+        polityId: 'ming-wanli-revival',
+        polityName: '戚继光俞大猷肃清浙闽沿海倭患',
+        shortLabel: '大明肃清海疆',
+        controlType: 'direct',
+        color: '#B83B2A',
+        frontColor: '#F59E0B',
+      },
+      '局部海防涂抹：平海卫大捷荡平倭巢，仅浙闽受侵沿海恢复海晏河清！'
+    );
   }
 
   // 9. 1592-1598 Wanli Imjin War in Korea
@@ -1332,7 +1245,7 @@ export function buildCampaignTerritoryFrame(
     };
   }
 
-  // 10. 1619-1621 Battle of Sarhu & Fall of Shenyang-Liaoyang
+  // 10. 1619-1621 Battle of Sarhu (ONLY Shenyang-Liaoyang changes to Later Jin!)
   if (campaignId === 'cmp-1619-sarhu') {
     const base1582 = TERRITORY_SNAPSHOT_BY_ID['ter-1582'].geojson;
     if (phaseIndex === 3) {
@@ -1347,18 +1260,18 @@ export function buildCampaignTerritoryFrame(
         liaodongCore,
         eased,
         [124.83, 41.68],
-        4.8,
-        3.8,
+        4.6,
+        3.6,
         eased * 1.4,
         {
           polityId: 'later-jin-nurhaci',
-          polityName: '后金攻占沈阳辽阳七十余城',
+          polityName: '后金攻占沈阳辽阳地区',
           shortLabel: '后金 · 努尔哈赤',
           controlType: 'direct',
           color: '#9A3412',
           frontColor: '#F59E0B',
         },
-        '胜方版图涂抹：努尔哈赤乘萨尔浒大胜连克沈阳、辽阳，尽占辽河以东！'
+        '局部失地涂抹：努尔哈赤连克沈阳辽阳，仅辽河以东变更为后金控制！'
       );
     }
     return {
@@ -1369,37 +1282,60 @@ export function buildCampaignTerritoryFrame(
     };
   }
 
-  // 11. 1622-1627 Sun Chengzong & Yuan Chonghuan's Ningyuan Victory
+  // 11. 1622-1627 Ningyuan & Guan-Ning Line (ONLY 400-li Liaoxi Corridor changes!)
   if (campaignId === 'cmp-1626-ningyuan-guangning') {
     const base1621 = TERRITORY_SNAPSHOT_BY_ID['ter-1621'].geojson;
-    if (phaseIndex === 1 || phaseIndex === 2) {
-      const corridor = getCachedBoxSlice(
-        'guanning-corridor',
-        'ter-1621',
-        'ming-tianqi-guanning',
-        [119.5, 39.8, 122.1, 41.8]
-      );
+    const corridor = getCachedBoxSlice(
+      'guanning-corridor',
+      'ter-1621',
+      'ming-tianqi-guanning',
+      [119.8, 40.0, 121.9, 41.6]
+    );
+    const baseContestedLiaoxi = getCarvedContestedBase(
+      'guanning-contested-base',
+      base1621,
+      corridor,
+      {
+        polityId: 'liaoxi-abandoned',
+        polityName: '广宁兵败后辽西动荡弃守走廊',
+        shortLabel: '辽西弃守前沿',
+        ruler: '后金游骑逼境',
+        controlType: 'direct',
+        color: '#9A3412',
+        labelCoord: [120.73, 40.62],
+      }
+    );
+
+    if (phaseIndex === 0) {
+      return {
+        baseGeoJSON: baseContestedLiaoxi,
+        wipeOverlayGeoJSON: EMPTY_FC,
+        caption: null,
+        hasWipeInPhase: false,
+      };
+    }
+
+    if (phaseIndex === 1) {
       return buildSweepResponse(
-        base1621,
+        baseContestedLiaoxi,
         corridor,
         eased,
         [119.78, 40.01],
-        2.8,
-        2.2,
+        2.5,
+        1.9,
         eased,
         {
           polityId: 'ming-tianqi-guanning',
-          polityName: '孙承宗袁崇焕关宁锦防线四百里',
-          shortLabel: '关宁锦铁壁防线',
+          polityName: '孙承宗袁崇焕收复筑城辽西四百里',
+          shortLabel: '关宁锦防线',
           controlType: 'direct',
           color: '#B83B2A',
           frontColor: '#F59E0B',
         },
-        phaseIndex === 1
-          ? '胜利方版图涂抹：孙承宗督师山海关连筑九城，向东北收复辽西四百里！'
-          : '胜利方版图涂抹：袁崇焕宁远红夷巨炮轰败努尔哈赤，守稳关外铁壁！'
+        '局部收复涂抹：孙承宗督师山海关，仅辽西关宁走廊四百里复归大明！'
       );
     }
+
     return {
       baseGeoJSON: base1621,
       wipeOverlayGeoJSON: EMPTY_FC,
@@ -1410,96 +1346,120 @@ export function buildCampaignTerritoryFrame(
 
   // 12. 1642-1662 Jiashen Fall, Shanhaiguan & Koxinga Recovering Taiwan
   if (campaignId === 'cmp-1644-jiashen-fall') {
+    const base1642 = TERRITORY_SNAPSHOT_BY_ID['ter-1642'].geojson;
     if (phaseIndex === 0) {
       return {
-        baseGeoJSON: TERRITORY_SNAPSHOT_BY_ID['ter-1642'].geojson,
+        baseGeoJSON: base1642,
         wipeOverlayGeoJSON: EMPTY_FC,
         caption: null,
         hasWipeInPhase: false,
       };
     }
 
+    const northChinaSlice = getCachedBoxSlice(
+      'jiashen-shun-beijing',
+      'ter-1644',
+      'qing-dorgon-1644',
+      [110.2, 35.0, 118.0, 41.0]
+    );
+
     if (phaseIndex === 1) {
-      const base1642 = TERRITORY_SNAPSHOT_BY_ID['ter-1642'].geojson;
-      const northChinaSlice = getCachedBoxSlice(
-        'jiashen-shun-beijing',
-        'ter-1644',
-        'qing-dorgon-1644',
-        [110.0, 34.8, 118.2, 41.2]
-      );
       return buildSweepResponse(
         base1642,
         northChinaSlice,
         eased,
         [108.94, 34.34],
-        10.5,
-        8.2,
+        9.6,
+        7.2,
         eased,
         {
           polityId: 'great-shun-sweep',
-          polityName: '李自成大顺东征军攻克太原宣大与北京',
-          shortLabel: '大顺 · 李自成破京师',
+          polityName: '李自成大顺东征攻占山西京师',
+          shortLabel: '大顺 · 李自成',
           controlType: 'direct',
           color: '#D97706',
           frontColor: '#FEF08A',
         },
-        '胜方版图涂抹：李自成大顺军东渡黄河破太原入北京，崇祯帝煤山殉国！'
+        '局部疆域涂抹：李自成渡河破太原入北京，仅山西京畿变更为大顺！'
       );
     }
 
     if (phaseIndex === 2) {
-      const base1644 = TERRITORY_SNAPSHOT_BY_ID['ter-1644'].geojson;
-      const northSweep = getCachedBoxSlice(
-        'jiashen-qing-north',
-        'ter-1644',
-        'qing-dorgon-1644',
-        [111.0, 34.2, 122.5, 41.5]
+      const baseShunInBeijing = getCarvedContestedBase(
+        'jiashen-shun-beijing-base',
+        TERRITORY_SNAPSHOT_BY_ID['ter-1644'].geojson,
+        northChinaSlice,
+        {
+          polityId: 'great-shun-beijing',
+          polityName: '大顺李自成占领京畿华北区',
+          shortLabel: '大顺京畿防区',
+          ruler: '李自成',
+          controlType: 'direct',
+          color: '#D97706',
+          labelCoord: [115.5, 38.8],
+        }
       );
+
       return buildSweepResponse(
-        base1644,
-        northSweep,
+        baseShunInBeijing,
+        northChinaSlice,
         eased,
         [119.78, 40.01],
-        10.2,
-        7.5,
+        9.8,
+        7.0,
         eased * 1.4,
         {
           polityId: 'qing-dorgon-1644',
-          polityName: '多尔衮八旗入山海关定鼎北京席卷华北',
-          shortLabel: '大清入关席卷华北',
+          polityName: '多尔衮清军入山海关接管华北',
+          shortLabel: '大清入主京畿',
           controlType: 'direct',
           color: '#1E3A8A',
           frontColor: '#60A5FA',
         },
-        '胜方版图涂抹：山海关一片石击溃李自成，清军长驱入主北京席卷华北！'
+        '局部疆域涂抹：山海关击败李自成，仅京畿华北战区变更为清廷控制！'
       );
     }
 
     if (phaseIndex === 3) {
       const base1652 = TERRITORY_SNAPSHOT_BY_ID['ter-1652'].geojson;
-      const taiwanAndGui = getCachedBoxSlice(
-        'jiashen-koxinga-taiwan',
+      const taiwanIslandMp = getCachedBoxSlice(
+        'jiashen-taiwan-island-only',
         'ter-1652',
         'southern-ming-yongli-koxinga',
-        [108.5, 21.5, 122.5, 27.6]
+        [119.8, 21.7, 122.3, 25.5]
       );
-      return buildSweepResponse(
+      const baseWithDutchTaiwan = getCarvedContestedBase(
+        'jiashen-dutch-taiwan-base',
         base1652,
-        taiwanAndGui,
+        taiwanIslandMp,
+        {
+          polityId: 'dutch-voc-taiwan',
+          polityName: '荷属东印度殖民据点（热兰遮城）',
+          shortLabel: '荷夷据台殖民点',
+          ruler: '揆一',
+          controlType: 'direct',
+          color: '#EA580C',
+          labelCoord: [120.95, 23.6],
+        }
+      );
+
+      return buildSweepResponse(
+        baseWithDutchTaiwan,
+        taiwanIslandMp,
         eased,
-        [118.09, 24.48],
-        10.5,
-        6.5,
+        [120.14, 23.0],
+        2.4,
+        3.2,
         eased * 1.5,
         {
           polityId: 'southern-ming-yongli-koxinga',
-          polityName: '郑成功收复宝岛台湾与李定国两蹶名王光复区',
-          shortLabel: '郑成功复台 · 永历抗清',
+          polityName: '国姓爷郑成功驱逐荷夷收复宝岛台湾',
+          shortLabel: '明郑收复台湾',
           controlType: 'direct',
           color: '#B83B2A',
           frontColor: '#F59E0B',
         },
-        '胜利方版图涂抹：李定国桂林衡阳两蹶名王，国姓爷郑成功驱逐荷夷收复宝岛台湾！'
+        '局部疆域涂抹：郑成功横渡鹿耳门受降揆一，仅宝岛台湾重归华夏版图！'
       );
     }
   }

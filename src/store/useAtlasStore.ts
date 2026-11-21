@@ -52,6 +52,7 @@ export interface LayerVisibility {
 }
 
 export type CampaignCameraMode = 'follow' | 'free';
+export type CampaignArrowMode = 'dynamic' | 'static';
 
 const STORY_OPENING_EVENT = ALL_EVENTS[0];
 
@@ -81,6 +82,7 @@ interface AtlasState {
   isCampaignPlaying: boolean;
   campaignSpeed: 1 | 1.5;
   campaignCameraMode: CampaignCameraMode;
+  campaignArrowMode: CampaignArrowMode;
   campaignPhaseProgress: number;
   campaignReplayNonce: number;
 
@@ -128,6 +130,7 @@ interface AtlasState {
   setCampaignPlaying: (playing: boolean) => void;
   setCampaignSpeed: (speed: 1 | 1.5) => void;
   setCampaignCameraMode: (mode: CampaignCameraMode) => void;
+  setCampaignArrowMode: (mode: CampaignArrowMode) => void;
   setCampaignPhaseProgress: (progress: number) => void;
   replayCurrentPhase: () => void;
 
@@ -180,6 +183,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   isCampaignPlaying: false,
   campaignSpeed: 1,
   campaignCameraMode: 'follow',
+  campaignArrowMode: 'dynamic',
   campaignPhaseProgress: 0,
   campaignReplayNonce: 0,
 
@@ -534,6 +538,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
       campaignReplayNonce:
         mode !== 'free' ? state.campaignReplayNonce + 1 : state.campaignReplayNonce,
     })),
+  setCampaignArrowMode: (mode) => set({ campaignArrowMode: mode }),
   setCampaignPhaseProgress: (progress) => set({ campaignPhaseProgress: progress }),
 
   replayCurrentPhase: () =>

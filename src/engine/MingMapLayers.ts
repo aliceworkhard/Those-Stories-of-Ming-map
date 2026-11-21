@@ -12,7 +12,6 @@ import {
 import {
   buildCurvedRouteCoords,
   sampleAlongPath,
-  sliceCurveByProgress,
 } from '@/lib/curve';
 import type {
   Campaign,
@@ -22,7 +21,10 @@ import type {
   MapVisualTheme,
   PlaceNameMode,
 } from '@/types/ming';
-import type { LayerVisibility } from '@/store/useAtlasStore';
+import type {
+  CampaignArrowMode,
+  LayerVisibility,
+} from '@/store/useAtlasStore';
 
 const EMPTY_FC: GeoJSON.FeatureCollection = {
   type: 'FeatureCollection',
@@ -340,6 +342,7 @@ export function mountHistoricalLayers(
         id: 'ming-territory-wipe-fill',
         type: 'fill',
         source: 'ming-territory-wipe',
+        filter: ['!=', ['get', 'isEraserOnly'], 1],
         paint: {
           'fill-antialias': false,
           'fill-color': ['get', 'color'],
@@ -360,6 +363,7 @@ export function mountHistoricalLayers(
         id: 'ming-territory-wipe-outline',
         type: 'line',
         source: 'ming-territory-wipe',
+        filter: ['!=', ['get', 'isEraserOnly'], 1],
         layout: { 'line-join': 'round', 'line-cap': 'round' },
         paint: {
           'line-color': ['get', 'color'],
@@ -1012,34 +1016,12 @@ export function mountHistoricalLayers(
     });
 
     map.addLayer({
-      id: 'campaign-routes-chevrons',
-      type: 'symbol',
-      source: 'campaign-routes',
-      layout: {
-        'symbol-placement': 'line',
-        'symbol-spacing': 58,
-        'icon-image': 'tactical-spearhead',
-        'icon-size': 0.42,
-        'icon-rotate': 90,
-        'icon-rotation-alignment': 'map',
-        'icon-allow-overlap': true,
-        'icon-ignore-placement': true,
-      },
-      paint: {
-        'icon-color': '#FFFFFF',
-        'icon-halo-color': ['get', 'color'],
-        'icon-halo-width': 1.4,
-        'icon-opacity': 0.94,
-      },
-    });
-
-    map.addLayer({
       id: 'campaign-vanguard-heads',
       type: 'symbol',
       source: 'campaign-vanguards',
       layout: {
         'icon-image': 'tactical-spearhead',
-        'icon-size': 0.88,
+        'icon-size': 0.96,
         'icon-rotate': ['get', 'bearing'],
         'icon-rotation-alignment': 'map',
         'icon-pitch-alignment': 'map',
@@ -1822,75 +1804,35 @@ export function buildPhaseRouteFeatures(
  * Strictly Sequential Step-by-Step Route & Spearhead Updater (`① -> ② -> ③`).
  * Once `growProgress >= 1` (`skipRouteGeometryUpdate`), stops ALL `setData()` calls (`0%` idle GPU/CPU!).
  */
-export function updateCampaignAnimationFrame(
+export function setCampaignStaticRoutesOnMap(
+  map: maplibregl.Map,
+  routeFeatureCollection: GeoJSON.FeatureCollection
+): void {
+  const routeSrc = map.getSource('campaign-routes') as GeoJSONSource | undefined;
+  if (!routeSrc) return;
+  routeSrc.setData(routeFeatureCollection);
+}
+
+export function updateCampaignArrowheadsOnMap(
   map: maplibregl.Map,
   curves: PreparedRouteCurve[],
-  growProgress: number,
-  skipRouteGeometryUpdate = false
+  arrowMode: CampaignArrowMode,
+  cycleProgress: number
 ): void {
-  if (skipRouteGeometryUpdate) return;
-
-  const routeSrc = map.getSource('campaign-routes') as GeoJSONSource | undefined;
   const vanguardSrc = map.getSource('campaign-vanguards') as
     | GeoJSONSource
     | undefined;
-  if (!routeSrc || !vanguardSrc) return;
+  if (!vanguardSrc) return;
 
   if (curves.length === 0) {
-    routeSrc.setData(EMPTY_FC);
     vanguardSrc.setData(EMPTY_FC);
     return;
   }
 
-  const allFinished = growProgress >= 0.999;
-  const routeFeatures: GeoJSON.Feature[] = [];
   const vanguardFeatures: GeoJSON.Feature[] = [];
 
-  for (const curve of curves) {
-    if (!allFinished && growProgress < curve.startAt + 0.002) {
-      continue;
-    }
-
-    const span = Math.max(0.01, curve.endAt - curve.startAt);
-    const rawStep = allFinished
-      ? 1
-      : Math.max(0, Math.min(1, (growProgress - curve.startAt) / span));
-    const localGrow = allFinished ? 1 : 1 - Math.pow(1 - rawStep, 2.0);
-
-    const { sliced, headCoord, headBearing } = sliceCurveByProgress(
-      curve.coords,
-      Math.max(0.025, localGrow)
-    );
-
-    routeFeatures.push({
-      type: 'Feature',
-      properties: {
-        id: curve.id,
-        stepNo: curve.stepNo,
-        color: curve.color,
-        tactic: curve.tactic,
-        label: curve.label,
-      },
-      geometry: {
-        type: 'LineString',
-        coordinates: sliced,
-      },
-    });
-
-    if (localGrow < 0.998) {
-      vanguardFeatures.push({
-        type: 'Feature',
-        properties: {
-          id: curve.id,
-          color: curve.color,
-          bearing: headBearing,
-        },
-        geometry: {
-          type: 'Point',
-          coordinates: headCoord,
-        },
-      });
-    } else {
+  if (arrowMode === 'static' || cycleProgress >= 0.999) {
+    for (const curve of curves) {
       const { coordinates, bearing } = sampleAlongPath(curve.coords, 0.995);
       vanguardFeatures.push({
         type: 'Feature',
@@ -1905,12 +1847,47 @@ export function updateCampaignAnimationFrame(
         },
       });
     }
+    vanguardSrc.setData({
+      type: 'FeatureCollection',
+      features: vanguardFeatures,
+    });
+    return;
   }
 
-  routeSrc.setData({
-    type: 'FeatureCollection',
-    features: routeFeatures,
-  });
+  for (const curve of curves) {
+    if (cycleProgress < curve.startAt) {
+      continue;
+    }
+
+    const span = Math.max(0.01, curve.endAt - curve.startAt);
+    const rawStep = Math.max(
+      0,
+      Math.min(1, (cycleProgress - curve.startAt) / span)
+    );
+    const t =
+      rawStep >= 0.999
+        ? 0.995
+        : 0.02 +
+          0.975 *
+            (rawStep < 0.5
+              ? 2 * rawStep * rawStep
+              : 1 - Math.pow(-2 * rawStep + 2, 2) / 2);
+
+    const { coordinates, bearing } = sampleAlongPath(curve.coords, t);
+    vanguardFeatures.push({
+      type: 'Feature',
+      properties: {
+        id: curve.id,
+        color: curve.color,
+        bearing,
+      },
+      geometry: {
+        type: 'Point',
+        coordinates,
+      },
+    });
+  }
+
   vanguardSrc.setData({
     type: 'FeatureCollection',
     features: vanguardFeatures,

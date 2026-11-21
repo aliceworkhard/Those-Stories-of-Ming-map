@@ -6,6 +6,7 @@ import {
   ChevronLeft,
   ChevronRight,
   HelpCircle,
+  Navigation,
   Pause,
   Play,
   RotateCcw,
@@ -17,6 +18,7 @@ import { CAMPAIGN_MAP } from '@/lib/atlasData';
 import { subscribePlaybackTick } from '@/lib/playbackBus';
 import {
   useAtlasStore,
+  type CampaignArrowMode,
   type CampaignCameraMode,
 } from '@/store/useAtlasStore';
 
@@ -32,12 +34,14 @@ export default function CampaignPlayer() {
   const isCampaignPlaying = useAtlasStore((s) => s.isCampaignPlaying);
   const campaignSpeed = useAtlasStore((s) => s.campaignSpeed);
   const campaignCameraMode = useAtlasStore((s) => s.campaignCameraMode);
+  const campaignArrowMode = useAtlasStore((s) => s.campaignArrowMode);
   const setCampaignPhase = useAtlasStore((s) => s.setCampaignPhase);
   const nextCampaignPhase = useAtlasStore((s) => s.nextCampaignPhase);
   const prevCampaignPhase = useAtlasStore((s) => s.prevCampaignPhase);
   const setCampaignPlaying = useAtlasStore((s) => s.setCampaignPlaying);
   const setCampaignSpeed = useAtlasStore((s) => s.setCampaignSpeed);
   const setCampaignCameraMode = useAtlasStore((s) => s.setCampaignCameraMode);
+  const setCampaignArrowMode = useAtlasStore((s) => s.setCampaignArrowMode);
   const replayCurrentPhase = useAtlasStore((s) => s.replayCurrentPhase);
   const exitCampaign = useAtlasStore((s) => s.exitCampaign);
   const theme = useAtlasStore((s) => s.theme);
@@ -123,6 +127,7 @@ export default function CampaignPlayer() {
             （{phase.dateLabel}）
           </span>
 
+          {/* 1. Steady Camera Mode Selector ("跟随进军" vs "自由视角") */}
           <div
             className="flex items-center gap-0.5 p-0.5 rounded-lg bg-current/8 border border-current/12 text-[11px]"
             role="group"
@@ -142,6 +147,35 @@ export default function CampaignPlayer() {
                 className={`px-2 py-0.5 rounded-md font-medium transition cursor-pointer ${
                   campaignCameraMode === m.id
                     ? 'bg-[#B83B2A] text-amber-50 font-bold'
+                    : 'opacity-75 hover:opacity-100'
+                }`}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
+
+          {/* 2. Static vs Dynamic Arrowhead Toggle ("动态箭矢：仅箭头沿线移动，线静止" vs "静态箭矢") */}
+          <div
+            className="flex items-center gap-0.5 p-0.5 rounded-lg bg-current/8 border border-current/12 text-[11px]"
+            role="group"
+            aria-label="行军箭矢动态或静态模式"
+            title="切换行军箭头显示方式：动态箭矢（路线保持静止，仅箭头沿线推进） / 静态箭矢（路线与箭头均静止定格）"
+          >
+            <Navigation className="w-3 h-3 ml-1.5 mr-0.5 text-[#B83B2A] dark:text-amber-400 shrink-0" />
+            {(
+              [
+                { id: 'dynamic', label: '动态箭矢' },
+                { id: 'static', label: '静态箭矢' },
+              ] as { id: CampaignArrowMode; label: string }[]
+            ).map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => setCampaignArrowMode(m.id)}
+                className={`px-2 py-0.5 rounded-md font-medium transition cursor-pointer ${
+                  campaignArrowMode === m.id
+                    ? 'bg-amber-600 text-white font-bold'
                     : 'opacity-75 hover:opacity-100'
                 }`}
               >

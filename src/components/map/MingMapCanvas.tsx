@@ -20,10 +20,11 @@ import {
   buildPhaseRouteFeatures,
   buildPolityLabelGeoJSON,
   mountHistoricalLayers,
+  setCampaignStaticRoutesOnMap,
   setPlaceNameModeOnGpu,
   syncLayerVisibility,
-  updateCampaignAnimationFrame,
   updateCampaignAnnotationsOnMap,
+  updateCampaignArrowheadsOnMap,
   updateCausalArcsOnMap,
   updateCharacterOdysseyOnMap,
   updateEventsOnMap,
@@ -117,6 +118,7 @@ export default function MingMapCanvas() {
   const activePhaseIndex = useAtlasStore((s) => s.activePhaseIndex);
   const isCampaignPlaying = useAtlasStore((s) => s.isCampaignPlaying);
   const campaignCameraMode = useAtlasStore((s) => s.campaignCameraMode);
+  const campaignArrowMode = useAtlasStore((s) => s.campaignArrowMode);
   const campaignReplayNonce = useAtlasStore((s) => s.campaignReplayNonce);
   const activeCharacterId = useAtlasStore((s) => s.activeCharacterId);
   const activeCharacterStopIndex = useAtlasStore(
@@ -289,15 +291,29 @@ export default function MingMapCanvas() {
       causalIds: causalLinkedSetRef.current,
     });
 
-    const { preparedCurves } = buildPhaseRouteFeatures(
+    const { featureCollection, preparedCurves } = buildPhaseRouteFeatures(
       activeCampaign,
       activePhase
     );
     activeCurvesRef.current = preparedCurves;
 
+    // Route lines are ALWAYS 100% stationary at full length ("线不用动")!
+    setCampaignStaticRoutesOnMap(map, featureCollection);
+
     if (!activeCampaign) {
-      updateCampaignAnimationFrame(map, [], 0, false);
+      updateCampaignArrowheadsOnMap(map, [], 'static', 1);
       updateCampaignAnnotationsOnMap(map, [], null, 0, st.theme);
+    } else {
+      updateCampaignAnnotationsOnMap(
+        map,
+        preparedCurves,
+        activePhase,
+        preparedCurves.length,
+        st.theme
+      );
+      if (st.campaignArrowMode === 'static') {
+        updateCampaignArrowheadsOnMap(map, preparedCurves, 'static', 1);
+      }
     }
   };
 
@@ -455,16 +471,15 @@ export default function MingMapCanvas() {
       if (typeof document !== 'undefined' && document.hidden) return false;
       const st = useAtlasStore.getState();
       const routeCount = activeCurvesRef.current.length;
-      const growTotalMs = getRouteGrowDurationMs(routeCount) / st.campaignSpeed;
       const campaignWipePending =
         campaignHasWipeRef.current &&
         campaignWipeElapsedMsRef.current < CAMPAIGN_WIPE_DURATION_MS;
+      const dynamicArrowsActive =
+        st.campaignArrowMode === 'dynamic' && routeCount > 0;
       const campaignNeedsFrames =
         Boolean(st.activeCampaignId) &&
         routeCount > 0 &&
-        (st.isCampaignPlaying ||
-          routeGrowElapsedMsRef.current < growTotalMs ||
-          campaignWipePending);
+        (st.isCampaignPlaying || dynamicArrowsActive || campaignWipePending);
       const tourNeedsFrames = !st.activeCampaignId && st.isStoryTourPlaying;
       const eraWipeNeedsFrames = eraWipeRef.current !== null;
       return campaignNeedsFrames || tourNeedsFrames || eraWipeNeedsFrames;
@@ -486,20 +501,21 @@ export default function MingMapCanvas() {
       lastFrameTimeRef.current = now;
 
       const store = useAtlasStore.getState();
-      const minRouteInterval = store.perfMode === 'eco' ? 30 : 14;
+      const minArrowInterval = store.perfMode === 'eco' ? 30 : 16;
 
+      // Only territory polygon wipes mutate draped fill/line geometry!
       const hasMutatingGeoJSON =
         eraWipeRef.current !== null ||
         (Boolean(store.activeCampaignId) &&
-          (!routeGrowFinishedRef.current ||
-            (campaignHasWipeRef.current &&
-              campaignWipeElapsedMsRef.current < CAMPAIGN_WIPE_DURATION_MS)));
+          campaignHasWipeRef.current &&
+          campaignWipeElapsedMsRef.current > 0 &&
+          campaignWipeElapsedMsRef.current < CAMPAIGN_WIPE_DURATION_MS);
 
       if (currentMap && styleReadyRef.current) {
         syncTerrainDrapeSuspension(currentMap, hasMutatingGeoJSON);
       }
 
-      // --- MODE C: Era-to-Era Victory Brush Paint-Over (< 0.2ms simplified sweep!) ---
+      // --- MODE C: Local-Delta Era-to-Era Brush Paint-Over (ONLY changed border region!) ---
       if (
         currentMap &&
         styleReadyRef.current &&
@@ -531,7 +547,7 @@ export default function MingMapCanvas() {
         }
       }
 
-      // --- MODE A: Active Battlefield Campaign Replay (60fps Synced + Smooth Damped Camera!) ---
+      // --- MODE A: Battlefield Campaign ("线不用动，仅动态箭头在线上顺序移动" + Local Delta Wipe!) ---
       if (
         currentMap &&
         styleReadyRef.current &&
@@ -541,38 +557,58 @@ export default function MingMapCanvas() {
         const speed = store.campaignSpeed;
         const curves = activeCurvesRef.current;
         const growTotalMs = getRouteGrowDurationMs(curves.length) / speed;
+        const cycleWithHoldMs = growTotalMs + 680;
         const phaseTotalMs =
           getPhaseTotalDurationMs(curves.length, campaignHasWipeRef.current) /
           speed;
 
-        routeGrowElapsedMsRef.current = Math.min(
-          growTotalMs,
-          routeGrowElapsedMsRef.current + dt
-        );
+        if (store.campaignArrowMode === 'dynamic') {
+          routeGrowElapsedMsRef.current += dt;
+          // If phase auto-play is paused (`!isCampaignPlaying`), loop the arrowhead glide cleanly!
+          const effectiveElapsed = store.isCampaignPlaying
+            ? Math.min(growTotalMs, routeGrowElapsedMsRef.current)
+            : routeGrowElapsedMsRef.current % cycleWithHoldMs;
+          const cycleProgress = Math.min(1, effectiveElapsed / growTotalMs);
+
+          let nextUnlocked = 1;
+          for (const c of curves) {
+            if (cycleProgress >= c.startAt) {
+              nextUnlocked = Math.max(nextUnlocked, c.stepNo);
+            }
+          }
+          if (nextUnlocked !== unlockedStepsRef.current && !store.isCampaignPlaying) {
+            emitPlaybackTick({
+              mode: 'campaign',
+              percent: 0,
+              unlockedSteps: nextUnlocked,
+            });
+          }
+          unlockedStepsRef.current = nextUnlocked;
+
+          if (now - lastWebglFrameMsRef.current >= minArrowInterval) {
+            lastWebglFrameMsRef.current = now;
+            updateCampaignArrowheadsOnMap(
+              currentMap,
+              curves,
+              'dynamic',
+              cycleProgress
+            );
+          }
+        } else {
+          // `static` mode: advance timer silently for wipe/camera if playing, keep arrowheads 100% still!
+          routeGrowElapsedMsRef.current = Math.min(
+            growTotalMs,
+            routeGrowElapsedMsRef.current + dt
+          );
+          unlockedStepsRef.current = curves.length;
+        }
+
         const rawGrow = Math.min(
           1,
           routeGrowElapsedMsRef.current / growTotalMs
         );
 
-        // Unlock sequential step callouts (`① -> ② -> ③`) on GPU ONLY when count changes!
-        let nextUnlocked = 1;
-        for (const c of curves) {
-          if (rawGrow >= c.startAt - 0.005) {
-            nextUnlocked = Math.max(nextUnlocked, c.stepNo);
-          }
-        }
-        if (nextUnlocked !== unlockedStepsRef.current) {
-          unlockedStepsRef.current = nextUnlocked;
-          updateCampaignAnnotationsOnMap(
-            currentMap,
-            curves,
-            activePhaseRef.current,
-            nextUnlocked,
-            store.theme
-          );
-        }
-
-        // Progressive Victory Territory Paint-Over once attacking arrows strike (>= 62%)
+        // Progressive Local-Delta Territory Paint-Over once attacking sequence reaches >= 62%
         if (campaignHasWipeRef.current && rawGrow >= 0.62) {
           campaignWipeElapsedMsRef.current = Math.min(
             CAMPAIGN_WIPE_DURATION_MS,
@@ -599,19 +635,6 @@ export default function MingMapCanvas() {
           }
         }
 
-        // Display-synced route growth; freezes completely once `rawGrow >= 1` (`0` wasted setData!)
-        if (
-          !routeGrowFinishedRef.current &&
-          (now - lastWebglFrameMsRef.current >= minRouteInterval ||
-            rawGrow >= 0.999)
-        ) {
-          lastWebglFrameMsRef.current = now;
-          if (rawGrow >= 0.999) {
-            routeGrowFinishedRef.current = true;
-          }
-          updateCampaignAnimationFrame(currentMap, curves, rawGrow, false);
-        }
-
         if (store.isCampaignPlaying) {
           phaseElapsedMsRef.current += dt;
           const pct = Math.min(
@@ -619,14 +642,12 @@ export default function MingMapCanvas() {
             (phaseElapsedMsRef.current / phaseTotalMs) * 100
           );
 
-          // 60fps direct GPU progress ribbon update (ZERO React re-renders!)
           emitPlaybackTick({
             mode: 'campaign',
             percent: pct,
             unlockedSteps: unlockedStepsRef.current,
           });
 
-          // Smooth Exponentially Damped North-Up Follow Camera (ZERO snap & ZERO spinning!)
           if (
             store.perfMode !== 'eco' &&
             phaseElapsedMsRef.current >= OPENING_FLY_DURATION_MS &&
@@ -821,7 +842,7 @@ export default function MingMapCanvas() {
     startDirectorLoopRef.current();
   }, [selectedEventId, storyTourNonce, isStoryTourPlaying]);
 
-  // 6. Campaign Phase Opening Camera & Route Growth Reset
+  // 6. Campaign Phase Opening Camera & Stationary Route Setup
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !activeCampaign || !activePhase) return;
@@ -833,22 +854,32 @@ export default function MingMapCanvas() {
     campaignWipeElapsedMsRef.current = 0;
     userInteractedInPhaseRef.current = false;
 
-    const { preparedCurves } = buildPhaseRouteFeatures(
+    const { featureCollection, preparedCurves } = buildPhaseRouteFeatures(
       activeCampaign,
       activePhase
     );
     activeCurvesRef.current = preparedCurves;
 
     if (styleReadyRef.current) {
+      setCampaignStaticRoutesOnMap(map, featureCollection);
       updateCampaignAnnotationsOnMap(
         map,
         preparedCurves,
         activePhase,
-        1,
+        preparedCurves.length,
         theme
       );
+      if (campaignArrowMode === 'static') {
+        updateCampaignArrowheadsOnMap(map, preparedCurves, 'static', 1);
+      } else {
+        updateCampaignArrowheadsOnMap(map, preparedCurves, 'dynamic', 0);
+      }
     }
-    emitPlaybackTick({ mode: 'campaign', percent: 0, unlockedSteps: 1 });
+    emitPlaybackTick({
+      mode: 'campaign',
+      percent: 0,
+      unlockedSteps: campaignArrowMode === 'static' ? preparedCurves.length : 1,
+    });
 
     const firstCurve = preparedCurves[0];
     const startCenter: LngLat =
@@ -872,6 +903,24 @@ export default function MingMapCanvas() {
     startDirectorLoopRef.current();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeCampaignId, activePhaseIndex, campaignReplayNonce]);
+
+  // 6b. React Instantly When Toggling `[动态箭矢 | 静态箭矢]`
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !styleReadyRef.current || !activeCampaignId) return;
+    const curves = activeCurvesRef.current;
+    if (campaignArrowMode === 'static') {
+      updateCampaignArrowheadsOnMap(map, curves, 'static', 1);
+      emitPlaybackTick({
+        mode: 'campaign',
+        percent: 0,
+        unlockedSteps: curves.length,
+      });
+    } else {
+      routeGrowElapsedMsRef.current = 0;
+      startDirectorLoopRef.current();
+    }
+  }, [campaignArrowMode, activeCampaignId]);
 
   useEffect(() => {
     if (isCampaignPlaying) {
