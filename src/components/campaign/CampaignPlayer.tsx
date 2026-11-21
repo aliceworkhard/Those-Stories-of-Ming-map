@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ArrowRight,
   ChevronLeft,
@@ -14,7 +14,7 @@ import {
   X,
 } from 'lucide-react';
 import { CAMPAIGN_MAP } from '@/lib/atlasData';
-import { computeSequentialRouteWindows } from '@/engine/MingMapLayers';
+import { subscribePlaybackTick } from '@/lib/playbackBus';
 import {
   useAtlasStore,
   type CampaignCameraMode,
@@ -23,12 +23,15 @@ import {
 const CIRCLED_NUMS = ['①', '②', '③', '④', '⑤', '⑥'];
 
 export default function CampaignPlayer() {
+  const barRef = useRef<HTMLDivElement | null>(null);
+  const [unlockedSteps, setUnlockedSteps] = useState(1);
+
   const activeCampaignId = useAtlasStore((s) => s.activeCampaignId);
   const activePhaseIndex = useAtlasStore((s) => s.activePhaseIndex);
+  const campaignReplayNonce = useAtlasStore((s) => s.campaignReplayNonce);
   const isCampaignPlaying = useAtlasStore((s) => s.isCampaignPlaying);
   const campaignSpeed = useAtlasStore((s) => s.campaignSpeed);
   const campaignCameraMode = useAtlasStore((s) => s.campaignCameraMode);
-  const campaignPhaseProgress = useAtlasStore((s) => s.campaignPhaseProgress);
   const setCampaignPhase = useAtlasStore((s) => s.setCampaignPhase);
   const nextCampaignPhase = useAtlasStore((s) => s.nextCampaignPhase);
   const prevCampaignPhase = useAtlasStore((s) => s.prevCampaignPhase);
@@ -38,6 +41,29 @@ export default function CampaignPlayer() {
   const replayCurrentPhase = useAtlasStore((s) => s.replayCurrentPhase);
   const exitCampaign = useAtlasStore((s) => s.exitCampaign);
   const theme = useAtlasStore((s) => s.theme);
+
+  useEffect(() => {
+    setUnlockedSteps(1);
+    if (barRef.current) {
+      barRef.current.style.transform = 'scaleX(0)';
+    }
+  }, [activeCampaignId, activePhaseIndex, campaignReplayNonce]);
+
+  // Direct 60fps GPU `scaleX` progress bar + step unlock (ZERO per-frame React re-renders!)
+  useEffect(() => {
+    return subscribePlaybackTick((payload) => {
+      if (payload.mode !== 'campaign') return;
+      if (barRef.current) {
+        barRef.current.style.transform = `scaleX(${Math.max(
+          0,
+          Math.min(1, payload.percent / 100)
+        )})`;
+      }
+      setUnlockedSteps((prev) =>
+        prev === payload.unlockedSteps ? prev : payload.unlockedSteps
+      );
+    });
+  }, []);
 
   const campaign = activeCampaignId
     ? CAMPAIGN_MAP[activeCampaignId] ?? null
@@ -60,14 +86,10 @@ export default function CampaignPlayer() {
     campaign.factions.map((f) => [f.id, f.color])
   );
 
-  // Ordered sequential routes (`① -> ② -> ③`)
   const orderedRoutes = [...phase.routes]
     .map((r, idx) => ({ r, sortOrder: r.order ?? idx + 1 }))
     .sort((a, b) => a.sortOrder - b.sortOrder)
     .map((x) => x.r);
-  const windows = computeSequentialRouteWindows(orderedRoutes.length);
-  // Route growth occupies roughly the first 62% of total phase duration
-  const approxGrowRatio = Math.min(1, (campaignPhaseProgress / 100) / 0.62);
 
   return (
     <section
@@ -78,15 +100,16 @@ export default function CampaignPlayer() {
           : 'bg-[#FAF5E8]/98 border-amber-900/25 text-stone-900'
       }`}
     >
-      {/* Live Cinematic Phase Progress Ribbon along Top Edge */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-current/10">
+      {/* Live GPU-Composited Phase Progress Ribbon (`scaleX` -> 0 layout reflow!) */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-current/10 overflow-hidden">
         <div
-          style={{ width: `${campaignPhaseProgress}%` }}
-          className="h-full bg-gradient-to-r from-[#9E2318] via-amber-500 to-amber-300"
+          ref={barRef}
+          style={{ transform: 'scaleX(0)' }}
+          className="h-full w-full origin-left will-change-transform bg-gradient-to-r from-[#9E2318] via-amber-500 to-amber-300"
         />
       </div>
 
-      {/* Top Bar: Campaign Title + Steady Camera Mode Switch (NO spinning!) + Phase Pills + Exit */}
+      {/* Top Bar */}
       <div className="flex items-center justify-between gap-2 flex-wrap border-b border-current/12 pb-2.5 pt-0.5">
         <div className="flex items-center gap-2 min-w-0 flex-wrap">
           <span className="px-2 py-0.5 rounded bg-[#B83B2A] text-amber-50 text-[11px] font-bold flex items-center gap-1 shrink-0">
@@ -100,7 +123,6 @@ export default function CampaignPlayer() {
             （{phase.dateLabel}）
           </span>
 
-          {/* Steady Camera Mode Selector ("跟随进军" vs "自由视角", zero circular orbit!) */}
           <div
             className="flex items-center gap-0.5 p-0.5 rounded-lg bg-current/8 border border-current/12 text-[11px]"
             role="group"
@@ -134,9 +156,7 @@ export default function CampaignPlayer() {
             <button
               key={p.phaseNo}
               type="button"
-              onClick={() => {
-                setCampaignPhase(idx);
-              }}
+              onClick={() => setCampaignPhase(idx)}
               className={`w-6 h-6 rounded-full text-xs font-bold tabular-nums transition cursor-pointer ${
                 idx === activePhaseIndex
                   ? 'bg-[#B83B2A] text-amber-50 ring-2 ring-amber-400 scale-105'
@@ -168,22 +188,15 @@ export default function CampaignPlayer() {
           </div>
           <p className="text-xs leading-relaxed opacity-90">{phase.narrative}</p>
 
-          {/* Explicit Chronological Arrow Order Strip (`行军先后次序：① -> ② -> ③`) */}
           {orderedRoutes.length > 0 && (
             <div className="pt-1 flex items-center gap-1.5 flex-wrap text-[11px]">
               <span className="font-serif font-bold opacity-70 shrink-0">
                 箭矢先后次序：
               </span>
               {orderedRoutes.map((rt, idx) => {
-                const win = windows[idx] ?? { startAt: 0, endAt: 1 };
-                const started =
-                  campaignPhaseProgress === 0
-                    ? idx === 0
-                    : approxGrowRatio >= win.startAt;
-                const activeNow =
-                  isCampaignPlaying &&
-                  approxGrowRatio >= win.startAt &&
-                  approxGrowRatio <= win.endAt + 0.04;
+                const stepNo = idx + 1;
+                const started = stepNo <= unlockedSteps;
+                const activeNow = isCampaignPlaying && stepNo === unlockedSteps;
                 const c =
                   rt.type === 'supply'
                     ? '#D69E2E'
@@ -209,7 +222,7 @@ export default function CampaignPlayer() {
                         style={{ backgroundColor: c }}
                       />
                       <span>
-                        {CIRCLED_NUMS[idx] ?? idx + 1} {rt.label}
+                        {CIRCLED_NUMS[idx] ?? stepNo} {rt.label}
                       </span>
                     </span>
                   </React.Fragment>

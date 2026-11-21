@@ -23,7 +23,7 @@ export default function EventDirectoryPanel() {
   const selectedEventId = useAtlasStore((s) => s.selectedEventId);
   const activeCampaignId = useAtlasStore((s) => s.activeCampaignId);
   const isStoryTourPlaying = useAtlasStore((s) => s.isStoryTourPlaying);
-  const storyTourProgress = useAtlasStore((s) => s.storyTourProgress);
+  const hasTourSession = useAtlasStore((s) => s.storyTourProgress > 0);
   const isDirectoryOpen = useAtlasStore((s) => s.isDirectoryOpen);
   const setDirectoryOpen = useAtlasStore((s) => s.setDirectoryOpen);
   const selectEvent = useAtlasStore((s) => s.selectEvent);
@@ -33,7 +33,7 @@ export default function EventDirectoryPanel() {
 
   const isDark = theme === 'xuanmo';
   const isTourHudOpen =
-    !activeCampaignId && (isStoryTourPlaying || storyTourProgress > 0);
+    !activeCampaignId && (isStoryTourPlaying || hasTourSession);
 
   const counts = useMemo(
     () => ({

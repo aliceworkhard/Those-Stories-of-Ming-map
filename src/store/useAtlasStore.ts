@@ -14,7 +14,8 @@ import type {
   TerritoryPolityProps,
 } from '@/types/ming';
 
-export const ATLAS_PROGRESS_CACHE_KEY = 'ming_story_atlas_progress_v1';
+export const ATLAS_PROGRESS_CACHE_KEY = 'ming_story_atlas_progress_v2';
+const LEGACY_CACHE_KEY = 'ming_story_atlas_progress_v1';
 
 interface PersistedAtlasProgress {
   currentYear: number;
@@ -57,6 +58,7 @@ const STORY_OPENING_EVENT = ALL_EVENTS[0];
 interface AtlasState {
   hasHydratedCache: boolean;
   currentYear: number;
+  skipNextEraWipe: boolean;
   yearFilterMode: 'era-window' | 'all';
   selectedEventId: string | null;
   hoveredPolity: TerritoryPolityProps | null;
@@ -99,7 +101,8 @@ interface AtlasState {
   resetToStoryBeginning: () => void;
 
   // Core Actions
-  setCurrentYear: (year: number) => void;
+  setCurrentYear: (year: number, skipEraWipe?: boolean) => void;
+  clearSkipNextEraWipe: () => void;
   setYearFilterMode: (mode: 'era-window' | 'all') => void;
   selectEvent: (eventId: string | null, fly?: boolean) => void;
   setHoveredPolity: (polity: TerritoryPolityProps | null) => void;
@@ -157,6 +160,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   hasHydratedCache: false,
   // Uncached default: ALWAYS start at the very beginning of 《明朝那些事儿》 (1344 Chapter 1)!
   currentYear: STORY_OPENING_EVENT?.time.year ?? SITE_CONFIG.timeline.minYear,
+  skipNextEraWipe: false,
   yearFilterMode: 'all',
   selectedEventId: STORY_OPENING_EVENT?.id ?? null,
   hoveredPolity: null,
@@ -185,7 +189,8 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   isTocModalOpen: false,
   theme: 'xuanzhi',
   perfMode: 'balanced',
-  is3D: true,
+  // Default 2.5D stereo hillshade ON with 3D DEM Mesh OFF -> 0 Terrain Drape FBO overhead & silky 120fps!
+  is3D: false,
   placeNameMode: 'both',
   layers: {
     territories: true,
@@ -206,16 +211,23 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     const prevSeq = get().cameraCommand?.seq ?? 0;
 
     try {
-      const raw = window.localStorage.getItem(ATLAS_PROGRESS_CACHE_KEY);
+      const rawV2 = window.localStorage.getItem(ATLAS_PROGRESS_CACHE_KEY);
+      const rawLegacy = rawV2
+        ? null
+        : window.localStorage.getItem(LEGACY_CACHE_KEY);
+      const raw = rawV2 ?? rawLegacy;
       if (!raw) {
-        // No cache -> Start right at the opening chapter of the story!
         const startEvt = STORY_OPENING_EVENT;
         set({
           hasHydratedCache: true,
           currentYear: startEvt.time.year,
           selectedEventId: startEvt.id,
           cameraCommand: {
-            pose: { ...startEvt.camera, bearing: 0 },
+            pose: {
+              ...startEvt.camera,
+              pitch: 0,
+              bearing: 0,
+            },
             seq: prevSeq + 1,
           },
         });
@@ -243,9 +255,9 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
       const next3D =
         nextPerf === 'eco'
           ? false
-          : typeof parsed.is3D === 'boolean'
+          : rawV2 && typeof parsed.is3D === 'boolean'
           ? parsed.is3D
-          : true;
+          : false;
       const nextPlaceMode: PlaceNameMode =
         parsed.placeNameMode === 'ancient' || parsed.placeNameMode === 'modern'
           ? parsed.placeNameMode
@@ -261,7 +273,11 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
         is3D: next3D,
         placeNameMode: nextPlaceMode,
         cameraCommand: {
-          pose: { ...targetEvt.camera, bearing: 0 },
+          pose: {
+            ...targetEvt.camera,
+            pitch: next3D ? targetEvt.camera.pitch ?? 38 : 0,
+            bearing: 0,
+          },
           seq: prevSeq + 1,
         },
       });
@@ -272,7 +288,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
         currentYear: startEvt.time.year,
         selectedEventId: startEvt.id,
         cameraCommand: {
-          pose: { ...startEvt.camera, bearing: 0 },
+          pose: { ...startEvt.camera, pitch: 0, bearing: 0 },
           seq: prevSeq + 1,
         },
       });
@@ -307,14 +323,16 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     });
   },
 
-  setCurrentYear: (year) => {
+  setCurrentYear: (year, skipEraWipe = false) => {
     const clamped = Math.max(
       SITE_CONFIG.timeline.minYear,
       Math.min(SITE_CONFIG.timeline.extendedMaxYear, Math.round(year))
     );
-    set({ currentYear: clamped });
+    set({ currentYear: clamped, skipNextEraWipe: skipEraWipe });
     persistSnapshot(get());
   },
+
+  clearSkipNextEraWipe: () => set({ skipNextEraWipe: false }),
 
   setYearFilterMode: (mode) => set({ yearFilterMode: mode }),
 
@@ -331,10 +349,18 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
       selectedEventId: eventId,
       isDrawerOpen: state.isImmersionMode ? state.isDrawerOpen : true,
       currentYear: evt.time.year,
-      storyTourProgress: 0,
+      storyTourProgress:
+        state.isStoryTourPlaying || state.storyTourProgress > 0 ? 1 : 0,
       storyTourNonce: state.storyTourNonce + 1,
       cameraCommand: fly
-        ? { pose: { ...evt.camera, bearing: 0 }, seq: prevSeq + 1 }
+        ? {
+            pose: {
+              ...evt.camera,
+              pitch: state.is3D && state.perfMode !== 'eco' ? evt.camera.pitch ?? 38 : 0,
+              bearing: 0,
+            },
+            seq: prevSeq + 1,
+          }
         : state.cameraCommand,
     }));
     persistSnapshot(get());
@@ -393,18 +419,17 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     }
     const evt = EVENT_MAP[targetId] ?? ALL_EVENTS[0];
     const prevSeq = state.cameraCommand?.seq ?? 0;
-    const use3D = state.perfMode !== 'eco';
+    const use3D = state.is3D && state.perfMode !== 'eco';
 
     set({
       activeCampaignId: null,
       activeCharacterId: null,
       isCampaignPlaying: false,
       isStoryTourPlaying: true,
-      is3D: use3D,
       isDrawerOpen: !state.isImmersionMode,
       selectedEventId: evt.id,
       currentYear: evt.time.year,
-      storyTourProgress: 0,
+      storyTourProgress: 1,
       storyTourNonce: state.storyTourNonce + 1,
       cameraCommand: {
         pose: {
@@ -446,7 +471,6 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
       activeCampaignId: campaignId,
       activePhaseIndex: safeIdx,
       isCampaignPlaying: true,
-      is3D: state.perfMode !== 'eco',
       campaignCameraMode:
         state.campaignCameraMode === 'free' ? 'follow' : state.campaignCameraMode,
       campaignPhaseProgress: 0,
@@ -586,7 +610,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   },
 
   setPerfMode: (mode) => {
-    const next3D = mode !== 'eco';
+    const next3D = mode === 'ultra';
     const prevSeq = get().cameraCommand?.seq ?? 0;
     set((state) => ({
       perfMode: mode,

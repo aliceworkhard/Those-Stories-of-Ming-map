@@ -109,7 +109,8 @@ export default function TimelineBar() {
             value={clampedSliderYear}
             onChange={(e) => {
               const nextYr = Number(e.target.value);
-              setCurrentYear(nextYr);
+              // Skip heavy era-wipe animation while continuously dragging the range slider -> instant 120fps scrubbing!
+              setCurrentYear(nextYr, true);
               const exactEvt = ALL_EVENTS.find(
                 (ev) => ev.time.year === nextYr && ev.tier === 'macro'
               );

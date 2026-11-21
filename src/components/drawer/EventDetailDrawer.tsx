@@ -37,12 +37,15 @@ export default function EventDetailDrawer() {
   const selectEvent = useAtlasStore((s) => s.selectEvent);
   const stepStoryEvent = useAtlasStore((s) => s.stepStoryEvent);
   const isStoryTourPlaying = useAtlasStore((s) => s.isStoryTourPlaying);
-  const storyTourProgress = useAtlasStore((s) => s.storyTourProgress);
+  const hasTourSession = useAtlasStore((s) => s.storyTourProgress > 0);
   const startStoryTour = useAtlasStore((s) => s.startStoryTour);
   const setStoryTourPlaying = useAtlasStore((s) => s.setStoryTourPlaying);
   const startCampaign = useAtlasStore((s) => s.startCampaign);
   const exitCampaign = useAtlasStore((s) => s.exitCampaign);
   const activeCampaignId = useAtlasStore((s) => s.activeCampaignId);
+  const is3D = useAtlasStore((s) => s.is3D);
+  const perfMode = useAtlasStore((s) => s.perfMode);
+  const toggle3D = useAtlasStore((s) => s.toggle3D);
   const flyToCamera = useAtlasStore((s) => s.flyToCamera);
   const theme = useAtlasStore((s) => s.theme);
 
@@ -50,7 +53,7 @@ export default function EventDetailDrawer() {
   if (activeCampaignId) return null;
 
   const isDark = theme === 'xuanmo';
-  const isTourHudOpen = isStoryTourPlaying || storyTourProgress > 0;
+  const isTourHudOpen = isStoryTourPlaying || hasTourSession;
   const event = selectedEventId
     ? EVENT_MAP[selectedEventId] ?? ALL_EVENTS[0]
     : ALL_EVENTS[0];
@@ -193,9 +196,10 @@ export default function EventDetailDrawer() {
             {(event.why.terrainCamera || event.camera) && (
               <button
                 type="button"
-                onClick={() =>
-                  flyToCamera(event.why.terrainCamera ?? event.camera)
-                }
+                onClick={() => {
+                  if (!is3D && perfMode !== 'eco') toggle3D();
+                  flyToCamera(event.why.terrainCamera ?? event.camera);
+                }}
                 className="px-2 py-0.5 rounded-md bg-[#B83B2A]/15 hover:bg-[#B83B2A]/25 text-[#B83B2A] dark:text-amber-300 text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition"
               >
                 <Mountain className="w-3 h-3" />

@@ -1,6 +1,7 @@
 import type maplibregl from 'maplibre-gl';
 import type { GeoJSONSource } from 'maplibre-gl';
 import {
+  ALL_EVENTS,
   CHARACTER_MAP,
   EVENT_MAP,
   MING_INSTITUTIONS_GEOJSON,
@@ -27,6 +28,8 @@ const EMPTY_FC: GeoJSON.FeatureCollection = {
   type: 'FeatureCollection',
   features: [],
 };
+
+const CIRCLED_NUMS = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧'];
 
 export interface PreparedRouteCurve {
   id: string;
@@ -59,10 +62,6 @@ export function computeSequentialRouteWindows(
   });
 }
 
-/**
- * Extracts lightweight Point features from Territory polygons so Polity Dynasty Seals
- * render on the GPU with zero HTML DOM overhead!
- */
 export function buildPolityLabelGeoJSON(
   territories: GeoJSON.FeatureCollection
 ): GeoJSON.FeatureCollection {
@@ -95,9 +94,6 @@ export function buildPolityLabelGeoJSON(
   return { type: 'FeatureCollection', features };
 }
 
-/**
- * Builds curved historical causal arcs (`← 前因` & `深远后果 →`) for the currently selected event!
- */
 export function buildCausalArcGeoJSON(
   selectedEvent: HistoricalEvent | null | undefined
 ): GeoJSON.FeatureCollection {
@@ -111,12 +107,12 @@ export function buildCausalArcGeoJSON(
       prevEvt.location.coordinates[0] - selectedEvent.location.coordinates[0],
       prevEvt.location.coordinates[1] - selectedEvent.location.coordinates[1]
     );
-    if (d < 0.03) continue; // Co-located in same city; no spatial arc needed
+    if (d < 0.03) continue;
 
     const arcCoords = buildCurvedRouteCoords(
       [prevEvt.location.coordinates, selectedEvent.location.coordinates],
       'ambush',
-      24
+      20
     );
     features.push({
       type: 'Feature',
@@ -143,7 +139,7 @@ export function buildCausalArcGeoJSON(
     const arcCoords = buildCurvedRouteCoords(
       [selectedEvent.location.coordinates, nextEvt.location.coordinates],
       'assault',
-      24
+      20
     );
     features.push({
       type: 'Feature',
@@ -162,7 +158,8 @@ export function buildCausalArcGeoJSON(
 }
 
 /**
- * Installs all historical GIS, Landforms, Places, Causal Arcs & Campaign Route WebGL layers.
+ * Installs all historical GIS, Landforms, Places, Events, Causal Arcs & Campaign WebGL layers.
+ * 100% GPU-accelerated — ZERO HTML DOM `maplibregl.Marker` nodes!
  */
 export function mountHistoricalLayers(
   map: maplibregl.Map,
@@ -180,9 +177,6 @@ export function mountHistoricalLayers(
 
   // =========================================================================
   // 1. Sovereign Territories + Victory Brush Paint-Over Layer Stack
-  //    Placed BELOW `mountain-hillshade` & `vector-water-fill` so victorious
-  //    regimes cleanly paint/erase defeated territories while preserving 3D
-  //    mountain relief, lakes, coastlines & rivers on top!
   // =========================================================================
   if (!map.getSource('ming-territories')) {
     map.addSource('ming-territories', {
@@ -206,14 +200,13 @@ export function mountHistoricalLayers(
   }
 
   if (!map.getLayer('ming-territories-fill')) {
-    // Interior wash
     map.addLayer(
       {
         id: 'ming-territories-fill',
         type: 'fill',
         source: 'ming-territories',
         paint: {
-          'fill-antialias': true,
+          'fill-antialias': false,
           'fill-color': ['get', 'color'],
           'fill-opacity': [
             'match',
@@ -227,7 +220,6 @@ export function mountHistoricalLayers(
       beforeTerrainShadeId
     );
 
-    // Grand-Strategy Inner Frontier Band
     map.addLayer(
       {
         id: 'ming-territories-frontier-band',
@@ -244,26 +236,25 @@ export function mountHistoricalLayers(
             ['linear'],
             ['zoom'],
             3.5,
-            ['match', ['get', 'controlType'], 'tributary-garrison', 3.5, 6.5],
+            ['match', ['get', 'controlType'], 'tributary-garrison', 2.4, 4.5],
             7,
-            ['match', ['get', 'controlType'], 'tributary-garrison', 6, 12],
+            ['match', ['get', 'controlType'], 'tributary-garrison', 4.0, 8.0],
             10,
-            ['match', ['get', 'controlType'], 'tributary-garrison', 9, 16],
+            ['match', ['get', 'controlType'], 'tributary-garrison', 6.0, 11.0],
           ],
           'line-opacity': [
             'match',
             ['get', 'controlType'],
             'tributary-garrison',
-            isDark ? 0.2 : 0.16,
-            isDark ? 0.36 : 0.28,
+            isDark ? 0.18 : 0.15,
+            isDark ? 0.32 : 0.25,
           ],
-          'line-blur': 3.5,
+          'line-blur': 2.0,
         },
       },
       beforeTerrainShadeId
     );
 
-    // Crisp dark/parchment contrast casing on landward borders
     map.addLayer(
       {
         id: 'ming-territories-outline-casing',
@@ -275,20 +266,20 @@ export function mountHistoricalLayers(
         },
         paint: {
           'line-color': isDark
-            ? 'rgba(6, 10, 16, 0.75)'
+            ? 'rgba(6, 10, 16, 0.72)'
             : 'rgba(253, 249, 240, 0.72)',
           'line-width': [
             'interpolate',
             ['linear'],
             ['zoom'],
             3.5,
-            2.8,
+            2.4,
             7,
-            4.2,
+            3.6,
             10,
-            5.5,
+            4.8,
           ],
-          'line-opacity': 0.75,
+          'line-opacity': 0.72,
         },
       },
       beforeTerrainShadeId
@@ -312,9 +303,9 @@ export function mountHistoricalLayers(
             3.5,
             ['match', ['get', 'controlType'], 'tributary-garrison', 1.1, 1.8],
             7,
-            ['match', ['get', 'controlType'], 'tributary-garrison', 1.6, 2.7],
+            ['match', ['get', 'controlType'], 'tributary-garrison', 1.6, 2.6],
             10,
-            ['match', ['get', 'controlType'], 'tributary-garrison', 2.2, 3.6],
+            ['match', ['get', 'controlType'], 'tributary-garrison', 2.1, 3.4],
           ],
           'line-dasharray': [
             'match',
@@ -329,15 +320,14 @@ export function mountHistoricalLayers(
       beforeTerrainShadeId
     );
 
-    // --- VICTORY BRUSH PAINT-OVER ("胜利方版图涂抹覆盖层") ---
-    // Step A: Opaque base coat erases the defeated regime's color & old internal borders cleanly
+    // --- VICTORY BRUSH PAINT-OVER ("胜利方版图涂抹覆盖层" — Ultra-Light 3-Layer Stack) ---
     map.addLayer(
       {
         id: 'ming-territory-wipe-eraser',
         type: 'fill',
         source: 'ming-territory-wipe',
         paint: {
-          'fill-antialias': true,
+          'fill-antialias': false,
           'fill-color': isDark ? '#0F141D' : '#EFE6D4',
           'fill-opacity': 1.0,
         },
@@ -345,14 +335,13 @@ export function mountHistoricalLayers(
       beforeTerrainShadeId
     );
 
-    // Step B: Victor's sovereign wash painted over the conquered land
     map.addLayer(
       {
         id: 'ming-territory-wipe-fill',
         type: 'fill',
         source: 'ming-territory-wipe',
         paint: {
-          'fill-antialias': true,
+          'fill-antialias': false,
           'fill-color': ['get', 'color'],
           'fill-opacity': [
             'match',
@@ -361,23 +350,6 @@ export function mountHistoricalLayers(
             isDark ? 0.16 : 0.14,
             isDark ? 0.28 : 0.23,
           ],
-        },
-      },
-      beforeTerrainShadeId
-    );
-
-    // Step C: Victor's inner frontier band & sovereign border
-    map.addLayer(
-      {
-        id: 'ming-territory-wipe-band',
-        type: 'line',
-        source: 'ming-territory-wipe',
-        layout: { 'line-join': 'round', 'line-cap': 'round' },
-        paint: {
-          'line-color': ['get', 'color'],
-          'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 7, 8, 13],
-          'line-opacity': isDark ? 0.42 : 0.34,
-          'line-blur': 3.5,
         },
       },
       beforeTerrainShadeId
@@ -400,7 +372,6 @@ export function mountHistoricalLayers(
   }
 
   if (!map.getLayer('ming-territories-hover')) {
-    // Advancing Brush Rim Glow (visible above water/terrain while actively sweeping!)
     map.addLayer({
       id: 'ming-territory-wipe-front',
       type: 'line',
@@ -409,13 +380,11 @@ export function mountHistoricalLayers(
       layout: { 'line-join': 'round', 'line-cap': 'round' },
       paint: {
         'line-color': ['coalesce', ['get', 'frontColor'], '#F59E0B'],
-        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 3.2, 8, 5.4],
-        'line-opacity': 0.88,
-        'line-blur': 1.2,
+        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 3.0, 8, 5.0],
+        'line-opacity': 0.9,
       },
     });
 
-    // Interactive Hover Highlight Border
     map.addLayer({
       id: 'ming-territories-hover',
       type: 'line',
@@ -427,7 +396,7 @@ export function mountHistoricalLayers(
       },
       paint: {
         'line-color': isDark ? '#FCD34D' : '#9B1C1C',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 2.6, 8, 4.5],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 2.5, 8, 4.2],
         'line-opacity': 0.95,
       },
     });
@@ -463,11 +432,11 @@ export function mountHistoricalLayers(
           3.5,
           ['match', ['get', 'kind'], 'major-river', 2.4, 1.3],
           7,
-          ['match', ['get', 'kind'], 'major-river', 4.5, 2.5],
+          ['match', ['get', 'kind'], 'major-river', 4.4, 2.4],
           10,
-          ['match', ['get', 'kind'], 'major-river', 6.6, 3.8],
+          ['match', ['get', 'kind'], 'major-river', 6.4, 3.6],
         ],
-        'line-opacity': isDark ? 0.6 : 0.72,
+        'line-opacity': isDark ? 0.58 : 0.7,
       },
     });
 
@@ -498,7 +467,6 @@ export function mountHistoricalLayers(
       },
     });
 
-    // 1194-1855 Ming Duohuai Yellow River
     map.addLayer({
       id: 'ming-yellow-river-casing',
       type: 'line',
@@ -507,8 +475,8 @@ export function mountHistoricalLayers(
       layout: { 'line-join': 'round', 'line-cap': 'round' },
       paint: {
         'line-color': isDark ? '#1C1406' : '#FDF6E4',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 2.8, 7, 5.0, 10, 7.2],
-        'line-opacity': 0.8,
+        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 2.8, 7, 4.8, 10, 7.0],
+        'line-opacity': 0.78,
       },
     });
 
@@ -520,12 +488,11 @@ export function mountHistoricalLayers(
       layout: { 'line-join': 'round', 'line-cap': 'round' },
       paint: {
         'line-color': isDark ? '#EAB338' : '#B97316',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 1.6, 7, 3.0, 10, 4.5],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 1.6, 7, 3.0, 10, 4.4],
         'line-opacity': 0.96,
       },
     });
 
-    // Grand Canal
     map.addLayer({
       id: 'ming-grand-canal-line',
       type: 'line',
@@ -540,7 +507,6 @@ export function mountHistoricalLayers(
       },
     });
 
-    // Ming Great Wall (Double Crenellated Frontier Line)
     map.addLayer({
       id: 'ming-great-wall-casing',
       type: 'line',
@@ -549,8 +515,8 @@ export function mountHistoricalLayers(
       layout: { 'line-join': 'round', 'line-cap': 'round' },
       paint: {
         'line-color': isDark ? '#0B0F17' : '#EFE5D4',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 3.2, 7, 5.2, 10, 7.0],
-        'line-opacity': 0.75,
+        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 3.0, 7, 5.0, 10, 6.8],
+        'line-opacity': 0.72,
       },
     });
 
@@ -583,7 +549,7 @@ export function mountHistoricalLayers(
   }
 
   // =========================================================================
-  // 3. Classical Landforms (Mountain Ranges, Famous Lakes & Four Seas) — GPU!
+  // 3. Classical Landforms & Waterway Labels — 100% GPU!
   // =========================================================================
   if (!map.getSource('ming-landforms')) {
     map.addSource('ming-landforms', {
@@ -683,7 +649,6 @@ export function mountHistoricalLayers(
     });
   }
 
-  // Curved Waterway Labels
   if (!map.getLayer('ming-waterways-label')) {
     map.addLayer({
       id: 'ming-waterways-label',
@@ -725,7 +690,7 @@ export function mountHistoricalLayers(
   }
 
   // =========================================================================
-  // 4. Polity Dynasty Seal Titles & 40 Strategic Places — 100% GPU Symbol!
+  // 4. Polity Dynasty Seals & 106 Strategic Places — 100% GPU Symbol!
   // =========================================================================
   if (!map.getLayer('ming-polity-labels')) {
     map.addLayer({
@@ -886,9 +851,9 @@ export function mountHistoricalLayers(
           '#D97706',
           '#C53030',
         ],
-        'line-width': 7,
-        'line-opacity': isDark ? 0.34 : 0.24,
-        'line-blur': 3,
+        'line-width': 6,
+        'line-opacity': isDark ? 0.3 : 0.22,
+        'line-blur': 2.5,
       },
     });
 
@@ -965,7 +930,7 @@ export function mountHistoricalLayers(
   }
 
   // =========================================================================
-  // 6. Campaign War-Room Dynamic Marching Routes (4-Layer Composite Arrows)
+  // 6. Campaign War-Room Dynamic Marching Routes & 100% GPU Annotations
   // =========================================================================
   if (!map.getSource('campaign-routes')) {
     map.addSource('campaign-routes', {
@@ -981,6 +946,13 @@ export function mountHistoricalLayers(
     });
   }
 
+  if (!map.getSource('campaign-annotations')) {
+    map.addSource('campaign-annotations', {
+      type: 'geojson',
+      data: EMPTY_FC,
+    });
+  }
+
   if (!map.getLayer('campaign-routes-glow')) {
     map.addLayer({
       id: 'campaign-routes-glow',
@@ -989,13 +961,12 @@ export function mountHistoricalLayers(
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: {
         'line-color': ['get', 'color'],
-        'line-width': 12,
-        'line-opacity': isDark ? 0.34 : 0.25,
-        'line-blur': 4,
+        'line-width': 10,
+        'line-opacity': isDark ? 0.3 : 0.22,
+        'line-blur': 3,
       },
     });
 
-    // High-contrast military outer casing
     map.addLayer({
       id: 'campaign-routes-casing',
       type: 'line',
@@ -1004,7 +975,7 @@ export function mountHistoricalLayers(
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: {
         'line-color': isDark ? '#090D14' : '#FFFDF7',
-        'line-width': ['match', ['get', 'tactic'], 'naval', 7.4, 6.8],
+        'line-width': ['match', ['get', 'tactic'], 'naval', 7.2, 6.6],
         'line-opacity': 0.88,
       },
     });
@@ -1017,7 +988,7 @@ export function mountHistoricalLayers(
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: {
         'line-color': ['get', 'color'],
-        'line-width': ['match', ['get', 'tactic'], 'naval', 4.8, 4.4],
+        'line-width': ['match', ['get', 'tactic'], 'naval', 4.6, 4.2],
         'line-opacity': 0.96,
       },
     });
@@ -1034,7 +1005,7 @@ export function mountHistoricalLayers(
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: {
         'line-color': ['get', 'color'],
-        'line-width': ['match', ['get', 'tactic'], 'ambush', 4.0, 3.2],
+        'line-width': ['match', ['get', 'tactic'], 'ambush', 3.8, 3.2],
         'line-dasharray': [2.2, 1.4],
         'line-opacity': ['match', ['get', 'tactic'], 'retreat', 0.78, 0.96],
       },
@@ -1079,6 +1050,32 @@ export function mountHistoricalLayers(
         'icon-color': ['get', 'color'],
         'icon-halo-color': '#FFFDF7',
         'icon-halo-width': 2.6,
+      },
+    });
+
+    // GPU Battlefield Shockwaves & Sequential Step Callouts
+    map.addLayer({
+      id: 'campaign-annotations-symbol',
+      type: 'symbol',
+      source: 'campaign-annotations',
+      layout: {
+        'symbol-sort-key': ['get', 'sortKey'],
+        'icon-image': ['get', 'iconName'],
+        'icon-size': ['match', ['get', 'annoKind'], 'marker', 0.92, 0.01],
+        'icon-allow-overlap': true,
+        'text-field': ['get', 'labelText'],
+        'text-font': ['Noto Sans Regular'],
+        'text-size': ['match', ['get', 'annoKind'], 'marker', 12, 11.5],
+        'text-variable-anchor': ['bottom', 'top', 'right', 'left'],
+        'text-radial-offset': ['match', ['get', 'annoKind'], 'marker', 1.15, 0.3],
+        'text-padding': 4,
+      },
+      paint: {
+        'text-color': ['get', 'textColor'],
+        'text-halo-color': isDark
+          ? 'rgba(9, 13, 22, 0.96)'
+          : 'rgba(255, 253, 247, 0.97)',
+        'text-halo-width': 2.2,
       },
     });
   }
@@ -1212,9 +1209,9 @@ export function mountHistoricalLayers(
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: {
         'line-color': ['get', 'color'],
-        'line-width': 10,
-        'line-opacity': isDark ? 0.34 : 0.24,
-        'line-blur': 3.5,
+        'line-width': 8,
+        'line-opacity': isDark ? 0.3 : 0.22,
+        'line-blur': 2.5,
       },
     });
 
@@ -1226,7 +1223,7 @@ export function mountHistoricalLayers(
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: {
         'line-color': ['get', 'color'],
-        'line-width': 3.8,
+        'line-width': 3.6,
         'line-dasharray': [2.2, 1.3],
         'line-opacity': 0.95,
       },
@@ -1294,6 +1291,77 @@ export function mountHistoricalLayers(
       },
     });
   }
+
+  // =========================================================================
+  // 9. Historical Event Medallions (`战` / `史` / `轶`) — 100% Native WebGL!
+  //    Replaces 106 HTML DOM `Marker`s -> 0ms `move` cost & silky 120+ FPS!
+  // =========================================================================
+  if (!map.getSource('ming-events')) {
+    map.addSource('ming-events', {
+      type: 'geojson',
+      data: EMPTY_FC,
+    });
+  }
+
+  if (!map.getLayer('ming-events-symbol')) {
+    map.addLayer({
+      id: 'ming-events-tethers',
+      type: 'line',
+      source: 'ming-events',
+      filter: ['==', ['geometry-type'], 'LineString'],
+      layout: { 'line-cap': 'round' },
+      paint: {
+        'line-color': isDark ? '#F59E0B' : '#9B2C1D',
+        'line-width': 1.3,
+        'line-dasharray': [2, 2],
+        'line-opacity': 0.72,
+      },
+    });
+
+    map.addLayer({
+      id: 'ming-events-symbol',
+      type: 'symbol',
+      source: 'ming-events',
+      filter: ['==', ['geometry-type'], 'Point'],
+      layout: {
+        'symbol-sort-key': ['get', 'sortKey'],
+        'icon-image': ['get', 'iconName'],
+        'icon-size': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          3.8,
+          ['match', ['get', 'isEmphasized'], 1, 0.92, 0.8],
+          7.5,
+          ['match', ['get', 'isEmphasized'], 1, 1.04, 0.92],
+        ],
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': false,
+        'text-field': ['get', 'labelText'],
+        'text-font': ['Noto Sans Regular'],
+        'text-size': ['match', ['get', 'isSelected'], 1, 12.2, 11.0],
+        'text-variable-anchor': ['bottom', 'right', 'left', 'top'],
+        'text-radial-offset': 1.05,
+        'text-padding': 4,
+        'text-optional': true,
+      },
+      paint: {
+        'icon-opacity': ['get', 'iconOpacity'],
+        'text-color': [
+          'case',
+          ['==', ['get', 'isSelected'], 1],
+          isDark ? '#FEF08A' : '#8E1912',
+          ['==', ['get', 'isCausal'], 1],
+          isDark ? '#FDE68A' : '#92400E',
+          isDark ? '#F8FAFC' : '#1E1B18',
+        ],
+        'text-halo-color': isDark
+          ? 'rgba(11, 15, 23, 0.96)'
+          : 'rgba(252, 248, 238, 0.97)',
+        'text-halo-width': 2.1,
+      },
+    });
+  }
 }
 
 export function setPlaceNameModeOnGpu(
@@ -1327,8 +1395,6 @@ export function updateTerritoryWipeOnMap(
   src.setData(wipeGeoJSON ?? EMPTY_FC);
 }
 
-const CIRCLED_NUMS = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧'];
-
 export function updateCharacterOdysseyOnMap(
   map: maplibregl.Map,
   characterId: string | null,
@@ -1348,7 +1414,7 @@ export function updateCharacterOdysseyOnMap(
     const a = ch.stops[i].coordinates;
     const b = ch.stops[i + 1].coordinates;
     if (Math.hypot(a[0] - b[0], a[1] - b[1]) > 0.02) {
-      const seg = buildCurvedRouteCoords([a, b], 'assault', 20);
+      const seg = buildCurvedRouteCoords([a, b], 'assault', 18);
       features.push({
         type: 'Feature',
         properties: {
@@ -1383,6 +1449,253 @@ export function updateCharacterOdysseyOnMap(
   src.setData({ type: 'FeatureCollection', features });
 }
 
+/**
+ * Updates the 100% WebGL Event Medallions (`战` / `史` / `轶`) & Radial Co-Located Tethers!
+ * Runs ONLY when state (`currentYear` window, `selectedEventId`, `zoomBucket`, `layers`) changes —
+ * NEVER during pan/zoom/flyTo!
+ */
+export function updateEventsOnMap(
+  map: maplibregl.Map,
+  options: {
+    selectedEventId: string | null;
+    currentYear: number;
+    zoomBucket: 'far' | 'mid' | 'close';
+    macroVis: boolean;
+    allMicroVis: boolean;
+    inCampaign: boolean;
+    inOdyssey: boolean;
+    causalIds: Set<string>;
+  }
+): void {
+  const src = map.getSource('ming-events') as GeoJSONSource | undefined;
+  if (!src) return;
+
+  if (options.inCampaign) {
+    src.setData(EMPTY_FC);
+    return;
+  }
+
+  const showMicro = options.allMicroVis || options.zoomBucket !== 'far';
+
+  const visibleEvents = ALL_EVENTS.filter((evt) => {
+    const isSelected = evt.id === options.selectedEventId;
+    if (options.inOdyssey) return isSelected;
+    const isCausal = options.causalIds.has(evt.id);
+    if (isSelected || isCausal) return true;
+
+    const inEraWindow =
+      options.allMicroVis || Math.abs(evt.time.year - options.currentYear) <= 38;
+    if (!inEraWindow) return false;
+
+    return evt.tier === 'macro' ? options.macroVis : showMicro;
+  });
+
+  // Group co-located visible events (within 0.05 deg, e.g. Nanjing or Beijing) and spread onto a micro-ring
+  // scaled cleanly to current zoom Bucket so same-city seals never stack!
+  const spreadRadiusDeg =
+    options.zoomBucket === 'close'
+      ? 0.075
+      : options.zoomBucket === 'mid'
+      ? 0.14
+      : 0.24;
+
+  const assigned = new Uint8Array(visibleEvents.length);
+  const displayCoords: LngLat[] = visibleEvents.map(
+    (e) => e.location.coordinates
+  );
+  const features: GeoJSON.Feature[] = [];
+
+  for (let i = 0; i < visibleEvents.length; i++) {
+    if (assigned[i]) continue;
+    const cluster = [i];
+    assigned[i] = 1;
+    const [bx, by] = visibleEvents[i].location.coordinates;
+
+    for (let j = i + 1; j < visibleEvents.length; j++) {
+      if (assigned[j]) continue;
+      const [qx, qy] = visibleEvents[j].location.coordinates;
+      if (Math.hypot(bx - qx, by - qy) < 0.06) {
+        cluster.push(j);
+        assigned[j] = 1;
+      }
+    }
+
+    if (cluster.length > 1) {
+      const r =
+        cluster.length === 2
+          ? spreadRadiusDeg * 0.72
+          : cluster.length <= 4
+          ? spreadRadiusDeg
+          : spreadRadiusDeg * 1.25;
+      const cosLat = Math.max(0.55, Math.cos((by * Math.PI) / 180));
+
+      cluster.forEach((memberIdx, k) => {
+        const angle = -Math.PI / 2 + (2 * Math.PI * k) / cluster.length;
+        const ox = (r * Math.cos(angle)) / cosLat;
+        const oy = r * Math.sin(angle);
+        const orig = visibleEvents[memberIdx].location.coordinates;
+        const shifted: LngLat = [orig[0] + ox, orig[1] + oy];
+        displayCoords[memberIdx] = shifted;
+
+        features.push({
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'LineString',
+            coordinates: [orig, shifted],
+          },
+        });
+      });
+    }
+  }
+
+  visibleEvents.forEach((evt, idx) => {
+    const isSelected = evt.id === options.selectedEventId;
+    const isCausal = options.causalIds.has(evt.id);
+    const isMacro = evt.tier === 'macro';
+    const isBattle = Boolean(evt.campaignId);
+    const yearGap = Math.abs(evt.time.year - options.currentYear);
+    const isInEraFocus = yearGap <= 10;
+    const isEmphasized = isSelected || isCausal;
+
+    const iconName = isBattle
+      ? isEmphasized
+        ? 'event-seal-battle-active'
+        : 'event-seal-battle'
+      : isMacro
+      ? isEmphasized
+        ? 'event-seal-macro-active'
+        : 'event-seal-macro'
+      : isEmphasized
+      ? 'event-seal-micro-active'
+      : 'event-seal-micro';
+
+    const shouldShowText =
+      isSelected ||
+      isCausal ||
+      options.zoomBucket === 'close' ||
+      (options.zoomBucket === 'mid' && (isMacro || options.allMicroVis)) ||
+      (options.zoomBucket === 'far' && isMacro && isInEraFocus);
+
+    const shortTitle = `${evt.title.slice(0, 9)}${
+      evt.title.length > 9 ? '…' : ''
+    }`;
+
+    const sortKey = isSelected
+      ? 1
+      : isCausal
+      ? 2
+      : isMacro && isInEraFocus
+      ? 3
+      : isMacro
+      ? 4
+      : 5;
+
+    features.push({
+      type: 'Feature',
+      properties: {
+        eventId: evt.id,
+        iconName,
+        isSelected: isSelected ? 1 : 0,
+        isCausal: isCausal ? 1 : 0,
+        isEmphasized: isEmphasized ? 1 : 0,
+        iconOpacity: isSelected || isCausal || isInEraFocus ? 1.0 : 0.82,
+        labelText: shouldShowText ? `${evt.time.year} ${shortTitle}` : '',
+        sortKey,
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: displayCoords[idx],
+      },
+    });
+  });
+
+  src.setData({ type: 'FeatureCollection', features });
+}
+
+/**
+ * Updates 100% GPU Campaign Step Callouts (`① 主力 · ...`) & Battlefield Markers (`决` / `围` / `伏`).
+ * Called ONLY when unlocked step count changes (`0 -> 1 -> 2 -> 3`), never on every frame!
+ */
+export function updateCampaignAnnotationsOnMap(
+  map: maplibregl.Map,
+  curves: PreparedRouteCurve[],
+  phase: CampaignPhase | null,
+  unlockedStepCount: number,
+  theme: MapVisualTheme
+): void {
+  const src = map.getSource('campaign-annotations') as GeoJSONSource | undefined;
+  if (!src) return;
+
+  if (!phase || curves.length === 0) {
+    src.setData(EMPTY_FC);
+    return;
+  }
+
+  const isDark = theme === 'xuanmo';
+  const features: GeoJSON.Feature[] = [];
+
+  for (const bm of phase.markers) {
+    const iconName =
+      bm.kind === 'siege'
+        ? 'battle-marker-siege'
+        : bm.kind === 'cutoff'
+        ? 'battle-marker-cutoff'
+        : bm.kind === 'camp'
+        ? 'battle-marker-ambush'
+        : bm.kind === 'pass'
+        ? 'battle-marker-defense'
+        : 'battle-marker-decisive';
+
+    features.push({
+      type: 'Feature',
+      properties: {
+        annoKind: 'marker',
+        iconName,
+        labelText: bm.label,
+        textColor: isDark ? '#FEF08A' : '#7F1D1D',
+        sortKey: 1,
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: bm.coordinates,
+      },
+    });
+  }
+
+  for (const curve of curves) {
+    if (curve.stepNo > unlockedStepCount) continue;
+    const stepSymbol = CIRCLED_NUMS[curve.stepNo - 1] ?? `(${curve.stepNo})`;
+    const tacticTag =
+      curve.tactic === 'ambush'
+        ? '奇袭'
+        : curve.tactic === 'naval'
+        ? '水师'
+        : curve.tactic === 'retreat'
+        ? '败退'
+        : curve.tactic === 'supply'
+        ? '粮道'
+        : '主力';
+
+    features.push({
+      type: 'Feature',
+      properties: {
+        annoKind: 'callout',
+        iconName: 'place-city-dot',
+        labelText: `${stepSymbol}${tacticTag} · ${curve.label}`,
+        textColor: isDark ? '#F8FAFC' : '#1C1917',
+        sortKey: 2 + curve.stepNo,
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: curve.midPoint,
+      },
+    });
+  }
+
+  src.setData({ type: 'FeatureCollection', features });
+}
+
 export function syncLayerVisibility(
   map: maplibregl.Map,
   layers: LayerVisibility
@@ -1399,7 +1712,6 @@ export function syncLayerVisibility(
   setVis('ming-territories-outline', layers.territories);
   setVis('ming-territory-wipe-eraser', layers.territories);
   setVis('ming-territory-wipe-fill', layers.territories);
-  setVis('ming-territory-wipe-band', layers.territories);
   setVis('ming-territory-wipe-outline', layers.territories);
   setVis('ming-territory-wipe-front', layers.territories);
   setVis('ming-territories-hover', layers.territories);
@@ -1448,7 +1760,6 @@ export function buildPhaseRouteFeatures(
     campaign.factions.map((f) => [f.id, f.color])
   );
 
-  // Strictly sort routes by explicit chronological `order` (fallback to array index)
   const sortedRoutes = [...phase.routes]
     .map((r, idx) => ({ r, sortOrder: r.order ?? idx + 1 }))
     .sort((a, b) => a.sortOrder - b.sortOrder);
@@ -1508,18 +1819,17 @@ export function buildPhaseRouteFeatures(
 }
 
 /**
- * Strictly Sequential Step-by-Step Route & Spearhead Updater (`① -> ② -> ③`):
- * - Arrow `k` does NOT appear until `growProgress >= curve.startAt`!
- * - Arrow `k` advances `0% -> 100%` during `[curve.startAt, curve.endAt]` led by its spearhead.
- * - Completed arrows stay solidly rendered at `100%` while subsequent arrows advance in turn!
+ * Strictly Sequential Step-by-Step Route & Spearhead Updater (`① -> ② -> ③`).
+ * Once `growProgress >= 1` (`skipRouteGeometryUpdate`), stops ALL `setData()` calls (`0%` idle GPU/CPU!).
  */
 export function updateCampaignAnimationFrame(
   map: maplibregl.Map,
   curves: PreparedRouteCurve[],
   growProgress: number,
-  pulseProgress: number,
   skipRouteGeometryUpdate = false
 ): void {
+  if (skipRouteGeometryUpdate) return;
+
   const routeSrc = map.getSource('campaign-routes') as GeoJSONSource | undefined;
   const vanguardSrc = map.getSource('campaign-vanguards') as
     | GeoJSONSource
@@ -1536,10 +1846,9 @@ export function updateCampaignAnimationFrame(
   const routeFeatures: GeoJSON.Feature[] = [];
   const vanguardFeatures: GeoJSON.Feature[] = [];
 
-  curves.forEach((curve, idx) => {
-    // 1. Not started yet: keep completely hidden so chronological order is 100% clear!
+  for (const curve of curves) {
     if (!allFinished && growProgress < curve.startAt + 0.002) {
-      return;
+      continue;
     }
 
     const span = Math.max(0.01, curve.endAt - curve.startAt);
@@ -1548,66 +1857,40 @@ export function updateCampaignAnimationFrame(
       : Math.max(0, Math.min(1, (growProgress - curve.startAt) / span));
     const localGrow = allFinished ? 1 : 1 - Math.pow(1 - rawStep, 2.0);
 
-    if (!skipRouteGeometryUpdate) {
-      const { sliced, headCoord, headBearing } = sliceCurveByProgress(
-        curve.coords,
-        Math.max(0.025, localGrow)
-      );
+    const { sliced, headCoord, headBearing } = sliceCurveByProgress(
+      curve.coords,
+      Math.max(0.025, localGrow)
+    );
 
-      routeFeatures.push({
-        type: 'Feature',
-        properties: {
-          id: curve.id,
-          stepNo: curve.stepNo,
-          color: curve.color,
-          tactic: curve.tactic,
-          label: curve.label,
-        },
-        geometry: {
-          type: 'LineString',
-          coordinates: sliced,
-        },
-      });
+    routeFeatures.push({
+      type: 'Feature',
+      properties: {
+        id: curve.id,
+        stepNo: curve.stepNo,
+        color: curve.color,
+        tactic: curve.tactic,
+        label: curve.label,
+      },
+      geometry: {
+        type: 'LineString',
+        coordinates: sliced,
+      },
+    });
 
-      if (localGrow < 0.998) {
-        // Active advancing arrow gets its leading vanguard spearhead at the tip!
-        vanguardFeatures.push({
-          type: 'Feature',
-          properties: {
-            id: curve.id,
-            color: curve.color,
-            bearing: headBearing,
-          },
-          geometry: {
-            type: 'Point',
-            coordinates: headCoord,
-          },
-        });
-        return;
-      }
-    }
-
-    // Completed arrow: once all steps finish (or while next step runs), keep subtle flow spearhead
-    if (allFinished) {
-      const staggeredPulse = (pulseProgress + idx * 0.27) % 1;
-      const { coordinates, bearing } = sampleAlongPath(
-        curve.coords,
-        staggeredPulse
-      );
+    if (localGrow < 0.998) {
       vanguardFeatures.push({
         type: 'Feature',
         properties: {
           id: curve.id,
           color: curve.color,
-          bearing,
+          bearing: headBearing,
         },
         geometry: {
           type: 'Point',
-          coordinates,
+          coordinates: headCoord,
         },
       });
     } else {
-      // Pin spearhead cleanly at the destination of finished earlier step while step k+1 grows!
       const { coordinates, bearing } = sampleAlongPath(curve.coords, 0.995);
       vanguardFeatures.push({
         type: 'Feature',
@@ -1622,14 +1905,12 @@ export function updateCampaignAnimationFrame(
         },
       });
     }
-  });
-
-  if (!skipRouteGeometryUpdate) {
-    routeSrc.setData({
-      type: 'FeatureCollection',
-      features: routeFeatures,
-    });
   }
+
+  routeSrc.setData({
+    type: 'FeatureCollection',
+    features: routeFeatures,
+  });
   vanguardSrc.setData({
     type: 'FeatureCollection',
     features: vanguardFeatures,

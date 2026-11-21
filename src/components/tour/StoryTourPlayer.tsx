@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
@@ -11,11 +11,14 @@ import {
   X,
 } from 'lucide-react';
 import { ALL_EVENTS, CAMPAIGN_MAP, EVENT_MAP } from '@/lib/atlasData';
+import { subscribePlaybackTick } from '@/lib/playbackBus';
 import { useAtlasStore } from '@/store/useAtlasStore';
 
 export default function StoryTourPlayer() {
+  const barRef = useRef<HTMLDivElement | null>(null);
+
   const isStoryTourPlaying = useAtlasStore((s) => s.isStoryTourPlaying);
-  const storyTourProgress = useAtlasStore((s) => s.storyTourProgress);
+  const hasTourSession = useAtlasStore((s) => s.storyTourProgress > 0);
   const storyTourSpeed = useAtlasStore((s) => s.storyTourSpeed);
   const selectedEventId = useAtlasStore((s) => s.selectedEventId);
   const activeCampaignId = useAtlasStore((s) => s.activeCampaignId);
@@ -26,7 +29,19 @@ export default function StoryTourPlayer() {
   const startCampaign = useAtlasStore((s) => s.startCampaign);
   const theme = useAtlasStore((s) => s.theme);
 
-  if (activeCampaignId || (!isStoryTourPlaying && storyTourProgress === 0)) {
+  // Direct 60fps GPU `scaleX` progress bar update — ZERO React re-renders!
+  useEffect(() => {
+    return subscribePlaybackTick((payload) => {
+      if (payload.mode === 'tour' && barRef.current) {
+        barRef.current.style.transform = `scaleX(${Math.max(
+          0,
+          Math.min(1, payload.percent / 100)
+        )})`;
+      }
+    });
+  }, []);
+
+  if (activeCampaignId || (!isStoryTourPlaying && !hasTourSession)) {
     return null;
   }
 
@@ -46,11 +61,12 @@ export default function StoryTourPlayer() {
           : 'bg-[#FAF5E8]/98 border-amber-900/30 text-stone-900'
       }`}
     >
-      {/* Top Progress Bar */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-current/12">
+      {/* Top GPU-Composited Progress Bar (`scaleX` -> 0 layout reflow!) */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-current/12 overflow-hidden">
         <div
-          style={{ width: `${storyTourProgress}%` }}
-          className="h-full bg-gradient-to-r from-[#9E2318] via-amber-500 to-amber-300"
+          ref={barRef}
+          style={{ transform: 'scaleX(0)' }}
+          className="h-full w-full origin-left will-change-transform bg-gradient-to-r from-[#9E2318] via-amber-500 to-amber-300"
         />
       </div>
 

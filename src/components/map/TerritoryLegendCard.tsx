@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Brush, ChevronDown, ChevronUp, Map as MapIcon } from 'lucide-react';
 import { CAMPAIGN_MAP, getSnapshotForYear } from '@/lib/atlasData';
 import { buildCampaignTerritoryFrame } from '@/engine/territoryWipe';
@@ -22,69 +22,69 @@ export default function TerritoryLegendCard() {
   const layers = useAtlasStore((s) => s.layers);
   const isDirectoryOpen = useAtlasStore((s) => s.isDirectoryOpen);
   const isStoryTourPlaying = useAtlasStore((s) => s.isStoryTourPlaying);
-  const storyTourProgress = useAtlasStore((s) => s.storyTourProgress);
+  const hasTourSession = useAtlasStore((s) => s.storyTourProgress > 0);
   const isImmersionMode = useAtlasStore((s) => s.isImmersionMode);
   const theme = useAtlasStore((s) => s.theme);
 
   const isDark = theme === 'xuanmo';
   const snapshot = getSnapshotForYear(currentYear);
 
-  // Use campaign base territories when in Campaign mode so legend always matches map colors!
-  const sourceGeoJSON = activeCampaignId
-    ? buildCampaignTerritoryFrame(activeCampaignId, activePhaseIndex, 0)
-        .baseGeoJSON
-    : snapshot.geojson;
+  const polities = useMemo(() => {
+    const sourceGeoJSON = activeCampaignId
+      ? buildCampaignTerritoryFrame(activeCampaignId, activePhaseIndex, 0)
+          .baseGeoJSON
+      : snapshot.geojson;
 
-  const activeCampaign = activeCampaignId
-    ? CAMPAIGN_MAP[activeCampaignId] ?? null
-    : null;
+    const activeCampaign = activeCampaignId
+      ? CAMPAIGN_MAP[activeCampaignId] ?? null
+      : null;
 
-  // Collect ALL distinct polities on the current map (zero truncation!)
-  const seen = new Set<string>();
-  const polities: TerritoryPolityProps[] = [];
+    const seen = new Set<string>();
+    const list: TerritoryPolityProps[] = [];
 
-  for (const f of sourceGeoJSON.features) {
-    const p = (f.properties ?? {}) as Record<string, unknown>;
-    const id = String(p.polityId ?? '');
-    if (!id || seen.has(id)) continue;
-    seen.add(id);
-    polities.push({
-      polityId: id,
-      polityName: String(p.polityName || p.shortLabel || id),
-      shortLabel: String(p.shortLabel || p.polityName || id),
-      ruler: String(p.ruler || ''),
-      controlType:
-        p.controlType === 'tributary-garrison'
-          ? 'tributary-garrison'
-          : 'direct',
-      color: String(p.color || '#B83B2A'),
-      labelCoord: [0, 0],
-      capitalName: String(p.capitalName || ''),
-      changeReason: String(p.changeReason || ''),
-    });
-  }
+    for (const f of sourceGeoJSON.features) {
+      const p = (f.properties ?? {}) as Record<string, unknown>;
+      const id = String(p.polityId ?? '');
+      if (!id || seen.has(id)) continue;
+      seen.add(id);
+      list.push({
+        polityId: id,
+        polityName: String(p.polityName || p.shortLabel || id),
+        shortLabel: String(p.shortLabel || p.polityName || id),
+        ruler: String(p.ruler || ''),
+        controlType:
+          p.controlType === 'tributary-garrison'
+            ? 'tributary-garrison'
+            : 'direct',
+        color: String(p.color || '#B83B2A'),
+        labelCoord: [0, 0],
+        capitalName: String(p.capitalName || ''),
+        changeReason: String(p.changeReason || ''),
+      });
+    }
 
-  // Also append any campaign faction whose color isn't in `polities` (e.g. Yan army / Zhang Zhou)
-  if (activeCampaign) {
-    for (const fac of activeCampaign.factions) {
-      const alreadyHasColor = polities.some(
-        (p) => p.color.toLowerCase() === fac.color.toLowerCase()
-      );
-      if (!alreadyHasColor) {
-        polities.unshift({
-          polityId: fac.id,
-          polityName: fac.name,
-          shortLabel: fac.name,
-          ruler: fac.leader,
-          controlType: 'direct',
-          color: fac.color,
-          labelCoord: [0, 0],
-          capitalName: '战役参战主力',
-          changeReason: activeCampaign.summary,
-        });
+    if (activeCampaign) {
+      for (const fac of activeCampaign.factions) {
+        const alreadyHasColor = list.some(
+          (p) => p.color.toLowerCase() === fac.color.toLowerCase()
+        );
+        if (!alreadyHasColor) {
+          list.unshift({
+            polityId: fac.id,
+            polityName: fac.name,
+            shortLabel: fac.name,
+            ruler: fac.leader,
+            controlType: 'direct',
+            color: fac.color,
+            labelCoord: [0, 0],
+            capitalName: '战役参战主力',
+            changeReason: activeCampaign.summary,
+          });
+        }
       }
     }
-  }
+    return list;
+  }, [activeCampaignId, activePhaseIndex, snapshot.geojson]);
 
   const inspectedPolity = hoveredPolity ?? pinnedPolity;
 
@@ -94,7 +94,7 @@ export default function TerritoryLegendCard() {
 
   const isTourHudOpen =
     !activeCampaignId &&
-    (isStoryTourPlaying || storyTourProgress > 0 || Boolean(activeCharacterId));
+    (isStoryTourPlaying || hasTourSession || Boolean(activeCharacterId));
 
   // Position smartly so it NEVER overlaps sidebars, CampaignPlayer, or StoryTourPlayer!
   const positionClass = activeCampaignId
