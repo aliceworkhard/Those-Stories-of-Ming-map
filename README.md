@@ -104,27 +104,30 @@ npm run dev
 
 | 命令 | 用途说明 |
 | :--- | :--- |
-| `npm run dev` | 启动本地热更新开发服务器 |
-| `npm run validate:data` | 校验历史事件、战役路线、古今地名、全书 157 章目录锚点交叉引用与版权合规红线 |
-| `npm run check` | 运行全量数据校验 + TypeScript 严格类型检查 |
+| `npm run dev` | 启动本地热更新开发服务器（含 `/dev/territory-painter` 擦写工坊） |
+| `npm run validate:data` | 校验全量事件、战役、古今地名、157 章目录交叉引用与版权隔离红线（10 项套件） |
+| `npm test` | 运行全史年份连续性、纯局部布尔差分疆域与十二大战役/人物足迹回归测试套件 |
+| `npm run check` | 一键运行全量数据校验 + TypeScript 严格类型检查 + 回归测试 |
 | `npm run build` | 构建生产级静态/SSR 优化产物 |
 
 ### 独立服务器 + 自定义域名 Docker 一键部署 (`deploy/`)
 
-内置面向云服务器（2C2G 即可流畅承载）与自定义域名的容器化方案，由 Caddy 自动签发并续期免费 HTTPS 证书：
+内置面向云服务器（2C2G 即可流畅承载）与自定义域名的容器化方案，由 Caddy 自动签发并续期免费 HTTPS 证书（完整三分钟上线教程详见 [`deploy/README.md`](./deploy/README.md)）：
 
 ```bash
 cd deploy
-DOMAIN=mingmap.example.com docker compose up -d --build
+cp .env.example .env      # 修改 DOMAIN=你的域名（纯 IP 测试保持 DOMAIN=:80）
+sh ./deploy.sh
 ```
 
 ---
 
 ## 项目文档与贡献指南
 
-- [系统架构与三维运镜/防重叠引擎说明 (`docs/ARCHITECTURE.md`)](./docs/ARCHITECTURE.md)
-- [开放历史地理与事件数据契约 (`data/schemas/README.md`)](./data/schemas/README.md)
-- [社区贡献指南：如何提交新的《明朝那些事儿》事件或战役路线 (`docs/CONTRIBUTING.md`)](./docs/CONTRIBUTING.md)
+- [系统架构与纯 WebGL 局部差分渲染引擎说明 (`docs/ARCHITECTURE.md`)](./docs/ARCHITECTURE.md)
+- [开放历史地理与五维事件数据契约 (`data/schemas/README.md`)](./data/schemas/README.md)
+- [社区贡献指南：零代码补充历史事件、画笔擦写疆域与提交流程 (`docs/CONTRIBUTING.md`)](./docs/CONTRIBUTING.md)
+- [独立云服务器 + 专属域名 HTTPS 生产环境部署手册 (`deploy/README.md`)](./deploy/README.md)
 
 ---
 

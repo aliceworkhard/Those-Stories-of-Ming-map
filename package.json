@@ -1,6 +1,6 @@
 {
   "name": "those-stories-of-ming-map",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "《明途 · 舆图纪》— 以《明朝那些事儿》三百年叙事为脉络的开源三维交互式历史地图、战役行军推演与历史因果图谱系统",
   "license": "MIT",
@@ -10,7 +10,8 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "validate:data": "node scripts/validate-data.mjs",
-    "check": "npm run validate:data && npm run typecheck"
+    "test": "node scripts/test-atlas-engine.mjs",
+    "check": "npm run validate:data && npm run typecheck && npm test"
   },
   "dependencies": {
     "@turf/turf": "^7.2.0",

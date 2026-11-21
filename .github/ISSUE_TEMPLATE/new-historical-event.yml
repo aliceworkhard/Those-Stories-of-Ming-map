@@ -1,0 +1,41 @@
+name: 📜 提议新增《明朝那些事儿》历史事件或人物轶事
+description: 无需写代码，提供章节、时间地点与“为啥”线索，帮助补充新的大小事件或人物足迹
+title: "[Event]: "
+labels: ["historical-data", "enhancement"]
+body:
+  - type: input
+    id: event_title
+    attributes:
+      label: 事件或轶事名称
+      placeholder: 例如：1517年 王阳明南赣剿匪推行十家牌法
+    validations:
+      required: true
+  - type: dropdown
+    id: tier
+    attributes:
+      label: 事件层级
+      options:
+        - 定鼎国运 · 历史大事件 (macro)
+        - 大明烟火 · 人物奇闻轶事 (micro)
+        - 风云人物一生足迹驿站 (character-odyssey)
+    validations:
+      required: true
+  - type: input
+    id: time_and_place
+    attributes:
+      label: 发生年份与古今地点
+      placeholder: 例如：正德十二年（1517年） · 南安府横水（今江西崇义县）
+    validations:
+      required: true
+  - type: input
+    id: book_chapter
+    attributes:
+      label: 对应《明朝那些事儿》哪一部哪一章？
+      placeholder: 例如：第叁部 · 朱厚照篇 · 第十五章
+  - type: textarea
+    id: why_notes
+    attributes:
+      label: 事件梗概与「为啥会这样？」地理/制度线索（请用自己的话简述，勿整段粘贴原书原文）
+      placeholder: 简述事件经过、背后的山川地形因素或明代制度背景，以及《明史》考据线索...
+    validations:
+      required: true

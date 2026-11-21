@@ -1,4 +1,4 @@
-name: CI — Validate Data, Typecheck & Build
+name: CI — Validate Data, Typecheck, Regression Tests & Build
 
 on:
   push:
@@ -28,5 +28,13 @@ jobs:
       - name: TypeScript strict check
         run: npm run typecheck
 
-      - name: Production build
+      - name: Engine & local-delta geometry regression tests
+        run: npm test
+
+      - name: Production build (Vercel / Static)
+        run: npm run build
+
+      - name: Verify Docker standalone server output
+        env:
+          DOCKER_STANDALONE: '1'
         run: npm run build

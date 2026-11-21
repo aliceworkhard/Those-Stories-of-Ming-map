@@ -1,12 +1,22 @@
-# Replace :80 with your purchased domain in December (e.g., mingmap.yourdomain.com)
-# Caddy will automatically provision and renew free Let's Encrypt HTTPS certificates!
+# ============================================================================
+# Caddy Production Reverse Proxy + Automatic Free HTTPS (Let's Encrypt / ZeroSSL)
+# - Local / IP-only test: defaults to `:80` (HTTP) when DOMAIN is unset
+# - Custom domain mode: set `DOMAIN=ming.yourdomain.com` in `deploy/.env`
+# ============================================================================
 {$DOMAIN::80} {
   encode zstd gzip
 
-  @staticGeo {
-    path /geo/* *.topo.json *.geojson *.pbf
+  header {
+    X-Content-Type-Options "nosniff"
+    X-Frame-Options "SAMEORIGIN"
+    Referrer-Policy "strict-origin-when-cross-origin"
+    -Server
   }
-  header @staticGeo Cache-Control "public, max-age=604800, immutable"
+
+  @immutableStatic {
+    path /_next/static/* /docs/* *.woff2
+  }
+  header @immutableStatic Cache-Control "public, max-age=31536000, immutable"
 
   reverse_proxy ming-atlas-web:3000
 }
