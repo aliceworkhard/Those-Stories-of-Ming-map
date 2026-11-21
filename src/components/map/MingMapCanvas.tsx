@@ -25,6 +25,7 @@ import {
   syncLayerVisibility,
   updateCampaignAnimationFrame,
   updateCausalArcsOnMap,
+  updateCharacterOdysseyOnMap,
   updateTerritoryWipeOnMap,
   type PreparedRouteCurve,
 } from '@/engine/MingMapLayers';
@@ -260,6 +261,10 @@ export default function MingMapCanvas() {
   const campaignSpeed = useAtlasStore((s) => s.campaignSpeed);
   const campaignCameraMode = useAtlasStore((s) => s.campaignCameraMode);
   const campaignReplayNonce = useAtlasStore((s) => s.campaignReplayNonce);
+  const activeCharacterId = useAtlasStore((s) => s.activeCharacterId);
+  const activeCharacterStopIndex = useAtlasStore(
+    (s) => s.activeCharacterStopIndex
+  );
   const theme = useAtlasStore((s) => s.theme);
   const perfMode = useAtlasStore((s) => s.perfMode);
   const is3D = useAtlasStore((s) => s.is3D);
@@ -675,7 +680,13 @@ export default function MingMapCanvas() {
     updateCausalArcsOnMap(
       map,
       activeEvt,
-      st.layers.causalArcs && !st.activeCampaignId
+      st.layers.causalArcs && !st.activeCampaignId && !st.activeCharacterId
+    );
+
+    updateCharacterOdysseyOnMap(
+      map,
+      st.activeCampaignId ? null : st.activeCharacterId,
+      st.activeCharacterStopIndex
     );
 
     const { preparedCurves } = buildPhaseRouteFeatures(
@@ -857,14 +868,21 @@ export default function MingMapCanvas() {
       const isBattle = Boolean(evt.campaignId);
       const isCausal = causalIds.has(evt.id);
 
+      const isSelected = evt.id === selectedId;
+      const inEraWindow = allMicroVis || Math.abs(evt.time.year - year) <= 38;
+      const inOdyssey = Boolean(useAtlasStore.getState().activeCharacterId);
+
       const visible =
         !inCampaign &&
-        ((isMacro && macroVis) || (!isMacro && (showMicro || isCausal)));
+        (inOdyssey
+          ? isSelected
+          : isSelected ||
+            isCausal ||
+            (inEraWindow && ((isMacro && macroVis) || (!isMacro && showMicro))));
       rec.visible = visible;
       root.style.display = visible ? 'block' : 'none';
       if (!visible) return;
 
-      const isSelected = evt.id === selectedId;
       const isNearYear = Math.abs(evt.time.year - year) <= 8;
       if (!rec.hovered) {
         root.style.zIndex = isSelected
@@ -1406,6 +1424,8 @@ export default function MingMapCanvas() {
     layers,
     activeCampaignId,
     activePhaseIndex,
+    activeCharacterId,
+    activeCharacterStopIndex,
     selectedEventId,
   ]);
 
@@ -1492,6 +1512,7 @@ export default function MingMapCanvas() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     activeCampaign,
+    activeCharacterId,
     causalLinkedSet,
     currentYear,
     layers.macroEvents,

@@ -1,0 +1,274 @@
+{
+  "id": "cmp-1592-imjin-korea",
+  "title": "万历抗倭援朝 · 平壤大捷与露梁海全胜",
+  "subtitle": "义州哭秦庭 · 李如松火器破平壤 · 邓子龙李舜臣血染露梁海（1592—1598）",
+  "yearRange": [1592, 1598],
+  "chapterIds": [
+    "v5-zhu-yijun-ch13",
+    "v5-zhu-yijun-ch14",
+    "v5-zhu-yijun-ch15",
+    "v5-zhu-yijun-ch16",
+    "v5-zhu-yijun-ch18",
+    "v5-zhu-yijun-ch19"
+  ],
+  "summary": "万历二十年（1592）春，统一日本的关白丰臣秀吉发十五万精兵渡海闪击朝鲜，欲借道进攻大明。两月内朝鲜八道沦陷，宣祖逃至鸭绿江畔义州痛哭求救。平日倦政的万历皇帝毅然拍板出兵“御敌于国门之外”：首阶段李如松率四万辽东、戚家南北精兵一日轰克平壤、焚龙山粮仓收复汉城；二阶段麻贵、刘綎陆战击退蔚山泗川之敌，七旬老帅邓子龙与朝鲜名将李舜臣于露梁海峡全歼日军殿后舰队，彻底粉碎丰臣秀吉大陆迷梦！",
+  "strategicOutcome": "保全藩属朝鲜两百年和平，重创丰臣政权使其迅速覆亡于关原合战；但七年援朝亦耗银近八百万两并抽空辽东精锐，使建州努尔哈赤乘机坐大。",
+  "factions": [
+    {
+      "id": "ming-choson-allies",
+      "name": "大明援朝东征军与朝鲜水师",
+      "leader": "宋应昌 · 李如松 · 麻贵 · 邓子龙 · 李舜臣",
+      "color": "#B83B2A",
+      "badgeText": "明"
+    },
+    {
+      "id": "toyotomi-japan",
+      "name": "丰臣秀吉侵朝日本军",
+      "leader": "丰臣秀吉 · 小西行长 · 加藤清正 · 岛津义弘",
+      "color": "#374151",
+      "badgeText": "倭"
+    }
+  ],
+  "phases": [
+    {
+      "phaseNo": 1,
+      "title": "第一幕：唇亡齿寒 · 倭军连陷汉城平壤，万历拍板跨江抗援",
+      "dateLabel": "万历二十年（1592）四月—十二月",
+      "year": 1592,
+      "narrative": "经历百年战国厮杀的日本大军配备大量铁炮（鸟铳），由小西行长、加藤清正率领自釜山登陆，二十天攻陷王京汉城、六月占领平壤，朝鲜国王李昖逃至鸭绿江边义州请求举国内附。副总兵祖承训三千轻骑冒雨初探平壤中伏挫败，朝野震动；万历帝与兵部尚书石星、经略宋应昌深明“朝鲜乃辽东屏蔽，弃朝鲜则京师震动”，待宁夏哱拜之乱刚平，立即调集四万三千南北百战精锐踏冰渡过鸭绿江！",
+      "whyKeyPoint": "为啥万历皇帝宁可掏空内帑也要出兵救朝鲜？若日军占领鸭绿江口与大同江水港，顺风一天便可直插辽东甚至天津海口；在朝鲜半岛歼敌，成本远低于在九边本土迎敌！",
+      "camera": {
+        "center": [125.8, 37.8],
+        "zoom": 5.8,
+        "pitch": 38,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-choson-allies",
+        "leftLabel": "集结渡江之 43,000 明军精锐",
+        "leftPower": 48,
+        "rightFactionId": "toyotomi-japan",
+        "rightLabel": "席卷八道之 15 万侵朝日军",
+        "rightPower": 52
+      },
+      "routes": [
+        {
+          "id": "r-im1-japan-blitz",
+          "order": 1,
+          "factionId": "toyotomi-japan",
+          "type": "assault",
+          "label": "小西行长、加藤清正自釜山登陆，两月连陷汉城与平壤",
+          "commander": "小西行长 · 加藤清正",
+          "coordinates": [
+            [129.04, 35.18],
+            [126.98, 37.57],
+            [125.75, 39.02]
+          ]
+        },
+        {
+          "id": "r-im1-ming-cross-yalu",
+          "order": 2,
+          "factionId": "ming-choson-allies",
+          "type": "assault",
+          "label": "提督李如松统四万辽东铁骑与浙兵火器营自辽阳渡鸭绿江入义州",
+          "commander": "李如松 · 吴惟忠 · 骆尚志",
+          "coordinates": [
+            [123.17, 41.27],
+            [124.39, 40.12],
+            [125.15, 39.65]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-im1-yizhou",
+          "kind": "pass",
+          "label": "鸭绿江义州誓师渡江",
+          "subLabel": "“义武奋扬，跳梁者虽强必戮！”",
+          "coordinates": [124.39, 40.12],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 2,
+      "title": "第二幕：雷霆平壤 · 大将军炮轰塌七星门，一日击溃第一军团",
+      "dateLabel": "万历二十一年（1593）正月初六—初八",
+      "year": 1593,
+      "narrative": "正月初八黎明，李如松四万明军将小西行长一万八千最精锐日军团团围困于平壤坚城。日军依仗密集铁炮射击死守，李如松调上数百门大将军炮、佛朗机与虎蹲炮、毒火神箭万炮齐发，将平壤城楼轰成火海！南军戚家军老将吴惟忠胸中铅弹仍大呼先登牡丹峰，骆尚志身负重伤攀上含毯门，李如松坐骑被击毙换马再冲，一日之内攻克平壤，歼敌万余，小西行长乘夜踏大同江冰面狼狈逃回汉城！",
+      "whyKeyPoint": "为啥日军引以为傲的战国铁炮在平壤城头彻底哑火？日本铁炮只是单兵轻火绳枪，而大明投入的是重型攻城火炮、虎蹲霰弹炮与一窝蜂火箭——重火器代差直接把日军木石工事炸成了筛子！",
+      "camera": {
+        "center": [126.15, 38.45],
+        "zoom": 6.6,
+        "pitch": 42,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-choson-allies",
+        "leftLabel": "李如松重炮步骑混成军",
+        "leftPower": 78,
+        "rightFactionId": "toyotomi-japan",
+        "rightLabel": "小西行长第一军团",
+        "rightPower": 22
+      },
+      "routes": [
+        {
+          "id": "r-im2-storm-pyongyang",
+          "order": 1,
+          "factionId": "ming-choson-allies",
+          "type": "assault",
+          "label": "李如松万炮轰城，吴惟忠骆尚志先登一日攻克平壤，连复开城四道！",
+          "commander": "李如松 · 杨元 · 吴惟忠",
+          "coordinates": [
+            [125.15, 39.65],
+            [125.75, 39.02],
+            [126.55, 37.97]
+          ]
+        },
+        {
+          "id": "r-im2-konishi-flee",
+          "order": 2,
+          "factionId": "toyotomi-japan",
+          "type": "retreat",
+          "label": "小西行长残部夜渡大同江冰面狂逃汉城",
+          "commander": "小西行长",
+          "coordinates": [
+            [125.75, 39.02],
+            [126.35, 38.25],
+            [126.98, 37.57]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-im2-pyongyang",
+          "kind": "siege",
+          "label": "平壤大捷（一日克复）",
+          "subLabel": "重炮火器粉碎战国日军神话",
+          "coordinates": [125.75, 39.02],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 3,
+      "title": "第三幕：血战碧蹄馆与火烧龙山仓 · 断粮迫倭弃守王京汉城",
+      "dateLabel": "万历二十一年（1593）正月二十七—四月",
+      "year": 1593,
+      "narrative": "连胜之下李如松仅带两千辽东铁骑前出侦察，在汉城北郊碧蹄馆泥泞水田撞上小早川隆景、立花宗茂两万日军主力！绝境中李如松与猛将李有升（以身挡刃战死）寸步不退从上午血战至黄昏，杨元援骑携火器杀到反击退敌。正面僵持之际，李如松派死士查大受潜入汉城汉江畔，一把大火烧光龙山仓日军数十万石存粮！断粮绝望的日军被迫放弃汉城全线退缩釜山海角求和。",
+      "whyKeyPoint": "为啥烧掉龙山一座粮仓比杀敌两万更致命？朝鲜海上补给线已被名将李舜臣龟船舰队打残，陆上又逢春荒；烧毁汉城总粮库后十二万日军立即面临饿死绝境，不退也得退！",
+      "camera": {
+        "center": [127.25, 36.65],
+        "zoom": 6.4,
+        "pitch": 40,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-choson-allies",
+        "leftLabel": "明军断敌粮道收复王京",
+        "leftPower": 66,
+        "rightFactionId": "toyotomi-japan",
+        "rightLabel": "断粮南退釜山之日军",
+        "rightPower": 34
+      },
+      "routes": [
+        {
+          "id": "r-im3-longshan-fire",
+          "order": 1,
+          "factionId": "ming-choson-allies",
+          "type": "ambush",
+          "label": "碧蹄馆激战后，查大受选死士夜袭焚毁汉城龙山日军总粮仓",
+          "commander": "李如松 · 查大受",
+          "coordinates": [
+            [126.55, 37.97],
+            [126.89, 37.71],
+            [126.98, 37.53]
+          ]
+        },
+        {
+          "id": "r-im3-japan-retreat-busan",
+          "order": 2,
+          "factionId": "toyotomi-japan",
+          "type": "retreat",
+          "label": "十二万日军饥疲交困放弃汉城，全线退缩庆尚道釜山沿海倭城",
+          "commander": "宇喜多秀家 · 小西行长",
+          "coordinates": [
+            [126.98, 37.57],
+            [127.92, 36.55],
+            [129.04, 35.18]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-im3-seoul",
+          "kind": "cutoff",
+          "label": "火烧龙山仓 · 光复王京汉城",
+          "subLabel": "釜底抽薪瓦解日军盘踞企图",
+          "coordinates": [126.98, 37.57],
+          "color": "#D97706"
+        }
+      ]
+    },
+    {
+      "phaseNo": 4,
+      "title": "第四幕：忠魂露梁海 · 邓子龙李舜臣双星陨落换海疆三百年太平",
+      "dateLabel": "万历二十六年（1598）十一月十九日",
+      "year": 1598,
+      "narrative": "和谈破裂后日军再侵（丁酉再乱），杨镐、麻贵、刘綎、陈璘水陆四路十万明军入朝反攻。1598年秋丰臣秀吉病死，侵朝日军企图全军撤逃回国。水师提督陈璘、七旬老副总兵邓子龙与朝鲜三道水军统制使李舜臣设伏于狭窄的露梁海峡，拦腰截击岛津义弘五百艘救援战船！年过古稀的邓子龙跃上轻舟冲入敌阵浴血战死，李舜臣赶来救援亦中流弹临终嘱咐“战方急，慎勿言我死”，中朝联军击沉焚毁倭船四百余艘，大获全胜！",
+      "whyKeyPoint": "为啥日军明明已经在撤退，中朝水师还要拼死打赢露梁海战？若放任十余万日军主力完整撤回九州，不出数年必卷土重来；唯有在露梁海彻底打残萨摩与西国精锐，才能真正换来东亚三百年海波宁静！",
+      "camera": {
+        "center": [127.85, 35.25],
+        "zoom": 6.8,
+        "pitch": 42,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-choson-allies",
+        "leftLabel": "陈璘邓子龙李舜臣联合舰队",
+        "leftPower": 82,
+        "rightFactionId": "toyotomi-japan",
+        "rightLabel": "岛津义弘小西行长败逃船团",
+        "rightPower": 18
+      },
+      "routes": [
+        {
+          "id": "r-im4-land-push",
+          "order": 1,
+          "factionId": "ming-choson-allies",
+          "type": "assault",
+          "label": "刘綎、董一元、麻贵三路陆军南压顺天、泗川、蔚山",
+          "commander": "刑玠 · 麻贵 · 刘綎",
+          "coordinates": [
+            [126.98, 37.57],
+            [127.48, 35.95],
+            [127.52, 34.95]
+          ]
+        },
+        {
+          "id": "r-im4-noryang-block",
+          "order": 2,
+          "factionId": "ming-choson-allies",
+          "type": "naval",
+          "label": "陈璘、邓子龙与李舜臣舰队夜锁露梁海峡，焚沉岛津义弘四百艘敌舰！",
+          "commander": "陈璘 · 邓子龙 · 李舜臣",
+          "coordinates": [
+            [126.62, 34.55],
+            [127.35, 34.68],
+            [127.88, 34.95]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-im4-noryang",
+          "kind": "clash",
+          "label": "露梁海大海战全胜",
+          "subLabel": "七旬邓子龙与李舜臣并肩殉国，万古流芳",
+          "coordinates": [127.88, 34.95],
+          "color": "#B83B2A"
+        }
+      ]
+    }
+  ]
+}

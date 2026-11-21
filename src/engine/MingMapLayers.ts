@@ -1,7 +1,9 @@
 import type maplibregl from 'maplibre-gl';
 import type { GeoJSONSource } from 'maplibre-gl';
 import {
+  CHARACTER_MAP,
   EVENT_MAP,
+  MING_INSTITUTIONS_GEOJSON,
   MING_LANDFORMS_GEOJSON,
   MING_WATERWAYS_GEOJSON,
   PLACES_GEOJSON,
@@ -1080,6 +1082,218 @@ export function mountHistoricalLayers(
       },
     });
   }
+
+  // =========================================================================
+  // 7. Ming Institutional Thematic Layers (Princely Fiefs + Nine Garrisons)
+  // =========================================================================
+  if (!map.getSource('ming-institutions')) {
+    map.addSource('ming-institutions', {
+      type: 'geojson',
+      data: MING_INSTITUTIONS_GEOJSON,
+    });
+  }
+
+  if (!map.getLayer('ming-princely-fiefs-circle')) {
+    map.addLayer({
+      id: 'ming-princely-fiefs-circle',
+      type: 'circle',
+      source: 'ming-institutions',
+      filter: ['==', ['get', 'layerGroup'], 'princely-fief'],
+      layout: { visibility: 'none' },
+      paint: {
+        'circle-radius': ['match', ['get', 'isBorderPrince'], 1, 7.5, 6.0],
+        'circle-color': [
+          'match',
+          ['get', 'isBorderPrince'],
+          1,
+          '#C68B2C',
+          '#7C3AED',
+        ],
+        'circle-stroke-width': 2,
+        'circle-stroke-color': '#FFFDF7',
+        'circle-opacity': 0.92,
+      },
+    });
+
+    map.addLayer({
+      id: 'ming-princely-fiefs-label',
+      type: 'symbol',
+      source: 'ming-institutions',
+      filter: ['==', ['get', 'layerGroup'], 'princely-fief'],
+      layout: {
+        visibility: 'none',
+        'text-field': [
+          'format',
+          ['get', 'shortTitle'],
+          { 'font-scale': 1.0 },
+          '\n',
+          {},
+          ['get', 'subNote'],
+          { 'font-scale': 0.78 },
+        ],
+        'text-font': ['Noto Sans Regular'],
+        'text-size': 11.5,
+        'text-offset': [0, 0.95],
+        'text-anchor': 'top',
+        'text-optional': true,
+      },
+      paint: {
+        'text-color': isDark ? '#FDE68A' : '#5B21B6',
+        'text-halo-color': isDark
+          ? 'rgba(11, 15, 23, 0.96)'
+          : 'rgba(255, 252, 245, 0.96)',
+        'text-halo-width': 1.8,
+      },
+    });
+
+    map.addLayer({
+      id: 'ming-nine-garrisons-circle',
+      type: 'circle',
+      source: 'ming-institutions',
+      filter: ['==', ['get', 'layerGroup'], 'nine-garrison'],
+      layout: { visibility: 'none' },
+      paint: {
+        'circle-radius': 7.5,
+        'circle-color': '#9E2318',
+        'circle-stroke-width': 2.2,
+        'circle-stroke-color': '#FDE68A',
+        'circle-opacity': 0.94,
+      },
+    });
+
+    map.addLayer({
+      id: 'ming-nine-garrisons-label',
+      type: 'symbol',
+      source: 'ming-institutions',
+      filter: ['==', ['get', 'layerGroup'], 'nine-garrison'],
+      layout: {
+        visibility: 'none',
+        'text-field': [
+          'format',
+          ['get', 'shortTitle'],
+          { 'font-scale': 1.0 },
+          '\n',
+          {},
+          ['get', 'subNote'],
+          { 'font-scale': 0.76 },
+        ],
+        'text-font': ['Noto Sans Regular'],
+        'text-size': 11.5,
+        'text-offset': [0, 1.0],
+        'text-anchor': 'top',
+        'text-optional': true,
+      },
+      paint: {
+        'text-color': isDark ? '#FCA5A5' : '#7F1D1D',
+        'text-halo-color': isDark
+          ? 'rgba(11, 15, 23, 0.96)'
+          : 'rgba(255, 252, 245, 0.96)',
+        'text-halo-width': 1.8,
+      },
+    });
+  }
+
+  // =========================================================================
+  // 8. Character Odyssey Trajectory & Numbered Life Stops — 100% WebGL!
+  // =========================================================================
+  if (!map.getSource('character-odyssey')) {
+    map.addSource('character-odyssey', {
+      type: 'geojson',
+      data: EMPTY_FC,
+    });
+  }
+
+  if (!map.getLayer('character-odyssey-line')) {
+    map.addLayer({
+      id: 'character-odyssey-glow',
+      type: 'line',
+      source: 'character-odyssey',
+      filter: ['==', ['geometry-type'], 'LineString'],
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: {
+        'line-color': ['get', 'color'],
+        'line-width': 10,
+        'line-opacity': isDark ? 0.34 : 0.24,
+        'line-blur': 3.5,
+      },
+    });
+
+    map.addLayer({
+      id: 'character-odyssey-line',
+      type: 'line',
+      source: 'character-odyssey',
+      filter: ['==', ['geometry-type'], 'LineString'],
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: {
+        'line-color': ['get', 'color'],
+        'line-width': 3.8,
+        'line-dasharray': [2.2, 1.3],
+        'line-opacity': 0.95,
+      },
+    });
+
+    map.addLayer({
+      id: 'character-odyssey-arrows',
+      type: 'symbol',
+      source: 'character-odyssey',
+      filter: ['==', ['geometry-type'], 'LineString'],
+      layout: {
+        'symbol-placement': 'line',
+        'symbol-spacing': 68,
+        'icon-image': 'tactical-spearhead',
+        'icon-size': 0.38,
+        'icon-rotate': 90,
+        'icon-rotation-alignment': 'map',
+        'icon-allow-overlap': true,
+      },
+      paint: {
+        'icon-color': '#FFFDF7',
+        'icon-halo-color': ['get', 'color'],
+        'icon-halo-width': 1.3,
+      },
+    });
+
+    map.addLayer({
+      id: 'character-odyssey-stops',
+      type: 'circle',
+      source: 'character-odyssey',
+      filter: ['==', ['geometry-type'], 'Point'],
+      paint: {
+        'circle-radius': ['match', ['get', 'isActive'], 1, 11, 7.5],
+        'circle-color': ['get', 'color'],
+        'circle-stroke-width': ['match', ['get', 'isActive'], 1, 3, 2],
+        'circle-stroke-color': [
+          'match',
+          ['get', 'isActive'],
+          1,
+          '#FDE68A',
+          '#FFFDF7',
+        ],
+      },
+    });
+
+    map.addLayer({
+      id: 'character-odyssey-labels',
+      type: 'symbol',
+      source: 'character-odyssey',
+      filter: ['==', ['geometry-type'], 'Point'],
+      layout: {
+        'text-field': ['get', 'badgeLabel'],
+        'text-font': ['Noto Sans Regular'],
+        'text-size': ['match', ['get', 'isActive'], 1, 12.5, 11.5],
+        'text-offset': [0, 1.15],
+        'text-anchor': 'top',
+        'text-allow-overlap': true,
+      },
+      paint: {
+        'text-color': isDark ? '#FEF3C7' : '#231815',
+        'text-halo-color': isDark
+          ? 'rgba(11, 15, 23, 0.96)'
+          : 'rgba(255, 252, 244, 0.96)',
+        'text-halo-width': 2.0,
+      },
+    });
+  }
 }
 
 export function setPlaceNameModeOnGpu(
@@ -1111,6 +1325,62 @@ export function updateTerritoryWipeOnMap(
   const src = map.getSource('ming-territory-wipe') as GeoJSONSource | undefined;
   if (!src) return;
   src.setData(wipeGeoJSON ?? EMPTY_FC);
+}
+
+const CIRCLED_NUMS = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧'];
+
+export function updateCharacterOdysseyOnMap(
+  map: maplibregl.Map,
+  characterId: string | null,
+  activeStopIndex: number
+): void {
+  const src = map.getSource('character-odyssey') as GeoJSONSource | undefined;
+  if (!src) return;
+  if (!characterId || !CHARACTER_MAP[characterId]) {
+    src.setData(EMPTY_FC);
+    return;
+  }
+
+  const ch = CHARACTER_MAP[characterId];
+  const features: GeoJSON.Feature[] = [];
+
+  for (let i = 0; i < ch.stops.length - 1; i++) {
+    const a = ch.stops[i].coordinates;
+    const b = ch.stops[i + 1].coordinates;
+    if (Math.hypot(a[0] - b[0], a[1] - b[1]) > 0.02) {
+      const seg = buildCurvedRouteCoords([a, b], 'assault', 20);
+      features.push({
+        type: 'Feature',
+        properties: {
+          color: ch.color,
+          segIdx: i,
+        },
+        geometry: {
+          type: 'LineString',
+          coordinates: seg,
+        },
+      });
+    }
+  }
+
+  ch.stops.forEach((st, idx) => {
+    const numGlyph = CIRCLED_NUMS[idx] ?? `(${idx + 1})`;
+    features.push({
+      type: 'Feature',
+      properties: {
+        step: st.step,
+        color: ch.color,
+        isActive: idx === activeStopIndex ? 1 : 0,
+        badgeLabel: `${numGlyph} ${st.year}年 · ${st.title.slice(0, 12)}`,
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: st.coordinates,
+      },
+    });
+  });
+
+  src.setData({ type: 'FeatureCollection', features });
 }
 
 export function syncLayerVisibility(
@@ -1156,6 +1426,11 @@ export function syncLayerVisibility(
   setVis('causal-arcs-line', layers.causalArcs);
   setVis('causal-arcs-arrows', layers.causalArcs);
   setVis('causal-arcs-label', layers.causalArcs);
+
+  setVis('ming-princely-fiefs-circle', layers.princelyFiefs);
+  setVis('ming-princely-fiefs-label', layers.princelyFiefs);
+  setVis('ming-nine-garrisons-circle', layers.nineGarrisons);
+  setVis('ming-nine-garrisons-label', layers.nineGarrisons);
 }
 
 export function buildPhaseRouteFeatures(

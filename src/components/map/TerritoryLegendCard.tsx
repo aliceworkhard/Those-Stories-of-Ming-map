@@ -18,6 +18,8 @@ export default function TerritoryLegendCard() {
   const activeWipeCaption = useAtlasStore((s) => s.activeWipeCaption);
   const activeCampaignId = useAtlasStore((s) => s.activeCampaignId);
   const activePhaseIndex = useAtlasStore((s) => s.activePhaseIndex);
+  const activeCharacterId = useAtlasStore((s) => s.activeCharacterId);
+  const layers = useAtlasStore((s) => s.layers);
   const isDirectoryOpen = useAtlasStore((s) => s.isDirectoryOpen);
   const isStoryTourPlaying = useAtlasStore((s) => s.isStoryTourPlaying);
   const storyTourProgress = useAtlasStore((s) => s.storyTourProgress);
@@ -91,7 +93,8 @@ export default function TerritoryLegendCard() {
     : 'bg-[#FAF5E8]/96 border-amber-900/25 text-stone-900';
 
   const isTourHudOpen =
-    !activeCampaignId && (isStoryTourPlaying || storyTourProgress > 0);
+    !activeCampaignId &&
+    (isStoryTourPlaying || storyTourProgress > 0 || Boolean(activeCharacterId));
 
   // Position smartly so it NEVER overlaps sidebars, CampaignPlayer, or StoryTourPlayer!
   const positionClass = activeCampaignId
@@ -347,6 +350,26 @@ export default function TerritoryLegendCard() {
                   <span className="w-4 h-2.5 rounded-[2px] bg-gradient-to-r from-[#B83B2A] to-amber-400 border border-amber-500 inline-block shrink-0" />
                   <span>胜方版图涂抹</span>
                 </span>
+
+                {/* 7. Optional Institutional & Character Odyssey Indicators */}
+                {layers.princelyFiefs && (
+                  <span className="flex items-center gap-1.5 whitespace-nowrap">
+                    <span className="w-3 h-3 rounded-full bg-[#7C3AED]/85 border border-amber-200 inline-block shrink-0" />
+                    <span>藩王/九边塞王</span>
+                  </span>
+                )}
+                {layers.nineGarrisons && (
+                  <span className="flex items-center gap-1.5 whitespace-nowrap">
+                    <span className="w-3.5 h-2.5 rounded-[2px] bg-[#9E2318]/25 border border-dashed border-[#9E2318] inline-block shrink-0" />
+                    <span>九边重镇防区</span>
+                  </span>
+                )}
+                {activeCharacterId && (
+                  <span className="flex items-center gap-1.5 whitespace-nowrap">
+                    <span className="w-4 h-0.5 border-t-2 border-dashed border-[#B83B2A] inline-block shrink-0" />
+                    <span>人物一生足迹</span>
+                  </span>
+                )}
               </div>
             </div>
           </div>

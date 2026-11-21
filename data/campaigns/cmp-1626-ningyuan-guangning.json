@@ -1,0 +1,273 @@
+{
+  "id": "cmp-1626-ningyuan-guangning",
+  "title": "孙承宗拓地四百里与袁崇焕宁远大捷",
+  "subtitle": "单骑出山海关 · 筑关宁锦防线 · 红夷巨炮首挫努尔哈赤（1622—1627）",
+  "yearRange": [1622, 1627],
+  "chapterIds": [
+    "v6-zhu-youxiao-ch12",
+    "v6-zhu-youxiao-ch18",
+    "v6-zhu-youxiao-ch19",
+    "v6-zhu-youxiao-ch20",
+    "v7-zhu-youxiao-ch02"
+  ],
+  "summary": "天启二年广宁兵溃后，兵部主事袁崇焕单骑出山海关考察，配合帝师大学士孙承宗督师辽东四年，修复宁远、锦州九大城拓地四百里建立“关宁锦防线”！天启六年（1626）正月，努尔哈赤率六万八旗猛扑宁远孤城，袁崇焕刺血誓师，以十一门西洋红夷大炮轰溃后金主力，打破努尔哈赤四十三年不败神话；次年再败皇太极获宁锦大捷！",
+  "strategicOutcome": "努尔哈赤兵败宁远八月后病逝，大明凭“坚城+红夷重炮+关宁铁骑”锁死辽西走廊十八年。",
+  "factions": [
+    {
+      "id": "guanning-army",
+      "name": "大明关宁防线守军",
+      "leader": "帝师孙承宗 · 袁崇焕 · 满桂 · 赵率教",
+      "color": "#B83B2A",
+      "badgeText": "明"
+    },
+    {
+      "id": "later-jin-army",
+      "name": "后金努尔哈赤与皇太极主力",
+      "leader": "努尔哈赤 · 皇太极",
+      "color": "#9A3412",
+      "badgeText": "金"
+    }
+  ],
+  "phases": [
+    {
+      "phaseNo": 1,
+      "title": "第一幕：广宁大溃与书生请缨 · “予我军马钱谷，我一人足守此”",
+      "dateLabel": "天启二年（1622）正月—三月",
+      "year": 1622,
+      "narrative": "广宁十三万明军溃散，难民涌入山海关。文官袁崇焕单骑夜出山海关深入前屯、宁远勘察山海地形，归奏“予我军马钱谷，我一人足守此”，获首辅叶向高与帝师孙承宗大力支持！",
+      "whyKeyPoint": "为啥绝不能退守山海关一道孤墙？守关内必守关外宁远，若无二百里纵深缓冲，后金大炮直接架到山海关下，京师永无宁日！",
+      "camera": {
+        "center": [120.85, 40.55],
+        "zoom": 6.8,
+        "pitch": 40,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "guanning-army",
+        "leftLabel": "山海关重整守军",
+        "leftPower": 32,
+        "rightFactionId": "later-jin-army",
+        "rightLabel": "连克广宁之后金锋芒",
+        "rightPower": 68
+      },
+      "routes": [
+        {
+          "id": "r-ny1-guangning-rout",
+          "order": 1,
+          "factionId": "later-jin-army",
+          "type": "assault",
+          "label": "努尔哈赤渡三岔河攻陷辽西重镇广宁，王化贞逃入关内",
+          "commander": "努尔哈赤",
+          "coordinates": [
+            [123.17, 41.27],
+            [122.25, 41.45],
+            [121.77, 41.6]
+          ]
+        },
+        {
+          "id": "r-ny1-yuan-scout",
+          "order": 2,
+          "factionId": "guanning-army",
+          "type": "ambush",
+          "label": "袁崇焕单骑出山海关深入宁远勘察山海险隘",
+          "commander": "袁崇焕",
+          "coordinates": [
+            [119.78, 40.01],
+            [120.25, 40.28],
+            [120.73, 40.62]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-ny1-shanhaiguan",
+          "kind": "pass",
+          "label": "山海关定策守关外",
+          "subLabel": "“予我军马钱谷，我一人足守此！”",
+          "coordinates": [119.78, 40.01],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 2,
+      "title": "第二幕：帝师督辽 · 孙承宗筑城屯田，向东收复辽西四百里！",
+      "dateLabel": "天启二年至五年（1622—1625）",
+      "year": 1624,
+      "narrative": "大学士孙承宗亲镇山海关四年，命袁崇焕筑宁远坚城并架设西洋红夷大炮、赵率教前屯锦州，修复大城九座、练精兵十一万，向东北拓地四百里直抵大凌河！后高第尽撤锦州防军，唯袁崇焕死誓不退孤守宁远！",
+      "whyKeyPoint": "为啥孙承宗用“步步筑城、凭城架炮”彻底克制了八旗？辽西走廊北靠松岭南临渤海宽仅数十里，棱堡化重炮坚城直接堵死了骑兵迂回空间！",
+      "camera": {
+        "center": [120.65, 40.68],
+        "zoom": 7.0,
+        "pitch": 42,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "guanning-army",
+        "leftLabel": "孙承宗袁崇焕关宁锦体系",
+        "leftPower": 65,
+        "rightFactionId": "later-jin-army",
+        "rightLabel": "沈阳观望之后金军",
+        "rightPower": 35
+      },
+      "routes": [
+        {
+          "id": "r-ny2-build-ningyuan",
+          "order": 1,
+          "factionId": "guanning-army",
+          "type": "assault",
+          "label": "孙承宗率袁崇焕、满桂出山海关筑宁远坚城架红夷巨炮",
+          "commander": "孙承宗 · 袁崇焕",
+          "coordinates": [
+            [119.78, 40.01],
+            [120.28, 40.32],
+            [120.73, 40.62]
+          ]
+        },
+        {
+          "id": "r-ny2-push-jinzhou",
+          "order": 2,
+          "factionId": "guanning-army",
+          "type": "assault",
+          "label": "赵率教继续东北推进修复锦州、松山、大凌河，拓地四百里！",
+          "commander": "孙承宗 · 赵率教",
+          "coordinates": [
+            [120.73, 40.62],
+            [120.98, 40.88],
+            [121.13, 41.1]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-ny2-ningyuan-fort",
+          "kind": "camp",
+          "label": "宁远重城架设红夷大炮",
+          "subLabel": "孙承宗四年苦心铸就辽西铁壁",
+          "coordinates": [120.73, 40.62],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 3,
+      "title": "第三幕：血战宁远 · 十一门西洋红夷巨炮轰碎八旗不败神话！",
+      "dateLabel": "天启六年（1626）正月二十三—二十六日",
+      "year": 1626,
+      "narrative": "努尔哈赤亲率六万八旗渡辽河猛攻孤城宁远。袁崇焕与满桂、祖大寿仅万余孤军，刺血写书激励将士，以十一门西洋红夷大炮与万人敌火器轰击楯车敌阵，连战两日毙伤八旗精锐数千，努尔哈赤叹恨撤回沈阳，八月即病逝！",
+      "whyKeyPoint": "为啥宁远一战能改写全败颓势？欧洲长身管加农炮（红夷大炮）配合高厚包砖城台形成降维打击，终结了八旗冷兵器攻城优势！",
+      "camera": {
+        "center": [121.15, 40.85],
+        "zoom": 7.3,
+        "pitch": 44,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "guanning-army",
+        "leftLabel": "袁崇焕满桂 1 万死士 + 红夷炮",
+        "leftPower": 72,
+        "rightFactionId": "later-jin-army",
+        "rightLabel": "努尔哈赤 6 万攻城八旗",
+        "rightPower": 28
+      },
+      "routes": [
+        {
+          "id": "r-ny3-nurhaci-attack",
+          "order": 1,
+          "factionId": "later-jin-army",
+          "type": "assault",
+          "label": "努尔哈赤亲统六万八旗自沈阳渡辽河直扑宁远孤城",
+          "commander": "努尔哈赤",
+          "coordinates": [
+            [123.43, 41.81],
+            [121.85, 41.25],
+            [120.73, 40.62]
+          ]
+        },
+        {
+          "id": "r-ny3-retreat",
+          "order": 2,
+          "factionId": "later-jin-army",
+          "type": "retreat",
+          "label": "红夷巨炮轰溃八旗攻势，努尔哈赤重挫败退沈阳旋即病逝！",
+          "commander": "努尔哈赤",
+          "coordinates": [
+            [120.73, 40.62],
+            [121.95, 41.32],
+            [123.43, 41.81]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-ny3-ningyuan-win",
+          "kind": "siege",
+          "label": "宁远大捷（首破八旗）",
+          "subLabel": "努尔哈赤四十三年不败金身告破",
+          "coordinates": [120.73, 40.62],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 4,
+      "title": "第四幕：宁锦再捷 · 赵率教守锦州、满桂血战宁远重创皇太极",
+      "dateLabel": "天启七年（1627）五月",
+      "year": 1627,
+      "narrative": "新汗皇太极亲统八旗先围赵率教锦州二十四日不下，转攻宁远又遭满桂关宁铁骑与城头红夷巨炮夹击，大贝勒负伤败归盛京，史称“宁锦大捷”！",
+      "whyKeyPoint": "为啥宁锦两战逼皇太极改变了战略？知道关宁铁壁硬啃必死后，皇太极转而征服漠南蒙古，从喜峰口绕道偷袭北京！",
+      "camera": {
+        "center": [121.25, 40.95],
+        "zoom": 7.2,
+        "pitch": 42,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "guanning-army",
+        "leftLabel": "锦州赵率教 · 宁远袁崇焕满桂",
+        "leftPower": 76,
+        "rightFactionId": "later-jin-army",
+        "rightLabel": "皇太极攻坚受挫大军",
+        "rightPower": 24
+      },
+      "routes": [
+        {
+          "id": "r-ny4-jinzhou-siege",
+          "order": 1,
+          "factionId": "later-jin-army",
+          "type": "assault",
+          "label": "皇太极猛攻锦州遭赵率教火炮重创不下",
+          "commander": "皇太极",
+          "coordinates": [
+            [123.43, 41.81],
+            [122.15, 41.42],
+            [121.13, 41.1]
+          ]
+        },
+        {
+          "id": "r-ny4-ningyuan-clash",
+          "order": 2,
+          "factionId": "later-jin-army",
+          "type": "assault",
+          "label": "转攻宁远城下，遭满桂关宁铁骑与巨炮夹击败逃！",
+          "commander": "皇太极 · 袁崇焕 · 满桂",
+          "coordinates": [
+            [121.13, 41.1],
+            [120.92, 40.85],
+            [120.73, 40.62]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-ny4-ningjin",
+          "kind": "clash",
+          "label": "宁锦大捷",
+          "subLabel": "关宁铁骑成型，锁死辽西走廊",
+          "coordinates": [120.73, 40.62],
+          "color": "#D97706"
+        }
+      ]
+    }
+  ]
+}

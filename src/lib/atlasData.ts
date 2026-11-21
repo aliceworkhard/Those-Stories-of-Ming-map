@@ -2,8 +2,11 @@ import tocJson from '@data/chapters/toc.json';
 import placesJson from '@data/geo-base/ming-places.json';
 import waterwaysGeoJson from '@data/geo-base/ming-waterways.json';
 import landformsGeoJson from '@data/geo-base/ming-landforms.json';
+import institutionsGeoJson from '@data/geo-base/ming-institutions.json';
 import landMaskGeoJson from '@data/geo-base/land-mask-east-asia.json';
+import odysseysJson from '@data/characters/odysseys.json';
 import territoriesIndexJson from '@data/territories/index.json';
+
 import ter1356 from '@data/territories/ter-1356.json';
 import ter1363 from '@data/territories/ter-1363.json';
 import ter1368 from '@data/territories/ter-1368.json';
@@ -13,21 +16,39 @@ import ter1402 from '@data/territories/ter-1402.json';
 import ter1415 from '@data/territories/ter-1415.json';
 import ter1435 from '@data/territories/ter-1435.json';
 import ter1449 from '@data/territories/ter-1449.json';
+import ter1479 from '@data/territories/ter-1479.json';
+import ter1582 from '@data/territories/ter-1582.json';
+import ter1621 from '@data/territories/ter-1621.json';
+import ter1642 from '@data/territories/ter-1642.json';
+import ter1644 from '@data/territories/ter-1644.json';
+import ter1652 from '@data/territories/ter-1652.json';
+
 import eventsFoundingJson from '@data/events/era-founding.json';
 import eventsJingnanJson from '@data/events/era-jingnan.json';
 import eventsYongleRenxuanJson from '@data/events/era-yongle-renxuan.json';
 import eventsTumuJingtaiJson from '@data/events/era-tumu-jingtai.json';
+import eventsMidMingJson from '@data/events/era-mid-ming.json';
+import eventsWanliReformJson from '@data/events/era-wanli-reform.json';
+import eventsCollapseNanmingJson from '@data/events/era-collapse-nanming.json';
+
 import cmpPoyangJson from '@data/campaigns/cmp-1363-poyang.json';
 import cmpNorthJson from '@data/campaigns/cmp-1367-northern-expedition.json';
 import cmpBuyurJson from '@data/campaigns/cmp-1387-buyur-lake.json';
 import cmpJingnanJson from '@data/campaigns/cmp-1399-jingnan.json';
 import cmpZhengheJson from '@data/campaigns/cmp-1405-zhenghe-voyages.json';
 import cmpTumuJson from '@data/campaigns/cmp-1449-tumu-beijing.json';
+import cmpNingJson from '@data/campaigns/cmp-1519-ning-rebellion.json';
+import cmpQiJson from '@data/campaigns/cmp-1561-qijiguang-wokou.json';
+import cmpImjinJson from '@data/campaigns/cmp-1592-imjin-korea.json';
+import cmpSarhuJson from '@data/campaigns/cmp-1619-sarhu.json';
+import cmpNingyuanJson from '@data/campaigns/cmp-1626-ningyuan-guangning.json';
+import cmpJiashenJson from '@data/campaigns/cmp-1644-jiashen-fall.json';
 
 import type {
   BookTocIndex,
   Campaign,
   ChapterAnchor,
+  CharacterOdyssey,
   HistoricalEvent,
   HistoricalPlace,
   PlaceNameMode,
@@ -51,8 +72,15 @@ export const MING_WATERWAYS_GEOJSON =
 export const MING_LANDFORMS_GEOJSON =
   landformsGeoJson as unknown as GeoJSON.FeatureCollection;
 
+export const MING_INSTITUTIONS_GEOJSON =
+  institutionsGeoJson as unknown as GeoJSON.FeatureCollection;
+
 export const EAST_ASIA_LAND_MASK_GEOJSON =
   landMaskGeoJson as unknown as GeoJSON.FeatureCollection;
+
+export const ALL_CHARACTERS = odysseysJson as unknown as CharacterOdyssey[];
+export const CHARACTER_MAP: Record<string, CharacterOdyssey> =
+  Object.fromEntries(ALL_CHARACTERS.map((c) => [c.id, c]));
 
 export const TERRITORY_INDEX =
   territoriesIndexJson as unknown as TerritorySnapshotMeta[];
@@ -67,6 +95,12 @@ const TERRITORY_DATA_BY_FILE: Record<string, GeoJSON.FeatureCollection> = {
   'ter-1415.json': ter1415 as unknown as GeoJSON.FeatureCollection,
   'ter-1435.json': ter1435 as unknown as GeoJSON.FeatureCollection,
   'ter-1449.json': ter1449 as unknown as GeoJSON.FeatureCollection,
+  'ter-1479.json': ter1479 as unknown as GeoJSON.FeatureCollection,
+  'ter-1582.json': ter1582 as unknown as GeoJSON.FeatureCollection,
+  'ter-1621.json': ter1621 as unknown as GeoJSON.FeatureCollection,
+  'ter-1642.json': ter1642 as unknown as GeoJSON.FeatureCollection,
+  'ter-1644.json': ter1644 as unknown as GeoJSON.FeatureCollection,
+  'ter-1652.json': ter1652 as unknown as GeoJSON.FeatureCollection,
 };
 
 export const TERRITORY_SNAPSHOT_BY_ID: Record<
@@ -89,6 +123,9 @@ export const ALL_EVENTS: HistoricalEvent[] = [
   ...(eventsJingnanJson as unknown as HistoricalEvent[]),
   ...(eventsYongleRenxuanJson as unknown as HistoricalEvent[]),
   ...(eventsTumuJingtaiJson as unknown as HistoricalEvent[]),
+  ...(eventsMidMingJson as unknown as HistoricalEvent[]),
+  ...(eventsWanliReformJson as unknown as HistoricalEvent[]),
+  ...(eventsCollapseNanmingJson as unknown as HistoricalEvent[]),
 ].sort(
   (a, b) =>
     a.time.year - b.time.year || (a.time.month ?? 1) - (b.time.month ?? 1)
@@ -105,6 +142,12 @@ export const ALL_CAMPAIGNS: Campaign[] = [
   cmpJingnanJson as unknown as Campaign,
   cmpZhengheJson as unknown as Campaign,
   cmpTumuJson as unknown as Campaign,
+  cmpNingJson as unknown as Campaign,
+  cmpQiJson as unknown as Campaign,
+  cmpImjinJson as unknown as Campaign,
+  cmpSarhuJson as unknown as Campaign,
+  cmpNingyuanJson as unknown as Campaign,
+  cmpJiashenJson as unknown as Campaign,
 ];
 
 export const CAMPAIGN_MAP: Record<string, Campaign> = Object.fromEntries(
@@ -138,7 +181,7 @@ export function formatPlaceDisplay(
 ): string {
   const shortAncient = ancientName.replace(/（.+?）/g, '');
   const shortModern = modernName.replace(
-    /^(江苏|安徽|江西|湖北|浙江|山东|河南|河北|陕西|四川|福建|广东|广西|云南|贵州|辽宁|吉林|黑龙江|新疆|内蒙古)/,
+    /^(江苏|安徽|江西|湖北|湖南|浙江|山东|河南|河北|山西|陕西|四川|福建|广东|广西|云南|贵州|辽宁|吉林|黑龙江|新疆|宁夏|内蒙古|台湾)/,
     ''
   );
   if (mode === 'ancient') return shortAncient;
@@ -147,10 +190,6 @@ export function formatPlaceDisplay(
   return `${shortAncient} · ${shortModern}`;
 }
 
-/**
- * Pre-computed GPU GeoJSON FeatureCollection for all strategic places so MapLibre
- * renders & collision-tests them in C++/WebGL with 0 HTML DOM overhead!
- */
 export const PLACES_GEOJSON: GeoJSON.FeatureCollection = {
   type: 'FeatureCollection',
   features: PLACES.map((p) => ({

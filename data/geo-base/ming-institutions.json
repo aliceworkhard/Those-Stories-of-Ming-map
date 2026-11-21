@@ -1,0 +1,277 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "description": "大明专题制度图层数据集：洪武分封藩王/九边塞王封地印 + 明代九边重镇军饷防区",
+    "coordinateSystem": "WGS-84 [lng, lat]"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-prince-qin",
+        "layerGroup": "princely-fief",
+        "shortTitle": "秦藩 · 西安",
+        "fullName": "秦王朱樉封藩（天下第一藩）",
+        "subNote": "太祖次子 · 坐镇关中节制西北诸卫",
+        "isBorderPrince": 1
+      },
+      "geometry": { "type": "Point", "coordinates": [108.95, 34.27] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-prince-jin",
+        "layerGroup": "princely-fief",
+        "shortTitle": "晋藩 · 太原",
+        "fullName": "晋王朱棡封藩（九边塞王）",
+        "subNote": "太祖三子 · 控扼山西雁门偏头防线",
+        "isBorderPrince": 1
+      },
+      "geometry": { "type": "Point", "coordinates": [112.55, 37.87] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-prince-yan",
+        "layerGroup": "princely-fief",
+        "shortTitle": "燕藩 · 北平",
+        "fullName": "燕王朱棣封藩（九边最强塞王）",
+        "subNote": "太祖四子 · 1399起兵靖难夺取帝位",
+        "isBorderPrince": 1
+      },
+      "geometry": { "type": "Point", "coordinates": [116.41, 39.91] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-prince-zhou",
+        "layerGroup": "princely-fief",
+        "shortTitle": "周藩 · 开封",
+        "fullName": "周王朱橚封藩（建文削藩首当其冲）",
+        "subNote": "太祖五子 · 著《救荒本草》惠泽饥民",
+        "isBorderPrince": 0
+      },
+      "geometry": { "type": "Point", "coordinates": [114.35, 34.79] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-prince-chu",
+        "layerGroup": "princely-fief",
+        "shortTitle": "楚藩 · 武昌",
+        "fullName": "楚王朱桢封藩",
+        "subNote": "太祖六子 · 镇抚两湖苗疆，1643末代楚王被张献忠沉江",
+        "isBorderPrince": 0
+      },
+      "geometry": { "type": "Point", "coordinates": [114.31, 30.54] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-prince-qi",
+        "layerGroup": "princely-fief",
+        "shortTitle": "齐藩 · 青州",
+        "fullName": "齐王朱榑封藩",
+        "subNote": "太祖七子 · 控山东海防，建文永乐两度被废",
+        "isBorderPrince": 0
+      },
+      "geometry": { "type": "Point", "coordinates": [118.48, 36.69] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-prince-shu",
+        "layerGroup": "princely-fief",
+        "shortTitle": "蜀藩 · 成都",
+        "fullName": "蜀王朱椿封藩（“蜀秀才”）",
+        "subNote": "太祖十一子 · 崇文守礼保巴蜀两百余年安宁",
+        "isBorderPrince": 0
+      },
+      "geometry": { "type": "Point", "coordinates": [104.07, 30.66] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-prince-xiang",
+        "layerGroup": "princely-fief",
+        "shortTitle": "湘藩 · 荆州",
+        "fullName": "湘王朱柏封藩",
+        "subNote": "太祖十二子 · 建文元年遭削藩逼迫阖宫自焚，刺激朱棣起兵",
+        "isBorderPrince": 0
+      },
+      "geometry": { "type": "Point", "coordinates": [112.21, 30.35] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-prince-dai",
+        "layerGroup": "princely-fief",
+        "shortTitle": "代藩 · 大同",
+        "fullName": "代王朱桂封藩（九边塞王）",
+        "subNote": "太祖十三子 · 直面漠南草原第一线",
+        "isBorderPrince": 1
+      },
+      "geometry": { "type": "Point", "coordinates": [113.3, 40.09] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-prince-su",
+        "layerGroup": "princely-fief",
+        "shortTitle": "肃藩 · 甘州/兰州",
+        "fullName": "肃王朱楧封藩（河西塞王）",
+        "subNote": "太祖十四子 · 屏藩河西走廊与嘉峪关",
+        "isBorderPrince": 1
+      },
+      "geometry": { "type": "Point", "coordinates": [100.45, 38.93] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-prince-liao",
+        "layerGroup": "princely-fief",
+        "shortTitle": "辽藩 · 广宁->荆州",
+        "fullName": "辽王朱植封藩（辽西塞王）",
+        "subNote": "太祖十五子 · 初封辽东广宁，靖难时渡海归朝改封荆州",
+        "isBorderPrince": 1
+      },
+      "geometry": { "type": "Point", "coordinates": [121.77, 41.6] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-prince-qing",
+        "layerGroup": "princely-fief",
+        "shortTitle": "庆藩 · 宁夏",
+        "fullName": "庆王朱栴封藩（贺兰塞王）",
+        "subNote": "太祖十六子 · 镇守宁夏河套西翼（正德五年安化王之乱发生地）",
+        "isBorderPrince": 1
+      },
+      "geometry": { "type": "Point", "coordinates": [106.27, 38.47] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-prince-ning-daning",
+        "layerGroup": "princely-fief",
+        "shortTitle": "宁藩 · 大宁->南昌",
+        "fullName": "宁王朱权封藩（带甲八万革车六千）",
+        "subNote": "太祖十七子 · 永乐元年被朱棣自塞外大宁改封南昌，四世孙朱宸濠1519叛乱被王阳明平定",
+        "isBorderPrince": 1
+      },
+      "geometry": { "type": "Point", "coordinates": [115.89, 28.68] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-prince-fu",
+        "layerGroup": "princely-fief",
+        "shortTitle": "福藩 · 洛阳",
+        "fullName": "福王朱常洵封藩（万历国本之争焦点）",
+        "subNote": "神宗爱子 · 赐庄田二百万亩，1641李自成破洛阳被杀，其子朱由崧为南明弘光帝",
+        "isBorderPrince": 0
+      },
+      "geometry": { "type": "Point", "coordinates": [112.45, 34.62] }
+    },
+
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-garrison-liaodong",
+        "layerGroup": "nine-garrison",
+        "shortTitle": "【九边】辽东镇 · 额兵8.6万",
+        "fullName": "辽东镇（驻辽阳/广宁 · 管辖边墙千九百里）",
+        "subNote": "年耗京运年例银逾六十万两，晚明抗击后金/大清主战场（辽饷黑洞）"
+      },
+      "geometry": { "type": "Point", "coordinates": [122.65, 41.35] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-garrison-jizhou",
+        "layerGroup": "nine-garrison",
+        "shortTitle": "【九边】蓟州镇 · 戚继光敌台",
+        "fullName": "蓟州镇（驻三屯营 · 拱卫京师东大门）",
+        "subNote": "自山海关至居庸灰岭口千二百里，戚继光筑空心敌台千余座固若金汤"
+      },
+      "geometry": { "type": "Point", "coordinates": [118.12, 40.22] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-garrison-xuanfu",
+        "layerGroup": "nine-garrison",
+        "shortTitle": "【九边】宣府镇 · 京师西北锁钥",
+        "fullName": "宣府镇（驻宣化 · 称九边第一精锐之区）",
+        "subNote": "屏护居庸关与怀来，额兵逾八万，年例银三十余万两"
+      },
+      "geometry": { "type": "Point", "coordinates": [115.06, 40.68] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-garrison-datong",
+        "layerGroup": "nine-garrison",
+        "shortTitle": "【九边】大同镇 · 平原重防",
+        "fullName": "大同镇（驻大同 · 无山险可依全凭墩堡马市）",
+        "subNote": "直面土默特草原，隆庆俺答封贡核心互市窗口"
+      },
+      "geometry": { "type": "Point", "coordinates": [113.22, 40.25] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-garrison-shanxi",
+        "layerGroup": "nine-garrison",
+        "shortTitle": "【九边】山西镇 · 外三关",
+        "fullName": "太原/山西镇（驻偏关 · 辖偏头、宁武、雁门外三关）",
+        "subNote": "扼守黄河东岸与晋北崇山隘口"
+      },
+      "geometry": { "type": "Point", "coordinates": [111.51, 39.44] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-garrison-yansui",
+        "layerGroup": "nine-garrison",
+        "shortTitle": "【九边】延绥镇 · 榆林雄镇",
+        "fullName": "延绥镇（驻榆林卫 · 余子俊筑墙锁河套）",
+        "subNote": "明中叶将风最悍，号称“榆林好汉”，崇祯末全城抗闯军战死不降"
+      },
+      "geometry": { "type": "Point", "coordinates": [109.73, 38.38] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-garrison-ningxia",
+        "layerGroup": "nine-garrison",
+        "shortTitle": "【九边】宁夏镇 · 贺兰天险",
+        "fullName": "宁夏镇（驻银川 · 背倚贺兰山前临黄河屯垦）",
+        "subNote": "塞上江南军屯重镇，万历二十年哱拜兵变（三大征首役）发生地"
+      },
+      "geometry": { "type": "Point", "coordinates": [106.2, 38.56] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-garrison-guyuan",
+        "layerGroup": "nine-garrison",
+        "shortTitle": "【九边】固原镇 · 三边总制",
+        "fullName": "固原/陕西镇（驻固原 · 陕西三边总督驻节中枢）",
+        "subNote": "弘治十四年置，策应延绥、宁夏、甘肃三镇机动纵深"
+      },
+      "geometry": { "type": "Point", "coordinates": [106.28, 36.01] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "inst-garrison-gansu",
+        "layerGroup": "nine-garrison",
+        "shortTitle": "【九边】甘肃镇 · 极西嘉峪关",
+        "fullName": "甘肃镇（驻甘州张掖 · 西控肃州嘉峪关千六百里）",
+        "subNote": "扼守河西走廊狭长通道，经略哈密关西七卫与吐鲁番"
+      },
+      "geometry": { "type": "Point", "coordinates": [99.25, 39.45] }
+    }
+  ]
+}

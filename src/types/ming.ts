@@ -225,6 +225,30 @@ export interface TerritorySnapshotMeta {
   file: string;
 }
 
+// ==========================================
+// 6. Character Odyssey (人生万里足迹)
+// ==========================================
+export interface CharacterOdysseyStop {
+  step: number;
+  year: number;
+  placeName: string;
+  coordinates: LngLat;
+  title: string;
+  caption: string;
+  eventId?: string;
+}
+
+export interface CharacterOdyssey {
+  id: string;
+  name: string;
+  courtesyOrTitle: string;
+  lifespan: string;
+  volumeSpan: string;
+  color: string;
+  quote: string;
+  stops: CharacterOdysseyStop[];
+}
+
 export type PlaceNameMode = 'ancient' | 'modern' | 'both';
 export type MapVisualTheme = 'xuanzhi' | 'xuanmo';
 export type PerformanceMode = 'eco' | 'balanced' | 'ultra';

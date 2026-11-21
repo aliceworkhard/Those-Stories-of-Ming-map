@@ -14,12 +14,13 @@ export default function TimelineBar() {
   const setCurrentYear = useAtlasStore((s) => s.setCurrentYear);
   const selectEvent = useAtlasStore((s) => s.selectEvent);
   const exitCampaign = useAtlasStore((s) => s.exitCampaign);
+  const exitCharacterOdyssey = useAtlasStore((s) => s.exitCharacterOdyssey);
   const flyToCamera = useAtlasStore((s) => s.flyToCamera);
   const theme = useAtlasStore((s) => s.theme);
 
   const isDark = theme === 'xuanmo';
   const minYear = SITE_CONFIG.timeline.minYear;
-  const maxYear = 1460;
+  const maxYear = SITE_CONFIG.timeline.extendedMaxYear;
 
   const clampedSliderYear = Math.max(minYear, Math.min(maxYear, currentYear));
 
@@ -68,18 +69,20 @@ export default function TimelineBar() {
               type="button"
               onClick={() => {
                 exitCampaign();
+                exitCharacterOdyssey();
                 stopStoryTour();
                 setCurrentYear(era.defaultYear);
                 flyToCamera(era.camera);
               }}
-              className={`px-2.5 py-1 rounded-lg text-xs font-serif font-bold whitespace-nowrap transition cursor-pointer ${
+              className={`px-2 py-1 rounded-lg text-xs font-serif font-bold whitespace-nowrap transition cursor-pointer ${
                 inEra
                   ? 'bg-stone-800 text-amber-50 dark:bg-amber-500 dark:text-slate-950 shadow-xs'
                   : 'bg-current/8 hover:bg-current/15 opacity-85'
               }`}
+              title={`${era.label} (${era.yearRange[0]}–${era.yearRange[1]})`}
             >
               {era.label}
-              <span className="ml-1 font-sans font-normal opacity-80 tabular-nums text-[10px]">
+              <span className="ml-1 font-sans font-normal opacity-80 tabular-nums text-[10px] hidden 2xl:inline">
                 ({era.yearRange[0]}–{era.yearRange[1]})
               </span>
             </button>

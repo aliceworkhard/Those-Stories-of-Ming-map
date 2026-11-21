@@ -1,0 +1,345 @@
+{
+  "id": "cmp-1644-jiashen-fall",
+  "title": "甲申国变、山海关大战与南明收复台湾",
+  "subtitle": "孙传庭绝唱潼关 · 崇祯煤山落幕 · 一片石决战与郑成功复台（1642—1662）",
+  "yearRange": [1642, 1662],
+  "chapterIds": [
+    "v7-zhu-youjian-ch11",
+    "v7-zhu-youjian-ch16",
+    "v7-zhu-youjian-ch19",
+    "v7-zhu-youjian-ch20",
+    "v7-zhu-youjian-ch21"
+  ],
+  "summary": "崇祯十五年松锦大战十三万精锐覆没后，大明陷入关外大清与关内李自成两线绝境。崇祯十六年孙传庭被迫出潼关决战断粮阵亡，李自成攻占西安建国“大顺”，于1644年三月十九日攻破北京，崇祯帝于煤山自缢殉国！四月山海关总兵吴三桂降清开关，多尔衮八旗铁骑于一片石击败李自成入主北京；此后史可法死守扬州、李定国西南“两蹶名王”，直至1661—1662年延平王郑成功横渡鹿耳门驱逐荷夷收复台湾，为三百年大明画下苍凉而壮烈的句号。",
+  "strategicOutcome": "明朝二百七十六年中原统治于1644年终结，清军入关定鼎；郑成功收复台湾使宝岛重归华夏版图。",
+  "factions": [
+    {
+      "id": "ming-loyalists",
+      "name": "大明与南明抗清义师",
+      "leader": "崇祯帝 · 孙传庭 · 史可法 · 李定国 · 郑成功",
+      "color": "#B83B2A",
+      "badgeText": "明"
+    },
+    {
+      "id": "shun-army",
+      "name": "闯王李自成大顺军",
+      "leader": "李自成 · 刘宗敏",
+      "color": "#D97706",
+      "badgeText": "顺"
+    },
+    {
+      "id": "qing-banners",
+      "name": "大清八旗与关宁降军",
+      "leader": "皇太极 · 多尔衮 · 多铎 · 吴三桂",
+      "color": "#1E3A8A",
+      "badgeText": "清"
+    }
+  ],
+  "phases": [
+    {
+      "phaseNo": 1,
+      "title": "第一幕：底牌尽碎 · 松锦崩溃与孙传庭血染潼关绝唱",
+      "dateLabel": "崇祯十五年至十六年（1642—1643）十月",
+      "year": 1643,
+      "narrative": "洪承畴十三万边军在松锦被皇太极围歼后，崇祯帝从诏狱放出双耳已聋的三边总督孙传庭统领最后秦军家底。朝廷与秦绅日夜催促出关速战，孙传庭被迫率新募之兵东出潼关挺进河南汝州、郪县，连降七日暴雨后方粮断，新兵哗溃；李自成铁骑一日夜狂追四百里攻破潼关，五十岁的孙传庭跃马挥刀战死乱军之中——《明史》叹曰：“传庭死，而明亡矣！”",
+      "whyKeyPoint": "为啥孙传庭明明已经打到宝丰郪县却功亏一篑？大明此时已无一两存银、无一支预备队，一旦遭遇连续七天秋雨导致陕西运粮牛车陷泥断绝，把全部筹码押上一桌的孤军便再无翻盘余地。",
+      "camera": {
+        "center": [111.35, 34.35],
+        "zoom": 6.4,
+        "pitch": 40,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-loyalists",
+        "leftLabel": "断粮溃退之孙传庭秦军",
+        "leftPower": 25,
+        "rightFactionId": "shun-army",
+        "rightLabel": "李自成席卷中原百万闯军",
+        "rightPower": 75
+      },
+      "routes": [
+        {
+          "id": "r-js1-chuanting-east",
+          "order": 1,
+          "factionId": "ming-loyalists",
+          "type": "assault",
+          "label": "孙传庭奉严旨率秦兵出潼关东进洛阳、汝州与郪县，遇淫雨断粮",
+          "commander": "孙传庭 · 白广恩",
+          "coordinates": [
+            [108.94, 34.34],
+            [110.25, 34.54],
+            [113.25, 33.88]
+          ]
+        },
+        {
+          "id": "r-js1-shun-counter",
+          "order": 2,
+          "factionId": "shun-army",
+          "type": "assault",
+          "label": "李自成截断粮道一日夜急追四百里攻破潼关，孙传庭阵亡，西安失守！",
+          "commander": "李自成 · 刘宗敏",
+          "coordinates": [
+            [113.48, 33.65],
+            [110.25, 34.54],
+            [108.94, 34.34]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-js1-tongguan",
+          "kind": "clash",
+          "label": "潼关陷落 · 孙传庭殉国",
+          "subLabel": "“传庭死，而明亡矣！”",
+          "coordinates": [110.25, 34.54],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 2,
+      "title": "第二幕：煤山斜阳 · 李自成东征破北京，崇祯殉社稷",
+      "dateLabel": "崇祯十七年（1644）正月—三月十九日",
+      "year": 1644,
+      "narrative": "1644年正月李自成于西安称王建国“大顺”，二月渡黄河克太原，守将周遇吉于宁武关浴血巷战杀敌数千壮烈阖门殉国！大同、宣府、居庸关太监守将随即望风开城投降。三月十八日大顺军攻破北京外城，崇祯帝拒绝南逃（群臣此前因怕背锅阻挠南迁），撞钟集百官竟无一人到场；十九日黎明，三十四岁的朱由检披发以面掩衣自缢于煤山歪脖槐树下，兑现“君王死社稷”之祖训！",
+      "whyKeyPoint": "为啥宁武关周遇吉死战之后，宣大居庸关三天就全降了？连年欠饷加瘟疫鼠疫已掏空北边守军最后一点战心，而南迁太子之议又被东林与言官死要面子否决，最终君臣同葬孤城。",
+      "camera": {
+        "center": [113.25, 37.85],
+        "zoom": 5.6,
+        "pitch": 38,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-loyalists",
+        "leftLabel": "瘟疫欠饷之北京残兵",
+        "leftPower": 14,
+        "rightFactionId": "shun-army",
+        "rightLabel": "势如破竹之大顺东征军",
+        "rightPower": 86
+      },
+      "routes": [
+        {
+          "id": "r-js2-shun-taiyuan",
+          "order": 1,
+          "factionId": "shun-army",
+          "type": "assault",
+          "label": "李自成自西安渡黄河克太原，惨烈攻陷周遇吉死守之宁武关",
+          "commander": "李自成",
+          "coordinates": [
+            [108.94, 34.34],
+            [112.55, 37.87],
+            [112.3, 39.0]
+          ]
+        },
+        {
+          "id": "r-js2-shun-beijing",
+          "order": 2,
+          "factionId": "shun-army",
+          "type": "assault",
+          "label": "连受大同、宣府、居庸关降书，三月十九日攻克北京京师！",
+          "commander": "李自成 · 刘宗敏",
+          "coordinates": [
+            [112.3, 39.0],
+            [113.3, 40.09],
+            [115.06, 40.61],
+            [116.41, 39.9]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-js2-meishan",
+          "kind": "siege",
+          "label": "甲申国变 · 崇祯煤山自缢",
+          "subLabel": "“任贼分裂朕尸，勿伤百姓一人”",
+          "coordinates": [116.397, 39.925],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 3,
+      "title": "第三幕：山海巨变 · 吴三桂开关降清，一片石八旗破大顺",
+      "dateLabel": "崇祯十七年 / 顺治元年（1644）四月二十一—五月",
+      "year": 1644,
+      "narrative": "大顺军进北京后刘宗敏拷掠百官追赃并强掳平西伯吴三桂爱妾陈圆圆、羁押吴襄。手握四万关宁铁骑的吴三桂掉头重夺山海关，致书摄政王多尔衮“借兵复仇”！四月二十一日李自成亲率十万大顺军猛攻山海关外一片石，吴三桂拼死苦撑至正午；待两军筋疲力尽、海风卷起漫天黄沙之际，蓄势待发的多尔衮两万八旗精骑高举白旗自威远台呼啸冲出，大顺军瞬间崩盘，李自成匆忙回京登基一日即焚宫西逃！",
+      "whyKeyPoint": "为啥多尔衮死等吴三桂和李自成拼到中午才出手？八旗满洲男丁总数不足十万，多尔衮算准了让关宁军替八旗消耗大顺军锋芒，关键时刻一锤定音，以最小代价摘取整个华北胜利果实！",
+      "camera": {
+        "center": [118.45, 40.05],
+        "zoom": 6.6,
+        "pitch": 40,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "shun-army",
+        "leftLabel": "李自成 10 万东征步骑",
+        "leftPower": 35,
+        "rightFactionId": "qing-banners",
+        "rightLabel": "多尔衮八旗 + 吴三桂关宁铁骑",
+        "rightPower": 65
+      },
+      "routes": [
+        {
+          "id": "r-js3-shun-march",
+          "order": 1,
+          "factionId": "shun-army",
+          "type": "assault",
+          "label": "李自成挟吴襄亲率十万大顺军出北京东扑山海关",
+          "commander": "李自成",
+          "coordinates": [
+            [116.41, 39.9],
+            [118.18, 39.63],
+            [119.78, 40.01]
+          ]
+        },
+        {
+          "id": "r-js3-dorgon-charge",
+          "order": 2,
+          "factionId": "qing-banners",
+          "type": "ambush",
+          "label": "多尔衮八旗疾驰抵关，乘狂风黄沙侧击一片石击溃大顺军并长驱入北京！",
+          "commander": "多尔衮 · 吴三桂",
+          "coordinates": [
+            [120.73, 40.62],
+            [119.78, 40.01],
+            [116.41, 39.9]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-js3-shanhaiguan",
+          "kind": "clash",
+          "label": "山海关一片石决战",
+          "subLabel": "吴三桂剃发降清，八旗铁骑入关定鼎",
+          "coordinates": [119.78, 40.01],
+          "color": "#1E3A8A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 4,
+      "title": "第四幕：梅花岭血泪 · 史可法孤守扬州殉国与江南抗清",
+      "dateLabel": "弘光元年（1645）四月—八月",
+      "year": 1645,
+      "narrative": "清军阿济格西破潼关灭大顺的同时，豫亲王多铎统十万清军南下直扑淮扬。南京弘光朝廷仍在马士英、阮大铖党争与左良玉内战中自毁长城；督师兵部尚书史可法退守孤城扬州，连续严词拒绝多尔衮五封劝降书（“城亡与亡，我意已决”），四月二十五日红衣大炮轰塌扬州西门，史可法自刎未遂被执不屈就义，清军纵兵屠城（“扬州十日”）；随后江阴阎应元率百姓死守孤城八十一日杀清军七万五千，气壮山河！",
+      "whyKeyPoint": "为啥坐拥富庶江南的弘光朝廷撑不过一年？江北四镇军阀割据互斗、朝堂文武只顾争权夺利，把全部重担扔给扬州孤城里的文臣史可法——重演了南宋临安的悲剧却少了岳飞韩世忠的强军。",
+      "camera": {
+        "center": [119.15, 32.35],
+        "zoom": 6.8,
+        "pitch": 40,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-loyalists",
+        "leftLabel": "史可法扬州孤城守军",
+        "leftPower": 22,
+        "rightFactionId": "qing-banners",
+        "rightLabel": "多铎重炮南征清军",
+        "rightPower": 78
+      },
+      "routes": [
+        {
+          "id": "r-js4-dodo-south",
+          "order": 1,
+          "factionId": "qing-banners",
+          "type": "assault",
+          "label": "豫亲王多铎南下渡淮河，以红衣巨炮轰破扬州，五月渡江陷南京",
+          "commander": "多铎",
+          "coordinates": [
+            [117.18, 34.26],
+            [119.02, 33.59],
+            [119.41, 32.39],
+            [118.8, 32.06]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-js4-yangzhou",
+          "kind": "siege",
+          "label": "史可法孤城殉节扬州",
+          "subLabel": "梅花岭衣冠冢留芳千古",
+          "coordinates": [119.41, 32.39],
+          "color": "#B83B2A"
+        },
+        {
+          "id": "m-js4-jiangyin",
+          "kind": "clash",
+          "label": "江阴八十一日抗清",
+          "subLabel": "典史阎应元率十万义民宁死不剃发",
+          "coordinates": [120.29, 31.92],
+          "color": "#D97706"
+        }
+      ]
+    },
+    {
+      "phaseNo": 5,
+      "title": "第五幕：落日余晖 · 李定国两蹶名王与郑成功横渡鹿耳门收复台湾！",
+      "dateLabel": "永历六年至十六年（1652—1662）",
+      "year": 1661,
+      "narrative": "大明余脉并未轻易熄灭：西南晋王李定国联明抗清，于1652年出奇兵克桂林逼死定南王孔有德、设伏衡阳阵斩八旗统帅敬谨亲王尼堪，“两蹶名王，天下震动”！东南海上，延平王“国姓爷”郑成功以厦门思明州为基地北伐南京挫败后，于1661年四月亲率两万五千水师战舰三百艘自金门横渡台湾海峡，乘大潮冲入鹿耳门天险，围困热兰遮城九个月迫使荷兰殖民总督揆一签字投降——收复宝岛台湾，留住华夏火种！",
+      "whyKeyPoint": "为啥郑成功东征台湾具有超越朝代兴亡的历史意义？在大陆抗清大势已去之际，郑成功用大明水师驱逐了盘踞台湾三十八年的西方殖民霸主荷兰东印度公司，使台湾永久回归中国版图！",
+      "camera": {
+        "center": [115.65, 25.15],
+        "zoom": 5.5,
+        "pitch": 36,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-loyalists",
+        "leftLabel": "李定国铁骑 · 郑成功复台水师",
+        "leftPower": 68,
+        "rightFactionId": "qing-banners",
+        "rightLabel": "桂林衡阳清军与台湾荷军",
+        "rightPower": 32
+      },
+      "routes": [
+        {
+          "id": "r-js5-lidingguo",
+          "order": 1,
+          "factionId": "ming-loyalists",
+          "type": "assault",
+          "label": "晋王李定国出云贵闪电攻克桂林毙孔有德，北进衡阳阵斩八旗亲王尼堪！",
+          "commander": "晋王李定国",
+          "coordinates": [
+            [106.63, 26.65],
+            [110.29, 25.27],
+            [112.57, 26.89]
+          ]
+        },
+        {
+          "id": "r-js5-koxinga-taiwan",
+          "order": 2,
+          "factionId": "ming-loyalists",
+          "type": "naval",
+          "label": "延平王郑成功率两万五千水师自厦门金门东渡鹿耳门，驱逐荷夷收复台湾！",
+          "commander": "国姓爷郑成功",
+          "coordinates": [
+            [118.09, 24.48],
+            [119.58, 23.57],
+            [120.16, 23.0]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-js5-hengyang",
+          "kind": "clash",
+          "label": "桂林 · 衡阳“两蹶名王”",
+          "subLabel": "李定国创南明抗清最高峰",
+          "coordinates": [112.57, 26.89],
+          "color": "#B83B2A"
+        },
+        {
+          "id": "m-js5-taiwan",
+          "kind": "siege",
+          "label": "收复台湾热兰遮城（1662）",
+          "subLabel": "驱逐荷兰殖民者，宝岛重归中华",
+          "coordinates": [120.16, 23.0],
+          "color": "#D97706"
+        }
+      ]
+    }
+  ]
+}

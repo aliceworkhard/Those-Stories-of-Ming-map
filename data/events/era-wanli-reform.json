@@ -1,0 +1,572 @@
+[
+  {
+    "id": "evt-1571-longqing-open-altan",
+    "title": "隆庆开关与俺答封贡：月港通商吸纳全球白银、宣大互市换五十年和平",
+    "tier": "macro",
+    "category": "institution",
+    "time": {
+      "year": 1571,
+      "month": 3,
+      "display": "隆庆元年（1567年）月港开海 · 隆庆五年（1571年）俺答封贡",
+      "reignTitle": "隆庆五年"
+    },
+    "location": {
+      "placeId": "place-guihuacheng",
+      "ancientName": "归化城（呼和浩特）· 漳州月港",
+      "modernName": "内蒙古呼和浩特 · 福建漳州",
+      "coordinates": [111.67, 40.818]
+    },
+    "camera": {
+      "center": [114.5, 34.5],
+      "zoom": 4.8,
+      "pitch": 36,
+      "bearing": 0
+    },
+    "summary": "嘉靖驾崩后，明穆宗隆庆帝在徐阶、高拱、张居正辅佐下做成两件改写大明国运的大事：南线于隆庆元年开放福建漳州月港准许民间商船出洋贸易（“隆庆开关”），使西班牙美洲银元与日本白银潮水般涌入中国；北线于隆庆四年借俺答汗之孙把汉那吉投明契机，由高拱、张居正、王崇古力排众议拍板册封俺答汗为“顺义王”并开放十一处马市（“俺答封贡”），兵不血刃终结了两百年蒙古边患！",
+    "actors": ["高拱", "张居正", "王崇古", "俺答汗", "三娘子", "涂泽民"],
+    "why": {
+      "geoFactor": "一南一北两大地理阀门同步打开：东南月港对接马尼拉大帆船太平洋贸易航线，塞北归化城对接草原皮毛马匹与中原茶布铁锅互补刚需。",
+      "systemFactor": "月港流入的海量白银直接为两年后张居正“一条鞭法”赋税折银提供了货币基础，而北边马市每年节省数百万两军饷，真正实现了海陆双赢！",
+      "prevEventIds": [
+        "evt-1550-gengxu-yansong",
+        "evt-1561-qijiguang-taizhou",
+        "evt-1566-hairui-memorial"
+      ],
+      "nextEventIds": ["evt-1573-zhangjuzheng-single-whip"]
+    },
+    "bookLens": {
+      "chapterIds": ["v5-zhu-zaihou-ch06"],
+      "mingyuePerspective": "《第六章 高拱的成就》盛赞高拱与张居正这对死对头在国家大义面前的默契联手：不费一兵一卒，把二十年前围困北京的死敌俺答汗变成了替大明看守北大门五十年的顺义王，这才是真正的大国政治智慧！",
+      "historicalNote": "据经济史学界估算，隆庆开关至明亡间全球约三分之一的白银最终流入明朝，彻底重塑了晚明社会经济形态。"
+    }
+  },
+  {
+    "id": "evt-1573-zhangjuzheng-single-whip",
+    "title": "张居正十年铁腕变法：“考成法”整肃百官与“一条鞭法”清丈天下",
+    "tier": "macro",
+    "category": "institution",
+    "time": {
+      "year": 1573,
+      "month": 6,
+      "display": "万历元年（1573年）考成法—万历九年（1581年）一条鞭法通行全国",
+      "reignTitle": "万历元年"
+    },
+    "location": {
+      "placeId": "place-beiping",
+      "ancientName": "北京紫禁城文渊阁",
+      "modernName": "北京故宫",
+      "coordinates": [116.402, 39.916]
+    },
+    "camera": {
+      "center": [116.402, 39.916],
+      "zoom": 6.8,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "十岁的万历帝朱翊钧即位，内阁首辅张居正联手李太后与司礼监大太监冯保（“铁三角”），开启大明最后一次全面自救变法：政治上创立“考成法”立限期账本层层督办，裁汰冗官三成；军事上重用戚继光守蓟门、李成梁镇辽东、潘季驯“束水攻沙”根治黄淮；经济上顶住豪强勋贵狂吠清丈全国土地（查出隐匿黑地两百万顷！），于万历九年全面推行“一条鞭法”——将田赋徭役杂税合并折银按亩征收，太仓存粮足支十年、存银高达四百余万两！",
+    "actors": ["张居正", "冯保", "李太后", "戚继光", "潘季驯"],
+    "why": {
+      "geoFactor": "潘季驯在淮安清口修筑高家堰“蓄清刷黄、束水攻沙”，既驯服了夺淮黄河水患，又确保了每年四百万石运河漕粮准点抵京。",
+      "systemFactor": "一条鞭法实现了中国赋役史从“税人（人头丁役）”向“税地（按亩征银）”的划时代飞跃，把负担从贫苦无地农民转移到了占田万顷的皇亲士绅头上——也因此得罪了整个既得利益官僚集团！",
+      "prevEventIds": ["evt-1571-longqing-open-altan"],
+      "nextEventIds": [
+        "evt-1578-lishizhen-bencao",
+        "evt-1582-zhangjuzheng-death-reversal"
+      ]
+    },
+    "bookLens": {
+      "chapterIds": [
+        "v5-zhu-yijun-ch08",
+        "v5-zhu-yijun-ch09",
+        "v5-zhu-yijun-ch11"
+      ],
+      "mingyuePerspective": "《第十一章 千古，唯此一人》写尽了改革者的孤独与悲壮：张居正不讲清誉、利用冯保、夺情恋栈，满朝言官骂他是权奸，他只回了一句“愿以深心奉尘刹，不予自身求利益”——他用自己身败名裂的代价，生生替快要断气的大明续了六十年阳寿！",
+      "historicalNote": "万历十年后万历三大征耗银上千万两而未加派民间一文钱，花的全是张居正十年变法攒下的丰厚国库老本。"
+    }
+  },
+  {
+    "id": "evt-1578-lishizhen-bencao",
+    "title": "李时珍踏遍大江南北撰成《本草纲目》：明代药物博物学巅峰",
+    "tier": "micro",
+    "category": "culture",
+    "time": {
+      "year": 1578,
+      "month": 8,
+      "display": "嘉靖三十一年起稿—万历六年（1578年）定稿",
+      "reignTitle": "万历六年"
+    },
+    "location": {
+      "placeId": "place-wuchang",
+      "ancientName": "湖广蕲州 -> 南京刊印",
+      "modernName": "湖北黄冈蕲春",
+      "coordinates": [115.43, 30.22]
+    },
+    "camera": {
+      "center": [115.43, 30.22],
+      "zoom": 6.8,
+      "pitch": 36,
+      "bearing": 0
+    },
+    "summary": "出身湖广蕲州世医家庭的李时珍三次乡试落第后弃儒从医，不迷信古书丹方，穿上草鞋背起药篓亲赴武当山、庐山、茅山及豫皖赣苏实地采药，请教樵夫渔民药农，历时二十七载三易其稿，于万历六年撰成一百九十万字巨著《本草纲目》，收录药物1,892种、附方一万一千余则，按“从微至巨、从贱至贵”自然演化分类法领先世界百余年！",
+    "actors": ["李时珍", "王世贞"],
+    "why": {
+      "geoFactor": "长江中游大别山、幕阜山、武当山与鄱阳洞庭水泽交汇，温带与亚热带药用动植物种类冠绝全国，为实地辨伪提供了天然宝库。",
+      "systemFactor": "在八股科举垄断上升通道的时代，一批落第士人转向实学、医药、农学与地理考察（李时珍、宋应星、徐光启、徐霞客），绽放出晚明最璀璨的科学实证光芒。",
+      "prevEventIds": ["evt-1573-zhangjuzheng-single-whip"],
+      "nextEventIds": ["evt-1637-tiangong-xuxiake"]
+    },
+    "bookLens": {
+      "chapterIds": ["v5-zhu-yijun-ch11"],
+      "mingyuePerspective": "书中特意指出李时珍在《本草纲目》中毫不留情地揭穿了嘉靖皇帝吃了一辈子的水银铅丹“服食求仙”纯属慢性自杀剧毒——敢在皇权时代用科学常识打脸炼丹迷信，殊为可贵。",
+      "historicalNote": "达尔文在《人类的由来》中多次引用《本草纲目》，称之为“中国古代的百科全书”。"
+    }
+  },
+  {
+    "id": "evt-1582-zhangjuzheng-death-reversal",
+    "title": "张居正病逝与万历抄家清算：人亡政息，皇帝开启二十八年罢朝",
+    "tier": "macro",
+    "category": "politics",
+    "time": {
+      "year": 1582,
+      "month": 6,
+      "display": "万历十年（1582年）六月病逝 · 十二年四月抄家",
+      "reignTitle": "万历十年"
+    },
+    "location": {
+      "placeId": "place-jiangling",
+      "ancientName": "北京首辅宅 -> 湖广荆州江陵张府",
+      "modernName": "湖北荆州",
+      "coordinates": [112.204, 30.352]
+    },
+    "camera": {
+      "center": [113.5, 32.8],
+      "zoom": 5.8,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "万历十年六月，耗尽最后一滴心血的首辅张居正病逝于北京任上。从小对严师张居正又敬又怕的二十岁万历帝，在言官揭发冯保与张居正奢华收受戚继光馈赠后信仰崩塌、压抑爆发：先流放冯保，万历十二年四月下诏削夺张居正太师官爵与“文忠”谥号，派锦衣卫封闭荆州张府大门抄家，竟活活饿死张家老弱十余口，长子礼部主事张敬修受酷刑屈打后写绝命书自缢！考成法随即废止，万历帝不久亦与文官集团彻底决裂，躲入深宫二十八年不再上朝！",
+    "actors": ["朱翊钧", "张居正", "张敬修", "申时行"],
+    "why": {
+      "geoFactor": "钦差至荆州抄家时因张府实存金银远少于万历想象（仅十余万两，不及冯保十分之一），为交差竟锁死府门断水断粮并株连荆州全城富户。",
+      "systemFactor": "张居正看透了天下制度，唯独漏算了少年皇帝扭曲的逆反心理与独裁体制“人亡政息”的死结——杀死张居正改革精神的那一刻，大明实际上已经错失了最后一次和平转型的机会。",
+      "prevEventIds": ["evt-1573-zhangjuzheng-single-whip"],
+      "nextEventIds": [
+        "evt-1583-nurhaci-thirteen-armors",
+        "evt-1592-ningxia-bobai",
+        "evt-1604-donglin-academy"
+      ]
+    },
+    "bookLens": {
+      "chapterIds": ["v5-zhu-yijun-ch11", "v5-zhu-yijun-ch12"],
+      "mingyuePerspective": "《第十二章 谜团》令人唏嘘：万历皇帝恨张居正管自己太严、恨老师嘴上讲清廉私下坐三十二人大轿，于是亲手毁掉了老师留下的一切；直到天启二年后金兵临山海关，明廷才想起张居正的救国大功为其彻底平反，可惜早已太迟了。",
+      "historicalNote": "张居正垮台次年（1583），失去后台的蓟镇名将戚继光亦被言官弹劾调广东旋即罢官，贫病交加卒于登州。"
+    }
+  },
+  {
+    "id": "evt-1583-nurhaci-thirteen-armors",
+    "title": "十三副遗甲起兵：建州二十五岁青年努尔哈赤点燃白山黑水星火",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1583,
+      "month": 5,
+      "display": "万历十一年（1583年）五月",
+      "reignTitle": "万历十一年"
+    },
+    "location": {
+      "placeId": "place-hetuala",
+      "ancientName": "建州左卫图伦城 · 赫图阿拉",
+      "modernName": "辽宁抚顺新宾",
+      "coordinates": [124.828, 41.678]
+    },
+    "camera": {
+      "center": [124.5, 41.75],
+      "zoom": 6.8,
+      "pitch": 40,
+      "bearing": 0
+    },
+    "summary": "张居正病逝仅十一个月后（万历十一年二月），辽东总兵李成梁攻破建州古勒城诛阿台，建州左卫向导觉昌安与儿子塔克世在混战中被苏克素护部尼堪外兰引明军误杀。年仅二十五岁的长孙努尔哈赤强忍血泪向李成梁领回祖、父遗体与敕书三十道、战马三十匹，凭借父亲留下的区区“十三副遗甲”与数十名追随者起兵讨伐尼堪外兰——谁也没想到，这个常在抚顺马市贩卖人参貂皮、爱读《三国演义》的女真青年，将在三十六年后颠覆大明江山！",
+    "actors": ["努尔哈赤", "李成梁", "尼堪外兰"],
+    "why": {
+      "geoFactor": "苏子河与浑河上游群山环抱（赫图阿拉），既可通过抚顺关与辽沈马市贸易获取铁器财力，又可借长白山密林屏障躲避明军早期监控。",
+      "systemFactor": "李成梁晚年养寇自重，采取“扶植努尔哈赤压制海西叶赫诸部”的短视均势策略，甚至弃守宽甸六堡肥沃土地，亲手养大了掘墓猛虎！",
+      "prevEventIds": ["evt-1582-zhangjuzheng-death-reversal"],
+      "nextEventIds": ["evt-1619-sarhu-defeat"]
+    },
+    "bookLens": {
+      "chapterIds": ["v6-zhu-yijun-ch07"],
+      "mingyuePerspective": "《第七章 不起眼的敌人》对比了努尔哈赤早年的极度隐忍：每次进北京朝贡都恭顺跪拜，暗地里却创制满文、建立军政合一的八旗制度——当北京城里的东林党还在为谁当内阁首辅吵得不可开交时，关外的铁骑已经磨亮了弯刀。",
+      "historicalNote": "努尔哈赤前后耗费三十年逐步吞并建州五部、长白山三部及海西哈达、辉发、乌拉三部，于1616年在赫图阿拉称汗建国“大金”。"
+    }
+  },
+  {
+    "id": "evt-1592-ningxia-bobai",
+    "title": "引黄河水灌破银川城：平定宁夏哱拜兵变拉开“万历三大征”序幕",
+    "tier": "micro",
+    "category": "war",
+    "time": {
+      "year": 1592,
+      "month": 9,
+      "display": "万历二十年（1592年）二月兵变—九月平定",
+      "reignTitle": "万历二十年"
+    },
+    "location": {
+      "placeId": "place-yulin",
+      "ancientName": "宁夏镇城（银川）",
+      "modernName": "宁夏银川",
+      "coordinates": [106.27, 38.47]
+    },
+    "camera": {
+      "center": [106.6, 38.4],
+      "zoom": 6.4,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "因宁夏巡抚党馨苛扣冬衣粮饷并鞭挞军士，蒙古降将副总兵哱拜父子与刘东阳于万历二十年二月发动兵变杀巡抚，连陷河西四十七堡，并以重金许诺河套蒙古著力兔数万骑兵助战，企图截断整个西北边防！万历帝果断启用魏学曾、叶梦熊总督三边，调辽东名将李如松（李成梁长子）携麻贵疾驰西北：先挡住河套蒙古援骑，再筑长堤决引黄河水淹灌宁夏坚城，城墙泡塌后李如松率死士登城诛灭哱拜阖族！",
+    "actors": ["李如松", "叶梦熊", "魏学曾", "麻贵", "哱拜"],
+    "why": {
+      "geoFactor": "宁夏镇西倚贺兰山、东临黄河灌渠且低于河床；攻城火炮难破厚重夯土城墙，叶梦熊因地制宜筑堤三十里引黄河水灌城，一举瓦解叛军防御。",
+      "systemFactor": "万历帝虽不上朝，但在国家边疆主权底线上毫不含糊；宁夏刚在九月平定，李如松大军连盔甲都没脱便立刻星夜东调四千里奔赴鸭绿江抗倭援朝！",
+      "prevEventIds": ["evt-1582-zhangjuzheng-death-reversal"],
+      "nextEventIds": ["evt-1593-imjin-pyongyang-noryang"]
+    },
+    "bookLens": {
+      "chapterIds": ["v5-zhu-yijun-ch14"],
+      "mingyuePerspective": "书中展示了万历中期明军依然恐怖的跨战区投送能力：刚在宁夏贺兰山下砍完叛军，转身就跨过整个华北去朝鲜平壤硬刚日本战国精锐——张居正留下的强军余威在此刻尽显无遗。",
+      "historicalNote": "宁夏之役、朝鲜之役与播州之役并称“万历三大征”，三战全胜捍卫了明朝宗藩与西南版图。"
+    }
+  },
+  {
+    "id": "evt-1593-imjin-pyongyang-noryang",
+    "title": "万历抗倭援朝大捷：平壤万炮破倭与邓子龙李舜臣血战露梁海",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1593,
+      "month": 1,
+      "display": "万历二十年出师—二十六年（1598年）十一月露梁海全胜",
+      "reignTitle": "万历二十一年"
+    },
+    "location": {
+      "placeId": "place-pyongyang",
+      "ancientName": "朝鲜平壤 -> 王京汉城 -> 露梁海峡",
+      "modernName": "朝鲜平壤 · 韩国南海露梁津",
+      "coordinates": [125.754, 39.019]
+    },
+    "camera": {
+      "center": [126.5, 37.2],
+      "zoom": 5.8,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "丰臣秀吉发十五万日军两月鲸吞朝鲜八道，欲以朝鲜为跳板进攻大明。万历皇帝力排众议发兵跨鸭绿江：1593年正月提督李如松统四万精兵以重炮火器一日轰克平壤、焚毁汉城龙山总粮仓收复王京；1597年日军再犯，明廷再发水陆十万大军，至1598年十一月露梁海大海战，七旬老将邓子龙与朝鲜统制使李舜臣并肩血战殉国，焚沉岛津义弘战船四百余艘，将侵略者彻底赶出朝鲜半岛！",
+    "actors": ["朱翊钧", "李如松", "宋应昌", "麻贵", "陈璘", "邓子龙", "李舜臣"],
+    "why": {
+      "geoFactor": "朝鲜半岛多山少粮且三面临海，只要中朝水师掐断对马—釜山海道、陆军用重炮摧毁平壤据点焚其屯粮，十五万日军便陷入无粮孤岛。",
+      "systemFactor": "万历援朝彰显了东亚宗藩体系“兴灭继绝、保藩卫国”的道义巅峰（朝鲜此后尊明奉崇祯年号百余年）；但李如松1598年在辽东中蒙古伏击阵亡，辽东李氏家丁精锐大损，给了努尔哈赤千载难逢的战略窗口！",
+      "prevEventIds": ["evt-1592-ningxia-bobai"],
+      "nextEventIds": ["evt-1600-bozhou-hailongtun", "evt-1619-sarhu-defeat"]
+    },
+    "bookLens": {
+      "chapterIds": [
+        "v5-zhu-yijun-ch15",
+        "v5-zhu-yijun-ch16",
+        "v5-zhu-yijun-ch19"
+      ],
+      "mingyuePerspective": "《平壤，血战》与《胜算》燃爆全卷：当日本战国名将以为明军早像南宋一样腐朽不堪时，李如松的辽东铁骑与戚家军传人用铺天盖地的虎蹲炮和火箭教丰臣秀吉重新做人；而七十岁白发苍苍的邓子龙与李舜臣在黎明海面上的同归于尽，堪称东亚历史上最悲壮的英雄交响。",
+      "historicalNote": "丰臣秀吉死后两年（1600年）德川家康于关原合战夺权建江户幕府，日本转入两百六十年锁国和平。"
+    },
+    "campaignId": "cmp-1592-imjin-korea"
+  },
+  {
+    "id": "evt-1600-bozhou-hailongtun",
+    "title": "八路大军攻克海龙囤：平定播州杨应龙叛乱，改土归流收官三大征",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1600,
+      "month": 6,
+      "display": "万历二十八年（1600年）二月誓师 · 六月破囤",
+      "reignTitle": "万历二十八年"
+    },
+    "location": {
+      "placeId": "place-hailongtun",
+      "ancientName": "四川播州宣慰司海龙囤",
+      "modernName": "贵州遵义汇川区海龙屯",
+      "coordinates": [106.822, 27.812]
+    },
+    "camera": {
+      "center": [106.822, 27.812],
+      "zoom": 7.0,
+      "pitch": 44,
+      "bearing": 0
+    },
+    "summary": "盘踞川黔交界播州（遵义）长达七百余年的世袭土司杨应龙趁朝廷忙于朝鲜战事，拥苗兵十余万攻破綦江，杀掠川黔百姓。朝鲜凯旋刚毕，川湖贵总督李化龙将援朝归来的名将刘綎、陈璘、吴广全部调往西南，统八路二十四万大军步步逼进娄山关；万历二十八年六月冒倾盆大雨攀登四面绝壁的“飞龙关、飞虎关”攻破海龙囤天险，杨应龙自焚身亡，明廷废除播州土司改设四川遵义府与贵州平越府（“改土归流”），万历三大征全胜收官！",
+    "actors": ["李化龙", "刘綎", "陈璘", "杨应龙"],
+    "why": {
+      "geoFactor": "大娄山脉海龙囤孤峰拔地三百米、三面绝壁唯有一线石阶飞虎关相通，冷兵器时代号称“飞鸟莫度”；刘綎破娄山关后八路轮番昼夜仰攻断其外援，终破千年堡垒。",
+      "systemFactor": "平播改土归流彻底打通了湖广经贵州入云南的驿道咽喉，但也耗尽了太仓最后数百万两积蓄，万历帝随即派出臭名昭著的矿监税使四出搜刮民间工商。",
+      "prevEventIds": ["evt-1593-imjin-pyongyang-noryang"],
+      "nextEventIds": ["evt-1604-donglin-academy", "evt-1619-sarhu-defeat"]
+    },
+    "bookLens": {
+      "chapterIds": ["v5-zhu-yijun-ch20"],
+      "mingyuePerspective": "当年明月盛赞文官总督李化龙卓越的后勤与统御艺术（父丧夺情含泪指挥二十四万各省骄兵悍将零哗变），仅用一百一十四天便终结了唐末以来割据播州七百二十五年的杨氏土司王国。",
+      "historicalNote": "遵义海龙屯土司遗址已于2015年列入联合国教科文组织世界文化遗产名录。"
+    }
+  },
+  {
+    "id": "evt-1604-donglin-academy",
+    "title": "顾宪成重修无锡东林书院：从清流讲学圣地到晚明党争漩涡",
+    "tier": "macro",
+    "category": "politics",
+    "time": {
+      "year": 1604,
+      "month": 10,
+      "display": "万历三十二年（1604年）十月",
+      "reignTitle": "万历三十二年"
+    },
+    "location": {
+      "placeId": "place-donglin",
+      "ancientName": "常州府无锡东林书院",
+      "modernName": "江苏无锡东林书院",
+      "coordinates": [120.308, 31.578]
+    },
+    "camera": {
+      "center": [120.308, 31.578],
+      "zoom": 7.4,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "因在“争国本”中反对万历帝立郑贵妃之子福王、坚持立长子朱常洛而被削籍回乡的吏部郎中顾宪成，与高攀龙在无锡重修北宋杨时讲学旧址——东林书院，题写千古名联：“风声雨声读书声声声入耳，家事国事天下事事事关心！”书院抨击矿税害民、臧否朝廷人物，迅速与朝内赵南星、邹元标、杨涟、左光斗呼应形成“东林党”，与浙党、齐党、楚党围绕京察与国本展开长达数十年的惨烈门户混战！",
+    "actors": ["顾宪成", "高攀龙", "赵南星", "邹元标"],
+    "why": {
+      "geoFactor": "太湖流域苏松常嘉湖是晚明工商业最发达、进士密度最高的财富文化核心，东林派反对工商矿税的立场天然代表江南中小地主与市民工商业利益。",
+      "systemFactor": "东林前辈顾宪成、杨涟、左光斗确有一腔舍生取义的热血正气，但党争演化到后期渐沦为“只问门户立场、不论是非实务”的意气撕咬，严重瘫痪了晚明国家行政效率！",
+      "prevEventIds": [
+        "evt-1582-zhangjuzheng-death-reversal",
+        "evt-1600-bozhou-hailongtun"
+      ],
+      "nextEventIds": [
+        "evt-1615-tingji-stick-case",
+        "evt-1625-weizhongxian-six-martyrs"
+      ]
+    },
+    "bookLens": {
+      "chapterIds": ["v6-zhu-yijun-ch05", "v6-zhu-yijun-ch09"],
+      "mingyuePerspective": "当年明月对东林党给出了极为客观公允的剖析：他们不是完人，常常迂腐刻薄爱扣道德大帽子；但当魏忠贤屠刀落下和清军破城之时，高攀龙投水、杨涟左光斗惨死诏狱、黄道周史可法从容就义——东林君子用鲜血证明了自己并非只会空谈的懦夫。",
+      "historicalNote": "天启六年魏忠贤曾下令拆毁全国书院，东林书院被夷为平地，崇祯即位后方诏命修复。"
+    }
+  },
+  {
+    "id": "evt-1615-tingji-stick-case",
+    "title": "梃击案惊魂：疯汉张差一根枣木棍打穿紫禁城宫门与国本暗战",
+    "tier": "micro",
+    "category": "anecdote",
+    "time": {
+      "year": 1615,
+      "month": 5,
+      "display": "万历四十三年（1615年）五月初四",
+      "reignTitle": "万历四十三年"
+    },
+    "location": {
+      "placeId": "place-beiping",
+      "ancientName": "北京紫禁城东华门 -> 慈庆宫",
+      "modernName": "北京故宫",
+      "coordinates": [116.404, 39.916]
+    },
+    "camera": {
+      "center": [116.404, 39.916],
+      "zoom": 8.0,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "万历帝苦争十五年被迫立长子朱常洛为太子、遣爱子福王朱常洵赴洛阳就藩后仅一年（1615年五月），蓟州男子张差竟手持一根枣木棍，大摇大摆穿过戒备森严的东华门，一路打伤守门太监直冲太子居住的慈庆宫屋檐下！刑部提牢主事王之寀夜审张差，竟供出幕后指使乃是郑贵妃手下太监庞保、刘成！满朝哗然直指郑贵妃谋害皇储，万历帝慌忙牵着太子朱常洛的手在慈宁宫召见百官哭求息事宁人，处决张差与两名太监草草结案（明末三大案之首“梃击案”）。",
+    "actors": ["朱常洛", "王之寀", "张差", "朱翊钧", "郑贵妃"],
+    "why": {
+      "geoFactor": "堂堂大明皇宫紫禁城东华门竟能让一名外地樵夫拎着木棍如入无人之境打到太子寝宫门口，暴露出万历晚年宫禁卫戍已松弛腐败到了何等匪夷所思的地步！",
+      "systemFactor": "长达三十年的“国本之争”使皇室父子猜忌、朝臣水火不容，太子朱常洛更在惊恐压抑中熬坏了身体，导致五年后继位仅一个月便暴毙。",
+      "prevEventIds": ["evt-1604-donglin-academy"],
+      "nextEventIds": ["evt-1620-red-pill-palace-move"]
+    },
+    "bookLens": {
+      "chapterIds": ["v6-zhu-yijun-ch06", "v6-zhu-changluo-ch10"],
+      "mingyuePerspective": "《第六章 谋杀》既好笑又寒心：一个连正经刺客都算不上的农村壮汉张差，因为有人许诺给他几十亩地，拎根木棍就差点改写了大明皇位继承顺位。",
+      "historicalNote": "当初审讯张差的王之寀在十年后魏忠贤专权时遭翻旧账报复，惨死于诏狱之中。"
+    }
+  },
+  {
+    "id": "evt-1619-sarhu-defeat",
+    "title": "萨尔浒五日惨败：杨镐四路分兵丧师五万，大明辽东天平倾覆！",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1619,
+      "month": 3,
+      "display": "万历四十七年（1619年）三月初一—初五",
+      "reignTitle": "万历四十七年"
+    },
+    "location": {
+      "placeId": "place-sarhu",
+      "ancientName": "辽东萨尔浒山 · 尚间崖 · 阿布达里冈",
+      "modernName": "辽宁抚顺东萨尔浒",
+      "coordinates": [124.215, 41.892]
+    },
+    "camera": {
+      "center": [124.25, 41.75],
+      "zoom": 6.8,
+      "pitch": 42,
+      "bearing": 0
+    },
+    "summary": "努尔哈赤建立后金袭破抚顺清河后，万历帝起复杨镐经略辽东并开征“辽饷”。1619年二月杨镐坐镇沈阳，将全国抽调而来的九万余精兵分作四路进剿赫图阿拉。努尔哈赤集中六万八旗精骑实施内线各个击破：三月初一于萨尔浒、吉林崖全歼西路杜松，初二北转尚间崖击溃马林，初五换穿明军衣甲于阿布达里冈诱歼南路名将刘綎！五天之内明军丧师四万五千八百余人、亡将校三百余员，两年后沈阳辽阳相继陷落！",
+    "actors": ["努尔哈赤", "皇太极", "杨镐", "杜松", "刘綎", "熊廷弼"],
+    "why": {
+      "geoFactor": "浑河与苏子河上游群山峡谷纵横，外线四路明军被山岭彻底割裂，而处于中心枢纽的八旗骑兵半日即可转换战场形成三比一局部绝对优势。",
+      "systemFactor": "萨尔浒之败不仅葬送了万历朝最后一批百战宿将（杜松、刘綎），更迫使明廷连年加派全国田赋“辽饷”（每年五百二十万两），直接点燃了九年后陕北饥民造反的导火索！",
+      "prevEventIds": [
+        "evt-1583-nurhaci-thirteen-armors",
+        "evt-1593-imjin-pyongyang-noryang",
+        "evt-1600-bozhou-hailongtun"
+      ],
+      "nextEventIds": [
+        "evt-1620-red-pill-palace-move",
+        "evt-1626-ningyuan-victory"
+      ]
+    },
+    "bookLens": {
+      "chapterIds": ["v6-zhu-yijun-ch08"],
+      "mingyuePerspective": "《第八章 萨尔浒》是全书最沉重的历史分水岭：从此以后，辽东这口无底洞将吞噬大明每一两白银、每一支精兵，直到把整个帝国拖入万劫不复的深渊。",
+      "historicalNote": "萨尔浒败讯传至北京，年老病重的万历皇帝痛悔不已，于次年（万历四十八年七月）驾崩。"
+    },
+    "campaignId": "cmp-1619-sarhu"
+  },
+  {
+    "id": "evt-1620-red-pill-palace-move",
+    "title": "一月天子“红丸案”与杨涟左光斗“移宫案”：明末三大案连环震荡",
+    "tier": "micro",
+    "category": "politics",
+    "time": {
+      "year": 1620,
+      "month": 9,
+      "display": "泰昌元年（1620年）八月即位—九月初一崩",
+      "reignTitle": "泰昌元年"
+    },
+    "location": {
+      "placeId": "place-beiping",
+      "ancientName": "北京紫禁城乾清宫",
+      "modernName": "北京故宫",
+      "coordinates": [116.397, 39.919]
+    },
+    "camera": {
+      "center": [116.397, 39.919],
+      "zoom": 7.8,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "苦熬三十九年的太子朱常洛终于在万历驾崩后登基（泰昌帝），即位之初发内帑二百万两犒赏辽东边军、罢撤全国矿税，朝野欢呼！孰料郑贵妃进献美女，泰昌帝纵欲患病又误服太监崔文升泻药昼夜腹泻三四十次，鸿胪寺丞李可灼进献两颗神秘“红丸”（秋石春药），泰昌帝服下当夜五更暴毙，在位仅二十九天！李选侍随即扣留十五岁皇长子朱由校企图垂帘听政，给事中杨涟、御史左光斗挺身闯宫喝退太监，护送朱由校出乾清宫登基（天启帝，“移宫案”）——然而天启帝转头迷上了做木匠活，把皇权交给了文盲太监魏忠贤！",
+    "actors": ["朱常洛", "杨涟", "左光斗", "朱由校", "魏忠贤"],
+    "why": {
+      "geoFactor": "乾清宫乃天子正寝，李选侍盘踞乾清宫不退则新君无处正位，杨涟左光斗在宫门台阶死守逼移哕鸾宫，完成了惊心动魄的空间夺权。",
+      "systemFactor": "万历怠政导致皇长孙朱由校从未接受系统储君教育（竟连字都不太识，唯独木工手艺天下第一），司礼监与乳母客氏遂与魏忠贤结成阉党专政同盟。",
+      "prevEventIds": ["evt-1615-tingji-stick-case", "evt-1619-sarhu-defeat"],
+      "nextEventIds": ["evt-1625-weizhongxian-six-martyrs"]
+    },
+    "bookLens": {
+      "chapterIds": ["v6-zhu-changluo-ch10", "v6-zhu-youxiao-ch13"],
+      "mingyuePerspective": "当年明月感叹万历四十ハ年这魔幻的两个月：大明在六十天里连死两任皇帝，好不容易扶上去一个木匠少年朱由校，而市井赌徒出身的魏进忠（魏忠贤）已经在角落里露出了狰狞的冷笑。",
+      "historicalNote": "因朱常洛在八月即位、九月初一即崩，朝臣议将万历四十八年八月以后改称泰昌元年，次年改天启元年。"
+    }
+  },
+  {
+    "id": "evt-1625-weizhongxian-six-martyrs",
+    "title": "杨涟痛劾魏忠贤二十四罪与东林六君子殉道：铁钉贯耳血染诏狱",
+    "tier": "macro",
+    "category": "politics",
+    "time": {
+      "year": 1625,
+      "month": 7,
+      "display": "天启四年六月上疏—五年（1625年）七月惨死诏狱",
+      "reignTitle": "天启五年"
+    },
+    "location": {
+      "placeId": "place-beiping",
+      "ancientName": "北京北镇抚司锦衣卫诏狱",
+      "modernName": "北京东城区",
+      "coordinates": [116.41, 39.92]
+    },
+    "camera": {
+      "center": [116.41, 39.92],
+      "zoom": 7.6,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "“九千岁”魏忠贤掌控东厂与锦衣卫，全国督抚竞相为其建生祠跪拜。天启四年六月，左副都御史杨涟冒死上疏痛陈魏忠贤“二十四大罪”，七十余名朝臣接力弹劾！专心做木工的天启帝却偏信魏忠贤，魏忠贤随即借汪文言狱掀起腥风血雨大清洗：将杨涟、左光斗、魏大中、袁化中、周朝瑞、顾大章（“东林六君子”）及次年周顺昌等“后七君子”投入北镇抚司诏狱！酷吏许显纯对左光斗炮烙剥面、对杨涟用土囊压身、铁钉活活钉入双耳贯脑而死，杨涟血衣书绝命词：“大笑大笑还大笑，刀砍东风，于我何有哉！”",
+    "actors": ["杨涟", "左光斗", "魏大中", "周顺昌", "高攀龙", "魏忠贤"],
+    "why": {
+      "geoFactor": "次年锦衣卫赴苏州抓捕清官周顺昌时，苏州数万市民激愤暴动打死锦衣卫缇骑（颜佩韦等“五人墓”起义），江南民心与阉党朝廷彻底决裂。",
+      "systemFactor": "魏忠贤阉党屠杀了大明最后一批有担当脊梁的正直干臣（包括冤杀辽东经略熊廷弼传首九边），把朝堂变成了蝇营狗苟的无耻奴才场。",
+      "prevEventIds": [
+        "evt-1604-donglin-academy",
+        "evt-1620-red-pill-palace-move"
+      ],
+      "nextEventIds": [
+        "evt-1626-ningyuan-victory",
+        "evt-1627-chongzhen-falls-wei"
+      ]
+    },
+    "bookLens": {
+      "chapterIds": ["v6-zhu-youxiao-ch16", "v6-zhu-youxiao-ch17"],
+      "mingyuePerspective": "《第十六章 杨涟》与《第十七章 殉道》让人读得双拳紧握：左光斗在脸被烙铁烧烂、膝盖骨碎裂时，为了保住乔装潜入死牢探望他的学生史可法（日后扬州殉国督师），抓起烧红的铁镣砸向史可法怒骂赶他出牢——薪火相传的华夏道统，就是这样在炼狱里交接的！",
+      "historicalNote": "杨涟死后家中仅余老屋一间、薄田数亩，老母妻子栖身城楼；湖广京山百姓自发集资迎葬忠骸。"
+    }
+  },
+  {
+    "id": "evt-1626-ningyuan-victory",
+    "title": "宁远大捷：孙承宗筑关宁防线，袁崇焕凭西洋红夷大炮轰败努尔哈赤！",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1626,
+      "month": 1,
+      "display": "天启六年（1626年）正月二十四—二十六日",
+      "reignTitle": "天启六年"
+    },
+    "location": {
+      "placeId": "place-ningyuan",
+      "ancientName": "辽西宁远卫城",
+      "modernName": "辽宁葫芦岛兴城",
+      "coordinates": [120.728, 40.618]
+    },
+    "camera": {
+      "center": [120.728, 40.618],
+      "zoom": 7.2,
+      "pitch": 42,
+      "bearing": 0
+    },
+    "summary": "在朝堂最黑暗的天启六年正月，辽西风雪孤城却传来震天捷报！此前帝师孙承宗督师四年提拔袁崇焕筑成宁远坚城；高第接任下令撤弃关外，宁前道袁崇焕拒命死守，与总兵满桂、副将左辅、祖大寿歃血盟誓！面对努尔哈赤亲统六万八旗大军围攻，袁崇焕使用徐光启、李之藻引进的十一门西洋红夷大炮居高临下猛轰两昼夜，八旗死伤惨重败退，努尔哈赤遭遇起兵四十三年来首次惨败，八月愤懑病逝沈阳，次年袁崇焕赵率教再获“宁锦大捷”！",
+    "actors": ["袁崇焕", "孙承宗", "满桂", "祖大寿", "努尔哈赤"],
+    "why": {
+      "geoFactor": "宁远城卡在辽西走廊首山与渤海湾觉华岛之间最窄隘口，城池方正设四角凸出炮台构成交叉火力网，后金大军无法绕越只能硬撞火炮死区。",
+      "systemFactor": "徐光启等士大夫积极译介西方近代弹道火炮科技（红夷大炮）与孙承宗筑城战略结合，一度为晚明扳平了辽东战场技术天平。",
+      "prevEventIds": [
+        "evt-1619-sarhu-defeat",
+        "evt-1625-weizhongxian-six-martyrs"
+      ],
+      "nextEventIds": [
+        "evt-1627-chongzhen-falls-wei",
+        "evt-1629-jisi-yuanchonghuan"
+      ]
+    },
+    "bookLens": {
+      "chapterIds": [
+        "v6-zhu-youxiao-ch18",
+        "v6-zhu-youxiao-ch19",
+        "v6-zhu-youxiao-ch20",
+        "v7-zhu-youxiao-ch02"
+      ],
+      "mingyuePerspective": "当年明月写活了那个热血书生袁崇焕：全关外友军都跑光了，他给老父亲写完遗书，脱下战袍裹在宁远城头大炮旁睡觉——这一刻的袁崇焕，无愧于顶天立地的民族英雄！",
+      "historicalNote": "努尔哈赤死后第八子皇太极击败多尔衮母子争位继任后金大汗，成为比努尔哈赤更可怕的政治军事全才。"
+    },
+    "campaignId": "cmp-1626-ningyuan-guangning"
+  }
+]

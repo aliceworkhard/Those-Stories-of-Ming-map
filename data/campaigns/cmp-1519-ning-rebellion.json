@@ -1,0 +1,280 @@
+{
+  "id": "cmp-1519-ning-rebellion",
+  "title": "王阳明三十五日平定宁王朱宸濠之乱",
+  "subtitle": "伪谍疑兵缓安庆 · 攻敌必救克南昌 · 鄱阳湖火攻擒藩王（1519）",
+  "yearRange": [1519, 1519],
+  "chapterIds": [
+    "v3-zhu-houzhao-ch14",
+    "v3-zhu-houzhao-ch15",
+    "v3-zhu-houzhao-ch16",
+    "v3-zhu-houzhao-ch17"
+  ],
+  "summary": "正德十四年（1519）六月十四日，蓄谋十余年的宁王朱宸濠在南昌杀巡抚孙燧起兵十万，顺长江东下猛攻安庆、直逼南京！途经丰城险遭追杀的南赣巡抚王守仁（王阳明）手头仅百余随从，却退守吉安联手知府伍文定，一面释放假情报瘫痪宁王判断，一面白手起家集结八万民兵，不救安庆而直捣宁王老巢南昌，最终于鄱阳湖樵舍火攻生擒朱宸濠——从叛乱爆发到彻底平定仅用短短三十五天！",
+  "strategicOutcome": "粉碎明中叶最大宗室武装叛乱，保全江南半壁免遭战火涂炭；心学宗师王阳明封新建伯，缔造“书生用兵如神、知行合一”千古传奇。",
+  "factions": [
+    {
+      "id": "yangming-army",
+      "name": "王阳明吉安平叛义军",
+      "leader": "南赣巡抚王守仁 · 吉安知府伍文定",
+      "color": "#B83B2A",
+      "badgeText": "明"
+    },
+    {
+      "id": "ning-rebels",
+      "name": "宁王朱宸濠叛军",
+      "leader": "宁王朱宸濠 · 李士实 · 刘养正",
+      "color": "#805AD5",
+      "badgeText": "宁"
+    }
+  ],
+  "phases": [
+    {
+      "phaseNo": 1,
+      "title": "第一幕：伪谍疑兵 · 丰城脱险退守吉安，十面假公文吓阻宁王",
+      "dateLabel": "正德十四年（1519）六月十四—二十五日",
+      "year": 1519,
+      "narrative": "朱宸濠在南昌起兵杀孙燧、许逵，而王阳明正巧乘小船赴福建勘事行至南昌南面丰城！闻变后王阳明换乘渔船顺逆风逃入吉安府，身边无一兵一卒。为阻止朱宸濠立刻顺江闪击空虚的南京，王阳明连夜伪造“朝廷十六万大军四路合围南昌”的绝密公文与策反李士实、刘养正的假回信，故意让宁王密探截获——多疑的朱宸濠果然在南昌枯等半个月不敢出动！",
+      "whyKeyPoint": "为啥宁王耽误这半个月就注定必败？造反贵在神速直取南京建立政权；王阳明精准拿捏了朱宸濠多疑惜命的心理弱点（“破心中贼”），零成本替南京和自己抢出了集结军队的黄金十五天！",
+      "camera": {
+        "center": [115.85, 28.25],
+        "zoom": 6.7,
+        "pitch": 40,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "yangming-army",
+        "leftLabel": "王阳明吉安临时募兵",
+        "leftPower": 18,
+        "rightFactionId": "ning-rebels",
+        "rightLabel": "宁王南昌 10 万大军",
+        "rightPower": 82
+      },
+      "routes": [
+        {
+          "id": "r-nr1-escape-jian",
+          "order": 1,
+          "factionId": "yangming-army",
+          "type": "retreat",
+          "label": "王阳明于丰城闻变急换渔船南退吉安，联手伍文定募兵",
+          "commander": "王守仁 · 伍文定",
+          "coordinates": [
+            [115.77, 28.19],
+            [115.38, 27.68],
+            [114.99, 27.11]
+          ]
+        },
+        {
+          "id": "r-nr1-ning-anqing",
+          "order": 2,
+          "factionId": "ning-rebels",
+          "type": "naval",
+          "label": "宁王迟疑半月后留万兵守南昌，亲率六万水师出鄱阳湖猛攻安庆",
+          "commander": "朱宸濠",
+          "coordinates": [
+            [115.89, 28.68],
+            [116.22, 29.74],
+            [117.04, 30.51]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-nr1-jian",
+          "kind": "camp",
+          "label": "吉安伪造十万援军假情报",
+          "subLabel": "心理战生生拖住宁王半月",
+          "coordinates": [114.99, 27.11],
+          "color": "#B83B2A"
+        },
+        {
+          "id": "m-nr1-anqing",
+          "kind": "siege",
+          "label": "安庆知府张文锦死守孤城",
+          "subLabel": "粉碎叛军顺江直扑南京企图",
+          "coordinates": [117.04, 30.51],
+          "color": "#D97706"
+        }
+      ]
+    },
+    {
+      "phaseNo": 2,
+      "title": "第二幕：攻敌必救 · 不救安庆直捣南昌，一日端掉叛军老巢",
+      "dateLabel": "正德十四年（1519）七月十二—二十日",
+      "year": 1519,
+      "narrative": "七月中旬王阳明在樟树镇集结江西各府临时拼凑的八万义军。诸将皆请顺江东救危在旦夕的安庆，王阳明断然否决：“若救安庆，南昌留守贼兵绝我粮道，腹背受敌必败；今直捣其老巢南昌，宸濠家属积蓄尽在城中，必弃安庆回救！”七月二十日黎明，明军四面梯攻，一日之内攻克南昌城，生擒宜春王及叛军留守核心！",
+      "whyKeyPoint": "为啥孙膑围魏救赵在千年后依然百试百灵？叛军士卒家眷财宝全部留在南昌城内，一旦老家被抄，安庆城下的六万叛军不用打就会军心瓦解、乖乖钻进王阳明预设的鄱阳湖口袋阵！",
+      "camera": {
+        "center": [115.65, 28.15],
+        "zoom": 6.9,
+        "pitch": 42,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "yangming-army",
+        "leftLabel": "王阳明 8 万奇袭义军",
+        "leftPower": 70,
+        "rightFactionId": "ning-rebels",
+        "rightLabel": "南昌留守万余叛军",
+        "rightPower": 30
+      },
+      "routes": [
+        {
+          "id": "r-nr2-zhangshu",
+          "order": 1,
+          "factionId": "yangming-army",
+          "type": "assault",
+          "label": "各府县义军自吉安北上樟树镇誓师整编",
+          "commander": "王守仁 · 伍文定",
+          "coordinates": [
+            [114.99, 27.11],
+            [115.35, 27.62],
+            [115.54, 28.06]
+          ]
+        },
+        {
+          "id": "r-nr2-storm-nanchang",
+          "order": 2,
+          "factionId": "yangming-army",
+          "type": "assault",
+          "label": "兵分十二哨星夜奔袭，七月二十日一举攻克宁王老巢南昌城！",
+          "commander": "王守仁 · 伍文定 · 邢珣",
+          "coordinates": [
+            [115.54, 28.06],
+            [115.77, 28.32],
+            [115.89, 28.68]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-nr2-nanchang",
+          "kind": "siege",
+          "label": "一日攻克南昌王城",
+          "subLabel": "尽获叛军家眷帑藏，安庆之围自解",
+          "coordinates": [115.89, 28.68],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 3,
+      "title": "第三幕：宿命重演 · 鄱阳湖火烧连环巨舰生擒朱宸濠！",
+      "dateLabel": "正德十四年（1519）七月二十二—二十六日",
+      "year": 1519,
+      "narrative": "朱宸濠在安庆城下惊闻南昌失守，果然魂飞魄散撤围南归！两军于鄱阳湖黄家渡、八字脑、樵舍展开决战：首战前锋稍却，伍文定站在船头须发皆焦斩后退者死战破敌；二十六日黎明，朱宸濠竟在当年陈友谅丧命的同一片水域将千艘大船结成方阵！王阳明命轻舟满载芦苇火药顺风冲入焚烧，烈焰蔽空，焚溺叛军三万余人，当场生擒宁王朱宸濠父子，距起兵仅三十五天！",
+      "whyKeyPoint": "为啥一百五十六年后鄱阳湖火烧连环船会分毫不差重演？朱宸濠主力习惯大舰结营自保，而王阳明早已熟读太祖康郎山战史——不读历史的造反者，终究逃不过历史的复刻惩罚。",
+      "camera": {
+        "center": [116.25, 29.25],
+        "zoom": 7.0,
+        "pitch": 42,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "yangming-army",
+        "leftLabel": "王阳明伍文定火船水师",
+        "leftPower": 78,
+        "rightFactionId": "ning-rebels",
+        "rightLabel": "回救丧胆之宁王连环船",
+        "rightPower": 22
+      },
+      "routes": [
+        {
+          "id": "r-nr3-ning-back",
+          "order": 1,
+          "factionId": "ning-rebels",
+          "type": "retreat",
+          "label": "朱宸濠解安庆之围，率六万水师慌乱驶回鄱阳湖",
+          "commander": "朱宸濠",
+          "coordinates": [
+            [117.04, 30.51],
+            [116.22, 29.74],
+            [116.18, 29.05]
+          ]
+        },
+        {
+          "id": "r-nr3-fire-attack",
+          "order": 2,
+          "factionId": "yangming-army",
+          "type": "naval",
+          "label": "王阳明伍文定出南昌迎战，于樵舍乘风纵火船焚毁连环舰生擒宁王！",
+          "commander": "王守仁 · 伍文定",
+          "coordinates": [
+            [115.89, 28.68],
+            [116.05, 28.88],
+            [116.18, 29.05]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-nr3-qiaoshe",
+          "kind": "clash",
+          "label": "鄱阳湖樵舍火攻生擒宁王",
+          "subLabel": "三十五日平定大乱，神机妙算冠绝古今",
+          "coordinates": [116.18, 29.05],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 4,
+      "title": "第四幕：荒诞终曲 · “威武大将军”南巡抢功与阳明全身护民",
+      "dateLabel": "正德十四年秋—十五年（1520）",
+      "year": 1520,
+      "narrative": "比十万叛军更难对付的，是得知有人造反兴奋得摩拳擦掌的正德帝朱厚照！皇帝自封“总督军务威武大将军总兵官朱寿”亲率边军南下，王阳明的捷报送到涿州竟被江彬、张忠扣压，逼王阳明把朱宸濠放回鄱阳湖“让皇上亲自重抓一遍”！为免边军入江西祸害百姓，王阳明抱病北上杭州将俘虏交予正直太监张永，改写捷报归功于“威武大将军方略”，以无我胸怀化解滔天谗毁！",
+      "whyKeyPoint": "为啥说对付江彬、张忠比抓宁王难十倍？战场上敌人明刀明枪，官场上佞幸却欲构陷王阳明“曾通宁王”；阳明先生放下个人虚名把首功让给皇帝与张永，正是“此心不动、知行合一”的最高实战！",
+      "camera": {
+        "center": [118.25, 30.85],
+        "zoom": 6.0,
+        "pitch": 36,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "yangming-army",
+        "leftLabel": "王阳明张永护民定局",
+        "leftPower": 85,
+        "rightFactionId": "ning-rebels",
+        "rightLabel": "江彬张忠谗言构陷",
+        "rightPower": 15
+      },
+      "routes": [
+        {
+          "id": "r-nr4-emperor-south",
+          "order": 1,
+          "factionId": "ning-rebels",
+          "type": "supply",
+          "label": "正德帝朱厚照自封威武大将军沿大运河南巡至南京索俘",
+          "commander": "明武宗朱厚照 · 江彬",
+          "coordinates": [
+            [117.18, 34.26],
+            [119.41, 32.39],
+            [118.8, 32.06]
+          ]
+        },
+        {
+          "id": "r-nr4-hangzhou-handover",
+          "order": 2,
+          "factionId": "yangming-army",
+          "type": "supply",
+          "label": "王阳明押解朱宸濠赴浙江杭州交予张永，智退谗臣保全江西黎民",
+          "commander": "王守仁 · 张永",
+          "coordinates": [
+            [115.89, 28.68],
+            [118.43, 29.87],
+            [120.16, 30.27]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-nr4-hangzhou",
+          "kind": "camp",
+          "label": "杭州夜会张永交俘让功",
+          "subLabel": "功成弗居，免除江西百姓二次兵燹",
+          "coordinates": [120.16, 30.27],
+          "color": "#B83B2A"
+        }
+      ]
+    }
+  ]
+}

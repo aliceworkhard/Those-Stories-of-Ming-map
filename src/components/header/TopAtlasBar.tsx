@@ -9,6 +9,7 @@ import {
   Compass,
   Eye,
   EyeOff,
+  Footprints,
   Gauge,
   Layers,
   Moon,
@@ -21,7 +22,11 @@ import {
   X,
 } from 'lucide-react';
 import { SITE_CONFIG } from '@/config/site';
-import { ALL_CAMPAIGNS, getSnapshotForYear } from '@/lib/atlasData';
+import {
+  ALL_CAMPAIGNS,
+  ALL_CHARACTERS,
+  getSnapshotForYear,
+} from '@/lib/atlasData';
 import { useAtlasStore } from '@/store/useAtlasStore';
 import type { PerformanceMode, PlaceNameMode } from '@/types/ming';
 
@@ -30,10 +35,12 @@ const STAR_CACHE_KEY = 'ming_atlas_gh_stars_v1';
 export default function TopAtlasBar() {
   const [layerMenuOpen, setLayerMenuOpen] = useState(false);
   const [campaignMenuOpen, setCampaignMenuOpen] = useState(false);
+  const [characterMenuOpen, setCharacterMenuOpen] = useState(false);
   const [starCount, setStarCount] = useState<number | null>(null);
 
   const currentYear = useAtlasStore((s) => s.currentYear);
   const activeCampaignId = useAtlasStore((s) => s.activeCampaignId);
+  const activeCharacterId = useAtlasStore((s) => s.activeCharacterId);
   const isStoryTourPlaying = useAtlasStore((s) => s.isStoryTourPlaying);
   const isImmersionMode = useAtlasStore((s) => s.isImmersionMode);
   const toggleImmersionMode = useAtlasStore((s) => s.toggleImmersionMode);
@@ -41,6 +48,8 @@ export default function TopAtlasBar() {
   const stopStoryTour = useAtlasStore((s) => s.stopStoryTour);
   const startCampaign = useAtlasStore((s) => s.startCampaign);
   const exitCampaign = useAtlasStore((s) => s.exitCampaign);
+  const startCharacterOdyssey = useAtlasStore((s) => s.startCharacterOdyssey);
+  const exitCharacterOdyssey = useAtlasStore((s) => s.exitCharacterOdyssey);
   const setTocModalOpen = useAtlasStore((s) => s.setTocModalOpen);
   const theme = useAtlasStore((s) => s.theme);
   const setTheme = useAtlasStore((s) => s.setTheme);
@@ -95,6 +104,7 @@ export default function TopAtlasBar() {
 
   const snapshot = getSnapshotForYear(currentYear);
   const activeCampaign = ALL_CAMPAIGNS.find((c) => c.id === activeCampaignId);
+  const activeCharacter = ALL_CHARACTERS.find((c) => c.id === activeCharacterId);
   const isDark = theme === 'xuanmo';
 
   // Opaque classical Xuan-paper / Obsidian surface (0 GPU-heavy backdrop-blur!)
@@ -143,6 +153,7 @@ export default function TopAtlasBar() {
           type="button"
           onClick={() => {
             setCampaignMenuOpen(false);
+            setCharacterMenuOpen(false);
             if (isStoryTourPlaying) stopStoryTour();
             else startStoryTour();
           }}
@@ -172,7 +183,11 @@ export default function TopAtlasBar() {
             <div className="flex items-center gap-1">
               <button
                 type="button"
-                onClick={() => setCampaignMenuOpen((v) => !v)}
+                onClick={() => {
+                  setCharacterMenuOpen(false);
+                  setLayerMenuOpen(false);
+                  setCampaignMenuOpen((v) => !v);
+                }}
                 className="px-2.5 py-1.5 rounded-lg bg-amber-700 text-amber-50 text-xs font-serif font-bold flex items-center gap-1 cursor-pointer"
               >
                 <Swords className="w-3.5 h-3.5" />
@@ -195,6 +210,7 @@ export default function TopAtlasBar() {
               type="button"
               onClick={() => {
                 setLayerMenuOpen(false);
+                setCharacterMenuOpen(false);
                 setCampaignMenuOpen((v) => !v);
               }}
               className={`px-2.5 py-1.5 rounded-lg border text-xs font-serif font-bold flex items-center gap-1 transition cursor-pointer ${
@@ -214,7 +230,7 @@ export default function TopAtlasBar() {
 
           {campaignMenuOpen && (
             <div
-              className={`absolute left-0 top-full mt-1.5 z-50 w-80 p-2.5 rounded-xl border shadow-2xl text-xs flex flex-col gap-1.5 ${panelClass}`}
+              className={`absolute left-0 top-full mt-1.5 z-50 w-84 max-h-[72vh] overflow-y-auto p-2.5 rounded-xl border shadow-2xl text-xs flex flex-col gap-1.5 ${panelClass}`}
             >
               <div className="px-1.5 py-1 font-serif font-bold border-b border-current/12 flex items-center justify-between">
                 <span>选择经典战役 · 分步箭头与版图涂抹</span>
@@ -245,6 +261,106 @@ export default function TopAtlasBar() {
                     </div>
                     <div className="text-[11px] opacity-75 truncate mt-0.5">
                       {cmp.subtitle}（共 {cmp.phases.length} 幕）
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* 2b. Historical Figure Life Odyssey Selector (12 Legendary Figures) */}
+        <div className="relative shrink-0">
+          {activeCharacter ? (
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setCampaignMenuOpen(false);
+                  setLayerMenuOpen(false);
+                  setCharacterMenuOpen((v) => !v);
+                }}
+                className="px-2.5 py-1.5 rounded-lg text-amber-50 text-xs font-serif font-bold flex items-center gap-1 cursor-pointer"
+                style={{ backgroundColor: activeCharacter.color }}
+              >
+                <Footprints className="w-3.5 h-3.5" />
+                <span>{activeCharacter.name}足迹</span>
+                <ChevronDown className="w-3 h-3 opacity-80" />
+              </button>
+              <button
+                type="button"
+                onClick={exitCharacterOdyssey}
+                className="p-1.5 rounded-lg bg-current/10 hover:bg-current/20 cursor-pointer"
+                title="退出人物一生足迹模式"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                setCampaignMenuOpen(false);
+                setLayerMenuOpen(false);
+                setCharacterMenuOpen((v) => !v);
+              }}
+              className={`px-2.5 py-1.5 rounded-lg border text-xs font-serif font-bold flex items-center gap-1 transition cursor-pointer ${
+                characterMenuOpen
+                  ? 'border-[#B83B2A] bg-[#B83B2A]/15 text-[#B83B2A] dark:text-amber-300'
+                  : isDark
+                  ? 'border-amber-400/30 bg-slate-900 hover:bg-slate-800 text-amber-200'
+                  : 'border-amber-900/25 bg-amber-950/6 hover:bg-amber-950/12 text-stone-800'
+              }`}
+              title="开启风云人物一生足迹轨迹巡礼（朱元璋、王守仁、戚继光、张居正、袁崇焕、徐霞客等12人）"
+            >
+              <Footprints className="w-3.5 h-3.5 text-[#B83B2A] dark:text-amber-400" />
+              <span className="hidden sm:inline">人物足迹</span>
+              <ChevronDown className="w-3 h-3 opacity-75" />
+            </button>
+          )}
+
+          {characterMenuOpen && (
+            <div
+              className={`absolute left-0 top-full mt-1.5 z-50 w-80 max-h-[72vh] overflow-y-auto p-2.5 rounded-xl border shadow-2xl text-xs flex flex-col gap-1.5 ${panelClass}`}
+            >
+              <div className="px-1.5 py-1 font-serif font-bold border-b border-current/12 flex items-center justify-between">
+                <span>风云人物一生足迹巡礼</span>
+                <span className="text-[10px] opacity-65">共 {ALL_CHARACTERS.length} 位</span>
+              </div>
+              {ALL_CHARACTERS.map((ch) => {
+                const active = activeCharacterId === ch.id;
+                return (
+                  <button
+                    key={ch.id}
+                    type="button"
+                    onClick={() => {
+                      setCharacterMenuOpen(false);
+                      if (active) exitCharacterOdyssey();
+                      else startCharacterOdyssey(ch.id, 0);
+                    }}
+                    className={`w-full text-left px-2.5 py-2 rounded-lg border transition cursor-pointer ${
+                      active
+                        ? 'bg-[#9E2318] text-amber-50 border-amber-300'
+                        : 'border-transparent hover:bg-current/8'
+                    }`}
+                  >
+                    <div className="font-serif font-bold text-xs flex items-center justify-between gap-2">
+                      <span className="flex items-center gap-1.5">
+                        <span
+                          className="w-2.5 h-2.5 rounded-full inline-block shrink-0"
+                          style={{ backgroundColor: ch.color }}
+                        />
+                        <span>{ch.name}</span>
+                        <span className="text-[10px] font-sans font-normal opacity-75">
+                          ({ch.volumeSpan})
+                        </span>
+                      </span>
+                      <span className="text-[10px] tabular-nums opacity-75 shrink-0">
+                        {ch.lifespan}
+                      </span>
+                    </div>
+                    <div className="text-[11px] opacity-75 truncate mt-0.5">
+                      {ch.courtesyOrTitle} · 共 {ch.stops.length} 站足迹
                     </div>
                   </button>
                 );
@@ -433,6 +549,7 @@ export default function TopAtlasBar() {
             type="button"
             onClick={() => {
               setCampaignMenuOpen(false);
+              setCharacterMenuOpen(false);
               setLayerMenuOpen((v) => !v);
             }}
             className={`px-2 py-1 rounded-lg text-xs font-medium flex items-center gap-1 border transition cursor-pointer ${
@@ -448,10 +565,10 @@ export default function TopAtlasBar() {
 
         {layerMenuOpen && (
           <div
-            className={`absolute right-0 top-full mt-1.5 z-50 w-64 p-3 rounded-xl border shadow-2xl text-xs flex flex-col gap-2 ${panelClass}`}
+            className={`absolute right-0 top-full mt-1.5 z-50 w-72 p-3 rounded-xl border shadow-2xl text-xs flex flex-col gap-2 ${panelClass}`}
           >
             <div className="font-serif font-bold text-sm border-b border-current/15 pb-1.5 flex items-center justify-between">
-              <span>舆图要素图层开关</span>
+              <span>舆图要素与大明制度图层</span>
               <Compass className="w-4 h-4 opacity-60" />
             </div>
 
@@ -460,13 +577,15 @@ export default function TopAtlasBar() {
                 { key: 'territories', label: '政权疆域与胜方涂抹图层' },
                 { key: 'waterways', label: '明代夺淮故黄河 · 大运河 · 水系' },
                 { key: 'greatWall', label: '明长城与九边重镇防线' },
+                { key: 'princelyFiefs', label: '洪武分封藩王与九边塞王封藩印' },
+                { key: 'nineGarrisons', label: '明代九边重镇防区与军饷制度层' },
                 { key: 'landforms', label: '名山脊线 · 湖泊 · 四海古注记' },
                 { key: 'places', label: '两京州府与战略关隘地名' },
                 { key: 'causalArcs', label: '历史事件跨时空因果飞弧' },
                 { key: 'macroEvents', label: '定鼎国运 · 历史大事件印记' },
                 {
                   key: 'showAllMicroEvents',
-                  label: '全局常显所有历史轶事小标',
+                  label: '全局常显全史所有大小事件印记',
                 },
               ] as const
             ).map((item) => (

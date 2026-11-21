@@ -230,6 +230,42 @@ if (fs.existsSync(landformsPath)) {
   }
 }
 
+// 7. Validate Character Odysseys & Institutional Thematic Layers
+console.log('7. Validating data/characters/odysseys.json & data/geo-base/ming-institutions.json...');
+const odysseysPath = path.join(DATA_DIR, 'characters', 'odysseys.json');
+if (fs.existsSync(odysseysPath)) {
+  const chars = JSON.parse(fs.readFileSync(odysseysPath, 'utf8'));
+  const charIds = new Set();
+  for (const ch of chars) {
+    if (!ch.id?.startsWith('char-')) fail(`Invalid character id: ${ch.id}`);
+    if (charIds.has(ch.id)) fail(`Duplicate character id: ${ch.id}`);
+    charIds.add(ch.id);
+    if (!Array.isArray(ch.stops) || ch.stops.length < 3) {
+      fail(`Character ${ch.id} must have >= 3 stops`);
+    }
+    for (const st of ch.stops || []) {
+      checkCoord(st.coordinates, `${ch.id} stop ${st.step}`);
+      if (st.eventId && !eventIdSet.has(st.eventId)) {
+        fail(`Character ${ch.id} stop ${st.step} references unknown eventId ${st.eventId}`);
+      }
+    }
+  }
+  ok(`Character Odysseys verified (${chars.length} historical figures)`);
+}
+
+const instPath = path.join(DATA_DIR, 'geo-base', 'ming-institutions.json');
+if (fs.existsSync(instPath)) {
+  const ifc = JSON.parse(fs.readFileSync(instPath, 'utf8'));
+  if (!Array.isArray(ifc.features) || ifc.features.length < 20) {
+    fail(`ming-institutions.json expected >= 20 features, got ${ifc.features?.length}`);
+  } else {
+    for (const f of ifc.features) {
+      checkCoord(f.geometry?.coordinates, `Institution ${f.properties?.id}`);
+    }
+    ok(`Ming princely fiefs & Nine-Garrison institutional layers verified (${ifc.features.length} features)`);
+  }
+}
+
 if (errors > 0) {
   console.error(`\nValidation FAILED with ${errors} error(s).`);
   process.exit(1);

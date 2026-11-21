@@ -1,0 +1,648 @@
+[
+  {
+    "id": "evt-1467-chenghua-yansui",
+    "title": "成化犁庭与余子俊筑延绥长城：铁腕靖建州、高墙锁河套",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1467,
+      "month": 9,
+      "display": "成化三年（1467年）犁庭 · 成化十年筑延绥墙",
+      "reignTitle": "成化三年"
+    },
+    "location": {
+      "placeId": "place-yulin",
+      "ancientName": "延绥镇榆林卫 · 建州婆猪江",
+      "modernName": "陕西榆林 · 辽宁桓仁",
+      "coordinates": [109.734, 38.285]
+    },
+    "camera": {
+      "center": [115.2, 40.2],
+      "zoom": 5.2,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "明宪宗朱见深即位首先为于谦平反昭雪。面对东北建州女真首领董山屡犯辽东，成化三年（及十五年）命赵辅、王直、朱永联合朝鲜大军直捣建州老巢，诛杀董山、焚寨千余（“成化犁庭”），换来辽东百年安宁；西北针对蒙古入据河套，右副都御史余子俊率四万军民于榆林一线依山铲崖修筑千七百里延绥边墙与墩台，正式开启明中后期修筑万里边墙的国防时代！",
+    "actors": ["朱见深", "余子俊", "赵辅", "汪直", "董山"],
+    "why": {
+      "geoFactor": "黄河“几”字弯内的河套平原水草丰美，一旦蒙古骑兵长期驻牧河套，随时可南下关中；沿毛乌素沙地南缘榆林修筑连续边墙，用人工地理屏障切断了骑兵纵马通道。",
+      "systemFactor": "放弃耗费巨亿的“搜套”主动进攻，改采性价比更高的筑墙屯田守御，标志着大明国防战略全面制度化定型。",
+      "prevEventIds": ["evt-1457-duomen-yuqian-martyr"],
+      "nextEventIds": ["evt-1476-wangzhi-hongzhi-birth"]
+    },
+    "bookLens": {
+      "chapterIds": ["v3-zhu-jianshen-ch04", "v3-zhu-jianshen-ch05"],
+      "mingyuePerspective": "当年明月指出结巴皇帝朱见深绝非平庸之辈：他给于谦平反、放手让余子俊修榆林长城、甚至敢用二十岁的太监汪直去辽东打“成化犁庭”，硬是把努尔哈赤的祖宗打老实了一百多年。",
+      "historicalNote": "努尔哈赤起兵“七大恨”仍对百余年前明廷诛杀建州左卫董山耿耿于怀，足见成化犁庭震慑之深。"
+    }
+  },
+  {
+    "id": "evt-1476-wangzhi-hongzhi-birth",
+    "title": "西厂风波与冷宫奇迹：张敏太监冒死藏储君保住大明圣主",
+    "tier": "macro",
+    "category": "politics",
+    "time": {
+      "year": 1476,
+      "month": 6,
+      "display": "成化十一年认皇子 · 成化十三年（1477年）设西厂",
+      "reignTitle": "成化十二年"
+    },
+    "location": {
+      "placeId": "place-beiping",
+      "ancientName": "北京紫禁城安乐堂冷宫",
+      "modernName": "北京故宫西北隅",
+      "coordinates": [116.394, 39.921]
+    },
+    "camera": {
+      "center": [116.394, 39.921],
+      "zoom": 8.0,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "成化帝朱见深痴恋比自己大十七岁的万贵妃，万贵妃丧子后嫉恨成狂，凡后宫妃嫔怀孕皆强灌堕胎药害死；外廷又有汪直提督“西缉事厂”侦缉百官。成化十一年，对镜自叹“老将至而无子”的朱见深听司礼监老太监张敏伏地吐露惊天秘密：“万岁已有皇子，藏在冷宫已六岁矣！”原来瑶族宫女纪氏生子后，门监张敏、废后吴氏与无数底层宫女冒灭族之祸用米粉哺育小皇子朱祐樘整整六年——这位冷宫幸存儿，正是明代最仁德的弘治皇帝！",
+    "actors": ["朱祐樘", "纪淑妃", "张敏", "吴废后", "朱见深", "万贵妃"],
+    "why": {
+      "geoFactor": "紫禁城西苑安乐堂偏僻幽深，废后吴氏居所紧邻其侧，重重宫墙阴差阳错成了隔绝万贵妃眼线的生命孤岛。",
+      "systemFactor": "在严酷血腥的深宫绞肉机里，拯救帝国皇统的不是高官显贵，而是太监怀恩、张敏（后吞金自尽）与废后吴氏心中未泯的人性善良。",
+      "prevEventIds": ["evt-1467-chenghua-yansui"],
+      "nextEventIds": ["evt-1488-hongzhi-renaissance"]
+    },
+    "bookLens": {
+      "chapterIds": ["v3-zhu-jianshen-ch04", "v3-zhu-youtang-ch06"],
+      "mingyuePerspective": "全书最温暖感人的章节之一：当朱见深抱起胎发披肩、瘦弱胆怯的六岁儿子失声痛哭时，无数小人物用生命接力守护的善良终于战胜了深宫恶魔，而且他们救活的是大明三百年最完美的一位明君。",
+      "historicalNote": "纪氏旋即在宫中暴卒（传为万贵妃毒害），周太后亲自将小太子朱祐樘抱入仁寿宫抚养，确保其平安继位。"
+    }
+  },
+  {
+    "id": "evt-1488-hongzhi-renaissance",
+    "title": "弘治中兴与“一夫一妻”皇帝：刘健李东阳谢迁君臣相得盛局",
+    "tier": "macro",
+    "category": "politics",
+    "time": {
+      "year": 1488,
+      "month": 2,
+      "display": "弘治元年至十八年（1488—1505年）",
+      "reignTitle": "弘治元年"
+    },
+    "location": {
+      "placeId": "place-beiping",
+      "ancientName": "北京紫禁城文华殿暖阁",
+      "modernName": "北京故宫",
+      "coordinates": [116.401, 39.917]
+    },
+    "camera": {
+      "center": [116.401, 39.917],
+      "zoom": 7.4,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "经历冷宫童年的明孝宗朱祐樘即位后，驱逐成化朝三千传奉官与妖僧继晓，提拔徐溥、刘健、李东阳、谢迁入阁，王恕、马文升、刘大夏执掌六部，重开早朝、午朝与经筵平台召对，减免江南灾赋、治理黄河张秋决口，开创“弘治中兴”！更令人称奇的是，在中国两千年多妻制皇宫中，朱祐樘终生只娶张皇后一人，不纳一妃一嫔，夫妻如寻常百姓般同起居共患难！",
+    "actors": ["朱祐樘", "张皇后", "刘健", "李东阳", "谢迁", "刘大夏"],
+    "why": {
+      "geoFactor": "弘治七年刘大夏采用“塞黄北流、导黄南入淮”方略成功堵筑山东张秋决口，保住了会通河漕运命脉免遭截断。",
+      "systemFactor": "朱祐樘真正做到了“宽仁而不懦弱、纳谏而不盲从”，内阁“刘健断、李东阳谋、谢迁侃”黄金组合使明代君臣共治达到最和谐巅峰；唯“一夫一妻”仅育一子朱厚照，为日后正德无嗣埋下伏笔。",
+      "prevEventIds": ["evt-1476-wangzhi-hongzhi-birth"],
+      "nextEventIds": [
+        "evt-1499-tangbohu-exam",
+        "evt-1508-longchang-enlightenment"
+      ]
+    },
+    "bookLens": {
+      "chapterIds": ["v3-zhu-youtang-ch06"],
+      "mingyuePerspective": "当年明月由衷赞叹《第六章 明君》：朱祐樘从不乱杀人、从不折腾百姓，连宫里着火烧了衣服都自责检讨；万历年间张居正曾感叹明代政治最清明、百姓最安乐的时代，莫过于弘治十八年。",
+      "historicalNote": "弘治十八年（1505）三十六岁的孝宗因误服风寒药鼻血不止英年早逝，临终托孤刘健等辅佐十五岁贪玩太子朱厚照。"
+    }
+  },
+  {
+    "id": "evt-1499-tangbohu-exam",
+    "title": "己未会试舞弊冤案：解元唐寅（唐伯虎）罢黜为吏与江南桃花庵",
+    "tier": "micro",
+    "category": "culture",
+    "time": {
+      "year": 1499,
+      "month": 3,
+      "display": "弘治十二年（1499年）三月",
+      "reignTitle": "弘治十二年"
+    },
+    "location": {
+      "placeId": "place-pingjiang",
+      "ancientName": "北京贡院 -> 苏州府桃花坞",
+      "modernName": "江苏苏州姑苏区桃花坞",
+      "coordinates": [120.608, 31.325]
+    },
+    "camera": {
+      "center": [120.608, 31.325],
+      "zoom": 7.6,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "弘治十一年南京乡试第一名（解元）才子唐寅（字伯虎），与江阴富家公子徐经（徐霞客高祖父！）结伴进京参加会试。因徐经暗贿主考程敏政家僮加上唐伯虎酒后狂言“今年会元必属我”，遭给事中华昶弹劾泄题，两人双双下锦衣卫诏狱拷问！虽查无唐寅买题实据，仍被终身革去功名罚往浙江为小吏；唐寅耻不就官，归苏州筑桃花庵卖画终老（后装疯逃脱宁王朱宸濠招揽）！",
+    "actors": ["唐寅", "徐经", "程敏政", "李东阳"],
+    "why": {
+      "geoFactor": "明中叶苏州松江常州商品经济极度繁荣，即便脱离科举仕途，江南发达的书画出版市场已足以支撑文人独立谋生。",
+      "systemFactor": "一场科场党争毁掉了官场上一位普通进士，却意外成就了中国美术史与文学史上最潇洒不羁的“江南第一风流才子”——且同案徐经曾孙女所生之子，正是日后踏遍九州的徐霞客！",
+      "prevEventIds": ["evt-1488-hongzhi-renaissance"],
+      "nextEventIds": ["evt-1519-wangyangming-ning-rebellion"]
+    },
+    "bookLens": {
+      "chapterIds": ["v3-zhu-youtang-ch06", "v3-zhu-houzhao-ch14"],
+      "mingyuePerspective": "书中不仅还原了真实的悲情唐伯虎（没有八个老婆，一生穷困坎坷），更串起了一条奇妙的家族伏笔：当年跟唐伯虎一起坐牢丢掉功名的江阴人徐经，百年后他的玄孙徐霞客彻底看穿功名，走出了最自由的人生。",
+      "historicalNote": "正德九年宁王朱宸濠重金聘唐寅入幕，唐寅察觉宁王谋反企图后赤身裸体装疯狂呼才得以被放回苏州脱险。"
+    }
+  },
+  {
+    "id": "evt-1508-longchang-enlightenment",
+    "title": "贵州龙场驿石棺悟道：王守仁绝境创立“知行合一”阳明心学",
+    "tier": "macro",
+    "category": "culture",
+    "time": {
+      "year": 1508,
+      "month": 5,
+      "display": "正德元年廷杖贬谪—正德三年（1508年）龙场悟道",
+      "reignTitle": "正德三年"
+    },
+    "location": {
+      "placeId": "place-longchang",
+      "ancientName": "贵州龙场驿（阳明洞）",
+      "modernName": "贵州贵阳修文县",
+      "coordinates": [106.592, 26.841]
+    },
+    "camera": {
+      "center": [106.592, 26.841],
+      "zoom": 7.0,
+      "pitch": 42,
+      "bearing": 0
+    },
+    "summary": "正德帝朱厚照登基宠信“八虎”太监刘瑾，兵部主事王守仁（王阳明）因仗义上疏营救言官戴铣，被刘瑾廷杖四十下狱、贬为贵州修文蛮荒绝境之龙场驿丞，途中钱塘江更遭锦衣卫追杀投水诈死方才脱险。在毒蛇瘴疠遍地、连房屋都没有的龙场山洞里，王守仁躺在一具石棺中面对生死日夜端居澄默，终在一夜子时欢呼跃起：“圣人之道，吾性自足，向之求理于事物者误也！”震古烁今的阳明心学就此诞生！",
+    "actors": ["王守仁", "刘瑾"],
+    "why": {
+      "geoFactor": "黔中修文深山苗彝杂处、与世隔绝，彻底剥离了京城功名利禄与书本注疏束缚，极致的外部苦难反而淬炼出最纯粹的内心觉醒。",
+      "systemFactor": "明中期官场程朱理学已沦为满口仁义道德、实则麻木虚伪的应试敲门砖；阳明心学高举“致良知、知行合一”，重新激活了晚明士人与民众的主体精神力量。",
+      "prevEventIds": ["evt-1488-hongzhi-renaissance"],
+      "nextEventIds": [
+        "evt-1510-liujin-downfall",
+        "evt-1519-wangyangming-ning-rebellion"
+      ]
+    },
+    "bookLens": {
+      "chapterIds": ["v3-zhu-houzhao-ch08", "v3-zhu-houzhao-ch09"],
+      "mingyuePerspective": "《第八章 传奇就此开始》与《第九章 悟道》是当年明月倾注最多心血的哲理篇章：真正的强大不是刀枪不入，而是被扒光一切扔进贵州野山洞的石头棺材里时，依然确信良知就在自己心里。",
+      "historicalNote": "刘瑾伏诛后王守仁复起历任庐陵知县、南赣巡抚，将心学哲理完美转化为行政与军事奇迹，成为中国历史上罕见的“立德、立功、立言”三不朽完人。"
+    }
+  },
+  {
+    "id": "evt-1510-liujin-downfall",
+    "title": "杨一清张永智诛“立皇帝”刘瑾：抄出金银数千万两、凌迟三千刀",
+    "tier": "macro",
+    "category": "politics",
+    "time": {
+      "year": 1510,
+      "month": 8,
+      "display": "正德五年（1510年）八月",
+      "reignTitle": "正德五年"
+    },
+    "location": {
+      "placeId": "place-beiping",
+      "ancientName": "北京豹房与菜市口刑场",
+      "modernName": "北京西城",
+      "coordinates": [116.385, 39.922]
+    },
+    "camera": {
+      "center": [116.385, 39.922],
+      "zoom": 7.5,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "正德帝躲入豹房嬉戏，司礼监掌印太监刘瑾趁正德在玩乐时呈递奏章，专权五年逼退刘健谢迁、罚跪三百朝臣，时人号称“刘瑾是站着的皇帝，朱厚照是坐着的皇帝”！宁夏安化王叛乱爆发（十八天即被仇钺平定），三边总制杨一清抓住献俘良机，一路密劝监军太监张永（八虎之一但与刘瑾不睦）。回京庆功夜宴上，张永掏出刘瑾十七条大罪与谋反铁证，朱厚照微醺下令：“瑾果如此，任汝缚之！”抄家查出伪玺、衮袍与扇藏匕首，朱厚照大怒判处刘瑾凌迟三千三百五十七刀！",
+    "actors": ["杨一清", "张永", "朱厚照", "刘瑾"],
+    "why": {
+      "geoFactor": "利用宁夏边关平叛回京沿途两千里无人监听的密谈空间，杨一清成功实施了“以八虎制八虎”的内廷分化奇谋。",
+      "systemFactor": "全书反复验证的铁律：宦官一切通天权势皆依附于皇权一念之间，刘瑾以为自己真是“立皇帝”，殊不知只要贪玩的正德帝皱一下眉头，庞大阉党一夜之间便灰飞烟灭！",
+      "prevEventIds": ["evt-1508-longchang-enlightenment"],
+      "nextEventIds": ["evt-1517-yingzhou-victory"]
+    },
+    "bookLens": {
+      "chapterIds": ["v3-zhu-houzhao-ch10", "v3-zhu-houzhao-ch11"],
+      "mingyuePerspective": "当年明月盛赞奇才杨一清：东林清流只会排队挨板子送人头，老江湖杨一清深谙“打败太监最好的武器是另一个太监”，谈笑间借张永之手替天下除掉了刘瑾。",
+      "historicalNote": "据《明史·刘瑾传》及清赵翼《廿二史札记》，刘瑾抄家金银折合白银数千万两，创下当时世界个人贪腐纪录。"
+    }
+  },
+  {
+    "id": "evt-1517-yingzhou-victory",
+    "title": "应州大捷：“威武大将军”朱厚照塞外亲砍一敌，硬刚达延汗五万铁骑",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1517,
+      "month": 10,
+      "display": "正德十二年（1517年）十月",
+      "reignTitle": "正德十二年"
+    },
+    "location": {
+      "placeId": "place-yingzhou",
+      "ancientName": "山西大同镇应州城外",
+      "modernName": "山西朔州应县",
+      "coordinates": [113.19, 39.553]
+    },
+    "camera": {
+      "center": [113.45, 39.85],
+      "zoom": 6.8,
+      "pitch": 42,
+      "bearing": 0
+    },
+    "summary": "不爱批奏折只爱领兵打仗的正德帝朱厚照，趁内阁大学士梁储等不备溜出居庸关赴宣府镇总兵府办公（称“家里”），自封“总督军务威武大将军总兵官朱寿”！正德十二年十月，中兴蒙古的雄主达延汗（小王子）亲率五万精骑南侵阳和、应州，朱厚照非但不逃，反而兴奋调集宣大辽东援军五万余人亲赴应州迎战，身先士卒与蒙古骑兵从清晨混战百余合至黄昏，皇帝亲手杀伤一敌，达延汗见明军越打越多被迫北撤，此后数年不敢大举入寇！",
+    "actors": ["朱厚照", "江彬", "王勋", "达延汗"],
+    "why": {
+      "geoFactor": "应州位于桑干河冲积平原南缘、雁门关北口之前，宣府、大同、延绥三镇机动骑兵可迅速汇集形成多路夹击之势。",
+      "systemFactor": "正德帝虽荒唐胡闹，却具备朱祁镇完全没有的军事直觉与尚武胆魄，懂得调动各镇职业边军协同作战，故未重演土木堡覆辙。",
+      "prevEventIds": ["evt-1510-liujin-downfall"],
+      "nextEventIds": ["evt-1519-wangyangming-ning-rebellion"]
+    },
+    "bookLens": {
+      "chapterIds": ["v3-zhu-houzhao-ch12", "v3-zhu-houzhao-ch13"],
+      "mingyuePerspective": "《第十三章 无人知晓的胜利》还了顽童皇帝一个公道：文官修《武宗实录》时为了证明皇帝瞎胡闹，故意把应州之战写成“斩首十六级而明军死五十二人”，却掩盖不了连不可一世的达延汗都被打退的真实战略胜果。",
+      "historicalNote": "朱厚照回京后自己给自己加封“太师、镇国公”俸禄，荒诞滑稽却颇具真性情。"
+    }
+  },
+  {
+    "id": "evt-1519-wangyangming-ning-rebellion",
+    "title": "王阳明三十五日平定宁王之乱：书生白手募兵火烧鄱阳湖",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1519,
+      "month": 7,
+      "display": "正德十四年（1519年）六月十四起兵—七月二十六生擒",
+      "reignTitle": "正德十四年"
+    },
+    "location": {
+      "placeId": "place-hongdu",
+      "ancientName": "吉安 -> 南昌 -> 鄱阳湖樵舍",
+      "modernName": "江西南昌 · 鄱阳湖",
+      "coordinates": [115.892, 28.676]
+    },
+    "camera": {
+      "center": [115.95, 28.65],
+      "zoom": 6.6,
+      "pitch": 42,
+      "bearing": 0
+    },
+    "summary": "当年大宁内迁改封南昌的宁王四世孙朱宸濠，贿赂权贵蓄兵十万起兵造反，顺江猛攻安庆欲取南京！恰在丰城手无一兵的南赣巡抚王阳明退守吉安，一面用伪造公文疑兵计把宁王唬在南昌枯等半月，一面联手知府伍文定召集八万文官知府临时义军，围魏救赵一日攻克南昌老巢，再于鄱阳湖樵舍顺风纵火焚毁连环战舰生擒朱宸濠——全程仅三十五天，朝廷大军还没出发叛乱已经平完了！",
+    "actors": ["王守仁", "伍文定", "孙燧", "朱宸濠", "朱厚照"],
+    "why": {
+      "geoFactor": "南昌、鄱阳湖、湖口、安庆的地理链条与1363年朱陈决战完全重合：只要安庆知府张文锦顶住十天，后方南昌老巢一旦被吉安北上之师端掉，叛军便在鄱阳湖进退维谷。",
+      "systemFactor": "上承1399年朱棣夺宁王大宁兵权改封南昌之历史积怨，下见王阳明“不动心”心学在瞬息万变战场上的惊世威力。",
+      "prevEventIds": [
+        "evt-1399-daning-raid",
+        "evt-1499-tangbohu-exam",
+        "evt-1508-longchang-enlightenment",
+        "evt-1517-yingzhou-victory"
+      ],
+      "nextEventIds": ["evt-1524-great-ritual-controversy"]
+    },
+    "bookLens": {
+      "chapterIds": [
+        "v3-zhu-houzhao-ch15",
+        "v3-zhu-houzhao-ch16",
+        "v3-zhu-houzhao-ch17"
+      ],
+      "mingyuePerspective": "当年明月感叹朱宸濠是全书最倒霉的造反者：筹划了整整十年买通满朝大臣，结果起兵第一天正好撞上路过江西的千古第一奇人王阳明——带着一群知府县令临时拼凑的杂牌军，三十五天就把十万大军灰飞烟灭！",
+      "historicalNote": "正德十五年底朱厚照南巡返京途中于清江浦泛舟落水染病，十六年三月崩于豹房无嗣，内阁首辅杨廷和迎立湖广安陆兴献王世子朱厚熜入继大统（嘉靖帝）。"
+    },
+    "campaignId": "cmp-1519-ning-rebellion"
+  },
+  {
+    "id": "evt-1524-great-ritual-controversy",
+    "title": "左顺门“大礼议”血杖：十四岁藩王少年朱厚熜硬刚满朝文官扳倒杨廷和",
+    "tier": "macro",
+    "category": "politics",
+    "time": {
+      "year": 1524,
+      "month": 7,
+      "display": "嘉靖元年争礼—嘉靖三年（1524年）七月左顺门廷杖",
+      "reignTitle": "嘉靖三年"
+    },
+    "location": {
+      "placeId": "place-beiping",
+      "ancientName": "北京紫禁城左顺门",
+      "modernName": "北京故宫协和门一带",
+      "coordinates": [116.398, 39.914]
+    },
+    "camera": {
+      "center": [116.398, 39.914],
+      "zoom": 7.6,
+      "pitch": 40,
+      "bearing": 0
+    },
+    "summary": "正德无子驾崩，三朝元老首辅杨廷和援引《皇明祖训》自湖广安陆迎立十四岁的堂弟朱厚熜即位（嘉靖帝），要求新帝尊伯父孝宗朱祐樘为“皇考（父亲）”、改称亲生父亲兴献王为“皇叔父”！少年老成的朱厚熜行至通州拒不受诏，借新科进士张璁一疏掀起“继统不继嗣”大反击！嘉靖三年七月，杨廷和之子状元杨慎率两百余名官员跪伏左顺门撼门号哭，十七岁的嘉靖帝冷酷下令锦衣卫全部抓捕廷杖，当场打死十七名官员，彻底夺回乾纲独断皇权！",
+    "actors": ["朱厚熜", "杨廷和", "张璁", "桂萼", "杨慎"],
+    "why": {
+      "geoFactor": "朱厚熜自湖广安陆（钟祥）藩邸北上京师，在通州城外驻跸不动试探北京内阁底线，甫入紫禁城便深明政治主场主动权所在。",
+      "systemFactor": "表面是叫“爹”还是叫“叔”的伦理礼仪之争，实质是正德末年极度膨胀的内阁首辅相权与新君皇权的最高统治权争夺战——嘉靖帝赢下了绝对皇权，却也把大明士风打得转向揣摩圣意的权谋内斗！",
+      "prevEventIds": ["evt-1519-wangyangming-ning-rebellion"],
+      "nextEventIds": [
+        "evt-1524-yangshen-yunnan-exile",
+        "evt-1542-renyin-palace-plot",
+        "evt-1550-gengxu-yansong"
+      ]
+    },
+    "bookLens": {
+      "chapterIds": [
+        "v4-zhu-houcong-ch01",
+        "v4-zhu-houcong-ch02",
+        "v4-zhu-houcong-ch03"
+      ],
+      "mingyuePerspective": "第肆部开篇《皇帝很脆弱，大臣很强悍》写出了中国政治史上最精彩的一场少年逆袭：杨廷和刚干掉江彬、遣散豹房威震天下，以为十四岁小皇帝是捏在手心里的软柿子，没想到迎回来的是一位权术天赋满级的顶级驭臣大师。",
+      "historicalNote": "嘉靖十七年朱厚熜更进一步将生父兴献帝庙号追尊为“睿宗”祔太庙，并将大明开国太宗朱棣庙号改尊为“成祖”。"
+    }
+  },
+  {
+    "id": "evt-1524-yangshen-yunnan-exile",
+    "title": "状元杨慎流放云南永昌：“滚滚长江东逝水”傲立西南三十五载",
+    "tier": "micro",
+    "category": "culture",
+    "time": {
+      "year": 1524,
+      "month": 8,
+      "display": "嘉靖三年（1524年）八月充军—嘉靖三十八年卒",
+      "reignTitle": "嘉靖三年"
+    },
+    "location": {
+      "placeId": "place-yongchang",
+      "ancientName": "云南永昌卫（保山）",
+      "modernName": "云南保山",
+      "coordinates": [99.161, 25.112]
+    },
+    "camera": {
+      "center": [101.2, 26.5],
+      "zoom": 5.8,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "左顺门两次惨烈廷杖后，三十七岁的状元修撰杨慎血肉模糊被铁链押往西南极边云南永昌卫永远充军（妻子黄娥作《寄夫》词送别江陵）。嘉靖帝对杨廷和父子恨之入骨，六次大赦天下唯独不赦杨慎！杨慎在滇西蛮烟瘴雨中丝毫未曾颓废，插花傅粉饮酒高歌，苦心编纂《南诏野史》《滇载记》等四百余种著作居明代博学第一，更在江畔写下冠绝千古的《临江仙·滚滚长江东逝水》！",
+    "actors": ["杨慎", "黄娥", "朱厚熜"],
+    "why": {
+      "geoFactor": "永昌卫地处澜沧江与怒江之间高黎贡山东麓，距北京七千余里，杨慎四处游历大理点苍山与昆明滇池，极大推动了中原文化向滇西边疆的传播。",
+      "systemFactor": "皇帝可以用廷杖剥夺读书人的官职与自由，却永远夺不走他笔下的江山与千古文名——三百年后人们早忘了大礼议条文，却人人皆诵“青山依旧在，几度夕阳红”。",
+      "prevEventIds": ["evt-1524-great-ritual-controversy"],
+      "nextEventIds": ["evt-1553-yangjisheng-martyr"]
+    },
+    "bookLens": {
+      "chapterIds": ["v4-zhu-houcong-ch02"],
+      "mingyuePerspective": "当年明月深情写道：嘉靖皇帝每隔几年都要派人去云南打听“杨慎死了没有”，直到七十二岁的杨慎临终写下“临利不敢先，见义不敢后”含笑离世——在这场长达三十五年的意志较量里，赢家是杨慎。",
+      "historicalNote": "明清《三国演义》卷首开篇词即毛宗岗父子采录杨慎《廿一史弹词》第三段说秦汉开场词《临江仙》。"
+    }
+  },
+  {
+    "id": "evt-1542-renyin-palace-plot",
+    "title": "壬寅宫变：十六名采露水宫女黄绫绳勒刺嘉靖帝，皇帝移居西苑修道",
+    "tier": "micro",
+    "category": "anecdote",
+    "time": {
+      "year": 1542,
+      "month": 10,
+      "display": "嘉靖二十一年（1542年）十月二十一日夜",
+      "reignTitle": "嘉靖二十一年"
+    },
+    "location": {
+      "placeId": "place-beiping",
+      "ancientName": "北京紫禁城端妃宫 -> 西苑万寿宫",
+      "modernName": "北京故宫与北海中南海",
+      "coordinates": [116.39, 39.918]
+    },
+    "camera": {
+      "center": [116.39, 39.918],
+      "zoom": 8.0,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "迷恋道教长生炼丹的嘉靖帝性格暴虐，强迫宫女每日寅时采集荷叶甘露并仅食桑叶饮露，动辄鞭挞致死。嘉靖二十一年十月夜，忍无可忍的宫女杨金英、邢翠莲等十六名十几岁的弱女子趁嘉靖熟睡于曹端妃宫中，用黄绫绳猛套皇帝脖颈并用钗簪乱刺！只因极度紧张将活结系成了死结未能勒断气管，宫女张金莲惊恐告密，方皇后赶到救下休克吐血的嘉靖帝（杨金英等被凌迟）；惊魂未定的嘉靖从此搬离紫禁城，长期躲在西苑永寿宫修道二十余年不上早朝！",
+    "actors": ["杨金英", "朱厚熜", "方皇后"],
+    "why": {
+      "geoFactor": "嘉靖视紫禁城大内为血光凶地而迁居西苑（今中南海北海），内阁大臣夏言、严嵩、徐阶被迫入直西苑撰拟“青词”就近议政。",
+      "systemFactor": "中国两千年皇权史上绝无仅有的一场底层少女弑君行动！嘉靖遇刺后避居西苑依赖道教青词，直接把最擅长熬夜写青词的严嵩推上了二十年专权首辅宝座。",
+      "prevEventIds": ["evt-1524-great-ritual-controversy"],
+      "nextEventIds": ["evt-1550-gengxu-yansong"]
+    },
+    "bookLens": {
+      "chapterIds": ["v4-zhu-houcong-ch06"],
+      "mingyuePerspective": "书中感叹那个决定历史走向的“死结”：手无寸铁的十几岁小姑娘被逼到敢去勒死大明皇帝，可见西苑修仙背后浸透了多少无辜少女的血泪。",
+      "historicalNote": "五年后西苑失火方皇后被困火海，嘉靖帝因记恨当年方皇后趁自己昏迷处死了宠妃曹端妃，竟冷眼不救任方皇后烧死。"
+    }
+  },
+  {
+    "id": "evt-1550-gengxu-yansong",
+    "title": "庚戌之变与严嵩专权：俺答铁骑围掠北京八日，严嵩借刀斩丁汝夔",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1550,
+      "month": 8,
+      "display": "嘉靖二十九年（1550年）八月",
+      "reignTitle": "嘉靖二十九年"
+    },
+    "location": {
+      "placeId": "place-beiping",
+      "ancientName": "古北口 -> 通州 -> 北京安定门外",
+      "modernName": "北京密云古北口至朝阳通州",
+      "coordinates": [116.65, 39.92]
+    },
+    "camera": {
+      "center": [116.85, 40.25],
+      "zoom": 6.6,
+      "pitch": 40,
+      "bearing": 0
+    },
+    "summary": "借河套议案谗杀前首辅夏言与总督曾铣后，严嵩父子独揽朝纲克扣边饷。嘉靖二十九年八月，土默特首领俺答汗因求贡互市被拒，率十万蒙古铁骑攻破蓟镇古北口长驱直入通州，兵临北京安定门、德胜门城下焚掠京郊整整八天！京营缺额腐败不敢一战，首辅严嵩竟密令兵部尚书丁汝夔“塞上败可掩，京郊败天子亲见，切勿出战”，待俺答满载退兵后，严嵩转头将替罪羊丁汝夔推出西市斩首！",
+    "actors": ["严嵩", "朱厚熜", "徐阶", "仇鸾", "丁汝夔", "俺答汗"],
+    "why": {
+      "geoFactor": "宣府大同防线坚固，俺答汗效仿日后皇太极路线向东绕过潮白河峡谷突破蓟镇薄弱的古北口，两天便踏平通州直抵北京城墙之下。",
+      "systemFactor": "距于谦北京保卫战仅一百年：当年于谦开城列阵血战退敌，百年后严嵩父子与咸宁侯仇鸾却靠禁军不出战、花钱买通蒙古不抢自家庄园保乌纱帽，晚明军政腐烂触目惊心！",
+      "prevEventIds": [
+        "evt-1524-great-ritual-controversy",
+        "evt-1542-renyin-palace-plot"
+      ],
+      "nextEventIds": [
+        "evt-1553-yangjisheng-martyr",
+        "evt-1561-qijiguang-taizhou",
+        "evt-1571-longqing-open-altan"
+      ]
+    },
+    "bookLens": {
+      "chapterIds": ["v4-zhu-houcong-ch06", "v4-zhu-houcong-ch07"],
+      "mingyuePerspective": "《第七章 徐阶的觉醒》写透了丁汝夔临刑前悔恨交加的痛哭与礼部尚书徐阶冰冷的眼神：对付严嵩父子这种毫无底线的毒蛇，靠君子式的讲道理只有死路一条，徐阶从此开始了长达十二年的残酷隐忍。",
+      "historicalNote": "庚戌之变中礼部尚书徐阶请嘉靖帝暂还大内早朝稳住人心，由此渐入次辅中枢。"
+    }
+  },
+  {
+    "id": "evt-1553-yangjisheng-martyr",
+    "title": "铁骨杨继盛弹劾严嵩“十罪五奸”：瓷片刮腐肉写就浩气绝命辞",
+    "tier": "micro",
+    "category": "politics",
+    "time": {
+      "year": 1553,
+      "month": 1,
+      "display": "嘉靖三十二年（1553年）上疏—三十四年十月就义",
+      "reignTitle": "嘉靖三十二年"
+    },
+    "location": {
+      "placeId": "place-beiping",
+      "ancientName": "北京镇抚司诏狱 · 西市",
+      "modernName": "北京西城区达智桥松筠庵（杨椒山祠）",
+      "coordinates": [116.378, 39.895]
+    },
+    "camera": {
+      "center": [116.378, 39.895],
+      "zoom": 8.0,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "曾因反对仇鸾马市被贬狄道典史（在当地开煤矿办学校造福百姓）的杨继盛（号椒山），官复兵部武选司员外郎仅一个月，便再次置生死于度外，上疏弹劾首辅严嵩“十罪五奸”！严嵩大怒将其投入诏狱廷杖一百，双腿胫骨被打碎溃烂；夜半狱卒持灯颤抖围观，杨继盛竟拒绝蛇胆止痛药，亲手拾起碎碗瓷片一片片刮去腿上腐肉、挑断筋膜谈笑自若！三年后严嵩将杨继盛名字夹入秋决名单处斩，临刑赋诗：“浩气还太虚，丹心照千古！”",
+    "actors": ["杨继盛", "严嵩", "严世蕃", "王世贞"],
+    "why": {
+      "geoFactor": "杨继盛故宅松筠庵位于北京宣武门外达智桥，后世成为戊戌公车上书康梁集会凭吊忠魂的精神地标。",
+      "systemFactor": "杨继盛疏中一句“召问二王（裕王、景王）亦知严嵩之奸”触犯了嘉靖帝最忌讳的父子猜忌逆鳞；但杨继盛之死彻底点燃了裕王府与徐阶集团铲除严党的决心！",
+      "prevEventIds": [
+        "evt-1524-yangshen-yunnan-exile",
+        "evt-1550-gengxu-yansong"
+      ],
+      "nextEventIds": ["evt-1562-xujie-topples-yansong"]
+    },
+    "bookLens": {
+      "chapterIds": ["v4-zhu-houcong-ch11"],
+      "mingyuePerspective": "《第十一章 勇气》令人肃然起敬：关公刮骨疗毒尚有麻沸散或美酒下棋，杨椒山在漆黑恶臭的锦衣卫死牢里用碎瓷碗自己割烂肉挑断脚筋，连看守他的酷吏都吓得手抖掉灯——这就是中国文人硬起来时的真正模样。",
+      "historicalNote": "杨继盛妻张氏上疏愿代夫死被严嵩扣压，夫死同日自缢殉情；隆庆元年追谥“忠愍”。"
+    }
+  },
+  {
+    "id": "evt-1561-qijiguang-taizhou",
+    "title": "戚继光台州九战九捷与平海卫荡倭：义乌鸳鸯阵终结十年海患",
+    "tier": "macro",
+    "category": "war",
+    "time": {
+      "year": 1561,
+      "month": 5,
+      "display": "嘉靖三十八年募兵—嘉靖四十二年（1563年）平海卫全胜",
+      "reignTitle": "嘉靖四十年"
+    },
+    "location": {
+      "placeId": "place-taizhou",
+      "ancientName": "金华义乌 -> 台州白水洋 -> 福建平海卫",
+      "modernName": "浙江台州临海 · 福建莆田",
+      "coordinates": [121.135, 28.856]
+    },
+    "camera": {
+      "center": [120.45, 27.65],
+      "zoom": 6.0,
+      "pitch": 40,
+      "bearing": 0
+    },
+    "summary": "嘉靖严酷海禁催生汪直、徐海等武装海商集团勾结日本战国浪人肆虐江浙闽沿海（南京城下竟遭几十名真倭流窜砍杀）。浙直总督胡宗宪用徐文长奇计诱诛徐海、汪直后，参将戚继光于义乌募四千矿工农夫创制“鸳鸯阵”，1561年台州花街、白水洋九战九捷以极微小伤亡歼灭数千真倭，1562—1563年两入福建破横屿、会师俞大猷克平海卫，东南海波终归平静！",
+    "actors": ["戚继光", "俞大猷", "胡宗宪", "谭纶", "徐渭"],
+    "why": {
+      "geoFactor": "浙闽沿海港汊岛屿星罗棋布、陆上水田阡陌狭窄；鸳鸯阵针对田埂单行通道设计长短兵器梯次杀伤，俞大猷大福船封锁外海，水陆闭环彻底锁死倭寇机动。",
+      "systemFactor": "没有内阁严嵩/徐阶背后胡宗宪顶住言官唾骂提供粮饷，便没有戚家军的诞生；军事革新的成功永远离不开政治保护伞与实事求是的练兵科学。",
+      "prevEventIds": ["evt-1550-gengxu-yansong"],
+      "nextEventIds": [
+        "evt-1562-xujie-topples-yansong",
+        "evt-1571-longqing-open-altan"
+      ]
+    },
+    "bookLens": {
+      "chapterIds": [
+        "v4-zhu-houcong-ch12",
+        "v4-zhu-houcong-ch17",
+        "v4-zhu-houcong-ch19",
+        "v4-zhu-houcong-ch22"
+      ],
+      "mingyuePerspective": "当年明月把胡宗宪、徐文长、戚继光、俞大猷、谭纶写成了嘉靖乱世里最闪耀的英雄群像：胡宗宪背最黑的锅干最脏的活，保护着戚继光用科学和铁纪打出了零败绩神话。",
+      "historicalNote": "戚继光总结抗倭实战撰成《纪效新书》，北调蓟镇后又撰《练兵实纪》，为中国军事学不朽经典。"
+    },
+    "campaignId": "cmp-1561-qijiguang-wokou"
+  },
+  {
+    "id": "evt-1562-xujie-topples-yansong",
+    "title": "徐阶隐忍二十年致命一击：严世蕃弃市斩首，严嵩削籍孤死荒冢",
+    "tier": "macro",
+    "category": "politics",
+    "time": {
+      "year": 1562,
+      "month": 5,
+      "display": "嘉靖四十一年罢严嵩—四十四年（1565年）三月斩严世蕃",
+      "reignTitle": "嘉靖四十一年"
+    },
+    "location": {
+      "placeId": "place-beiping",
+      "ancientName": "北京西苑万寿宫 -> 江西分宜抄家",
+      "modernName": "北京 · 江西新余分宜",
+      "coordinates": [116.388, 39.916]
+    },
+    "camera": {
+      "center": [116.388, 39.916],
+      "zoom": 7.2,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "为了扳倒害死老师夏言与挚友杨继盛的严嵩、严世蕃父子，次辅徐阶把孙女嫁给严嵩孙子做妾、每日赔笑代写青词隐忍整整十年！嘉靖四十一年，徐阶利用方士蓝道行扶乩降仙直指“今日奸臣唯严嵩父子”，御史邹应龙顺势弹劾，八十三岁的严嵩罢官；三年后徐阶抓住严世蕃串通罗龙文窝藏逃军良机，连夜亲自改写御史林润弹章直戳嘉靖痛点——“严世蕃勾结倭寇叛党谋反、外投日本内通蒙古”，严世蕃当场被斩于西市，抄没黄金三万余两、白银二百余万两！",
+    "actors": ["徐阶", "严嵩", "严世蕃", "邹应龙", "林润", "朱厚熜"],
+    "why": {
+      "geoFactor": "严氏父子在江西袁州分宜强占良田数万亩并私通东南海商余党，空间跨度成为林润在江防任上锁定其死罪的突破口。",
+      "systemFactor": "全书最教科书级的官场反杀：在嘉靖皇帝面前弹劾严世蕃贪污两百万两银子毫无用处（初审仅判流放），徐阶把贪腐罪名精准替换成嘉靖最痛恨的“害死沈炼杨继盛让皇上背骂名 + 通倭谋反”，一剑封喉！",
+      "prevEventIds": [
+        "evt-1553-yangjisheng-martyr",
+        "evt-1561-qijiguang-taizhou"
+      ],
+      "nextEventIds": ["evt-1566-hairui-memorial"]
+    },
+    "bookLens": {
+      "chapterIds": [
+        "v4-zhu-houcong-ch08",
+        "v4-zhu-houcong-ch09",
+        "v5-zhu-houcong-ch01"
+      ],
+      "mingyuePerspective": "《天下，三人而已》揭示了严家的真实大脑其实是独眼怪才严世蕃（严嵩离开儿子连票拟都不会写），而王阳明再传弟子徐阶用深不见底的心学城府告诉世人：带着微笑隐忍二十年的猎人，出手时绝不留活口。",
+      "historicalNote": "严嵩家产尽抄后栖身墓舍寄食人家，两年后在贫病孤独中死去，无棺木下葬。"
+    }
+  },
+  {
+    "id": "evt-1566-hairui-memorial",
+    "title": "海瑞买棺独上《治安疏》：“嘉靖嘉靖，家家皆净”与道君皇帝谢幕",
+    "tier": "macro",
+    "category": "politics",
+    "time": {
+      "year": 1566,
+      "month": 2,
+      "display": "嘉靖四十五年（1566年）二月上疏 · 十二月嘉靖崩",
+      "reignTitle": "嘉靖四十五年"
+    },
+    "location": {
+      "placeId": "place-beiping",
+      "ancientName": "北京西苑无逸殿 · 镇抚司诏狱",
+      "modernName": "北京",
+      "coordinates": [116.39, 39.918]
+    },
+    "camera": {
+      "center": [116.39, 39.918],
+      "zoom": 7.5,
+      "pitch": 38,
+      "bearing": 0
+    },
+    "summary": "严嵩虽倒，嘉靖帝依然沉迷修道斋醮无人敢言。嘉靖四十五年二月，五十三岁的户部云南司六品小主事海瑞买好一口棺材、遣散仆役诀别妻子，向嘉靖呈上石破天惊的《治安疏》：直指“嘉靖者言家家皆净而无财用也，天下人早已不直陛下久矣”！嘉靖读罢浑身发抖大喊“抓住这个人别让他跑了”，太监黄锦平静答道：“此人素有痴名，已买好棺材在家坐等抓捕，不会跑的。”嘉靖默然长叹，将《治安疏》留在案头反复重读数月始终未杀海瑞，同年十二月驾崩前遗命释放海瑞复职！",
+    "actors": ["海瑞", "朱厚熜", "徐阶", "黄锦"],
+    "why": {
+      "geoFactor": "从琼州海南海岛走出的边缘举人海瑞，与京城盘根错节的同年门生利益集团毫无瓜葛，故能无欲则刚单剑劈向西苑深宫。",
+      "systemFactor": "绝顶聪明的政治动物嘉靖帝斗赢了杨廷和、夏言、严嵩所有权臣，却在人生终点输给了绝对纯粹、不求名利生死的海瑞——因为权术可以收买欲望，却永远无法战胜无私！",
+      "prevEventIds": ["evt-1562-xujie-topples-yansong"],
+      "nextEventIds": ["evt-1571-longqing-open-altan"]
+    },
+    "bookLens": {
+      "chapterIds": [
+        "v5-zhu-houcong-ch02",
+        "v5-zhu-houcong-ch03",
+        "v5-zhu-houcong-ch04"
+      ],
+      "mingyuePerspective": "《第三章 天下的对弈》写出了催人泪下的尾声：提牢主事在嘉靖驾崩那天请海瑞吃酒肉送行，海瑞以为要砍头大口吃完，得知是老皇帝驾崩释放自己时，竟当场痛哭呕出全部酒食昏厥过去——这两个孤独对手其实比任何人都懂彼此。",
+      "historicalNote": "徐阶在草拟《嘉靖遗诏》时全面平反大礼议以来所有建言得罪诸臣、罢除斋醮采买，顺利开启隆万新政。"
+    }
+  }
+]

@@ -8,6 +8,7 @@ import EventDetailDrawer from '@/components/drawer/EventDetailDrawer';
 import TerritoryLegendCard from '@/components/map/TerritoryLegendCard';
 import StoryTourPlayer from '@/components/tour/StoryTourPlayer';
 import CampaignPlayer from '@/components/campaign/CampaignPlayer';
+import CharacterOdysseyPlayer from '@/components/odyssey/CharacterOdysseyPlayer';
 import TimelineBar from '@/components/timeline/TimelineBar';
 import BookTocModal from '@/components/modals/BookTocModal';
 import { useAtlasStore } from '@/store/useAtlasStore';
@@ -57,6 +58,7 @@ export default function AtlasWorkspace() {
       <TerritoryLegendCard />
       <StoryTourPlayer />
       <CampaignPlayer />
+      <CharacterOdysseyPlayer />
       <TimelineBar />
       <BookTocModal />
     </main>

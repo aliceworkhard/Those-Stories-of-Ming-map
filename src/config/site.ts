@@ -1,7 +1,7 @@
 export const SITE_CONFIG = {
   title: '明途 · 舆图纪',
   englishTitle: 'Ming Story Atlas',
-  subtitle: '《明朝那些事儿》三维历史事件、疆域变迁与战役因果推演舆图',
+  subtitle: '《明朝那些事儿》全七部三维历史事件、疆域变迁、人物足迹与战役推演舆图',
   repoUrl: 'https://github.com/aliceworkhard/Those-Stories-of-Ming-map',
   repoSlug: 'aliceworkhard/Those-Stories-of-Ming-map',
   license: 'MIT',
@@ -14,7 +14,7 @@ export const SITE_CONFIG = {
       {
         id: 'era-founding',
         label: '洪武开国',
-        subLabel: '壹 · 朱元璋篇',
+        subLabel: '壹 · 朱元璋',
         yearRange: [1344, 1397] as [number, number],
         defaultYear: 1344,
         camera: {
@@ -26,8 +26,8 @@ export const SITE_CONFIG = {
       },
       {
         id: 'era-jingnan',
-        label: '削藩靖难',
-        subLabel: '壹 · 建文靖难',
+        label: '靖难夺位',
+        subLabel: '壹 · 建文朱棣',
         yearRange: [1398, 1402] as [number, number],
         defaultYear: 1399,
         camera: {
@@ -39,8 +39,8 @@ export const SITE_CONFIG = {
       },
       {
         id: 'era-yongle-renxuan',
-        label: '永乐仁宣',
-        subLabel: '贰 · 万国来朝',
+        label: '万国来朝',
+        subLabel: '贰 · 永乐仁宣',
         yearRange: [1403, 1435] as [number, number],
         defaultYear: 1415,
         camera: {
@@ -52,14 +52,53 @@ export const SITE_CONFIG = {
       },
       {
         id: 'era-tumu-jingtai',
-        label: '土木与景泰',
-        subLabel: '贰 · 北京保卫战',
+        label: '土木保卫',
+        subLabel: '贰 · 于谦救国',
         yearRange: [1436, 1457] as [number, number],
         defaultYear: 1449,
         camera: {
           center: [115.6, 40.15] as [number, number],
           zoom: 6.3,
           pitch: 40,
+          bearing: 0,
+        },
+      },
+      {
+        id: 'era-mid-ming',
+        label: '阳明抗倭',
+        subLabel: '叁肆 · 正德嘉靖',
+        yearRange: [1458, 1566] as [number, number],
+        defaultYear: 1519,
+        camera: {
+          center: [117.8, 28.8] as [number, number],
+          zoom: 5.5,
+          pitch: 38,
+          bearing: 0,
+        },
+      },
+      {
+        id: 'era-wanli-reform',
+        label: '隆万辽事',
+        subLabel: '伍陆 · 张居正萨尔浒',
+        yearRange: [1567, 1626] as [number, number],
+        defaultYear: 1582,
+        camera: {
+          center: [118.8, 38.2] as [number, number],
+          zoom: 5.1,
+          pitch: 36,
+          bearing: 0,
+        },
+      },
+      {
+        id: 'era-collapse-nanming',
+        label: '崇祯终章',
+        subLabel: '柒 · 大结局至复台',
+        yearRange: [1627, 1662] as [number, number],
+        defaultYear: 1644,
+        camera: {
+          center: [115.2, 34.8] as [number, number],
+          zoom: 4.9,
+          pitch: 36,
           bearing: 0,
         },
       },

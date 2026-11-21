@@ -1,6 +1,11 @@
 import { create } from 'zustand';
 import { SITE_CONFIG } from '@/config/site';
-import { ALL_EVENTS, CAMPAIGN_MAP, EVENT_MAP } from '@/lib/atlasData';
+import {
+  ALL_EVENTS,
+  CAMPAIGN_MAP,
+  CHARACTER_MAP,
+  EVENT_MAP,
+} from '@/lib/atlasData';
 import type {
   CameraPose,
   MapVisualTheme,
@@ -41,6 +46,8 @@ export interface LayerVisibility {
   causalArcs: boolean;
   macroEvents: boolean;
   showAllMicroEvents: boolean;
+  princelyFiefs: boolean;
+  nineGarrisons: boolean;
 }
 
 export type CampaignCameraMode = 'follow' | 'free';
@@ -74,6 +81,10 @@ interface AtlasState {
   campaignCameraMode: CampaignCameraMode;
   campaignPhaseProgress: number;
   campaignReplayNonce: number;
+
+  // Character Odyssey ("风云人物一生足迹模式")
+  activeCharacterId: string | null;
+  activeCharacterStopIndex: number;
 
   isTocModalOpen: boolean;
   theme: MapVisualTheme;
@@ -116,6 +127,11 @@ interface AtlasState {
   setCampaignCameraMode: (mode: CampaignCameraMode) => void;
   setCampaignPhaseProgress: (progress: number) => void;
   replayCurrentPhase: () => void;
+
+  // Character Odyssey Actions
+  startCharacterOdyssey: (characterId: string, stopIndex?: number) => void;
+  setCharacterStop: (stopIndex: number) => void;
+  exitCharacterOdyssey: () => void;
 
   setTocModalOpen: (open: boolean) => void;
   setTheme: (theme: MapVisualTheme) => void;
@@ -163,6 +179,9 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   campaignPhaseProgress: 0,
   campaignReplayNonce: 0,
 
+  activeCharacterId: null,
+  activeCharacterStopIndex: 0,
+
   isTocModalOpen: false,
   theme: 'xuanzhi',
   perfMode: 'balanced',
@@ -177,6 +196,8 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     causalArcs: true,
     macroEvents: true,
     showAllMicroEvents: false,
+    princelyFiefs: false,
+    nineGarrisons: false,
   },
   cameraCommand: null,
 
@@ -270,6 +291,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     const prevSeq = get().cameraCommand?.seq ?? 0;
     set({
       activeCampaignId: null,
+      activeCharacterId: null,
       isCampaignPlaying: false,
       isStoryTourPlaying: false,
       storyTourProgress: 0,
@@ -375,6 +397,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
 
     set({
       activeCampaignId: null,
+      activeCharacterId: null,
       isCampaignPlaying: false,
       isStoryTourPlaying: true,
       is3D: use3D,
@@ -419,6 +442,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     set((state) => ({
       isStoryTourPlaying: false,
       storyTourProgress: 0,
+      activeCharacterId: null,
       activeCampaignId: campaignId,
       activePhaseIndex: safeIdx,
       isCampaignPlaying: true,
@@ -496,6 +520,64 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
       campaignPhaseProgress: 0,
       campaignReplayNonce: state.campaignReplayNonce + 1,
     })),
+
+  startCharacterOdyssey: (characterId, stopIndex = 0) => {
+    const ch = CHARACTER_MAP[characterId];
+    if (!ch || ch.stops.length === 0) return;
+    const safeIdx = Math.max(0, Math.min(ch.stops.length - 1, stopIndex));
+    const stop = ch.stops[safeIdx];
+    const prevSeq = get().cameraCommand?.seq ?? 0;
+    set((state) => ({
+      activeCampaignId: null,
+      isCampaignPlaying: false,
+      isStoryTourPlaying: false,
+      storyTourProgress: 0,
+      activeCharacterId: characterId,
+      activeCharacterStopIndex: safeIdx,
+      currentYear: stop.year,
+      selectedEventId: stop.eventId ?? state.selectedEventId,
+      cameraCommand: {
+        pose: {
+          center: stop.coordinates,
+          zoom: 5.8,
+          pitch: state.is3D && state.perfMode !== 'eco' ? 38 : 0,
+          bearing: 0,
+        },
+        seq: prevSeq + 1,
+      },
+    }));
+  },
+
+  setCharacterStop: (stopIndex) => {
+    const { activeCharacterId } = get();
+    if (!activeCharacterId) return;
+    const ch = CHARACTER_MAP[activeCharacterId];
+    if (!ch) return;
+    const safeIdx = Math.max(0, Math.min(ch.stops.length - 1, stopIndex));
+    const stop = ch.stops[safeIdx];
+    const prevSeq = get().cameraCommand?.seq ?? 0;
+    set((state) => ({
+      activeCharacterStopIndex: safeIdx,
+      currentYear: stop.year,
+      selectedEventId: stop.eventId ?? state.selectedEventId,
+      isDrawerOpen: stop.eventId && !state.isImmersionMode ? true : state.isDrawerOpen,
+      cameraCommand: {
+        pose: {
+          center: stop.coordinates,
+          zoom: 6.1,
+          pitch: state.is3D && state.perfMode !== 'eco' ? 38 : 0,
+          bearing: 0,
+        },
+        seq: prevSeq + 1,
+      },
+    }));
+  },
+
+  exitCharacterOdyssey: () =>
+    set({
+      activeCharacterId: null,
+      activeCharacterStopIndex: 0,
+    }),
 
   setTocModalOpen: (open) => set({ isTocModalOpen: open }),
   setTheme: (theme) => {

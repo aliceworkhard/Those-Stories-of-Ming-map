@@ -646,5 +646,311 @@
     "type": "garrison-nine",
     "coordinates": [93.515, 42.819],
     "strategicNote": "大明经略西域咽喉前哨，正统年间被瓦剌也先攻破挟持，成为瓦剌控制西域朝贡商路与挑起边衅的导火索。"
+  },
+  {
+    "id": "place-yulin",
+    "ancientName": "延绥镇（榆林卫）",
+    "aliases": ["九边重镇延绥"],
+    "modernName": "陕西榆林",
+    "type": "garrison-nine",
+    "coordinates": [109.734, 38.285],
+    "strategicNote": "成化十年余子俊修筑千七百里延绥长城驻节重镇，锁死河套蒙古骑兵南下关中门户。"
+  },
+  {
+    "id": "place-longchang",
+    "ancientName": "贵州龙场驿",
+    "aliases": ["修文玩易窝"],
+    "modernName": "贵州贵阳修文县",
+    "type": "prefecture",
+    "coordinates": [106.592, 26.841],
+    "strategicNote": "1508年王阳明遭刘瑾贬谪绝境于石棺中“龙场悟道”，创立致良知与知行合一心学圣地！"
+  },
+  {
+    "id": "place-jian",
+    "ancientName": "吉安府（庐陵）",
+    "aliases": ["文忠节义之邦"],
+    "modernName": "江西吉安",
+    "type": "prefecture",
+    "coordinates": [114.993, 27.113],
+    "strategicNote": "1519年宁王朱宸濠起兵时，南赣巡抚王阳明退守吉安会合知府伍文定，白手起家集结平叛义军。"
+  },
+  {
+    "id": "place-ganzhou",
+    "ancientName": "南赣军门（赣州府）",
+    "aliases": ["虔州"],
+    "modernName": "江西赣州",
+    "type": "prefecture",
+    "coordinates": [114.935, 25.831],
+    "strategicNote": "王阳明任南赣巡抚驻节地，在此推行十家牌法平定闽粤赣湘山贼，练就百战用兵之术。"
+  },
+  {
+    "id": "place-yingzhou",
+    "ancientName": "应州城",
+    "aliases": ["应州木塔下"],
+    "modernName": "山西朔州应县",
+    "type": "battlefield",
+    "coordinates": [113.19, 39.553],
+    "strategicNote": "1517年“威武大将军”明武宗朱厚照御驾亲征与蒙古达延汗小王子五万骑兵激战百合大捷之地。"
+  },
+  {
+    "id": "place-yongchang",
+    "ancientName": "云南永昌卫（保山）",
+    "aliases": ["金齿卫"],
+    "modernName": "云南保山",
+    "type": "prefecture",
+    "coordinates": [99.161, 25.112],
+    "strategicNote": "大礼议状元杨慎（杨升庵）铁骨哭谏后充军三十五年终老之地，写下“滚滚长江东逝水”千古词章。"
+  },
+  {
+    "id": "place-yiwu",
+    "ancientName": "金华府义乌县",
+    "aliases": ["戚家军发源地"],
+    "modernName": "浙江金华义乌",
+    "type": "prefecture",
+    "coordinates": [120.075, 29.306],
+    "strategicNote": "1559年戚继光见义乌矿工剽悍重义，在此招募四千子弟练成“鸳鸯阵”百战不殆之戚家军！"
+  },
+  {
+    "id": "place-pinghaiwei",
+    "ancientName": "兴化府平海卫",
+    "aliases": ["莆田海防"],
+    "modernName": "福建莆田秀屿平海镇",
+    "type": "battlefield",
+    "coordinates": [119.168, 25.242],
+    "strategicNote": "1563年戚继光、俞大猷、刘显三路合击全歼福建主力倭寇，彻底荡平东南沿海倭患。"
+  },
+  {
+    "id": "place-jizhen",
+    "ancientName": "蓟州镇（三屯营）",
+    "aliases": ["蓟门九边"],
+    "modernName": "河北唐山迁西三屯营",
+    "type": "garrison-nine",
+    "coordinates": [118.318, 40.232],
+    "strategicNote": "戚继光北调镇守十六年之九边核心，大规模修筑包砖长城与空心敌台，令蒙古朵颜骑兵不敢南牧。"
+  },
+  {
+    "id": "place-yuegang",
+    "ancientName": "漳州月港",
+    "aliases": ["隆庆开海总港"],
+    "modernName": "福建漳州龙海海澄",
+    "type": "port",
+    "coordinates": [117.798, 24.442],
+    "strategicNote": "1567年“隆庆开关”唯一合法民间外贸出海巨港，全球美洲与日本白银由此潮水般涌入大明！"
+  },
+  {
+    "id": "place-guihuacheng",
+    "ancientName": "归化城（丰州滩）",
+    "aliases": ["顺义王城"],
+    "modernName": "内蒙古呼和浩特",
+    "type": "capital",
+    "coordinates": [111.67, 40.818],
+    "strategicNote": "1571年“俺答封贡”后俺答汗与三娘子筑城通贡互市之所，明廷赐名归化城，换得北疆五十年太平。"
+  },
+  {
+    "id": "place-jiangling",
+    "ancientName": "荆州府（江陵）",
+    "aliases": ["湘王府", "张居正故里"],
+    "modernName": "湖北荆州",
+    "type": "prefecture",
+    "coordinates": [112.204, 30.352],
+    "strategicNote": "万历改革首辅张居正故里，亦为建文初湘王朱柏阖宫自焚之地。"
+  },
+  {
+    "id": "place-hailongtun",
+    "ancientName": "播州海龙囤",
+    "aliases": ["杨氏土司王城"],
+    "modernName": "贵州遵义汇川区海龙屯",
+    "type": "battlefield",
+    "coordinates": [106.822, 27.812],
+    "strategicNote": "1600年万历三大征收官之战，总督李化龙统八路二十四万大军攻克天险海龙囤，改土归流设遵义平越府。"
+  },
+  {
+    "id": "place-pyongyang",
+    "ancientName": "朝鲜平壤城",
+    "aliases": ["箕子旧都"],
+    "modernName": "朝鲜平壤",
+    "type": "battlefield",
+    "coordinates": [125.754, 39.019],
+    "strategicNote": "1593年正月万历援朝提督李如松率四万明军以虎蹲炮火器猛攻七星门，一日击溃日军小西行长收复平壤！"
+  },
+  {
+    "id": "place-seoul",
+    "ancientName": "朝鲜王京（汉城/碧蹄馆）",
+    "aliases": ["汉阳"],
+    "modernName": "韩国首尔",
+    "type": "capital",
+    "coordinates": [126.978, 37.566],
+    "strategicNote": "李如松碧蹄馆血战倭军立花宗茂、查大受奇袭焚毁龙山日军总粮仓迫日军南撤之地。"
+  },
+  {
+    "id": "place-noryang",
+    "ancientName": "露梁海峡",
+    "aliases": ["万历援朝终战海面"],
+    "modernName": "韩国庆尚南道南海郡露梁津",
+    "type": "battlefield",
+    "coordinates": [127.882, 34.945],
+    "strategicNote": "1598年十一月中朝联军水师决战处！大明七旬老将邓子龙与朝鲜统制使李舜臣双双血战殉国，全歼岛津殿军。"
+  },
+  {
+    "id": "place-donglin",
+    "ancientName": "常州府无锡东林书院",
+    "aliases": ["东林讲学处"],
+    "modernName": "江苏无锡梁溪区东林书院",
+    "type": "prefecture",
+    "coordinates": [120.308, 31.578],
+    "strategicNote": "1604年顾宪成、高攀龙重修讲学，挂出“风声雨声读书声声声入耳”名联，晚明东林士林议政中心。"
+  },
+  {
+    "id": "place-hetuala",
+    "ancientName": "赫图阿拉（建州老城）",
+    "aliases": ["兴京"],
+    "modernName": "辽宁抚顺新宾永陵镇",
+    "type": "capital",
+    "coordinates": [124.828, 41.678],
+    "strategicNote": "努尔哈赤十三副遗甲起兵大本营与1616年建立后金汗国旧都。"
+  },
+  {
+    "id": "place-sarhu",
+    "ancientName": "萨尔浒山（浑河苏子河汇口）",
+    "aliases": ["吉林崖", "尚间崖"],
+    "modernName": "辽宁抚顺东大伙房水库周边",
+    "type": "battlefield",
+    "coordinates": [124.215, 41.892],
+    "strategicNote": "1619年帝国命运大转折！杨镐四路分兵十万攻后金，努尔哈赤集中八旗铁骑五日内连破杜松、马林、刘綎三路！"
+  },
+  {
+    "id": "place-shenyang",
+    "ancientName": "沈阳中卫（后金盛京）",
+    "aliases": ["沈州"],
+    "modernName": "辽宁沈阳",
+    "type": "capital",
+    "coordinates": [123.431, 41.805],
+    "strategicNote": "辽东军事中枢，1621年努尔哈赤攻陷沈阳辽阳后迁都于此，皇太极在此改国号“大清”。"
+  },
+  {
+    "id": "place-liaoyang",
+    "ancientName": "辽东都司（辽阳城）",
+    "aliases": ["东宁卫"],
+    "modernName": "辽宁辽阳",
+    "type": "garrison-nine",
+    "coordinates": [123.173, 41.267],
+    "strategicNote": "明代九边之辽东镇总兵与都司驻地，1621年经略袁应泰血战城陷自焚殉国。"
+  },
+  {
+    "id": "place-ningyuan",
+    "ancientName": "宁远卫",
+    "aliases": ["关外第一坚城"],
+    "modernName": "辽宁葫芦岛兴城",
+    "type": "pass",
+    "coordinates": [120.728, 40.618],
+    "strategicNote": "孙承宗与袁崇焕经营之辽西锁钥！1626年正月袁崇焕孤城血书死守，以西洋红夷大炮击败努尔哈赤六万大军！"
+  },
+  {
+    "id": "place-jinzhou",
+    "ancientName": "锦州城（松山杏山）",
+    "aliases": ["关宁锦前哨"],
+    "modernName": "辽宁锦州",
+    "type": "battlefield",
+    "coordinates": [121.127, 41.095],
+    "strategicNote": "1627年赵率教宁锦大捷守御地；1641—1642年松锦大战洪承畴十三万边军在此被皇太极围歼，明朝辽东防线彻底崩盘。"
+  },
+  {
+    "id": "place-denglai",
+    "ancientName": "登州府（蓬莱水城）",
+    "aliases": ["登莱巡抚驻地"],
+    "modernName": "山东烟台蓬莱",
+    "type": "port",
+    "coordinates": [120.758, 37.811],
+    "strategicNote": "明代跨渤海经略辽东与朝鲜水师基地；1633年孔有德吴桥兵变据登州跨海降清，带走全套西洋火炮技术！"
+  },
+  {
+    "id": "place-julu",
+    "ancientName": "顺德府巨鹿贾庄",
+    "aliases": ["卢象升殉国处"],
+    "modernName": "河北邢台巨鹿县贾庄",
+    "type": "battlefield",
+    "coordinates": [115.035, 37.218],
+    "strategicNote": "1638年冬兵部尚书卢象升遭杨嗣昌高起潜断粮孤立，率五千天雄军麻衣死战数万清军，身中四矢三刃壮烈殉国！"
+  },
+  {
+    "id": "place-xian",
+    "ancientName": "西安府（秦王藩府）",
+    "aliases": ["长安", "大顺西京"],
+    "modernName": "陕西西安",
+    "type": "capital",
+    "coordinates": [108.9402, 34.3416],
+    "strategicNote": "天下第一藩秦王封地与西北统兵中枢；1643年底孙传庭战死后李自成攻占西安建国“大顺”东征北京。"
+  },
+  {
+    "id": "place-shangluo",
+    "ancientName": "商洛山",
+    "aliases": ["商州深山"],
+    "modernName": "陕西商洛",
+    "type": "battlefield",
+    "coordinates": [109.94, 33.87],
+    "strategicNote": "1638年潼关南原惨败后，李自成仅率刘宗敏等十八骑藏身商洛深山卧薪尝胆，两年后入河南死灰复燃。"
+  },
+  {
+    "id": "place-xiangyang",
+    "ancientName": "襄阳府",
+    "aliases": ["大顺襄京"],
+    "modernName": "湖北襄阳",
+    "type": "pass",
+    "coordinates": [112.144, 32.012],
+    "strategicNote": "南北咽喉，1641年张献忠奇袭攻破襄阳杀襄王逼死督师杨嗣昌；后李自成改名襄京建立大顺政权雏形。"
+  },
+  {
+    "id": "place-jiangyin",
+    "ancientName": "常州府江阴县",
+    "aliases": ["徐霞客故里", "江阴八十一日"],
+    "modernName": "江苏无锡江阴",
+    "type": "prefecture",
+    "coordinates": [120.285, 31.919],
+    "strategicNote": "千古奇人徐霞客（徐弘祖）出发踏遍九州之地，亦是1645年阎应元率全城百姓抗清死守八十一日忠烈孤城。"
+  },
+  {
+    "id": "place-jizushan",
+    "ancientName": "大理鸡足山（金沙江源考）",
+    "aliases": ["徐霞客万里西行终点"],
+    "modernName": "云南大理宾川鸡足山",
+    "type": "prefecture",
+    "coordinates": [100.402, 25.968],
+    "strategicNote": "徐霞客晚年万里遐征终点，在此考订《盘江考》《江源考》，推翻千年“岷山导江”旧说确证金沙江为长江正源！"
+  },
+  {
+    "id": "place-guilin",
+    "ancientName": "桂林府（靖江王城）",
+    "aliases": ["广西省城"],
+    "modernName": "广西桂林",
+    "type": "battlefield",
+    "coordinates": [110.29, 25.273],
+    "strategicNote": "瞿式耜苦守南明西南门户之地；1652年晋王李定国神兵突袭攻克桂林，逼清定南王孔有德自焚毙命！"
+  },
+  {
+    "id": "place-hengyang",
+    "ancientName": "衡州府（衡阳）",
+    "aliases": ["两蹶名王决战地"],
+    "modernName": "湖南衡阳",
+    "type": "battlefield",
+    "coordinates": [112.572, 26.893],
+    "strategicNote": "1652年十一月李定国设伏衡阳城北，阵斩清廷八旗统帅敬谨亲王尼堪，创下“两蹶名王，天下震动”抗清巅峰！"
+  },
+  {
+    "id": "place-xiamen",
+    "ancientName": "中左所（思明州/厦门）",
+    "aliases": ["延平王金厦水师基地"],
+    "modernName": "福建厦门",
+    "type": "port",
+    "coordinates": [118.089, 24.479],
+    "strategicNote": "国姓爷郑成功改名“思明州”（思念大明），以此为水师大本营北伐南京、东渡收复台湾。"
+  },
+  {
+    "id": "place-zeelandia",
+    "ancientName": "台湾鹿耳门 · 安平热兰遮城",
+    "aliases": ["东都明京", "承天府"],
+    "modernName": "台湾台南安平",
+    "type": "port",
+    "coordinates": [120.161, 23.001],
+    "strategicNote": "1661年四月郑成功率两万五千水师乘大潮驶入鹿耳门，围困九个月迫荷兰总督揆一签字投降，宝岛台湾重归中华！"
   }
 ]

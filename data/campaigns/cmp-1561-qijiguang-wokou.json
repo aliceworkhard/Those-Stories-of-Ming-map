@@ -1,0 +1,260 @@
+{
+  "id": "cmp-1561-qijiguang-wokou",
+  "title": "戚继光台州九战九捷与东南荡平倭寇",
+  "subtitle": "义乌募矿工创鸳鸯阵 · 台州神话 · 福建平海卫全胜（1559—1563）",
+  "yearRange": [1559, 1563],
+  "chapterIds": [
+    "v4-zhu-houcong-ch17",
+    "v4-zhu-houcong-ch18",
+    "v4-zhu-houcong-ch19",
+    "v4-zhu-houcong-ch20",
+    "v4-zhu-houcong-ch22"
+  ],
+  "summary": "嘉靖中叶东南卫所腐烂，数十名日本浪人真倭便可横行江南数千里如入无人之境。参将戚继光在浙直总督胡宗宪支持下，赴金华义乌招募四千剽悍矿工农夫，针对江南稻田水网地形独创长短兵器协同的“鸳鸯阵”。嘉靖四十年（1561）台州九战九捷创下近乎零伤亡全歼数千悍倭的世界冷兵器奇迹，随后两度入闽破横屿、战平海卫，携手俞大猷彻底扫平东南十年倭患！",
+  "strategicOutcome": "彻底终结嘉靖朝东南倭乱，为隆庆元年漳州月港开海（“隆庆开关”）扫清海防障碍；戚继光旋即北调蓟镇守御长城十六年。",
+  "factions": [
+    {
+      "id": "qijia-army",
+      "name": "戚家军与俞大猷抗倭联军",
+      "leader": "戚继光 · 俞大猷 · 胡宗宪 · 谭纶",
+      "color": "#B83B2A",
+      "badgeText": "戚"
+    },
+    {
+      "id": "wokou-raiders",
+      "name": "日本浪人真倭与海盗集团",
+      "leader": "倭寇大头目 · 海盗船队",
+      "color": "#1E5F74",
+      "badgeText": "倭"
+    }
+  ],
+  "phases": [
+    {
+      "phaseNo": 1,
+      "title": "第一幕：义乌铸剑 · 弃卫所油滑老兵，募四千矿工练成鸳鸯阵",
+      "dateLabel": "嘉靖三十八年（1559）秋—冬",
+      "year": 1559,
+      "narrative": "岑港攻坚受挫让戚继光看透了沿海卫所兵贪生怕死的顽疾。途经金华义乌时，他目睹当地矿工与村民为争矿械斗悍不畏死且宗族团结，遂在总督胡宗宪支持下招募四千义乌子弟（选人铁律：切忌城市油滑白净之人，专选黑大粗壮庄稼汉！），针对倭刀凶狠与江南田埂狭窄，量身发明十二人一队的“鸳鸯阵”（藤牌挡箭、狼筅缠刀、长枪刺杀、镗钯护翼）！",
+      "whyKeyPoint": "为啥个人武艺平平的义乌农民能吊打日本职业武士？倭寇单兵双手长刀劈砍极猛，但戚继光用高大毛竹“狼筅”死死架住倭刀，后排两杆一丈二长枪同步捅刺——用严密的团队工程学降维粉碎了武士个人决斗！",
+      "camera": {
+        "center": [120.45, 29.15],
+        "zoom": 7.1,
+        "pitch": 40,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "qijia-army",
+        "leftLabel": "4,000 义乌严纪戚家军",
+        "leftPower": 75,
+        "rightFactionId": "wokou-raiders",
+        "rightLabel": "沿海劫掠精悍倭寇",
+        "rightPower": 25
+      },
+      "routes": [
+        {
+          "id": "r-qj1-yiwu-taizhou",
+          "order": 1,
+          "factionId": "qijia-army",
+          "type": "supply",
+          "label": "戚继光赴金华义乌精选四千矿工农夫，严训鸳鸯阵移驻台州海防",
+          "commander": "戚继光 · 陈大成",
+          "coordinates": [
+            [120.08, 29.31],
+            [120.62, 29.05],
+            [121.14, 28.86]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-qj1-yiwu",
+          "kind": "camp",
+          "label": "义乌募兵创鸳鸯阵",
+          "subLabel": "《纪效新书》科学练兵起点",
+          "coordinates": [120.08, 29.31],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 2,
+      "title": "第二幕：台州神话 · 花街白水洋九战九捷，交换比逾百比一！",
+      "dateLabel": "嘉靖四十年（1561）四月—五月",
+      "year": 1561,
+      "narrative": "嘉靖四十年春，数百艘倭船万余悍倭大举登陆台州象山、宁海、桃渚、新河，企图调虎离山洗劫台州府城！戚继光识破敌计，率戚家军疾风急行军：先救新河，转战花街斩倭三百而明军零阵亡；再战上峰岭；最惊心动魄的白水洋之战中，一千五百名戚家军将两千余名真倭死死堵在狭谷全数歼灭，仅陈四等三人牺牲，一个月内连打九场硬仗九战全胜！",
+      "whyKeyPoint": "为啥台州之战能打出千比三的逆天战损比？江南田埂与山谷通道宽不过数尺，倭寇人数再多也无法展开正面，只能一排排撞上戚家军密不透风的狼筅枪林与虎蹲炮弹雨！",
+      "camera": {
+        "center": [121.15, 28.88],
+        "zoom": 7.6,
+        "pitch": 42,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "qijia-army",
+        "leftLabel": "戚继光神速机动鸳鸯阵",
+        "leftPower": 92,
+        "rightFactionId": "wokou-raiders",
+        "rightLabel": "多点登陆万余真倭",
+        "rightPower": 8
+      },
+      "routes": [
+        {
+          "id": "r-qj2-wokou-land",
+          "order": 1,
+          "factionId": "wokou-raiders",
+          "type": "naval",
+          "label": "万余倭寇乘海船分犯宁海、桃渚、新河诸海口",
+          "commander": "倭寇大船团",
+          "coordinates": [
+            [122.35, 28.95],
+            [121.68, 28.82],
+            [121.38, 28.42]
+          ]
+        },
+        {
+          "id": "r-qj2-taizhou-sweep",
+          "order": 2,
+          "factionId": "qijia-army",
+          "type": "assault",
+          "label": "戚家军疾驰宁海、新河、花街、白水洋，一月之内九战九捷全歼登陆之倭！",
+          "commander": "戚继光 · 谭纶",
+          "coordinates": [
+            [121.42, 29.28],
+            [121.38, 28.42],
+            [121.14, 28.86]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-qj2-taizhou",
+          "kind": "clash",
+          "label": "台州白水洋九战九捷",
+          "subLabel": "歼真倭数千，明军阵亡仅寥寥数人",
+          "coordinates": [121.14, 28.86],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 3,
+      "title": "第三幕：负草渡泥 · 驰援福建攻破三年顽巢横屿与牛田",
+      "dateLabel": "嘉靖四十一年（1562）七月—九月",
+      "year": 1562,
+      "narrative": "浙江倭寇闻戚虎色变不敢再登岸，尽数南窜祸乱福建，攻陷福清、宁德。戚继光奉命率六千精兵入闽驰援：宁德横屿是一座四面淤泥没胫的海中孤岛，倭寇盘踞三年无人能近。戚继光趁退潮之际，令每名士兵身背一束干稻草，边铺草垫泥边匍匐冲锋，鼓声震天登岛血战，三个时辰斩倭两千六百人，随即乘胜夜袭福清牛田、莆田林墩，连拔三大倭巢！",
+      "whyKeyPoint": "为啥福建守军三年打不下的横屿，戚家军三个时辰就拿下了？潮间带滩涂深泥本是防守方的天险，戚继光用“每人一捆干草铺路”的极简工程巧思瞬间化淤泥为坦途，断绝了倭寇跳海逃跑的后路。",
+      "camera": {
+        "center": [119.85, 26.85],
+        "zoom": 6.6,
+        "pitch": 40,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "qijia-army",
+        "leftLabel": "入闽援军 6,000 戚家军",
+        "leftPower": 84,
+        "rightFactionId": "wokou-raiders",
+        "rightLabel": "横屿牛田盘踞顽倭",
+        "rightPower": 16
+      },
+      "routes": [
+        {
+          "id": "r-qj3-hengyu",
+          "order": 1,
+          "factionId": "qijia-army",
+          "type": "assault",
+          "label": "自温州翻越闽浙山岭入宁德，负草铺泥强渡滩涂攻破横屿老巢",
+          "commander": "戚继光",
+          "coordinates": [
+            [120.69, 28.0],
+            [119.95, 27.15],
+            [119.65, 26.68]
+          ]
+        },
+        {
+          "id": "r-qj3-niutian",
+          "order": 2,
+          "factionId": "qijia-army",
+          "type": "ambush",
+          "label": "马不停蹄南下夜袭福清牛田与莆田林墩，斩首数千",
+          "commander": "戚继光",
+          "coordinates": [
+            [119.65, 26.68],
+            [119.42, 25.72],
+            [119.12, 25.44]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-qj3-hengyu",
+          "kind": "clash",
+          "label": "宁德横屿负草破巢",
+          "subLabel": "三个时辰铲除盘踞三年海岛顽寇",
+          "coordinates": [119.65, 26.68],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 4,
+      "title": "第四幕：双璧合围 · 戚继光俞大猷会师平海卫，海波终平！",
+      "dateLabel": "嘉靖四十二年（1563）四月",
+      "year": 1563,
+      "narrative": "戚家军班师回浙休整刚走，新一批两万倭寇竟攻破福建重镇兴化府（莆田），盘踞平海卫！嘉靖帝震怒，起复譚纶为福建巡抚、升戚继光为副总兵再募义乌新兵一万星夜南下。四月，中路戚继光、右路水师名将俞大猷、左路刘显在平海卫完成历史性会师，戚家军冒火器竹签率先突破倭营大栅，斩真倭两千二百余级，救出被掳百姓三千人，东南十年倭患至此连根荡平！",
+      "whyKeyPoint": "为啥必须“戚虎俞龙”水陆联手才能彻底根除倭患？单靠陆战击败倭寇，残敌仍可乘船逃入大海流窜他省；俞大猷福船大舰封死海面退路、戚继光鸳鸯阵陆上清剿，方成瓮中捉鳖之势！",
+      "camera": {
+        "center": [119.45, 25.65],
+        "zoom": 6.8,
+        "pitch": 40,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "qijia-army",
+        "leftLabel": "戚继光俞大猷刘显三路联军",
+        "leftPower": 88,
+        "rightFactionId": "wokou-raiders",
+        "rightLabel": "平海卫两万困兽倭寇",
+        "rightPower": 12
+      },
+      "routes": [
+        {
+          "id": "r-qj4-qi-south",
+          "order": 1,
+          "factionId": "qijia-army",
+          "type": "assault",
+          "label": "戚继光自义乌再募万兵二次入闽，担任中路主攻直扑平海卫",
+          "commander": "戚继光 · 谭纶",
+          "coordinates": [
+            [120.08, 29.31],
+            [119.53, 25.96],
+            [119.17, 25.24]
+          ]
+        },
+        {
+          "id": "r-qj4-yu-naval",
+          "order": 2,
+          "factionId": "qijia-army",
+          "type": "naval",
+          "label": "俞大猷统福建水师封锁海湾，与刘显左右夹击全歼平海卫倭寇！",
+          "commander": "俞大猷 · 刘显",
+          "coordinates": [
+            [118.68, 24.88],
+            [119.35, 25.05],
+            [119.17, 25.24]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-qj4-pinghaiwei",
+          "kind": "siege",
+          "label": "平海卫三路会师大捷",
+          "subLabel": "收复兴化府，东南海疆重归太平",
+          "coordinates": [119.17, 25.24],
+          "color": "#B83B2A"
+        }
+      ]
+    }
+  ]
+}

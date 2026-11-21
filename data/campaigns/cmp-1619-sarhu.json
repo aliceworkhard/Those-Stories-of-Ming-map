@@ -1,0 +1,271 @@
+{
+  "id": "cmp-1619-sarhu",
+  "title": "萨尔浒四路分兵惨败与辽沈沦陷",
+  "subtitle": "尔几路来我一路去 · 五日覆没三路 · 辽东攻守大逆转（1619—1621）",
+  "yearRange": [1619, 1621],
+  "chapterIds": [
+    "v6-zhu-yijun-ch07",
+    "v6-zhu-yijun-ch08",
+    "v6-zhu-youxiao-ch12"
+  ],
+  "summary": "万历四十七年（1619）二月，辽东经略杨镐坐镇沈阳，将九万余明军拆成杜松、马林、刘綎、李如柏四路分进合击赫图阿拉。努尔哈赤采取“凭尔几路来，我只一路去”内线集中歼灭战略，五天内连破杜松、马林、刘綎三路大军，两年后乘势攻陷沈阳、辽阳七十余城，大明彻底丧失辽东战略主动权！",
+  "strategicOutcome": "明军精锐丧师四万五千八百余人、阵亡杜松刘綎等三百余员将校；1621年后金连陷沈辽迁都沈阳，明廷被迫退守辽西山海关一线。",
+  "factions": [
+    {
+      "id": "ming-four-routes",
+      "name": "大明四路征剿联军",
+      "leader": "经略杨镐 · 杜松 · 刘綎 · 马林",
+      "color": "#B83B2A",
+      "badgeText": "明"
+    },
+    {
+      "id": "later-jin",
+      "name": "后金八旗主力铁骑",
+      "leader": "天命汗努尔哈赤 · 代善 · 皇太极",
+      "color": "#9A3412",
+      "badgeText": "金"
+    }
+  ],
+  "phases": [
+    {
+      "phaseNo": 1,
+      "title": "第一幕：致命分兵 · 杨镐坐镇沈阳四路出师，军期尽泄",
+      "dateLabel": "万历四十七年（1619）二月二十五—二十九日",
+      "year": 1619,
+      "narrative": "杨镐坐镇沈阳，命杜松出抚顺关（西路）、马林出靖安堡（北路）、李如柏出清河（东路）、刘綎携朝鲜军出宽甸（南路）合围赫图阿拉。因提前泄露出兵日期且山林阻隔四路无法联络，努尔哈赤集结全部六万八旗铁骑直扑冲在最前的西路杜松军！",
+      "whyKeyPoint": "为啥四路分进合击在辽东丘陵成了自杀部署？群山密林阻隔下四路相距数百里无法呼应，等于把十万总兵力主动切成四个两万人的孤立肉块喂给六万八旗铁骑！",
+      "camera": {
+        "center": [124.25, 41.75],
+        "zoom": 7.1,
+        "pitch": 40,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-four-routes",
+        "leftLabel": "被切碎孤立之四路明军",
+        "leftPower": 40,
+        "rightFactionId": "later-jin",
+        "rightLabel": "集中一点之 6 万八旗铁骑",
+        "rightPower": 60
+      },
+      "routes": [
+        {
+          "id": "r-sh1-dusong-west",
+          "order": 1,
+          "factionId": "ming-four-routes",
+          "type": "assault",
+          "label": "西路总兵杜松贪立头功，冒雪自沈阳抢渡浑河猛冲萨尔浒",
+          "commander": "杜松 · 王宣",
+          "coordinates": [
+            [123.43, 41.81],
+            [123.92, 41.86],
+            [124.22, 41.89]
+          ]
+        },
+        {
+          "id": "r-sh1-malin-north",
+          "order": 2,
+          "factionId": "ming-four-routes",
+          "type": "assault",
+          "label": "北路马林自开原南下尚间崖，南路刘綎自宽甸北进",
+          "commander": "马林 · 潘宗颜",
+          "coordinates": [
+            [124.04, 42.54],
+            [124.18, 42.22],
+            [124.26, 42.02]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-sh1-hetuala",
+          "kind": "camp",
+          "label": "赫图阿拉（后金都城）",
+          "subLabel": "“凭尔几路来，我只一路去”",
+          "coordinates": [124.83, 41.68],
+          "color": "#9A3412"
+        }
+      ]
+    },
+    {
+      "phaseNo": 2,
+      "title": "第二幕：浑河血崩 · 萨尔浒灭杜松、尚间崖连破马林",
+      "dateLabel": "万历四十七年（1619）三月初一—初二",
+      "year": 1619,
+      "narrative": "三月初一，杜松将三万大军分置萨尔浒山与吉林崖。努尔哈赤集中六旗先破萨尔浒大营断其归路，再合围吉林崖，杜松中箭阵亡全军覆没！当夜八旗急行军北转四十里，初二晨突袭尚间崖击溃北路马林军，监军潘宗颜背水死战殉国！",
+      "whyKeyPoint": "为啥明军火器车营没挡住八旗冲锋？杜松急渡浑河时战车火炮大半陷在河滩掉队，马林则呆守壕沟不敢出击被八旗逐个撕碎。",
+      "camera": {
+        "center": [124.25, 41.96],
+        "zoom": 7.8,
+        "pitch": 44,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-four-routes",
+        "leftLabel": "分兵轻进之杜松马林军",
+        "leftPower": 20,
+        "rightFactionId": "later-jin",
+        "rightLabel": "六万八旗泰山压顶突击",
+        "rightPower": 80
+      },
+      "routes": [
+        {
+          "id": "r-sh2-crush-dusong",
+          "order": 1,
+          "factionId": "later-jin",
+          "type": "assault",
+          "label": "努尔哈赤八旗全军西扑萨尔浒与吉林崖，全歼杜松三万西路军",
+          "commander": "努尔哈赤 · 代善",
+          "coordinates": [
+            [124.83, 41.68],
+            [124.48, 41.82],
+            [124.22, 41.89]
+          ]
+        },
+        {
+          "id": "r-sh2-crush-malin",
+          "order": 2,
+          "factionId": "later-jin",
+          "type": "assault",
+          "label": "连夜北转尚间崖与斐芬山，次日一举击溃北路马林军！",
+          "commander": "努尔哈赤",
+          "coordinates": [
+            [124.22, 41.89],
+            [124.25, 41.96],
+            [124.26, 42.02]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-sh2-sarhu",
+          "kind": "clash",
+          "label": "萨尔浒 · 吉林崖血崩",
+          "subLabel": "西路总兵杜松中箭阵亡",
+          "coordinates": [124.22, 41.89],
+          "color": "#9A3412"
+        }
+      ]
+    },
+    {
+      "phaseNo": 3,
+      "title": "第三幕：大刀悲歌 · 阿布达里冈诱袭，“刘大刀”刘綎力战殉国",
+      "dateLabel": "万历四十七年（1619）三月初三—初五",
+      "year": 1619,
+      "narrative": "百战名将刘綎在深山中不知北西两路已覆没。皇太极与代善换穿缴获的杜松军衣甲旗帜，派人谎报“杜总兵已逼赫图阿拉速来合围”！刘綎催军急进阿布达里冈狭谷中伏，六旬老帅挥百斤大刀手刃数十敌战死沙场，五日内三路覆没！",
+      "whyKeyPoint": "为啥老将刘綎也会中计？杨镐在沈阳得知杜松败亡后只通知心腹李如柏撤退，竟未派死士通知南路刘綎，令其一头扎进包围圈！",
+      "camera": {
+        "center": [124.65, 41.35],
+        "zoom": 7.2,
+        "pitch": 42,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-four-routes",
+        "leftLabel": "阿布达里冈孤军刘綎部",
+        "leftPower": 24,
+        "rightFactionId": "later-jin",
+        "rightLabel": "伪装诈袭之代善皇太极军",
+        "rightPower": 76
+      },
+      "routes": [
+        {
+          "id": "r-sh3-liuting-north",
+          "order": 1,
+          "factionId": "ming-four-routes",
+          "type": "assault",
+          "label": "南路刘綎自宽甸北进阿布达里冈，误信假捷报加速孤进",
+          "commander": "刘綎",
+          "coordinates": [
+            [124.78, 40.73],
+            [124.75, 41.12],
+            [124.72, 41.45]
+          ]
+        },
+        {
+          "id": "r-sh3-jin-deception",
+          "order": 2,
+          "factionId": "later-jin",
+          "type": "ambush",
+          "label": "代善、皇太极伪穿明军衣甲诱袭，伏兵齐下围歼南路军！",
+          "commander": "代善 · 皇太极",
+          "coordinates": [
+            [124.83, 41.68],
+            [124.78, 41.56],
+            [124.72, 41.45]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-sh3-abudali",
+          "kind": "clash",
+          "label": "阿布达里冈 · 刘綎殉国",
+          "subLabel": "五日三路覆没，辽东精锐丧尽",
+          "coordinates": [124.72, 41.45],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 4,
+      "title": "第四幕：沈辽失守 · 后金连陷沈阳辽阳七十城，迁都盛京",
+      "dateLabel": "天启元年（1621）三月",
+      "year": 1621,
+      "narrative": "熊廷弼遭弹劾去职后，天启元年三月努尔哈赤攻破沈阳，陈策、戚金率数千川浙步兵在浑河血战至最后一人；七日后辽阳沦陷，经略袁应泰自焚殉国，辽河以东七十余城尽入后金之手！",
+      "whyKeyPoint": "为啥浑河几千川浙步兵能重创八旗？证明严密步炮长枪阵完全克制八旗骑兵，大明真正败于朝堂党争临阵换帅与欠饷腐败！",
+      "camera": {
+        "center": [123.35, 41.45],
+        "zoom": 6.8,
+        "pitch": 40,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-four-routes",
+        "leftLabel": "失去熊廷弼之沈辽守军",
+        "leftPower": 25,
+        "rightFactionId": "later-jin",
+        "rightLabel": "席卷辽东之后金大军",
+        "rightPower": 75
+      },
+      "routes": [
+        {
+          "id": "r-sh4-shenyang-fall",
+          "order": 1,
+          "factionId": "later-jin",
+          "type": "assault",
+          "label": "努尔哈赤西进攻陷重镇沈阳，浑河血战歼灭川浙援军",
+          "commander": "努尔哈赤",
+          "coordinates": [
+            [124.83, 41.68],
+            [124.12, 41.78],
+            [123.43, 41.81]
+          ]
+        },
+        {
+          "id": "r-sh4-liaoyang-fall",
+          "order": 2,
+          "factionId": "later-jin",
+          "type": "assault",
+          "label": "南下攻陷辽东首府辽阳城，尽占辽河以东七十余城！",
+          "commander": "努尔哈赤 · 皇太极",
+          "coordinates": [
+            [123.43, 41.81],
+            [123.28, 41.52],
+            [123.17, 41.27]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-sh4-shenyang",
+          "kind": "siege",
+          "label": "沈阳辽阳相继沦陷",
+          "subLabel": "后金迁都沈阳，辽河以东尽失",
+          "coordinates": [123.43, 41.81],
+          "color": "#9A3412"
+        }
+      ]
+    }
+  ]
+}

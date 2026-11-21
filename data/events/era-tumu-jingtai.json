@@ -469,7 +469,7 @@
         "evt-1450-yangshan-diplomacy",
         "evt-1452-nangong-lock"
       ],
-      "nextEventIds": []
+      "nextEventIds": ["evt-1467-chenghua-yansui"]
     },
     "bookLens": {
       "chapterIds": ["v2-zhu-qiyu-ch22", "v3-zhu-qizhen-ch01", "v3-zhu-qizhen-ch03"],
