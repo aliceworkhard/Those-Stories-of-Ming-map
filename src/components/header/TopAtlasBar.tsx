@@ -432,17 +432,17 @@ export default function TopAtlasBar() {
           </span>
         </a>
 
-        {/* 5. LINUX DO Community Recognition Friend Link */}
+        {/* 5. LINUX DO Community Recognition Friend-Link Button */}
         <a
           href={SITE_CONFIG.linuxDoUrl}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="访问 LINUX DO 开源技术社区"
-          title="友情链接 · 致谢 LINUX DO 社区 (https://linux.do/)"
-          className={`hidden xl:flex px-2 py-1.5 rounded-lg border text-[11px] font-semibold items-center gap-1 shrink-0 transition cursor-pointer ${
+          aria-label="友情链接：前往 LINUX DO 开源技术社区"
+          title="友情链接 · 访问 LINUX DO 社区 (https://linux.do/)"
+          className={`hidden sm:flex px-2.5 py-1.5 rounded-lg border text-xs font-semibold items-center gap-1.5 shrink-0 transition cursor-pointer ${
             isDark
-              ? 'border-amber-400/30 bg-slate-900/90 hover:bg-slate-800 text-amber-200'
-              : 'border-amber-900/25 bg-[#FFFDF7] hover:bg-amber-50 text-stone-800'
+              ? 'border-amber-400/45 bg-slate-900 hover:bg-slate-800 text-amber-200'
+              : 'border-amber-900/30 bg-[#FFFDF7] hover:bg-amber-50 text-stone-900 shadow-2xs'
           }`}
         >
           <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
