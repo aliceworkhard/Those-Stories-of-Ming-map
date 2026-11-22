@@ -4,6 +4,7 @@ export const SITE_CONFIG = {
   subtitle: '《明朝那些事儿》全七部三维历史事件、疆域变迁、人物足迹与战役推演舆图',
   repoUrl: 'https://github.com/aliceworkhard/Those-Stories-of-Ming-map',
   repoSlug: 'aliceworkhard/Those-Stories-of-Ming-map',
+  linuxDoUrl: 'https://linux.do/',
   license: 'MIT',
   timeline: {
     minYear: 1344,

@@ -5,6 +5,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-B83B2A.svg)](./LICENSE)
 [![Live Online](https://img.shields.io/badge/在线体验-those--stories--of--ming--map.vercel.app-1D4ED8)](https://those-stories-of-ming-map.vercel.app)
+[![Community: LINUX DO](https://img.shields.io/badge/Community-LINUX_DO-F59E0B?logo=discourse&logoColor=white)](https://linux.do/)
 [![Next.js 15](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org/)
 [![MapLibre GL 3D](https://img.shields.io/badge/MapLibre_GL-3D_Vector_WebGL-2962FF)](https://maplibre.org/)
 
@@ -87,9 +88,9 @@
 
 ---
 
-## 零配置快速启动 (Quickstart)
+## 零配置快速启动 (Quickstart · 100% 完整开源)
 
-本项目**无需申请任何商业地图付费 API Key**（全开源矢量瓦片 + AWS 开放地形高程），安装 Node.js（`>= 20`）后四行命令即可本地运行：
+本项目 **100% 完整开源，无任何未开源后端、无私有数据库、无付费商业地图 API Key 依赖**（包含全部三维 WebGL 渲染引擎、内置 `/dev/territory-painter` 制图工坊及全七部结构化历史时空数据集），安装 Node.js（`>= 20`）后四行命令即可在本地完整运行：
 
 ```bash
 git clone https://github.com/aliceworkhard/Those-Stories-of-Ming-map.git
@@ -128,6 +129,13 @@ sh ./deploy.sh
 - [开放历史地理与五维事件数据契约 (`data/schemas/README.md`)](./data/schemas/README.md)
 - [社区贡献指南：零代码补充历史事件、画笔擦写疆域与提交流程 (`docs/CONTRIBUTING.md`)](./docs/CONTRIBUTING.md)
 - [独立云服务器 + 专属域名 HTTPS 生产环境部署手册 (`deploy/README.md`)](./deploy/README.md)
+
+---
+
+## 社区致谢与友情链接 (Community & Acknowledgements)
+
+- **[LINUX DO](https://linux.do/)** — 真诚、友善、团结、专业的开源与技术交流社区（*Where possible begins*）。感谢 LINUX DO 社区佬友们的交流、建议与支持！
+- 底层开源生态致谢：[MapLibre GL JS](https://maplibre.org/) · [OpenFreeMap](https://openfreemap.org/) · [Natural Earth](https://www.naturalearthdata.com/) · [Next.js](https://nextjs.org/)
 
 ---
 

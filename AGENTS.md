@@ -1,19 +1,18 @@
-# Repository Agent Instructions (`Those-Stories-of-Ming-map`)
+# Repository Agent & Contributor Guide (`Those-Stories-of-Ming-map`)
 
-欢迎接手《明途 · 舆图纪》（`Those-Stories-of-Ming-map`）开源仓库！
+欢迎来到 **《明途 · 舆图纪》（`Those-Stories-of-Ming-map`）** 开源仓库！本仓库 100% 完整开源（MIT License），包含全部三维 WebGL 制图引擎、内置 `/dev/territory-painter` 画笔擦写工坊、全七部历史时空数据集与 Docker 独立部署套件。
 
-## 必读上下文（零提问启动）
+## 1. 核心架构与贡献文档导航
 
-如果你在顶层工作空间 `G:\王朝` 下运行，请**第一时间阅读以下三份核心文档**（无需向用户重复询问背景或规划）：
+1. **[系统架构说明 (`docs/ARCHITECTURE.md`)](./docs/ARCHITECTURE.md)**：纯 WebGL 零 DOM Marker 符号层、纯局部布尔差分疆域涂抹引擎、静止路线 + 动态/静态箭矢切换与性能优化架构。
+2. **[数据契约规范 (`data/schemas/README.md`)](./data/schemas/README.md)**：章节锚点、历史疆域、五维事件、分幕战役、人物一生足迹与制度图层的完整 Schema 定义。
+3. **[社区贡献指南 (`docs/CONTRIBUTING.md`)](./docs/CONTRIBUTING.md)**：零代码补充历史事件 JSON 模板、使用 `/dev/territory-painter` 擦写疆域与本地校验流程。
+4. **[独立服务器部署手册 (`deploy/README.md`)](./deploy/README.md)**：Docker Standalone + Caddy 自动免费 HTTPS 生产部署指南。
 
-1. **无缝交接手册（最高优先级）**：`../docs-workspace/03-Agent无缝交接手册.md`
-2. **第一阶段详细实施细则（WBS 与验收标准）**：`../docs-workspace/02-第一阶段详细实施细则.md`
-3. **项目总体规划与最终交付定义**：`../docs-workspace/01-项目总体规划与最终交付定义.md`
+## 2. 开发与提交铁律
 
-## 仓库级铁律速览
-
-1. **严禁版权与私有文件入库**：原书电子书与私有参考文件位于本仓库外部的 `../local-private/`，**严禁**复制到本仓库或通过 `git add` 提交。
-2. **100% 原创自研（MIT License）**：严禁从任何 `GPL` 协议项目（如 `jiangshan-map`）复制代码、样式或受限图层文件。
-3. **全 Node.js 脚本工具链**：当前开发机已安装 `Node.js v24` 与 `npm 11`，**未安装 Python**。`scripts/` 下所有脚本必须使用 Node.js (`.mjs` / `.ts`) 编写。
-4. **地理坐标铁律**：所有 GeoJSON / TopoJSON 坐标统一采用标准 **`WGS-84 (EPSG:4326)` `[lng, lat]`（经度在前，纬度在后）**，严禁混入 GCJ-02 或 BD-09 偏移坐标。
-5. **双阶段部署兼容**：架构须保持静态优先与标准容器化兼容（`deploy/` Docker 方案），禁止强依赖某单一云厂商的闭源私有存储，确保 12 月可零重构迁移至独立云服务器与自定义域名。
+1. **版权合规红线**：严禁向仓库提交任何受著作权保护的原书电子书文件（`.txt / .epub / .mobi / .pdf`）或整段照抄原书正文；导读与历史因果解析须保持原创总结。
+2. **100% 纯净 MIT 协议**：严禁复制任何 `GPL` / `AGPL` 项目的源码或带有商业/分发限制的地理数据。
+3. **Node.js 工具链**：`scripts/` 下所有校验与回归测试脚本均采用 Node.js ESM (`.mjs`) 编写，无需安装 Python。
+4. **标准地理坐标系**：所有 GeoJSON / TopoJSON 统一使用 **`WGS-84 (EPSG:4326)` `[lng, lat]`（经度在前，纬度在后）**。
+5. **提交前必跑检查**：运行 `npm run check`（全量数据校验 + TypeScript 类型检查 + 引擎回归测试）与 `npm run build` 确保零报错。
