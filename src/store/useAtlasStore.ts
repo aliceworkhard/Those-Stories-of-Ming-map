@@ -51,7 +51,7 @@ export interface LayerVisibility {
   nineGarrisons: boolean;
 }
 
-export type CampaignCameraMode = 'follow' | 'free';
+export type CampaignCameraMode = 'overview' | 'follow' | 'free';
 export type CampaignArrowMode = 'dynamic' | 'static';
 
 const STORY_OPENING_EVENT = ALL_EVENTS[0];
@@ -80,6 +80,9 @@ interface AtlasState {
   activeCampaignId: string | null;
   activePhaseIndex: number;
   isCampaignPlaying: boolean;
+  isCampaignPanelOpen: boolean;
+  spotlightRouteId: string | null;
+  focusedRouteRequest: { routeId: string; seq: number } | null;
   campaignSpeed: 1 | 1.5;
   campaignCameraMode: CampaignCameraMode;
   campaignArrowMode: CampaignArrowMode;
@@ -128,6 +131,9 @@ interface AtlasState {
   nextCampaignPhase: () => void;
   prevCampaignPhase: () => void;
   setCampaignPlaying: (playing: boolean) => void;
+  setCampaignPanelOpen: (open: boolean) => void;
+  setSpotlightRouteId: (routeId: string | null) => void;
+  focusCampaignRoute: (routeId: string) => void;
   setCampaignSpeed: (speed: 1 | 1.5) => void;
   setCampaignCameraMode: (mode: CampaignCameraMode) => void;
   setCampaignArrowMode: (mode: CampaignArrowMode) => void;
@@ -181,8 +187,11 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   activeCampaignId: null,
   activePhaseIndex: 0,
   isCampaignPlaying: false,
+  isCampaignPanelOpen: true,
+  spotlightRouteId: null,
+  focusedRouteRequest: null,
   campaignSpeed: 1,
-  campaignCameraMode: 'follow',
+  campaignCameraMode: 'overview',
   campaignArrowMode: 'dynamic',
   campaignPhaseProgress: 0,
   campaignReplayNonce: 0,
@@ -475,8 +484,11 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
       activeCampaignId: campaignId,
       activePhaseIndex: safeIdx,
       isCampaignPlaying: true,
+      isCampaignPanelOpen: true,
+      spotlightRouteId: null,
+      focusedRouteRequest: null,
       campaignCameraMode:
-        state.campaignCameraMode === 'free' ? 'follow' : state.campaignCameraMode,
+        state.campaignCameraMode === 'free' ? 'overview' : state.campaignCameraMode,
       campaignPhaseProgress: 0,
       campaignReplayNonce: state.campaignReplayNonce + 1,
       isDirectoryOpen: false,
@@ -490,6 +502,8 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
       activeCampaignId: null,
       activePhaseIndex: 0,
       isCampaignPlaying: false,
+      spotlightRouteId: null,
+      focusedRouteRequest: null,
       campaignPhaseProgress: 0,
       activeWipeCaption: null,
       isDirectoryOpen: !state.isImmersionMode,
@@ -505,6 +519,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     const phase = cmp.phases[safeIdx];
     set((state) => ({
       activePhaseIndex: safeIdx,
+      spotlightRouteId: null,
       campaignPhaseProgress: 0,
       campaignReplayNonce: state.campaignReplayNonce + 1,
       currentYear: phase.year,
@@ -531,6 +546,16 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   },
 
   setCampaignPlaying: (playing) => set({ isCampaignPlaying: playing }),
+  setCampaignPanelOpen: (open) => set({ isCampaignPanelOpen: open }),
+  setSpotlightRouteId: (routeId) => set({ spotlightRouteId: routeId }),
+  focusCampaignRoute: (routeId) =>
+    set((state) => ({
+      spotlightRouteId: routeId,
+      focusedRouteRequest: {
+        routeId,
+        seq: (state.focusedRouteRequest?.seq ?? 0) + 1,
+      },
+    })),
   setCampaignSpeed: (speed) => set({ campaignSpeed: speed }),
   setCampaignCameraMode: (mode) =>
     set((state) => ({
@@ -544,8 +569,9 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   replayCurrentPhase: () =>
     set((state) => ({
       isCampaignPlaying: true,
+      spotlightRouteId: null,
       campaignCameraMode:
-        state.campaignCameraMode === 'free' ? 'follow' : state.campaignCameraMode,
+        state.campaignCameraMode === 'free' ? 'overview' : state.campaignCameraMode,
       campaignPhaseProgress: 0,
       campaignReplayNonce: state.campaignReplayNonce + 1,
     })),

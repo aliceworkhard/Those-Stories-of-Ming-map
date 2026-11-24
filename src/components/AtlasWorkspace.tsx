@@ -36,9 +36,10 @@ export default function AtlasWorkspace() {
   const theme = useAtlasStore((s) => s.theme);
   const isDrawerOpen = useAtlasStore((s) => s.isDrawerOpen);
   const activeCampaignId = useAtlasStore((s) => s.activeCampaignId);
+  const isCampaignPanelOpen = useAtlasStore((s) => s.isCampaignPanelOpen);
   const hydrateFromStorage = useAtlasStore((s) => s.hydrateFromStorage);
   const isDark = theme === 'xuanmo';
-  const drawerTakesRight = isDrawerOpen && !activeCampaignId;
+  const drawerTakesRight = activeCampaignId ? isCampaignPanelOpen : isDrawerOpen;
 
   useEffect(() => {
     hydrateFromStorage();

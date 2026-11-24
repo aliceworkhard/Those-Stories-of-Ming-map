@@ -20,6 +20,7 @@ import {
   buildPhaseRouteFeatures,
   buildPolityLabelGeoJSON,
   mountHistoricalLayers,
+  setCampaignSpotlightRoute,
   setCampaignStaticRoutesOnMap,
   setPlaceNameModeOnGpu,
   syncLayerVisibility,
@@ -73,6 +74,94 @@ function getTargetPixelRatio(perfMode: PerformanceMode): number {
   return Math.min(dpr, 1.25);
 }
 
+/**
+ * Automatically frames 100% of a battle phase's marching routes and clash markers
+ * inside the unobstructed map viewport (accounting for TopBar, Right War-Room Drawer,
+ * and Bottom Playback Bar so routes are NEVER clipped or hidden behind UI panels).
+ */
+function fitPhaseTheaterOnMap(
+  map: maplibregl.Map,
+  curves: PreparedRouteCurve[],
+  phase: CampaignPhase,
+  panelOpen: boolean,
+  use3D: boolean,
+  duration = 950
+): void {
+  let minLng = Infinity;
+  let maxLng = -Infinity;
+  let minLat = Infinity;
+  let maxLat = -Infinity;
+
+  for (const c of curves) {
+    for (const [lng, lat] of c.coords) {
+      if (lng < minLng) minLng = lng;
+      if (lng > maxLng) maxLng = lng;
+      if (lat < minLat) minLat = lat;
+      if (lat > maxLat) maxLat = lat;
+    }
+  }
+  for (const m of phase.markers) {
+    const [lng, lat] = m.coordinates;
+    if (lng < minLng) minLng = lng;
+    if (lng > maxLng) maxLng = lng;
+    if (lat < minLat) minLat = lat;
+    if (lat > maxLat) maxLat = lat;
+  }
+
+  const targetPitch = use3D ? Math.min(40, phase.camera.pitch ?? 36) : 0;
+
+  if (!Number.isFinite(minLng) || !Number.isFinite(minLat)) {
+    map.flyTo({
+      center: phase.camera.center,
+      zoom: phase.camera.zoom,
+      pitch: targetPitch,
+      bearing: 0,
+      duration,
+      essential: true,
+    });
+    return;
+  }
+
+  const lngSpan = maxLng - minLng;
+  const latSpan = maxLat - minLat;
+  const padLng = Math.max(0.16, lngSpan * 0.14);
+  const padLat = Math.max(0.14, latSpan * 0.14);
+
+  const width = map.getCanvas().clientWidth || 1280;
+  const height = map.getCanvas().clientHeight || 800;
+  const isDesktop = width >= 1280;
+  const isTablet = width >= 640;
+
+  const padding = isTablet
+    ? {
+        top: 86,
+        bottom: 136,
+        left: isDesktop ? 96 : 48,
+        right: panelOpen ? (isDesktop ? 392 : 368) : 48,
+      }
+    : {
+        top: 68,
+        bottom: panelOpen ? Math.round(Math.min(height * 0.48, 360)) : 128,
+        left: 28,
+        right: 28,
+      };
+
+  map.fitBounds(
+    [
+      [minLng - padLng, minLat - padLat],
+      [maxLng + padLng, maxLat + padLat],
+    ],
+    {
+      padding,
+      maxZoom: Math.max(7.5, Math.min(8.5, phase.camera.zoom + 0.55)),
+      pitch: targetPitch,
+      bearing: 0,
+      duration,
+      essential: true,
+    }
+  );
+}
+
 export default function MingMapCanvas() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -117,6 +206,9 @@ export default function MingMapCanvas() {
   const activeCampaignId = useAtlasStore((s) => s.activeCampaignId);
   const activePhaseIndex = useAtlasStore((s) => s.activePhaseIndex);
   const isCampaignPlaying = useAtlasStore((s) => s.isCampaignPlaying);
+  const isCampaignPanelOpen = useAtlasStore((s) => s.isCampaignPanelOpen);
+  const spotlightRouteId = useAtlasStore((s) => s.spotlightRouteId);
+  const focusedRouteRequest = useAtlasStore((s) => s.focusedRouteRequest);
   const campaignCameraMode = useAtlasStore((s) => s.campaignCameraMode);
   const campaignArrowMode = useAtlasStore((s) => s.campaignArrowMode);
   const campaignReplayNonce = useAtlasStore((s) => s.campaignReplayNonce);
@@ -297,8 +389,13 @@ export default function MingMapCanvas() {
     );
     activeCurvesRef.current = preparedCurves;
 
-    // Route lines are ALWAYS 100% stationary at full length ("线不用动")!
-    setCampaignStaticRoutesOnMap(map, featureCollection);
+    // Route lines + origin rings + destination spearheads are ALWAYS 100% stationary ("线不用动")!
+    setCampaignStaticRoutesOnMap(map, featureCollection, preparedCurves);
+    setCampaignSpotlightRoute(
+      map,
+      st.activeCampaignId ? st.spotlightRouteId : null,
+      Boolean(st.activeCampaignId)
+    );
 
     if (!activeCampaign) {
       updateCampaignArrowheadsOnMap(map, [], 'static', 1);
@@ -388,6 +485,43 @@ export default function MingMapCanvas() {
     map.on('mouseleave', 'ming-events-symbol', () => {
       map.getCanvas().style.cursor = '';
     });
+
+    // Interactive Tactical Route & Pill Hit-Testing (`① / ② / ③`)
+    const campaignHitLayers = [
+      'campaign-callouts-pill',
+      'campaign-routes-solid',
+      'campaign-routes-dashed',
+    ] as const;
+
+    for (const layerId of campaignHitLayers) {
+      map.on('mouseenter', layerId, (e) => {
+        const feat = e.features?.[0];
+        const rId = String(
+          feat?.properties?.routeId ?? feat?.properties?.id ?? ''
+        );
+        map.getCanvas().style.cursor = 'pointer';
+        if (rId && useAtlasStore.getState().activeCampaignId) {
+          useAtlasStore.getState().setSpotlightRouteId(rId);
+        }
+      });
+
+      map.on('mouseleave', layerId, () => {
+        map.getCanvas().style.cursor = '';
+        if (useAtlasStore.getState().activeCampaignId) {
+          useAtlasStore.getState().setSpotlightRouteId(null);
+        }
+      });
+
+      map.on('click', layerId, (e) => {
+        const feat = e.features?.[0];
+        const rId = String(
+          feat?.properties?.routeId ?? feat?.properties?.id ?? ''
+        );
+        if (rId && useAtlasStore.getState().activeCampaignId) {
+          useAtlasStore.getState().focusCampaignRoute(rId);
+        }
+      });
+    }
 
     // Zero-Interference Territory Hover Highlight:
     // Completely skipped while camera is moving or any animation loop is active!
@@ -557,18 +691,19 @@ export default function MingMapCanvas() {
         const speed = store.campaignSpeed;
         const curves = activeCurvesRef.current;
         const growTotalMs = getRouteGrowDurationMs(curves.length) / speed;
-        const cycleWithHoldMs = growTotalMs + 680;
+        const cycleWithHoldMs = growTotalMs + 1600;
         const phaseTotalMs =
           getPhaseTotalDurationMs(curves.length, campaignHasWipeRef.current) /
           speed;
 
         if (store.campaignArrowMode === 'dynamic') {
           routeGrowElapsedMsRef.current += dt;
-          // If phase auto-play is paused (`!isCampaignPlaying`), loop the arrowhead glide cleanly!
+          // If phase auto-play is paused (`!isCampaignPlaying`), loop sequential `①->②->③` + continuous glide!
           const effectiveElapsed = store.isCampaignPlaying
             ? Math.min(growTotalMs, routeGrowElapsedMsRef.current)
             : routeGrowElapsedMsRef.current % cycleWithHoldMs;
           const cycleProgress = Math.min(1, effectiveElapsed / growTotalMs);
+          const continuousPulse = (now % 2600) / 2600;
 
           let nextUnlocked = 1;
           for (const c of curves) {
@@ -591,7 +726,8 @@ export default function MingMapCanvas() {
               currentMap,
               curves,
               'dynamic',
-              cycleProgress
+              cycleProgress,
+              continuousPulse
             );
           }
         } else {
@@ -861,7 +997,8 @@ export default function MingMapCanvas() {
     activeCurvesRef.current = preparedCurves;
 
     if (styleReadyRef.current) {
-      setCampaignStaticRoutesOnMap(map, featureCollection);
+      setCampaignStaticRoutesOnMap(map, featureCollection, preparedCurves);
+      setCampaignSpotlightRoute(map, null, true);
       updateCampaignAnnotationsOnMap(
         map,
         preparedCurves,
@@ -872,7 +1009,7 @@ export default function MingMapCanvas() {
       if (campaignArrowMode === 'static') {
         updateCampaignArrowheadsOnMap(map, preparedCurves, 'static', 1);
       } else {
-        updateCampaignArrowheadsOnMap(map, preparedCurves, 'dynamic', 0);
+        updateCampaignArrowheadsOnMap(map, preparedCurves, 'dynamic', 0, 0);
       }
     }
     emitPlaybackTick({
@@ -881,24 +1018,31 @@ export default function MingMapCanvas() {
       unlockedSteps: campaignArrowMode === 'static' ? preparedCurves.length : 1,
     });
 
-    const firstCurve = preparedCurves[0];
-    const startCenter: LngLat =
-      campaignCameraMode === 'follow' && firstCurve
-        ? [
-            firstCurve.startPoint[0] * 0.4 + activePhase.camera.center[0] * 0.6,
-            firstCurve.startPoint[1] * 0.4 + activePhase.camera.center[1] * 0.6,
-          ]
-        : activePhase.camera.center;
-
     const use3D = is3D && perfMode !== 'eco';
-    map.flyTo({
-      center: startCenter,
-      zoom: activePhase.camera.zoom,
-      pitch: use3D ? Math.min(42, activePhase.camera.pitch ?? 38) : 0,
-      bearing: 0,
-      duration: OPENING_FLY_DURATION_MS,
-      essential: true,
-    });
+    if (campaignCameraMode === 'follow' && preparedCurves[0]) {
+      const firstCurve = preparedCurves[0];
+      const startCenter: LngLat = [
+        firstCurve.startPoint[0] * 0.4 + activePhase.camera.center[0] * 0.6,
+        firstCurve.startPoint[1] * 0.4 + activePhase.camera.center[1] * 0.6,
+      ];
+      map.flyTo({
+        center: startCenter,
+        zoom: activePhase.camera.zoom,
+        pitch: use3D ? Math.min(42, activePhase.camera.pitch ?? 38) : 0,
+        bearing: 0,
+        duration: OPENING_FLY_DURATION_MS,
+        essential: true,
+      });
+    } else if (campaignCameraMode !== 'free') {
+      fitPhaseTheaterOnMap(
+        map,
+        preparedCurves,
+        activePhase,
+        isCampaignPanelOpen,
+        use3D,
+        OPENING_FLY_DURATION_MS
+      );
+    }
 
     startDirectorLoopRef.current();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -921,6 +1065,109 @@ export default function MingMapCanvas() {
       startDirectorLoopRef.current();
     }
   }, [campaignArrowMode, activeCampaignId]);
+
+  // 6c. Spotlight Specific Route (`① / ② / ③`) on Hover or Selection
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !styleReadyRef.current) return;
+    setCampaignSpotlightRoute(
+      map,
+      activeCampaignId ? spotlightRouteId : null,
+      Boolean(activeCampaignId)
+    );
+  }, [spotlightRouteId, activeCampaignId]);
+
+  // 6d. Re-frame Open Battlefield Smoothly When Expanding / Collapsing War-Room Drawer
+  useEffect(() => {
+    const map = mapRef.current;
+    if (
+      !map ||
+      !styleReadyRef.current ||
+      !activeCampaignId ||
+      !activePhase ||
+      campaignCameraMode !== 'overview' ||
+      userInteractedInPhaseRef.current
+    ) {
+      return;
+    }
+    const use3D = is3D && perfMode !== 'eco';
+    fitPhaseTheaterOnMap(
+      map,
+      activeCurvesRef.current,
+      activePhase,
+      isCampaignPanelOpen,
+      use3D,
+      540
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isCampaignPanelOpen]);
+
+  // 6e. Focus & Zoom onto Individual Route Corridor When Clicked in War-Room Drawer
+  useEffect(() => {
+    const map = mapRef.current;
+    if (
+      !map ||
+      !styleReadyRef.current ||
+      !activeCampaignId ||
+      !focusedRouteRequest
+    ) {
+      return;
+    }
+    const curve = activeCurvesRef.current.find(
+      (c) => c.id === focusedRouteRequest.routeId
+    );
+    if (!curve || curve.coords.length === 0) return;
+
+    userInteractedInPhaseRef.current = true;
+    let minLng = Infinity;
+    let maxLng = -Infinity;
+    let minLat = Infinity;
+    let maxLat = -Infinity;
+    for (const [lng, lat] of curve.coords) {
+      if (lng < minLng) minLng = lng;
+      if (lng > maxLng) maxLng = lng;
+      if (lat < minLat) minLat = lat;
+      if (lat > maxLat) maxLat = lat;
+    }
+
+    const padLng = Math.max(0.14, (maxLng - minLng) * 0.18);
+    const padLat = Math.max(0.12, (maxLat - minLat) * 0.18);
+    const width = map.getCanvas().clientWidth || 1280;
+    const height = map.getCanvas().clientHeight || 800;
+    const isDesktop = width >= 1280;
+    const isTablet = width >= 640;
+    const use3D = is3D && perfMode !== 'eco';
+
+    map.fitBounds(
+      [
+        [minLng - padLng, minLat - padLat],
+        [maxLng + padLng, maxLat + padLat],
+      ],
+      {
+        padding: isTablet
+          ? {
+              top: 96,
+              bottom: 144,
+              left: isDesktop ? 104 : 56,
+              right: isCampaignPanelOpen ? (isDesktop ? 400 : 376) : 56,
+            }
+          : {
+              top: 72,
+              bottom: isCampaignPanelOpen
+                ? Math.round(Math.min(height * 0.48, 360))
+                : 132,
+              left: 32,
+              right: 32,
+            },
+        maxZoom: 8.4,
+        pitch: use3D ? 36 : 0,
+        bearing: 0,
+        duration: 720,
+        essential: true,
+      }
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusedRouteRequest]);
 
   useEffect(() => {
     if (isCampaignPlaying) {

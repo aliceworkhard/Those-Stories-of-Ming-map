@@ -480,6 +480,67 @@ export function registerTacticalSprites(map: maplibregl.Map): void {
     60
   );
 
+  // 5b. SDF Marching Flow Chevron & 9-Slice Callout Banners for Campaign War-Room
+  if (!map.hasImage('marching-chevron')) {
+    const s = 48;
+    const c = document.createElement('canvas');
+    c.width = s;
+    c.height = s;
+    const ctx = c.getContext('2d');
+    if (ctx) {
+      ctx.clearRect(0, 0, s, s);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.moveTo(s / 2, 7);
+      ctx.lineTo(s - 7, s - 11);
+      ctx.lineTo(s / 2, s - 21);
+      ctx.lineTo(7, s - 11);
+      ctx.closePath();
+      ctx.fill();
+      const img = ctx.getImageData(0, 0, s, s);
+      map.addImage(
+        'marching-chevron',
+        { width: s, height: s, data: img.data },
+        { sdf: true, pixelRatio: 2 }
+      );
+    }
+  }
+
+  for (const [id, fill, stroke] of [
+    ['callout-pill-light', 'rgba(253, 250, 242, 0.96)', '#9E2318'],
+    ['callout-pill-dark', 'rgba(13, 19, 29, 0.95)', '#F59E0B'],
+  ] as const) {
+    if (!map.hasImage(id)) {
+      const w = 64;
+      const h = 36;
+      const c = document.createElement('canvas');
+      c.width = w;
+      c.height = h;
+      const ctx = c.getContext('2d');
+      if (ctx) {
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = fill;
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.roundRect(2, 2, w - 4, h - 4, 10);
+        ctx.fill();
+        ctx.stroke();
+        const img = ctx.getImageData(0, 0, w, h);
+        map.addImage(
+          id,
+          { width: w, height: h, data: img.data },
+          {
+            pixelRatio: 2,
+            stretchX: [[14, 50]],
+            stretchY: [[12, 24]],
+            content: [12, 7, 52, 29],
+          }
+        );
+      }
+    }
+  }
+
   // 6. GPU Battlefield Tactical Shockwave Seals (`围` / `决` / `伏` / `守` / `断`)
   addCircleSealSprite(
     map,

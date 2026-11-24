@@ -96,9 +96,9 @@ export default function TerritoryLegendCard() {
     !activeCampaignId &&
     (isStoryTourPlaying || hasTourSession || Boolean(activeCharacterId));
 
-  // Position smartly so it NEVER overlaps sidebars, CampaignPlayer, or StoryTourPlayer!
+  // Position smartly so it NEVER overlaps sidebars, right War-Room Drawer, or bottom Playback Bar!
   const positionClass = activeCampaignId
-    ? 'top-[58px] right-3 max-w-[300px] sm:max-w-[330px]'
+    ? 'top-[58px] left-3 max-w-[280px] sm:max-w-[308px]'
     : `${
         isTourHudOpen ? 'bottom-[152px] xl:bottom-[62px]' : 'bottom-[62px]'
       } ${

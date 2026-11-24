@@ -943,6 +943,13 @@ export function mountHistoricalLayers(
     });
   }
 
+  if (!map.getSource('campaign-endpoints')) {
+    map.addSource('campaign-endpoints', {
+      type: 'geojson',
+      data: EMPTY_FC,
+    });
+  }
+
   if (!map.getSource('campaign-vanguards')) {
     map.addSource('campaign-vanguards', {
       type: 'geojson',
@@ -958,6 +965,21 @@ export function mountHistoricalLayers(
   }
 
   if (!map.getLayer('campaign-routes-glow')) {
+    // Spotlight Halo when hovering/selecting a specific route `① / ② / ③`
+    map.addLayer({
+      id: 'campaign-routes-spotlight',
+      type: 'line',
+      source: 'campaign-routes',
+      filter: ['==', ['get', 'id'], '__none__'],
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: {
+        'line-color': '#FBBF24',
+        'line-width': 14,
+        'line-opacity': 0.65,
+        'line-blur': 3,
+      },
+    });
+
     map.addLayer({
       id: 'campaign-routes-glow',
       type: 'line',
@@ -965,22 +987,30 @@ export function mountHistoricalLayers(
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: {
         'line-color': ['get', 'color'],
-        'line-width': 10,
-        'line-opacity': isDark ? 0.3 : 0.22,
-        'line-blur': 3,
+        'line-width': 11,
+        'line-opacity': isDark ? 0.32 : 0.24,
+        'line-blur': 2.8,
       },
     });
 
+    // High-contrast casing on ALL tactical lines (both solid & dashed!) so routes pop cleanly off terrain
     map.addLayer({
       id: 'campaign-routes-casing',
       type: 'line',
       source: 'campaign-routes',
-      filter: ['in', ['get', 'tactic'], ['literal', ['assault', 'naval']]],
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: {
-        'line-color': isDark ? '#090D14' : '#FFFDF7',
-        'line-width': ['match', ['get', 'tactic'], 'naval', 7.2, 6.6],
-        'line-opacity': 0.88,
+        'line-color': isDark ? '#070B12' : '#FFFDF7',
+        'line-width': [
+          'match',
+          ['get', 'tactic'],
+          'naval',
+          8.2,
+          'assault',
+          7.6,
+          6.4,
+        ],
+        'line-opacity': 0.92,
       },
     });
 
@@ -992,8 +1022,8 @@ export function mountHistoricalLayers(
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: {
         'line-color': ['get', 'color'],
-        'line-width': ['match', ['get', 'tactic'], 'naval', 4.6, 4.2],
-        'line-opacity': 0.96,
+        'line-width': ['match', ['get', 'tactic'], 'naval', 5.2, 4.8],
+        'line-opacity': 0.98,
       },
     });
 
@@ -1009,19 +1039,35 @@ export function mountHistoricalLayers(
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: {
         'line-color': ['get', 'color'],
-        'line-width': ['match', ['get', 'tactic'], 'ambush', 3.8, 3.2],
+        'line-width': ['match', ['get', 'tactic'], 'ambush', 4.2, 3.6],
         'line-dasharray': [2.2, 1.4],
-        'line-opacity': ['match', ['get', 'tactic'], 'retreat', 0.78, 0.96],
+        'line-opacity': ['match', ['get', 'tactic'], 'retreat', 0.85, 0.98],
       },
     });
 
+    // Stationary Departure Garrison Ring (`○` at startPoint)
     map.addLayer({
-      id: 'campaign-vanguard-heads',
+      id: 'campaign-origin-rings',
+      type: 'circle',
+      source: 'campaign-endpoints',
+      filter: ['==', ['get', 'endKind'], 'origin'],
+      paint: {
+        'circle-radius': 5.8,
+        'circle-color': isDark ? '#0F172A' : '#FFFDF7',
+        'circle-stroke-width': 2.8,
+        'circle-stroke-color': ['get', 'color'],
+      },
+    });
+
+    // Stationary Authoritative Destination Spearhead (`▶` pinned at endPoint)
+    map.addLayer({
+      id: 'campaign-dest-arrowheads',
       type: 'symbol',
-      source: 'campaign-vanguards',
+      source: 'campaign-endpoints',
+      filter: ['==', ['get', 'endKind'], 'dest'],
       layout: {
         'icon-image': 'tactical-spearhead',
-        'icon-size': 0.96,
+        'icon-size': 1.04,
         'icon-rotate': ['get', 'bearing'],
         'icon-rotation-alignment': 'map',
         'icon-pitch-alignment': 'map',
@@ -1030,34 +1076,95 @@ export function mountHistoricalLayers(
       },
       paint: {
         'icon-color': ['get', 'color'],
-        'icon-halo-color': '#FFFDF7',
+        'icon-halo-color': isDark ? '#090D14' : '#FFFDF7',
         'icon-halo-width': 2.6,
       },
     });
 
-    // GPU Battlefield Shockwaves & Sequential Step Callouts
+    // Dynamic Marching Chevrons (`❯` gliding along stationary lines in `dynamic` mode!)
+    map.addLayer({
+      id: 'campaign-vanguard-heads',
+      type: 'symbol',
+      source: 'campaign-vanguards',
+      layout: {
+        'icon-image': 'marching-chevron',
+        'icon-size': ['get', 'scale'],
+        'icon-rotate': ['get', 'bearing'],
+        'icon-rotation-alignment': 'map',
+        'icon-pitch-alignment': 'map',
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
+      },
+      paint: {
+        'icon-color': '#FFFBEB',
+        'icon-halo-color': ['get', 'color'],
+        'icon-halo-width': 2.4,
+        'icon-opacity': 0.96,
+      },
+    });
+
+    // Concise Cartouche Route Step Pills (`① 杜松 · 主力`)
+    map.addLayer({
+      id: 'campaign-callouts-pill',
+      type: 'symbol',
+      source: 'campaign-annotations',
+      filter: ['==', ['get', 'annoKind'], 'callout'],
+      layout: {
+        'symbol-sort-key': ['get', 'sortKey'],
+        'icon-image': isDark ? 'callout-pill-dark' : 'callout-pill-light',
+        'icon-text-fit': 'both',
+        'icon-text-fit-padding': [3, 8, 3, 8],
+        'icon-allow-overlap': false,
+        'text-field': ['get', 'labelText'],
+        'text-font': ['Noto Sans Regular'],
+        'text-size': 11.5,
+        'text-variable-anchor': ['top', 'bottom', 'right', 'left'],
+        'text-radial-offset': 0.45,
+        'text-padding': 4,
+      },
+      paint: {
+        'text-color': isDark ? '#FEF3C7' : '#291D18',
+      },
+    });
+
+    // Rich Two-Line Battlefield Clash / Siege Seals (`决` / `围` / `伏` / `守` / `断`)
     map.addLayer({
       id: 'campaign-annotations-symbol',
       type: 'symbol',
       source: 'campaign-annotations',
+      filter: ['==', ['get', 'annoKind'], 'marker'],
       layout: {
-        'symbol-sort-key': ['get', 'sortKey'],
+        'symbol-sort-key': 1,
         'icon-image': ['get', 'iconName'],
-        'icon-size': ['match', ['get', 'annoKind'], 'marker', 0.92, 0.01],
+        'icon-size': 0.98,
         'icon-allow-overlap': true,
-        'text-field': ['get', 'labelText'],
+        'text-field': [
+          'case',
+          ['!=', ['get', 'subLabel'], ''],
+          [
+            'format',
+            ['get', 'labelText'],
+            { 'font-scale': 1.0 },
+            '\n',
+            {},
+            ['get', 'subLabel'],
+            { 'font-scale': 0.84 },
+          ],
+          ['get', 'labelText'],
+        ],
         'text-font': ['Noto Sans Regular'],
-        'text-size': ['match', ['get', 'annoKind'], 'marker', 12, 11.5],
+        'text-size': 12.2,
+        'text-line-height': 1.25,
         'text-variable-anchor': ['bottom', 'top', 'right', 'left'],
-        'text-radial-offset': ['match', ['get', 'annoKind'], 'marker', 1.15, 0.3],
+        'text-radial-offset': 1.25,
         'text-padding': 4,
       },
       paint: {
         'text-color': ['get', 'textColor'],
         'text-halo-color': isDark
-          ? 'rgba(9, 13, 22, 0.96)'
-          : 'rgba(255, 253, 247, 0.97)',
-        'text-halo-width': 2.2,
+          ? 'rgba(9, 13, 22, 0.97)'
+          : 'rgba(255, 253, 247, 0.98)',
+        'text-halo-width': 2.3,
       },
     });
   }
@@ -1635,6 +1742,7 @@ export function updateCampaignAnnotationsOnMap(
         annoKind: 'marker',
         iconName,
         labelText: bm.label,
+        subLabel: bm.subLabel ?? '',
         textColor: isDark ? '#FEF08A' : '#7F1D1D',
         sortKey: 1,
       },
@@ -1659,13 +1767,25 @@ export function updateCampaignAnnotationsOnMap(
         ? '粮道'
         : '主力';
 
+    // Concise, non-cluttering map badge (`① 杜松 · 主力`); full narrative lives in War-Room Drawer!
+    const leadCommander = curve.commander
+      ? curve.commander.split(/[·/、\s]+/)[0].slice(0, 4)
+      : '';
+    const conciseMapBadge = leadCommander
+      ? `${stepSymbol} ${leadCommander} · ${tacticTag}`
+      : `${stepSymbol} ${tacticTag} · ${curve.label.slice(0, 7)}${
+          curve.label.length > 7 ? '…' : ''
+        }`;
+
     features.push({
       type: 'Feature',
       properties: {
         annoKind: 'callout',
-        iconName: 'place-city-dot',
-        labelText: `${stepSymbol}${tacticTag} · ${curve.label}`,
-        textColor: isDark ? '#F8FAFC' : '#1C1917',
+        routeId: curve.id,
+        iconName: isDark ? 'callout-pill-dark' : 'callout-pill-light',
+        labelText: conciseMapBadge,
+        subLabel: '',
+        textColor: isDark ? '#FEF3C7' : '#291D18',
         sortKey: 2 + curve.stepNo,
       },
       geometry: {
@@ -1806,85 +1926,193 @@ export function buildPhaseRouteFeatures(
  */
 export function setCampaignStaticRoutesOnMap(
   map: maplibregl.Map,
-  routeFeatureCollection: GeoJSON.FeatureCollection
+  routeFeatureCollection: GeoJSON.FeatureCollection,
+  curves: PreparedRouteCurve[] = []
 ): void {
   const routeSrc = map.getSource('campaign-routes') as GeoJSONSource | undefined;
-  if (!routeSrc) return;
-  routeSrc.setData(routeFeatureCollection);
+  if (routeSrc) {
+    routeSrc.setData(routeFeatureCollection);
+  }
+
+  const endSrc = map.getSource('campaign-endpoints') as
+    | GeoJSONSource
+    | undefined;
+  if (endSrc) {
+    if (curves.length === 0) {
+      endSrc.setData(EMPTY_FC);
+    } else {
+      const endFeatures: GeoJSON.Feature[] = [];
+      for (const curve of curves) {
+        endFeatures.push({
+          type: 'Feature',
+          properties: {
+            id: curve.id,
+            endKind: 'origin',
+            color: curve.color,
+          },
+          geometry: {
+            type: 'Point',
+            coordinates: curve.startPoint,
+          },
+        });
+
+        const { coordinates: tipCoord, bearing: tipBearing } = sampleAlongPath(
+          curve.coords,
+          0.996
+        );
+        endFeatures.push({
+          type: 'Feature',
+          properties: {
+            id: curve.id,
+            endKind: 'dest',
+            color: curve.color,
+            bearing: tipBearing,
+          },
+          geometry: {
+            type: 'Point',
+            coordinates: tipCoord,
+          },
+        });
+      }
+      endSrc.setData({
+        type: 'FeatureCollection',
+        features: endFeatures,
+      });
+    }
+  }
+}
+
+export function setCampaignSpotlightRoute(
+  map: maplibregl.Map,
+  routeId: string | null,
+  inCampaign: boolean
+): void {
+  if (map.getLayer('campaign-routes-spotlight')) {
+    map.setFilter('campaign-routes-spotlight', [
+      '==',
+      ['get', 'id'],
+      routeId ?? '__none__',
+    ]);
+  }
+  if (map.getLayer('ming-polity-labels')) {
+    map.setPaintProperty(
+      'ming-polity-labels',
+      'text-opacity',
+      inCampaign
+        ? 0.22
+        : [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            3.5,
+            0.92,
+            7.5,
+            0.75,
+            8.5,
+            0.0,
+          ]
+    );
+  }
 }
 
 export function updateCampaignArrowheadsOnMap(
   map: maplibregl.Map,
   curves: PreparedRouteCurve[],
   arrowMode: CampaignArrowMode,
-  cycleProgress: number
+  cycleProgress: number,
+  continuousPulse = 0
 ): void {
   const vanguardSrc = map.getSource('campaign-vanguards') as
     | GeoJSONSource
     | undefined;
   if (!vanguardSrc) return;
 
-  if (curves.length === 0) {
+  // In `static` mode (or when no campaign is open), Origin Ring + Stationary Line +
+  // Stationary Destination Spearhead (`campaign-endpoints`) provide the complete static arrow!
+  if (curves.length === 0 || arrowMode === 'static') {
     vanguardSrc.setData(EMPTY_FC);
     return;
   }
 
   const vanguardFeatures: GeoJSON.Feature[] = [];
 
-  if (arrowMode === 'static' || cycleProgress >= 0.999) {
+  // Phase 1 (`cycleProgress < 0.999`): Strict sequential `① -> ② -> ③` marching launch!
+  if (cycleProgress < 0.999) {
     for (const curve of curves) {
-      const { coordinates, bearing } = sampleAlongPath(curve.coords, 0.995);
-      vanguardFeatures.push({
-        type: 'Feature',
-        properties: {
-          id: curve.id,
-          color: curve.color,
-          bearing,
-        },
-        geometry: {
-          type: 'Point',
-          coordinates,
-        },
-      });
-    }
-    vanguardSrc.setData({
-      type: 'FeatureCollection',
-      features: vanguardFeatures,
-    });
-    return;
-  }
+      if (cycleProgress < curve.startAt) continue;
 
-  for (const curve of curves) {
-    if (cycleProgress < curve.startAt) {
-      continue;
-    }
+      const span = Math.max(0.01, curve.endAt - curve.startAt);
+      const rawStep = Math.max(
+        0,
+        Math.min(1, (cycleProgress - curve.startAt) / span)
+      );
 
-    const span = Math.max(0.01, curve.endAt - curve.startAt);
-    const rawStep = Math.max(
-      0,
-      Math.min(1, (cycleProgress - curve.startAt) / span)
-    );
-    const t =
-      rawStep >= 0.999
-        ? 0.995
-        : 0.02 +
-          0.975 *
+      if (rawStep < 0.998) {
+        // Active step: primary + trailing marching chevron gliding along stationary shaft!
+        const leadT =
+          0.04 +
+          0.88 *
             (rawStep < 0.5
               ? 2 * rawStep * rawStep
               : 1 - Math.pow(-2 * rawStep + 2, 2) / 2);
+        const lead = sampleAlongPath(curve.coords, leadT);
+        vanguardFeatures.push({
+          type: 'Feature',
+          properties: {
+            id: curve.id,
+            color: curve.color,
+            bearing: lead.bearing,
+            scale: 0.78,
+          },
+          geometry: { type: 'Point', coordinates: lead.coordinates },
+        });
 
-    const { coordinates, bearing } = sampleAlongPath(curve.coords, t);
-    vanguardFeatures.push({
-      type: 'Feature',
-      properties: {
-        id: curve.id,
-        color: curve.color,
-        bearing,
-      },
-      geometry: {
-        type: 'Point',
-        coordinates,
-      },
+        if (leadT > 0.24) {
+          const trail = sampleAlongPath(curve.coords, leadT - 0.2);
+          vanguardFeatures.push({
+            type: 'Feature',
+            properties: {
+              id: curve.id,
+              color: curve.color,
+              bearing: trail.bearing,
+              scale: 0.62,
+            },
+            geometry: { type: 'Point', coordinates: trail.coordinates },
+          });
+        }
+      } else {
+        // Earlier completed step: gentle marching chevron flow along its stationary shaft
+        const flowT = 0.08 + ((continuousPulse + curve.stepNo * 0.31) % 1) * 0.82;
+        const sample = sampleAlongPath(curve.coords, flowT);
+        vanguardFeatures.push({
+          type: 'Feature',
+          properties: {
+            id: curve.id,
+            color: curve.color,
+            bearing: sample.bearing,
+            scale: 0.66,
+          },
+          geometry: { type: 'Point', coordinates: sample.coordinates },
+        });
+      }
+    }
+  } else {
+    // All steps unlocked (`①..N`): keep two crisp marching chevrons gliding steadily along every stationary line!
+    curves.forEach((curve, idx) => {
+      for (const offset of [0, 0.48]) {
+        const t = 0.06 + ((continuousPulse + idx * 0.23 + offset) % 1) * 0.84;
+        const sample = sampleAlongPath(curve.coords, t);
+        vanguardFeatures.push({
+          type: 'Feature',
+          properties: {
+            id: curve.id,
+            color: curve.color,
+            bearing: sample.bearing,
+            scale: 0.68,
+          },
+          geometry: { type: 'Point', coordinates: sample.coordinates },
+        });
+      }
     });
   }
 
