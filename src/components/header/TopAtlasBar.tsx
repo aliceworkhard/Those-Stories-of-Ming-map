@@ -12,6 +12,7 @@ import {
   Footprints,
   Gauge,
   Layers,
+  MessageSquare,
   Moon,
   Mountain,
   Pause,
@@ -432,21 +433,24 @@ export default function TopAtlasBar() {
           </span>
         </a>
 
-        {/* 5. LINUX DO Community Recognition Friend-Link Button */}
+        {/* 5. LINUX DO Promotion & Discussion Thread Jump Button */}
         <a
-          href={SITE_CONFIG.linuxDoUrl}
+          href={SITE_CONFIG.linuxDoTopicUrl}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="友情链接：前往 LINUX DO 开源技术社区"
-          title="友情链接 · 访问 LINUX DO 社区 (https://linux.do/)"
+          aria-label="前往 LINUX DO 社区专帖参与讨论与反馈"
+          title="前往本项目在 LINUX DO 社区的专属讨论帖交流互动 (https://linux.do/t/topic/3236921)"
           className={`hidden sm:flex px-2.5 py-1.5 rounded-lg border text-xs font-semibold items-center gap-1.5 shrink-0 transition cursor-pointer ${
             isDark
               ? 'border-amber-400/45 bg-slate-900 hover:bg-slate-800 text-amber-200'
               : 'border-amber-900/30 bg-[#FFFDF7] hover:bg-amber-50 text-stone-900 shadow-2xs'
           }`}
         >
-          <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+          <MessageSquare className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
           <span className="font-sans tracking-tight">LINUX DO</span>
+          <span className="hidden 2xl:inline px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/40 text-[11px] font-bold">
+            讨论帖
+          </span>
         </a>
       </div>
 

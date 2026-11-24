@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import { BookOpen, MapPin, Swords, X } from 'lucide-react';
+import { BookOpen, ExternalLink, MapPin, Swords, X } from 'lucide-react';
+import { SITE_CONFIG } from '@/config/site';
 import { ALL_CAMPAIGNS, ALL_EVENTS, BOOK_TOC } from '@/lib/atlasData';
 import { useAtlasStore } from '@/store/useAtlasStore';
 
@@ -124,7 +125,7 @@ export default function BookTocModal() {
 
                   {!hasContent && (
                     <span className="text-[10px] px-2 py-0.5 rounded bg-current/8">
-                      Phase 2/3 待点亮
+                      欢迎共建补充事件
                     </span>
                   )}
                 </div>
@@ -168,6 +169,40 @@ export default function BookTocModal() {
               </div>
             );
           })}
+        </div>
+
+        {/* Community & Open-Source Links Footer */}
+        <div className="px-5 py-2.5 border-t border-current/12 text-xs flex flex-wrap items-center justify-between gap-2 opacity-90">
+          <span>开源共建 · 欢迎补充考据或反馈建议：</span>
+          <div className="flex flex-wrap items-center gap-3 font-medium">
+            <a
+              href={SITE_CONFIG.linuxDoTopicUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#B83B2A] dark:text-amber-300 hover:underline flex items-center gap-1"
+            >
+              <span>LINUX DO 交流专帖</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+            <a
+              href={SITE_CONFIG.linuxDoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline flex items-center gap-1"
+            >
+              <span>LINUX DO 社区</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+            <a
+              href={SITE_CONFIG.repoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline flex items-center gap-1"
+            >
+              <span>GitHub 开源仓库</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
         </div>
       </div>
     </div>

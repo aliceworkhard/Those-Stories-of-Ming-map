@@ -5,6 +5,7 @@ export const SITE_CONFIG = {
   repoUrl: 'https://github.com/aliceworkhard/Those-Stories-of-Ming-map',
   repoSlug: 'aliceworkhard/Those-Stories-of-Ming-map',
   linuxDoUrl: 'https://linux.do/',
+  linuxDoTopicUrl: 'https://linux.do/t/topic/3236921',
   license: 'MIT',
   timeline: {
     minYear: 1344,

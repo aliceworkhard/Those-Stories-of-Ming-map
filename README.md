@@ -5,13 +5,14 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-B83B2A.svg)](./LICENSE)
 [![Live Online](https://img.shields.io/badge/在线体验-those--stories--of--ming--map.vercel.app-1D4ED8)](https://those-stories-of-ming-map.vercel.app)
+[![LINUX DO Discussion](https://img.shields.io/badge/LINUX_DO-社区交流专帖-D97706?logo=discourse&logoColor=white)](https://linux.do/t/topic/3236921)
 [![Friend Link: LINUX DO](https://img.shields.io/badge/友情链接-LINUX_DO_社区-F59E0B?logo=discourse&logoColor=white)](https://linux.do/)
 [![Next.js 15](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org/)
 [![MapLibre GL 3D](https://img.shields.io/badge/MapLibre_GL-3D_Vector_WebGL-2962FF)](https://maplibre.org/)
 
 🌐 **在线交互体验（免安装即开即用）**：[<kbd>🚀 打开三维历史地图</kbd>](https://those-stories-of-ming-map.vercel.app) · **[https://those-stories-of-ming-map.vercel.app](https://those-stories-of-ming-map.vercel.app)**
 
-🤝 **友情链接（社区认可）**：[<kbd>💛 访问 LINUX DO 社区</kbd>](https://linux.do/) · **[LINUX DO — 新的理想型社区 (https://linux.do/)](https://linux.do/)**
+💬 **LINUX DO 交流专帖 & 友情链接**：[<kbd>🔥 前往 LINUX DO 专帖讨论</kbd>](https://linux.do/t/topic/3236921) · **[https://linux.do/t/topic/3236921](https://linux.do/t/topic/3236921)** · [<kbd>💛 LINUX DO 社区主页</kbd>](https://linux.do/) · **[https://linux.do/](https://linux.do/)**
 
 ![《明朝那些事儿》三维历史地图与战役运镜推演系统预览](./public/docs/atlas-preview.png)
 
@@ -136,6 +137,7 @@ sh ./deploy.sh
 
 ## 友情链接与社区致谢 (Friend Links & Acknowledgements)
 
+- [<kbd>🔥 本项目 LINUX DO 讨论专帖</kbd>](https://linux.do/t/topic/3236921) — **[欢迎前往 LINUX DO 专帖留言交流与反馈 (https://linux.do/t/topic/3236921)](https://linux.do/t/topic/3236921)**
 - [<kbd>💛 LINUX DO 社区</kbd>](https://linux.do/) — **[LINUX DO (https://linux.do/)](https://linux.do/)**：真诚、友善、团结、专业的开源与技术交流社区（*Where possible begins*）。感谢 LINUX DO 社区佬友们的交流、建议与支持！
 - 底层开源生态致谢：[MapLibre GL JS](https://maplibre.org/) · [OpenFreeMap](https://openfreemap.org/) · [Natural Earth](https://www.naturalearthdata.com/) · [Next.js](https://nextjs.org/)
 
