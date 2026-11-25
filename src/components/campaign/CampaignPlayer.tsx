@@ -131,7 +131,7 @@ export default function CampaignPlayer() {
       {/* PART A: Right-Side Collapsible War-Room Tactical Drawer (`军情沙盘`)  */}
       {/* ===================================================================== */}
       {!isCampaignPanelOpen ? (
-        <div className="fixed top-[58px] right-3 z-30 flex items-center gap-1.5">
+        <div className="hidden sm:flex fixed top-[58px] right-3 z-30 items-center gap-1.5">
           <button
             type="button"
             onClick={() => setCampaignPanelOpen(true)}
@@ -157,10 +157,20 @@ export default function CampaignPlayer() {
       ) : (
         <aside
           aria-label="战役军情沙盘详笺"
-          className={`fixed left-2.5 right-2.5 bottom-[114px] max-h-[42vh] sm:max-h-none sm:left-auto sm:top-[58px] sm:bottom-[62px] sm:right-3 z-30 sm:w-[336px] xl:w-[356px] rounded-2xl border shadow-2xl flex flex-col overflow-hidden ${surfaceClass}`}
+          className={`fixed left-2.5 right-2.5 bottom-[98px] max-h-[46dvh] sm:max-h-none sm:left-auto sm:top-[58px] sm:bottom-[62px] sm:right-3 z-30 sm:w-[336px] xl:w-[356px] rounded-2xl border shadow-2xl flex flex-col overflow-hidden ${surfaceClass}`}
         >
+          {/* Mobile Sheet Handle */}
+          <button
+            type="button"
+            onClick={() => setCampaignPanelOpen(false)}
+            className="sm:hidden w-full pt-2 pb-0.5 flex justify-center cursor-pointer shrink-0"
+            aria-label="收起战况详笺查看全屏战场地图"
+          >
+            <span className="w-10 h-1 rounded-full bg-current/25" />
+          </button>
+
           {/* 1. War-Room Drawer Header & 12-Campaign Quick Switcher */}
-          <div className="px-3.5 py-2.5 border-b border-current/12 shrink-0 space-y-2">
+          <div className="px-3.5 py-2 border-b border-current/12 shrink-0 space-y-2">
             <div className="flex items-center justify-between gap-1.5">
               <span className="px-2 py-0.5 rounded bg-[#B83B2A] text-amber-50 text-[11px] font-bold flex items-center gap-1 shrink-0">
                 <Swords className="w-3 h-3" />
@@ -171,11 +181,12 @@ export default function CampaignPlayer() {
                 <button
                   type="button"
                   onClick={() => setCampaignPanelOpen(false)}
-                  className="px-2 py-1 rounded-lg bg-current/8 hover:bg-current/15 text-[11px] flex items-center gap-1 cursor-pointer"
+                  className="px-2.5 py-1 rounded-lg border border-current/20 bg-current/8 hover:bg-current/15 text-[11px] font-bold flex items-center gap-1 cursor-pointer"
                   title="收起面板以全屏检视战场舆图"
                 >
-                  <PanelRightClose className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">全屏看图</span>
+                  <PanelRightClose className="w-3.5 h-3.5 hidden sm:inline" />
+                  <X className="w-3.5 h-3.5 sm:hidden" />
+                  <span>收起看图</span>
                 </button>
                 <button
                   type="button"
@@ -457,7 +468,7 @@ export default function CampaignPlayer() {
       {/* ===================================================================== */}
       <section
         aria-label="战役推演播控与箭矢模式控制台"
-        className={`fixed bottom-[62px] left-1/2 -translate-x-1/2 z-30 w-[calc(100vw-16px)] sm:w-auto max-w-[96vw] rounded-2xl border shadow-2xl px-2.5 sm:px-3.5 py-2 overflow-hidden ${surfaceClass}`}
+        className={`fixed bottom-2.5 sm:bottom-[62px] left-1/2 -translate-x-1/2 z-30 w-[calc(100vw-20px)] sm:w-auto max-w-[96vw] rounded-2xl border shadow-2xl px-2.5 sm:px-3.5 py-2 overflow-hidden ${surfaceClass}`}
       >
         {/* Live GPU-Composited Phase Progress Ribbon (`scaleX` -> 0 layout reflow!) */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-current/10 overflow-hidden">
@@ -466,6 +477,41 @@ export default function CampaignPlayer() {
             style={{ transform: 'scaleX(0)' }}
             className="h-full w-full origin-left will-change-transform bg-gradient-to-r from-[#9E2318] via-amber-500 to-amber-300"
           />
+        </div>
+
+        {/* Mobile (<640px) Phase Caption + War-Room Sheet Toggle + Exit */}
+        <div className="sm:hidden flex items-center justify-between gap-1.5 pb-1.5 mb-1.5 border-b border-current/12 pt-0.5">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="px-1.5 py-0.5 rounded bg-[#B83B2A] text-amber-50 text-[10px] font-bold tabular-nums shrink-0">
+              {activePhaseIndex + 1}/{campaign.phases.length}幕
+            </span>
+            <span className="text-xs font-serif font-bold truncate">
+              {phase.title}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1 shrink-0">
+            <button
+              type="button"
+              onClick={() => setCampaignPanelOpen(!isCampaignPanelOpen)}
+              className={`px-2 py-0.5 rounded-lg border text-[11px] font-bold flex items-center gap-1 cursor-pointer ${
+                isCampaignPanelOpen
+                  ? 'bg-[#9E2318] text-amber-50 border-amber-300'
+                  : 'border-current/25 bg-current/8'
+              }`}
+            >
+              <ScrollText className="w-3 h-3" />
+              <span>{isCampaignPanelOpen ? '收起详笺' : '战况详笺'}</span>
+            </button>
+            <button
+              type="button"
+              onClick={exitCampaign}
+              className="p-1 rounded-lg bg-current/10 hover:bg-current/20 cursor-pointer"
+              aria-label="退出战役推演"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
 
         <div className="flex items-center justify-center sm:justify-between gap-1.5 sm:gap-2 flex-wrap pt-0.5">

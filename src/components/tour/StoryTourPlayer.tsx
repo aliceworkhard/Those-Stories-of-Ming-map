@@ -55,7 +55,7 @@ export default function StoryTourPlayer() {
   return (
     <section
       aria-label="全史自动运镜推演控制台"
-      className={`fixed bottom-16 left-1/2 -translate-x-1/2 z-30 w-[calc(100vw-24px)] max-w-lg rounded-2xl border shadow-2xl px-4 py-2.5 overflow-hidden ${
+      className={`fixed bottom-2.5 sm:bottom-16 left-1/2 -translate-x-1/2 z-30 w-[calc(100vw-20px)] max-w-lg rounded-2xl border shadow-2xl px-3.5 sm:px-4 py-2 sm:py-2.5 overflow-hidden ${
         isDark
           ? 'bg-[#0D131D]/98 border-amber-500/40 text-amber-50'
           : 'bg-[#FAF5E8]/98 border-amber-900/30 text-stone-900'

@@ -140,10 +140,10 @@ function fitPhaseTheaterOnMap(
         right: panelOpen ? (isDesktop ? 392 : 368) : 48,
       }
     : {
-        top: 68,
-        bottom: panelOpen ? Math.round(Math.min(height * 0.48, 360)) : 128,
-        left: 28,
-        right: 28,
+        top: 104,
+        bottom: panelOpen ? Math.round(Math.min(height * 0.52, 380)) : 124,
+        left: 24,
+        right: 24,
       };
 
   map.fitBounds(
@@ -484,6 +484,32 @@ export default function MingMapCanvas() {
     });
     map.on('mouseleave', 'ming-events-symbol', () => {
       map.getCanvas().style.cursor = '';
+    });
+
+    // Mobile Natural Gesture: Tap empty map canvas (<640px) to dismiss open bottom sheets!
+    map.on('click', (e) => {
+      if (typeof window === 'undefined' || window.innerWidth >= 640) return;
+      const st = useAtlasStore.getState();
+      if (!st.isDrawerOpen && !st.isDirectoryOpen && !st.isCampaignPanelOpen) {
+        return;
+      }
+      const interactiveLayers = [
+        'ming-events-symbol',
+        'campaign-callouts-pill',
+        'campaign-routes-solid',
+        'campaign-routes-dashed',
+      ].filter((id) => Boolean(map.getLayer(id)));
+
+      if (interactiveLayers.length > 0) {
+        const hits = map.queryRenderedFeatures(e.point, {
+          layers: interactiveLayers,
+        });
+        if (hits.length > 0) return;
+      }
+
+      if (st.isDrawerOpen) st.setDrawerOpen(false);
+      if (st.isDirectoryOpen) st.setDirectoryOpen(false);
+      if (st.isCampaignPanelOpen) st.setCampaignPanelOpen(false);
     });
 
     // Interactive Tactical Route & Pill Hit-Testing (`① / ② / ③`)
@@ -1176,17 +1202,32 @@ export default function MingMapCanvas() {
     }
   }, [isCampaignPlaying]);
 
-  // 7. Execute Declarative Camera FlyTo Commands
+  // 7. Execute Declarative Camera FlyTo Commands (with Mobile Upper-Viewport Sheet Padding!)
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !cameraCommand) return;
     const { pose } = cameraCommand;
     const use3D = is3D && perfMode !== 'eco';
+    const canvas = map.getCanvas();
+    const width = canvas.clientWidth || 1280;
+    const height = canvas.clientHeight || 800;
+    const isMobile = width < 640;
+    const drawerOpenNow = useAtlasStore.getState().isDrawerOpen;
+
     map.flyTo({
       center: pose.center,
       zoom: pose.zoom,
       pitch: use3D ? Math.min(42, pose.pitch ?? 38) : 0,
       bearing: pose.bearing ?? 0,
+      padding:
+        isMobile && drawerOpenNow
+          ? {
+              top: 96,
+              bottom: Math.round(Math.min(height * 0.48, 370)),
+              left: 16,
+              right: 16,
+            }
+          : { top: 0, bottom: 0, left: 0, right: 0 },
       duration: 950,
       essential: true,
     });

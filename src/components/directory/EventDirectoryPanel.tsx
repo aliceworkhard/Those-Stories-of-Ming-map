@@ -4,7 +4,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ListOrdered,
   MapPin,
-  PanelLeftClose,
+  Maximize2,
+  Minimize2,
   RotateCcw,
   Search,
   Swords,
@@ -18,6 +19,7 @@ type DirectoryFilter = 'all' | 'macro' | 'micro' | 'campaign';
 export default function EventDirectoryPanel() {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<DirectoryFilter>('all');
+  const [mobileExpanded, setMobileExpanded] = useState(false);
   const activeItemRef = useRef<HTMLButtonElement | null>(null);
 
   const selectedEventId = useAtlasStore((s) => s.selectedEventId);
@@ -84,7 +86,7 @@ export default function EventDirectoryPanel() {
       <button
         type="button"
         onClick={() => setDirectoryOpen(true)}
-        className={`fixed left-3 top-[58px] z-25 px-3 py-2 rounded-xl border shadow-lg flex items-center gap-1.5 text-xs font-serif font-bold cursor-pointer transition hover:scale-105 ${
+        className={`hidden sm:flex fixed left-3 top-[58px] z-25 px-3 py-2 rounded-xl border shadow-lg items-center gap-1.5 text-xs font-serif font-bold cursor-pointer transition hover:scale-105 ${
           isDark
             ? 'bg-[#0D131D]/97 border-amber-500/30 text-amber-100'
             : 'bg-[#FAF5E8]/97 border-amber-900/25 text-stone-900'
@@ -100,16 +102,30 @@ export default function EventDirectoryPanel() {
   return (
     <aside
       aria-label="编年历史事件目录面板"
-      className={`fixed top-[58px] ${
-        isTourHudOpen ? 'bottom-[164px] 2xl:bottom-16' : 'bottom-16'
-      } left-3 z-25 w-[calc(100vw-24px)] sm:w-[266px] xl:w-[280px] rounded-2xl border shadow-xl flex flex-col overflow-hidden ${
+      className={`fixed left-2.5 right-2.5 ${
+        isTourHudOpen ? 'bottom-[150px]' : 'bottom-[82px]'
+      } ${
+        mobileExpanded ? 'max-h-[78dvh]' : 'max-h-[56dvh]'
+      } sm:max-h-none sm:right-auto sm:top-[58px] ${
+        isTourHudOpen ? 'sm:bottom-[164px] 2xl:bottom-16' : 'sm:bottom-16'
+      } sm:left-3 z-25 sm:w-[266px] xl:w-[280px] rounded-2xl border shadow-2xl flex flex-col overflow-hidden transition-[max-height] duration-200 ${
         isDark
-          ? 'bg-[#0D131D]/97 border-amber-500/30 text-amber-50'
-          : 'bg-[#FAF5E8]/97 border-amber-900/25 text-stone-900'
+          ? 'bg-[#0D131D]/98 border-amber-500/35 text-amber-50'
+          : 'bg-[#FAF5E8]/98 border-amber-900/25 text-stone-900'
       }`}
     >
+      {/* Mobile Bottom-Sheet Tactile Handle Bar */}
+      <button
+        type="button"
+        onClick={() => setMobileExpanded((v) => !v)}
+        className="sm:hidden w-full pt-2 pb-1 flex flex-col items-center justify-center cursor-pointer shrink-0"
+        aria-label={mobileExpanded ? '切换为半屏看图高度' : '展开更高目录列表'}
+      >
+        <span className="w-10 h-1 rounded-full bg-current/25" />
+      </button>
+
       {/* Header */}
-      <div className="px-3.5 py-2.5 border-b border-current/12 flex items-center justify-between gap-2 shrink-0">
+      <div className="px-3.5 py-2 border-b border-current/12 flex items-center justify-between gap-2 shrink-0">
         <div className="flex items-center gap-2 min-w-0">
           <ListOrdered className="w-4 h-4 text-[#B83B2A] dark:text-amber-400 shrink-0" />
           <h2 className="font-serif font-bold text-sm tracking-wide truncate">
@@ -128,7 +144,7 @@ export default function EventDirectoryPanel() {
               setFilter('all');
               resetToStoryBeginning();
             }}
-            className={`px-1.5 py-0.5 rounded-md border text-[11px] font-medium flex items-center gap-1 transition cursor-pointer ${
+            className={`px-1.5 py-1 rounded-md border text-[11px] font-medium flex items-center gap-1 transition cursor-pointer ${
               isDark
                 ? 'border-amber-500/30 hover:bg-amber-500/15 text-amber-200'
                 : 'border-amber-900/20 hover:bg-amber-900/8 text-[#9E2318]'
@@ -141,11 +157,30 @@ export default function EventDirectoryPanel() {
 
           <button
             type="button"
-            onClick={() => setDirectoryOpen(false)}
-            className="p-1 rounded-lg hover:bg-current/10 transition cursor-pointer"
-            title="收起事件目录"
+            onClick={() => setMobileExpanded((v) => !v)}
+            className="sm:hidden p-1.5 rounded-lg bg-current/8 hover:bg-current/15 cursor-pointer"
+            title={mobileExpanded ? '半屏看图' : '展开目录'}
+            aria-label={mobileExpanded ? '半屏看图' : '展开目录'}
           >
-            <PanelLeftClose className="w-4 h-4 opacity-75" />
+            {mobileExpanded ? (
+              <Minimize2 className="w-3.5 h-3.5" />
+            ) : (
+              <Maximize2 className="w-3.5 h-3.5" />
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setDirectoryOpen(false)}
+            className={`px-2.5 py-1 rounded-lg border text-xs font-bold flex items-center gap-1 transition cursor-pointer ${
+              isDark
+                ? 'border-amber-400/40 bg-amber-400/15 hover:bg-amber-400/25 text-amber-100'
+                : 'border-amber-900/25 bg-amber-950/10 hover:bg-amber-950/20 text-stone-900'
+            }`}
+            title="收起事件目录查看地图"
+          >
+            <X className="w-3.5 h-3.5" />
+            <span>收起</span>
           </button>
         </div>
       </div>

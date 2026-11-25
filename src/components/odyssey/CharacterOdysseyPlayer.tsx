@@ -55,7 +55,7 @@ export default function CharacterOdysseyPlayer() {
   return (
     <section
       aria-label="风云人物一生足迹巡礼面板"
-      className={`fixed bottom-16 left-1/2 -translate-x-1/2 z-30 w-[calc(100vw-24px)] max-w-2xl rounded-2xl border shadow-2xl px-4 py-3 ${
+      className={`fixed bottom-2.5 sm:bottom-16 left-1/2 -translate-x-1/2 z-30 w-[calc(100vw-20px)] max-w-2xl rounded-2xl border shadow-2xl px-3.5 sm:px-4 py-2.5 sm:py-3 ${
         isDark
           ? 'bg-[#0D131D]/98 border-amber-500/40 text-amber-50'
           : 'bg-[#FAF5E8]/98 border-amber-900/30 text-stone-900'
@@ -123,7 +123,7 @@ export default function CharacterOdysseyPlayer() {
       </p>
 
       {/* Numbered Life Stops Pill Strip */}
-      <div className="mt-2 flex items-center gap-1.5 overflow-x-auto pb-1">
+      <div className="mt-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
         {character.stops.map((st, idx) => {
           const isCurrent = idx === activeCharacterStopIndex;
           return (

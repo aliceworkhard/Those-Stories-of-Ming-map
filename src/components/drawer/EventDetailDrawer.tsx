@@ -7,11 +7,14 @@ import {
   BookOpen,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
   Compass,
   HelpCircle,
+  ListOrdered,
   MapPin,
+  Maximize2,
+  Minimize2,
   Mountain,
-  PanelRightClose,
   PanelRightOpen,
   Pause,
   ScrollText,
@@ -19,6 +22,7 @@ import {
   Swords,
   Users,
   Video,
+  X,
 } from 'lucide-react';
 import {
   ALL_EVENTS,
@@ -30,10 +34,13 @@ import { useAtlasStore } from '@/store/useAtlasStore';
 
 export default function EventDetailDrawer() {
   const [lensTab, setLensTab] = useState<'mingyue' | 'history'>('mingyue');
+  const [mobileExpanded, setMobileExpanded] = useState(false);
 
   const selectedEventId = useAtlasStore((s) => s.selectedEventId);
   const isDrawerOpen = useAtlasStore((s) => s.isDrawerOpen);
+  const isDirectoryOpen = useAtlasStore((s) => s.isDirectoryOpen);
   const setDrawerOpen = useAtlasStore((s) => s.setDrawerOpen);
+  const setDirectoryOpen = useAtlasStore((s) => s.setDirectoryOpen);
   const selectEvent = useAtlasStore((s) => s.selectEvent);
   const stepStoryEvent = useAtlasStore((s) => s.stepStoryEvent);
   const isStoryTourPlaying = useAtlasStore((s) => s.isStoryTourPlaying);
@@ -43,6 +50,7 @@ export default function EventDetailDrawer() {
   const startCampaign = useAtlasStore((s) => s.startCampaign);
   const exitCampaign = useAtlasStore((s) => s.exitCampaign);
   const activeCampaignId = useAtlasStore((s) => s.activeCampaignId);
+  const activeCharacterId = useAtlasStore((s) => s.activeCharacterId);
   const is3D = useAtlasStore((s) => s.is3D);
   const perfMode = useAtlasStore((s) => s.perfMode);
   const toggle3D = useAtlasStore((s) => s.toggle3D);
@@ -64,39 +72,79 @@ export default function EventDetailDrawer() {
 
   if (!isDrawerOpen) {
     return (
-      <button
-        type="button"
-        onClick={() => setDrawerOpen(true)}
-        className={`fixed right-3 top-[58px] z-25 px-3 py-2 rounded-xl border shadow-lg flex items-center gap-1.5 text-xs font-serif font-bold cursor-pointer transition hover:scale-105 ${
-          isDark
-            ? 'bg-[#0D131D]/97 border-amber-500/30 text-amber-100'
-            : 'bg-[#FAF5E8]/97 border-amber-900/25 text-stone-900'
-        }`}
-        title="展开当前选中事件的五维详情面板"
-      >
-        <PanelRightOpen className="w-4 h-4 text-[#9E2318] dark:text-amber-400" />
-        <span>事件详情</span>
-      </button>
+      <>
+        {/* Desktop Top-Right Floating Reopen Pill */}
+        <button
+          type="button"
+          onClick={() => setDrawerOpen(true)}
+          className={`hidden sm:flex fixed right-3 top-[58px] z-25 px-3 py-2 rounded-xl border shadow-lg items-center gap-1.5 text-xs font-serif font-bold cursor-pointer transition hover:scale-105 ${
+            isDark
+              ? 'bg-[#0D131D]/97 border-amber-500/30 text-amber-100'
+              : 'bg-[#FAF5E8]/97 border-amber-900/25 text-stone-900'
+          }`}
+          title="展开当前选中事件的五维详情面板"
+        >
+          <PanelRightOpen className="w-4 h-4 text-[#9E2318] dark:text-amber-400" />
+          <span>事件详情</span>
+        </button>
+
+        {/* Mobile Compact 1-Line Selected Event Capsule (keeps 90% of phone screen open map!) */}
+        {!isDirectoryOpen && !isTourHudOpen && !activeCharacterId && (
+          <button
+            type="button"
+            onClick={() => setDrawerOpen(true)}
+            className={`sm:hidden fixed bottom-[84px] left-2.5 right-14 z-24 px-3 py-2 rounded-xl border shadow-lg flex items-center justify-between gap-2 text-left cursor-pointer ${
+              isDark
+                ? 'bg-[#0D131D]/96 border-amber-500/35 text-amber-50'
+                : 'bg-[#FAF5E8]/96 border-amber-900/25 text-stone-900'
+            }`}
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="px-1.5 py-0.5 rounded bg-[#B83B2A] text-amber-50 text-[10px] font-serif font-bold shrink-0">
+                {event.time.year}年
+              </span>
+              <span className="text-xs font-serif font-bold truncate">
+                {event.title}
+              </span>
+            </div>
+            <span className="px-2 py-0.5 rounded-md bg-current/10 text-[11px] font-semibold flex items-center gap-0.5 shrink-0">
+              <span>详情</span>
+              <ChevronUp className="w-3 h-3" />
+            </span>
+          </button>
+        )}
+      </>
     );
   }
 
   return (
     <aside
       aria-label="事件五维详情与原著对照面板"
-      className={`fixed top-[58px] ${
-        isTourHudOpen ? 'bottom-[164px] 2xl:bottom-16' : 'bottom-16'
-      } right-3 z-25 w-[calc(100vw-24px)] sm:w-[336px] xl:w-[356px] rounded-2xl border shadow-xl flex flex-col overflow-hidden ${
+      className={`fixed left-2.5 right-2.5 ${
+        isTourHudOpen || activeCharacterId ? 'bottom-[150px]' : 'bottom-[82px]'
+      } ${
+        mobileExpanded ? 'max-h-[78dvh]' : 'max-h-[50dvh]'
+      } sm:max-h-none sm:left-auto sm:top-[58px] ${
+        isTourHudOpen ? 'sm:bottom-[164px] 2xl:bottom-16' : 'sm:bottom-16'
+      } sm:right-3 z-25 sm:w-[336px] xl:w-[356px] rounded-2xl border shadow-2xl flex flex-col overflow-hidden transition-[max-height] duration-200 ${
         isDark
-          ? 'bg-[#0D131D]/97 border-amber-500/30 text-amber-50'
-          : 'bg-[#FAF5E8]/97 border-amber-900/25 text-stone-900'
+          ? 'bg-[#0D131D]/98 border-amber-500/35 text-amber-50'
+          : 'bg-[#FAF5E8]/98 border-amber-900/25 text-stone-900'
       }`}
     >
-      {/* Drawer Header */}
-      <div className="px-4 py-2.5 border-b border-current/12 flex items-center justify-between gap-2 shrink-0">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="font-serif font-bold text-xs opacity-80 shrink-0">
-            事件详情
-          </span>
+      {/* Mobile Bottom-Sheet Tactile Handle Bar */}
+      <button
+        type="button"
+        onClick={() => setMobileExpanded((v) => !v)}
+        className="sm:hidden w-full pt-2 pb-1 flex flex-col items-center justify-center cursor-pointer shrink-0"
+        aria-label={mobileExpanded ? '切换为半屏看图高度' : '展开更高阅读区域'}
+      >
+        <span className="w-10 h-1 rounded-full bg-current/25" />
+      </button>
+
+      {/* Drawer Header with Unmistakable Close Button */}
+      <div className="px-3.5 sm:px-4 py-2 border-b border-current/12 flex items-center justify-between gap-1.5 shrink-0">
+        <div className="flex items-center gap-1.5 min-w-0">
           <span
             className={`px-2 py-0.5 rounded text-[11px] font-bold shrink-0 ${
               event.tier === 'macro'
@@ -104,21 +152,55 @@ export default function EventDetailDrawer() {
                 : 'bg-amber-600 text-white'
             }`}
           >
-            {event.tier === 'macro' ? '历史大事件' : '烟火小事件'}
+            {event.tier === 'macro' ? '大事件' : '小事件'}
           </span>
-          <span className="text-xs opacity-75 truncate tabular-nums">
+          <span className="text-xs opacity-80 truncate tabular-nums">
             {event.time.display}
           </span>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setDrawerOpen(false)}
-          className="p-1 rounded-lg hover:bg-current/10 transition cursor-pointer"
-          title="收起事件详情面板"
-        >
-          <PanelRightClose className="w-4 h-4 opacity-75" />
-        </button>
+        <div className="flex items-center gap-1 shrink-0">
+          {/* Mobile Quick Switch to Event Directory */}
+          <button
+            type="button"
+            onClick={() => setDirectoryOpen(true)}
+            className="sm:hidden px-2 py-1 rounded-lg bg-current/8 hover:bg-current/15 text-[11px] font-medium flex items-center gap-1 cursor-pointer"
+            title="打开编年事件目录切换其他事件"
+          >
+            <ListOrdered className="w-3.5 h-3.5" />
+            <span>目录</span>
+          </button>
+
+          {/* Mobile Half / Full Sheet Height Toggle */}
+          <button
+            type="button"
+            onClick={() => setMobileExpanded((v) => !v)}
+            className="sm:hidden p-1.5 rounded-lg bg-current/8 hover:bg-current/15 cursor-pointer"
+            title={mobileExpanded ? '半屏看图' : '展开详情'}
+            aria-label={mobileExpanded ? '半屏看图' : '展开详情'}
+          >
+            {mobileExpanded ? (
+              <Minimize2 className="w-3.5 h-3.5" />
+            ) : (
+              <Maximize2 className="w-3.5 h-3.5" />
+            )}
+          </button>
+
+          {/* Unmistakable High-Contrast Close / Collapse Button (`✕ 收起`) */}
+          <button
+            type="button"
+            onClick={() => setDrawerOpen(false)}
+            className={`px-2.5 py-1 rounded-lg border text-xs font-bold flex items-center gap-1 transition cursor-pointer ${
+              isDark
+                ? 'border-amber-400/40 bg-amber-400/15 hover:bg-amber-400/25 text-amber-100'
+                : 'border-amber-900/25 bg-amber-950/10 hover:bg-amber-950/20 text-stone-900'
+            }`}
+            title="收起事件详情面板查看地图"
+          >
+            <X className="w-3.5 h-3.5" />
+            <span>收起</span>
+          </button>
+        </div>
       </div>
 
       {/* Scrollable Pure Event Detail Body (Separated from Event Directory!) */}

@@ -50,7 +50,7 @@ export default function AtlasWorkspace() {
       data-drawer-open={drawerTakesRight ? 'true' : 'false'}
       className={`${
         isDark ? 'dark bg-[#0F141D] text-amber-50' : 'bg-[#EFE6D4] text-stone-900'
-      } relative w-screen h-screen overflow-hidden select-none`}
+      } relative w-screen h-dvh overflow-hidden select-none`}
     >
       <MingMapCanvas />
       <TopAtlasBar />

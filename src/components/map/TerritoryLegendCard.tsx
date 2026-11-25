@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Brush, ChevronDown, ChevronUp, Map as MapIcon } from 'lucide-react';
 import { CAMPAIGN_MAP, getSnapshotForYear } from '@/lib/atlasData';
 import { buildCampaignTerritoryFrame } from '@/engine/territoryWipe';
@@ -13,14 +13,23 @@ export default function TerritoryLegendCard() {
     null
   );
 
+  // Default collapsed on mobile (<640px) so the phone map starts clean & unobstructed!
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 640) {
+      setCollapsed(true);
+    }
+  }, []);
+
   const currentYear = useAtlasStore((s) => s.currentYear);
   const hoveredPolity = useAtlasStore((s) => s.hoveredPolity);
   const activeWipeCaption = useAtlasStore((s) => s.activeWipeCaption);
   const activeCampaignId = useAtlasStore((s) => s.activeCampaignId);
   const activePhaseIndex = useAtlasStore((s) => s.activePhaseIndex);
+  const isCampaignPanelOpen = useAtlasStore((s) => s.isCampaignPanelOpen);
   const activeCharacterId = useAtlasStore((s) => s.activeCharacterId);
   const layers = useAtlasStore((s) => s.layers);
   const isDirectoryOpen = useAtlasStore((s) => s.isDirectoryOpen);
+  const isDrawerOpen = useAtlasStore((s) => s.isDrawerOpen);
   const isStoryTourPlaying = useAtlasStore((s) => s.isStoryTourPlaying);
   const hasTourSession = useAtlasStore((s) => s.storyTourProgress > 0);
   const isImmersionMode = useAtlasStore((s) => s.isImmersionMode);
@@ -96,21 +105,27 @@ export default function TerritoryLegendCard() {
     !activeCampaignId &&
     (isStoryTourPlaying || hasTourSession || Boolean(activeCharacterId));
 
-  // Position smartly so it NEVER overlaps sidebars, right War-Room Drawer, or bottom Playback Bar!
+  const mobileSheetOpen = activeCampaignId
+    ? isCampaignPanelOpen
+    : isDirectoryOpen || isDrawerOpen;
+
+  // Position smartly: top-left on mobile (<640px) & campaign mode; bottom-left on desktop normal mode!
   const positionClass = activeCampaignId
-    ? 'top-[58px] left-3 max-w-[280px] sm:max-w-[308px]'
-    : `${
-        isTourHudOpen ? 'bottom-[152px] xl:bottom-[62px]' : 'bottom-[62px]'
+    ? 'top-[94px] sm:top-[58px] left-2.5 sm:left-3 max-w-[270px] sm:max-w-[308px]'
+    : `top-[94px] sm:top-auto ${
+        isTourHudOpen ? 'sm:bottom-[152px] xl:bottom-[62px]' : 'sm:bottom-[62px]'
       } ${
         isDirectoryOpen && !isImmersionMode
-          ? 'left-3 sm:left-[286px] xl:left-[300px]'
-          : 'left-3'
-      } max-w-[calc(100vw-24px)] sm:max-w-[330px] xl:max-w-[365px]`;
+          ? 'left-2.5 sm:left-[286px] xl:left-[300px]'
+          : 'left-2.5 sm:left-3'
+      } max-w-[270px] sm:max-w-[330px] xl:max-w-[365px]`;
 
   return (
     <aside
       aria-label="舆图势力与地理军事图例"
-      className={`pointer-events-auto fixed z-22 flex flex-col gap-1.5 transition-all ${positionClass}`}
+      className={`pointer-events-auto fixed z-22 ${
+        mobileSheetOpen && !activeWipeCaption ? 'hidden sm:flex' : 'flex'
+      } flex-col gap-1.5 transition-all ${positionClass}`}
     >
       {/* 1. Live Victory Paint-Over Banner (when territory is actively being painted by victor) */}
       {activeWipeCaption && (

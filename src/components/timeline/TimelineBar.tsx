@@ -8,7 +8,10 @@ import { useAtlasStore } from '@/store/useAtlasStore';
 
 export default function TimelineBar() {
   const currentYear = useAtlasStore((s) => s.currentYear);
+  const activeCampaignId = useAtlasStore((s) => s.activeCampaignId);
+  const activeCharacterId = useAtlasStore((s) => s.activeCharacterId);
   const isStoryTourPlaying = useAtlasStore((s) => s.isStoryTourPlaying);
+  const hasTourSession = useAtlasStore((s) => s.storyTourProgress > 0);
   const startStoryTour = useAtlasStore((s) => s.startStoryTour);
   const stopStoryTour = useAtlasStore((s) => s.stopStoryTour);
   const setCurrentYear = useAtlasStore((s) => s.setCurrentYear);
@@ -21,20 +24,27 @@ export default function TimelineBar() {
   const isDark = theme === 'xuanmo';
   const minYear = SITE_CONFIG.timeline.minYear;
   const maxYear = SITE_CONFIG.timeline.extendedMaxYear;
+  const hasDedicatedPlayer =
+    Boolean(activeCampaignId) ||
+    Boolean(activeCharacterId) ||
+    isStoryTourPlaying ||
+    hasTourSession;
 
   const clampedSliderYear = Math.max(minYear, Math.min(maxYear, currentYear));
 
   return (
     <footer
       aria-label="历史年份时间轴控制器"
-      className={`fixed bottom-2 left-3 right-3 z-30 rounded-2xl border shadow-xl px-3 py-1.5 flex flex-col sm:flex-row items-center gap-2 sm:gap-3 ${
+      className={`fixed bottom-2 left-2.5 right-2.5 sm:left-3 sm:right-3 z-30 rounded-2xl border shadow-xl px-2.5 sm:px-3 py-1.5 ${
+        hasDedicatedPlayer ? 'hidden sm:flex' : 'flex'
+      } flex-col sm:flex-row items-center gap-1.5 sm:gap-3 ${
         isDark
           ? 'bg-[#0D131D]/97 border-amber-500/30 text-amber-50'
           : 'bg-[#FAF5E8]/97 border-amber-900/25 text-stone-900'
       }`}
     >
       {/* Era Quick Jump Capsules + Direct Auto-Camera Replay Button */}
-      <div className="flex items-center gap-1.5 shrink-0 overflow-x-auto max-w-full">
+      <div className="flex items-center gap-1.5 shrink-0 overflow-x-auto no-scrollbar max-w-full">
         <button
           type="button"
           onClick={() =>
@@ -150,7 +160,7 @@ export default function TimelineBar() {
           <Plus className="w-3.5 h-3.5" />
         </button>
 
-        <div className="min-w-[82px] text-right font-serif font-bold text-sm sm:text-base tabular-nums text-[#B83B2A] dark:text-amber-300 shrink-0">
+        <div className="min-w-[56px] sm:min-w-[82px] text-right font-serif font-bold text-xs sm:text-base tabular-nums text-[#B83B2A] dark:text-amber-300 shrink-0">
           {currentYear} 年
         </div>
       </div>

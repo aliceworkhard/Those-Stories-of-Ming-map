@@ -56,6 +56,12 @@ export type CampaignArrowMode = 'dynamic' | 'static';
 
 const STORY_OPENING_EVENT = ALL_EVENTS[0];
 
+const isMobileViewport = (): boolean =>
+  typeof window !== 'undefined' && window.innerWidth < 640;
+
+const isNarrowViewport = (): boolean =>
+  typeof window !== 'undefined' && window.innerWidth < 1024;
+
 interface AtlasState {
   hasHydratedCache: boolean;
   currentYear: number;
@@ -222,6 +228,11 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   hydrateFromStorage: () => {
     if (typeof window === 'undefined' || get().hasHydratedCache) return;
     const prevSeq = get().cameraCommand?.seq ?? 0;
+    const mobile = isMobileViewport();
+    const narrow = isNarrowViewport();
+    // On mobile (<640px), keep both panels closed on initial load so the map is 100% open & visible!
+    const initDirOpen = !narrow;
+    const initDrawerOpen = !mobile;
 
     try {
       const rawV2 = window.localStorage.getItem(ATLAS_PROGRESS_CACHE_KEY);
@@ -233,6 +244,8 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
         const startEvt = STORY_OPENING_EVENT;
         set({
           hasHydratedCache: true,
+          isDirectoryOpen: initDirOpen,
+          isDrawerOpen: initDrawerOpen,
           currentYear: startEvt.time.year,
           selectedEventId: startEvt.id,
           cameraCommand: {
@@ -279,6 +292,8 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
       const targetEvt = validEvt ?? STORY_OPENING_EVENT;
       set({
         hasHydratedCache: true,
+        isDirectoryOpen: initDirOpen,
+        isDrawerOpen: initDrawerOpen,
         currentYear: validYear,
         selectedEventId: targetEvt.id,
         theme: nextTheme,
@@ -298,6 +313,8 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
       const startEvt = STORY_OPENING_EVENT;
       set({
         hasHydratedCache: true,
+        isDirectoryOpen: initDirOpen,
+        isDrawerOpen: initDrawerOpen,
         currentYear: startEvt.time.year,
         selectedEventId: startEvt.id,
         cameraCommand: {
@@ -318,6 +335,8 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     }
     const startEvt = STORY_OPENING_EVENT;
     const prevSeq = get().cameraCommand?.seq ?? 0;
+    const mobile = isMobileViewport();
+    const narrow = isNarrowViewport();
     set({
       activeCampaignId: null,
       activeCharacterId: null,
@@ -325,8 +344,8 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
       isStoryTourPlaying: false,
       storyTourProgress: 0,
       isImmersionMode: false,
-      isDirectoryOpen: true,
-      isDrawerOpen: true,
+      isDirectoryOpen: !narrow,
+      isDrawerOpen: !mobile,
       currentYear: startEvt.time.year,
       selectedEventId: startEvt.id,
       cameraCommand: {
@@ -358,24 +377,40 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     const evt = EVENT_MAP[eventId];
     if (!evt) return;
     const prevSeq = get().cameraCommand?.seq ?? 0;
-    set((state) => ({
-      selectedEventId: eventId,
-      isDrawerOpen: state.isImmersionMode ? state.isDrawerOpen : true,
-      currentYear: evt.time.year,
-      storyTourProgress:
-        state.isStoryTourPlaying || state.storyTourProgress > 0 ? 1 : 0,
-      storyTourNonce: state.storyTourNonce + 1,
-      cameraCommand: fly
-        ? {
-            pose: {
-              ...evt.camera,
-              pitch: state.is3D && state.perfMode !== 'eco' ? evt.camera.pitch ?? 38 : 0,
-              bearing: 0,
-            },
-            seq: prevSeq + 1,
-          }
-        : state.cameraCommand,
-    }));
+    const mobile = isMobileViewport();
+    const narrow = isNarrowViewport();
+    set((state) => {
+      // During mobile StoryTour auto-playback, keep map unobstructed instead of popping open detail sheet
+      const nextDrawerOpen =
+        state.isImmersionMode || (mobile && state.isStoryTourPlaying)
+          ? state.isDrawerOpen
+          : true;
+      const nextDirOpen =
+        nextDrawerOpen && narrow ? false : state.isDirectoryOpen;
+
+      return {
+        selectedEventId: eventId,
+        isDrawerOpen: nextDrawerOpen,
+        isDirectoryOpen: nextDirOpen,
+        currentYear: evt.time.year,
+        storyTourProgress:
+          state.isStoryTourPlaying || state.storyTourProgress > 0 ? 1 : 0,
+        storyTourNonce: state.storyTourNonce + 1,
+        cameraCommand: fly
+          ? {
+              pose: {
+                ...evt.camera,
+                pitch:
+                  state.is3D && state.perfMode !== 'eco'
+                    ? evt.camera.pitch ?? 38
+                    : 0,
+                bearing: 0,
+              },
+              seq: prevSeq + 1,
+            }
+          : state.cameraCommand,
+      };
+    });
     persistSnapshot(get());
   },
 
@@ -404,22 +439,29 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   setDirectoryOpen: (open) =>
     set((state) => ({
       isDirectoryOpen: open,
+      // Strict mutual exclusion on mobile/tablet (<1024px) so two drawers NEVER stack!
+      isDrawerOpen: open && isNarrowViewport() ? false : state.isDrawerOpen,
       isImmersionMode: open ? false : state.isImmersionMode,
     })),
 
   setDrawerOpen: (open) =>
     set((state) => ({
       isDrawerOpen: open,
+      // Strict mutual exclusion on mobile/tablet (<1024px) so two drawers NEVER stack!
+      isDirectoryOpen:
+        open && isNarrowViewport() ? false : state.isDirectoryOpen,
       isImmersionMode: open ? false : state.isImmersionMode,
     })),
 
   toggleImmersionMode: () =>
     set((state) => {
       const next = !state.isImmersionMode;
+      const mobile = isMobileViewport();
+      const narrow = isNarrowViewport();
       return {
         isImmersionMode: next,
-        isDirectoryOpen: !next,
-        isDrawerOpen: !next,
+        isDirectoryOpen: next ? false : !narrow,
+        isDrawerOpen: next ? false : !mobile,
       };
     }),
 
@@ -433,13 +475,15 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     const evt = EVENT_MAP[targetId] ?? ALL_EVENTS[0];
     const prevSeq = state.cameraCommand?.seq ?? 0;
     const use3D = state.is3D && state.perfMode !== 'eco';
+    const mobile = isMobileViewport();
 
     set({
       activeCampaignId: null,
       activeCharacterId: null,
       isCampaignPlaying: false,
       isStoryTourPlaying: true,
-      isDrawerOpen: !state.isImmersionMode,
+      isDirectoryOpen: mobile ? false : state.isDirectoryOpen,
+      isDrawerOpen: mobile ? false : !state.isImmersionMode,
       selectedEventId: evt.id,
       currentYear: evt.time.year,
       storyTourProgress: 1,
@@ -477,6 +521,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     if (!cmp) return;
     const safeIdx = Math.max(0, Math.min(cmp.phases.length - 1, phaseIndex));
     const phase = cmp.phases[safeIdx];
+    const mobile = isMobileViewport();
     set((state) => ({
       isStoryTourPlaying: false,
       storyTourProgress: 0,
@@ -484,7 +529,8 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
       activeCampaignId: campaignId,
       activePhaseIndex: safeIdx,
       isCampaignPlaying: true,
-      isCampaignPanelOpen: true,
+      // On mobile (<640px), keep war-room drawer collapsed initially so 80% of phone screen shows the live battle map!
+      isCampaignPanelOpen: !mobile,
       spotlightRouteId: null,
       focusedRouteRequest: null,
       campaignCameraMode:
@@ -498,17 +544,21 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   },
 
   exitCampaign: () =>
-    set((state) => ({
-      activeCampaignId: null,
-      activePhaseIndex: 0,
-      isCampaignPlaying: false,
-      spotlightRouteId: null,
-      focusedRouteRequest: null,
-      campaignPhaseProgress: 0,
-      activeWipeCaption: null,
-      isDirectoryOpen: !state.isImmersionMode,
-      isDrawerOpen: !state.isImmersionMode,
-    })),
+    set((state) => {
+      const mobile = isMobileViewport();
+      const narrow = isNarrowViewport();
+      return {
+        activeCampaignId: null,
+        activePhaseIndex: 0,
+        isCampaignPlaying: false,
+        spotlightRouteId: null,
+        focusedRouteRequest: null,
+        campaignPhaseProgress: 0,
+        activeWipeCaption: null,
+        isDirectoryOpen: state.isImmersionMode ? false : !narrow,
+        isDrawerOpen: state.isImmersionMode ? false : !mobile,
+      };
+    }),
 
   setCampaignPhase: (phaseIndex) => {
     const { activeCampaignId } = get();
@@ -582,6 +632,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     const safeIdx = Math.max(0, Math.min(ch.stops.length - 1, stopIndex));
     const stop = ch.stops[safeIdx];
     const prevSeq = get().cameraCommand?.seq ?? 0;
+    const mobile = isMobileViewport();
     set((state) => ({
       activeCampaignId: null,
       isCampaignPlaying: false,
@@ -589,6 +640,8 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
       storyTourProgress: 0,
       activeCharacterId: characterId,
       activeCharacterStopIndex: safeIdx,
+      isDirectoryOpen: mobile ? false : state.isDirectoryOpen,
+      isDrawerOpen: mobile ? false : state.isDrawerOpen,
       currentYear: stop.year,
       selectedEventId: stop.eventId ?? state.selectedEventId,
       cameraCommand: {
@@ -611,11 +664,15 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     const safeIdx = Math.max(0, Math.min(ch.stops.length - 1, stopIndex));
     const stop = ch.stops[safeIdx];
     const prevSeq = get().cameraCommand?.seq ?? 0;
+    const mobile = isMobileViewport();
     set((state) => ({
       activeCharacterStopIndex: safeIdx,
       currentYear: stop.year,
       selectedEventId: stop.eventId ?? state.selectedEventId,
-      isDrawerOpen: stop.eventId && !state.isImmersionMode ? true : state.isDrawerOpen,
+      isDrawerOpen:
+        stop.eventId && !state.isImmersionMode && !mobile
+          ? true
+          : state.isDrawerOpen,
       cameraCommand: {
         pose: {
           center: stop.coordinates,
