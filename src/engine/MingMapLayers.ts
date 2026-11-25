@@ -593,9 +593,10 @@ export function mountHistoricalLayers(
       paint: {
         'text-color': isDark ? '#A89474' : '#6A5337',
         'text-halo-color': isDark
-          ? 'rgba(12, 16, 23, 0.88)'
-          : 'rgba(244, 237, 222, 0.92)',
-        'text-halo-width': 1.8,
+          ? 'rgba(12, 16, 23, 0.9)'
+          : 'rgba(244, 237, 222, 0.94)',
+        'text-halo-width': 1.45,
+        'text-halo-blur': 0.2,
         'text-opacity': [
           'interpolate',
           ['linear'],
@@ -730,9 +731,10 @@ export function mountHistoricalLayers(
       paint: {
         'text-color': isDark ? '#F6EAD2' : '#2A1D15',
         'text-halo-color': isDark
-          ? 'rgba(12, 16, 24, 0.92)'
-          : 'rgba(250, 245, 233, 0.94)',
-        'text-halo-width': 2.2,
+          ? 'rgba(12, 16, 24, 0.94)'
+          : 'rgba(250, 245, 233, 0.96)',
+        'text-halo-width': 1.65,
+        'text-halo-blur': 0.2,
         'text-opacity': [
           'interpolate',
           ['linear'],
@@ -798,9 +800,9 @@ export function mountHistoricalLayers(
           ['linear'],
           ['zoom'],
           4,
-          ['match', ['get', 'placeType'], 'capital', 11.5, 10],
+          ['match', ['get', 'placeType'], 'capital', 12.2, 10.8],
           8,
-          ['match', ['get', 'placeType'], 'capital', 13.5, 11.5],
+          ['match', ['get', 'placeType'], 'capital', 14.2, 12.2],
         ],
         'text-variable-anchor': ['top', 'right', 'left', 'bottom'],
         'text-radial-offset': [
@@ -824,9 +826,10 @@ export function mountHistoricalLayers(
           isDark ? '#CBD5E1' : '#332922',
         ],
         'text-halo-color': isDark
-          ? 'rgba(11, 15, 23, 0.94)'
-          : 'rgba(252, 248, 238, 0.96)',
-        'text-halo-width': 1.8,
+          ? 'rgba(11, 15, 23, 0.95)'
+          : 'rgba(252, 248, 238, 0.97)',
+        'text-halo-width': 1.45,
+        'text-halo-blur': 0.2,
       },
     });
   }
@@ -1153,7 +1156,7 @@ export function mountHistoricalLayers(
           ['get', 'labelText'],
         ],
         'text-font': ['Noto Sans Regular'],
-        'text-size': 12.2,
+        'text-size': 12.6,
         'text-line-height': 1.25,
         'text-variable-anchor': ['bottom', 'top', 'right', 'left'],
         'text-radial-offset': 1.25,
@@ -1164,7 +1167,8 @@ export function mountHistoricalLayers(
         'text-halo-color': isDark
           ? 'rgba(9, 13, 22, 0.97)'
           : 'rgba(255, 253, 247, 0.98)',
-        'text-halo-width': 2.3,
+        'text-halo-width': 1.65,
+        'text-halo-blur': 0.2,
       },
     });
   }
@@ -1428,7 +1432,7 @@ export function mountHistoricalLayers(
         'icon-ignore-placement': false,
         'text-field': ['get', 'labelText'],
         'text-font': ['Noto Sans Regular'],
-        'text-size': ['match', ['get', 'isSelected'], 1, 12.2, 11.0],
+        'text-size': ['match', ['get', 'isSelected'], 1, 12.8, 11.6],
         'text-variable-anchor': ['bottom', 'right', 'left', 'top'],
         'text-radial-offset': 1.05,
         'text-padding': 4,
@@ -1445,9 +1449,10 @@ export function mountHistoricalLayers(
           isDark ? '#F8FAFC' : '#1E1B18',
         ],
         'text-halo-color': isDark
-          ? 'rgba(11, 15, 23, 0.96)'
-          : 'rgba(252, 248, 238, 0.97)',
-        'text-halo-width': 2.1,
+          ? 'rgba(11, 15, 23, 0.97)'
+          : 'rgba(252, 248, 238, 0.98)',
+        'text-halo-width': 1.55,
+        'text-halo-blur': 0.2,
       },
     });
   }

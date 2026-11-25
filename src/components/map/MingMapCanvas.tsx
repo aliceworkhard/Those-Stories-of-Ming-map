@@ -66,12 +66,31 @@ function getPhaseTotalDurationMs(
   return getRouteGrowDurationMs(routeCount) + (hasWipeInPhase ? 3200 : 2300);
 }
 
+/**
+ * Computes an adaptive Retina WebGL pixelRatio using a physical-framebuffer pixel budget:
+ * - Smartphones & tablets (`390x844` @ 3x = 2.96M px) get FULL native `devicePixelRatio` (up to `3x`)
+ *   with ZERO non-integer `1.25x` bilinear upscaling blur!
+ * - Standard 1080p/1440p laptops also get native 1:1 `devicePixelRatio`.
+ * - Massive 4K/5K desktop monitors stay protected within a 4.5M physical-pixel budget in `balanced` mode
+ *   (or full native DPR in `ultra` mode).
+ */
 function getTargetPixelRatio(perfMode: PerformanceMode): number {
-  const dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
-  if (perfMode === 'eco') return 1;
-  if (perfMode === 'ultra') return Math.min(dpr, 2);
-  // 1.25x DPR cuts GPU fragment fill-rate pressure by 31% vs 1.5x while staying razor-sharp!
-  return Math.min(dpr, 1.25);
+  if (typeof window === 'undefined') return 1;
+  const dpr = window.devicePixelRatio || 1;
+  const cssPixels = Math.max(1, window.innerWidth * window.innerHeight);
+  const isSmallScreen = window.innerWidth < 1024;
+
+  if (perfMode === 'eco') {
+    // Even in eco mode on phones, keep >= 1.75x-2x so small CJK text stays legible
+    return isSmallScreen ? Math.min(dpr, 2) : 1;
+  }
+  if (perfMode === 'ultra') {
+    return Math.min(dpr, 3);
+  }
+
+  // `balanced` mode: full native Retina DPR (up to 3x) within a 4.5M physical-pixel budget!
+  const budgetMaxRatio = Math.sqrt(4_500_000 / cssPixels);
+  return Math.min(dpr, 3, Math.max(1.5, budgetMaxRatio));
 }
 
 /**
@@ -447,8 +466,9 @@ export default function MingMapCanvas() {
       maxZoom: 13.0,
       fadeDuration: 80,
       attributionControl: false,
+      // Uniform-stroke CJK Sans-Serif prevents hairline horizontal stroke loss in MapLibre's 24px TinySDF atlas!
       localIdeographFontFamily:
-        "'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'Microsoft YaHei', serif",
+        "'PingFang SC', 'HarmonyOS Sans SC', 'MiSans', 'Hiragino Sans GB', 'Microsoft YaHei UI', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif",
     });
 
     map.addControl(
@@ -903,12 +923,18 @@ export default function MingMapCanvas() {
         startDirectorLoop();
       }
     };
+    const onWindowResize = () => {
+      const st = useAtlasStore.getState();
+      map.setPixelRatio(getTargetPixelRatio(st.perfMode));
+    };
     document.addEventListener('visibilitychange', onVisibilityChange);
+    window.addEventListener('resize', onWindowResize);
 
     mapRef.current = map;
 
     return () => {
       document.removeEventListener('visibilitychange', onVisibilityChange);
+      window.removeEventListener('resize', onWindowResize);
       if (animFrameRef.current !== null) {
         cancelAnimationFrame(animFrameRef.current);
       }

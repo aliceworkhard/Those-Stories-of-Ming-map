@@ -221,12 +221,14 @@ function addDiamondSealSprite(
   size = 64
 ): void {
   if (map.hasImage(name)) return;
+  const pxSize = Math.round(size * 1.5);
   const c = document.createElement('canvas');
-  c.width = size;
-  c.height = size;
+  c.width = pxSize;
+  c.height = pxSize;
   const ctx = c.getContext('2d');
   if (!ctx) return;
 
+  ctx.scale(1.5, 1.5);
   const m = size / 2;
   ctx.clearRect(0, 0, size, size);
 
@@ -254,13 +256,13 @@ function addDiamondSealSprite(
   ctx.restore();
 
   ctx.fillStyle = '#FFFBEB';
-  ctx.font = `bold ${activeHalo ? 23 : 20}px "Noto Serif SC", "Songti SC", "Microsoft YaHei", serif`;
+  ctx.font = `700 ${activeHalo ? 23 : 20}px "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(char, m, m + 1);
+  ctx.fillText(char, m, m + 0.5);
 
-  const img = ctx.getImageData(0, 0, size, size);
-  map.addImage(name, { width: size, height: size, data: img.data }, { pixelRatio: 2 });
+  const img = ctx.getImageData(0, 0, pxSize, pxSize);
+  map.addImage(name, { width: pxSize, height: pxSize, data: img.data }, { pixelRatio: 3 });
 }
 
 function addCircleSealSprite(
@@ -273,12 +275,14 @@ function addCircleSealSprite(
   size = 56
 ): void {
   if (map.hasImage(name)) return;
+  const pxSize = Math.round(size * 1.5);
   const c = document.createElement('canvas');
-  c.width = size;
-  c.height = size;
+  c.width = pxSize;
+  c.height = pxSize;
   const ctx = c.getContext('2d');
   if (!ctx) return;
 
+  ctx.scale(1.5, 1.5);
   const m = size / 2;
   ctx.clearRect(0, 0, size, size);
 
@@ -301,13 +305,13 @@ function addCircleSealSprite(
   ctx.stroke();
 
   ctx.fillStyle = '#FFFBEB';
-  ctx.font = `bold ${activeHalo ? 19 : 17}px "Noto Serif SC", "Songti SC", "Microsoft YaHei", serif`;
+  ctx.font = `700 ${activeHalo ? 19 : 17}px "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(char, m, m + 1);
+  ctx.fillText(char, m, m + 0.5);
 
-  const img = ctx.getImageData(0, 0, size, size);
-  map.addImage(name, { width: size, height: size, data: img.data }, { pixelRatio: 2 });
+  const img = ctx.getImageData(0, 0, pxSize, pxSize);
+  map.addImage(name, { width: pxSize, height: pxSize, data: img.data }, { pixelRatio: 3 });
 }
 
 /**
@@ -342,14 +346,16 @@ export function registerTacticalSprites(map: maplibregl.Map): void {
     }
   }
 
-  // 2. Capital Imperial Diamond Seal
+  // 2. Capital Imperial Diamond Seal (@3x Retina)
   if (!map.hasImage('place-capital-seal')) {
     const s = 36;
+    const px = 54;
     const c = document.createElement('canvas');
-    c.width = s;
-    c.height = s;
+    c.width = px;
+    c.height = px;
     const ctx = c.getContext('2d');
     if (ctx) {
+      ctx.scale(1.5, 1.5);
       const m = s / 2;
       ctx.save();
       ctx.translate(m, m);
@@ -362,23 +368,24 @@ export function registerTacticalSprites(map: maplibregl.Map): void {
       ctx.fillStyle = '#FFF7E0';
       ctx.fillRect(-3, -3, 6, 6);
       ctx.restore();
-      const img = ctx.getImageData(0, 0, s, s);
+      const img = ctx.getImageData(0, 0, px, px);
       map.addImage(
         'place-capital-seal',
-        { width: s, height: s, data: img.data },
-        { pixelRatio: 2 }
+        { width: px, height: px, data: img.data },
+        { pixelRatio: 3 }
       );
     }
   }
 
-  // 3. Garrison / Pass Fortress Emblem
+  // 3. Garrison / Pass Fortress Emblem (@3x Retina)
   if (!map.hasImage('place-pass-fort')) {
-    const s = 28;
+    const px = 42;
     const c = document.createElement('canvas');
-    c.width = s;
-    c.height = s;
+    c.width = px;
+    c.height = px;
     const ctx = c.getContext('2d');
     if (ctx) {
+      ctx.scale(1.5, 1.5);
       ctx.fillStyle = '#8C5218';
       ctx.strokeStyle = '#FBE6B2';
       ctx.lineWidth = 2.4;
@@ -386,23 +393,25 @@ export function registerTacticalSprites(map: maplibregl.Map): void {
       ctx.strokeRect(6, 6, 16, 16);
       ctx.fillStyle = '#FBE6B2';
       ctx.fillRect(11, 11, 6, 6);
-      const img = ctx.getImageData(0, 0, s, s);
+      const img = ctx.getImageData(0, 0, px, px);
       map.addImage(
         'place-pass-fort',
-        { width: s, height: s, data: img.data },
-        { pixelRatio: 2 }
+        { width: px, height: px, data: img.data },
+        { pixelRatio: 3 }
       );
     }
   }
 
-  // 4. Prefecture / Port Classical Ringed Dot
+  // 4. Prefecture / Port Classical Ringed Dot (@3x Retina)
   if (!map.hasImage('place-city-dot')) {
     const s = 24;
+    const px = 36;
     const c = document.createElement('canvas');
-    c.width = s;
-    c.height = s;
+    c.width = px;
+    c.height = px;
     const ctx = c.getContext('2d');
     if (ctx) {
+      ctx.scale(1.5, 1.5);
       const m = s / 2;
       ctx.beginPath();
       ctx.arc(m, m, 6, 0, Math.PI * 2);
@@ -415,11 +424,11 @@ export function registerTacticalSprites(map: maplibregl.Map): void {
       ctx.arc(m, m, 2.5, 0, Math.PI * 2);
       ctx.fillStyle = '#B83B2A';
       ctx.fill();
-      const img = ctx.getImageData(0, 0, s, s);
+      const img = ctx.getImageData(0, 0, px, px);
       map.addImage(
         'place-city-dot',
-        { width: s, height: s, data: img.data },
-        { pixelRatio: 2 }
+        { width: px, height: px, data: img.data },
+        { pixelRatio: 3 }
       );
     }
   }
@@ -507,12 +516,12 @@ export function registerTacticalSprites(map: maplibregl.Map): void {
   }
 
   for (const [id, fill, stroke] of [
-    ['callout-pill-light', 'rgba(253, 250, 242, 0.96)', '#9E2318'],
-    ['callout-pill-dark', 'rgba(13, 19, 29, 0.95)', '#F59E0B'],
+    ['callout-pill-light', 'rgba(253, 250, 242, 0.97)', '#9E2318'],
+    ['callout-pill-dark', 'rgba(13, 19, 29, 0.96)', '#F59E0B'],
   ] as const) {
     if (!map.hasImage(id)) {
-      const w = 64;
-      const h = 36;
+      const w = 96;
+      const h = 54;
       const c = document.createElement('canvas');
       c.width = w;
       c.height = h;
@@ -521,9 +530,9 @@ export function registerTacticalSprites(map: maplibregl.Map): void {
         ctx.clearRect(0, 0, w, h);
         ctx.fillStyle = fill;
         ctx.strokeStyle = stroke;
-        ctx.lineWidth = 2.5;
+        ctx.lineWidth = 3.6;
         ctx.beginPath();
-        ctx.roundRect(2, 2, w - 4, h - 4, 10);
+        ctx.roundRect(3, 3, w - 6, h - 6, 15);
         ctx.fill();
         ctx.stroke();
         const img = ctx.getImageData(0, 0, w, h);
@@ -531,10 +540,10 @@ export function registerTacticalSprites(map: maplibregl.Map): void {
           id,
           { width: w, height: h, data: img.data },
           {
-            pixelRatio: 2,
-            stretchX: [[14, 50]],
-            stretchY: [[12, 24]],
-            content: [12, 7, 52, 29],
+            pixelRatio: 3,
+            stretchX: [[21, 75]],
+            stretchY: [[18, 36]],
+            content: [18, 10, 78, 44],
           }
         );
       }
