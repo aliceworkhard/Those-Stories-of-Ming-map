@@ -27,8 +27,12 @@ import {
   MING_WATERWAYS_GEOJSON,
   PLACES_GEOJSON,
   TERRITORY_INDEX,
-  TERRITORY_SNAPSHOT_BY_ID,
 } from '@/lib/atlasData';
+import {
+  TERRITORY_SNAPSHOT_BY_ID,
+  ensureSnapshotIdLoaded,
+  scheduleWarmAllTerritoryChunks,
+} from '@/lib/territoryData';
 import { createHistoricalBaseStyle } from '@/engine/mapStyle';
 import { buildPolityLabelGeoJSON } from '@/engine/MingMapLayers';
 import {
@@ -93,8 +97,8 @@ export default function TerritoryPainterStudio() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const onionInputRef = useRef<HTMLInputElement | null>(null);
 
-  const initialSnap = TERRITORY_SNAPSHOT_BY_ID['ter-1363'];
-  const [baseSnapshotId, setBaseSnapshotId] = useState<string>('ter-1363');
+  const initialSnap = TERRITORY_SNAPSHOT_BY_ID['ter-1356'];
+  const [baseSnapshotId, setBaseSnapshotId] = useState<string>('ter-1356');
   const [targetYear, setTargetYear] = useState<number>(1365);
   const [snapshotTitle, setSnapshotTitle] = useState<string>(
     '至正二十五年（1365）· 自定义疆域擦写切片'
@@ -105,6 +109,11 @@ export default function TerritoryPainterStudio() {
   const [activePolityId, setActivePolityId] = useState<string>(
     initialSnap.geojson.features[0]?.properties?.polityId ?? 'zhu-wu'
   );
+
+  useEffect(() => {
+    scheduleWarmAllTerritoryChunks();
+    void ensureSnapshotIdLoaded(baseSnapshotId);
+  }, [baseSnapshotId]);
 
   const [undoStack, setUndoStack] = useState<EditablePolity[][]>([]);
   const [redoStack, setRedoStack] = useState<EditablePolity[][]>([]);

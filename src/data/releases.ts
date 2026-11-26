@@ -6,14 +6,25 @@ export interface AtlasReleaseEntry {
   highlights: string[];
 }
 
-export const CURRENT_ATLAS_VERSION = 'v1.3.0';
+export const CURRENT_ATLAS_VERSION = 'v1.4.0';
 
 export const ATLAS_RELEASES: AtlasReleaseEntry[] = [
+  {
+    version: 'v1.4.0',
+    date: '2026-11-27',
+    title: '可视化战役投稿工坊 (/dev/campaign-builder) · 疆域切片异步分包瘦身',
+    badge: '最新正式版',
+    highlights: [
+      '上线零代码众包神器「可视化战役投稿工坊 (/dev/campaign-builder)」：点击地图即可绘制多路有序行军箭矢、放置交战印章、实时预览动态推演并一键导出标准合规 JSON 提交 PR。',
+      '首屏包体极速瘦身优化：将非首屏 14 期高精度疆域 GIS 切片与东亚海岸线掩膜拆分为异步按需分包 + 空闲时间自动预热（requestIdleCallback），首页主包体积从 859 kB 直降至 312 kB（压降 63.7%）。',
+      '顶栏新增「战役工坊」快捷入口，与「擦写工坊 (/dev/territory-painter)」共同组成完整开源历史地图创作双工坊。',
+    ],
+  },
   {
     version: 'v1.3.0',
     date: '2026-11-27',
     title: '决战现场微观战术子沙盘 · 松锦大战/收复台湾新战役 · 烟火轶事扩容',
-    badge: '最新正式版',
+    badge: '历史版本',
     highlights: [
       '新增「决战现场微观战术子沙盘」(Zoom≥7.4 或战役内一键“微观阵势”)：还原康郎山火攻风向、北京九门神机营伏击、萨尔浒吉林崖、宁远红夷火网、松山断粮长壕与鹿耳门大潮秘道。',
       '新增两套完整多幕战役推演包：《松锦大战：松山断粮与九边精锐总崩盘》《郑成功东征驱荷收复台湾之战》，全库战役扩充至 14 场（61 幕、123 条有序路线）。',

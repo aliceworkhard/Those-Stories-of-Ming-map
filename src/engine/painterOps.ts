@@ -1,7 +1,10 @@
 import polygonClipping from 'polygon-clipping';
 import { topology } from 'topojson-server';
-import { EAST_ASIA_LAND_MASK_GEOJSON } from '@/lib/atlasData';
+import landMaskGeoJson from '@data/geo-base/land-mask-east-asia.json';
 import type { LngLat, PolityControlType } from '@/types/ming';
+
+const EAST_ASIA_LAND_MASK_GEOJSON =
+  landMaskGeoJson as unknown as GeoJSON.FeatureCollection;
 
 export type PcMultiPolygon = polygonClipping.MultiPolygon;
 

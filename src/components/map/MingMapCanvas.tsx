@@ -5,12 +5,13 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 import { SITE_CONFIG } from '@/config/site';
+import { CAMPAIGN_MAP, EVENT_MAP } from '@/lib/atlasData';
 import {
-  CAMPAIGN_MAP,
-  EVENT_MAP,
   TERRITORY_SNAPSHOT_BY_ID,
   getSnapshotForYear,
-} from '@/lib/atlasData';
+  scheduleWarmAllTerritoryChunks,
+  subscribeTerritoryChunks,
+} from '@/lib/territoryData';
 import {
   createHistoricalBaseStyle,
   getTerrainExaggeration,
@@ -218,6 +219,14 @@ export default function MingMapCanvas() {
   } | null>(null);
 
   const [zoomBucket, setZoomBucket] = useState<'far' | 'mid' | 'close'>('far');
+  const [territoryChunkRev, setTerritoryChunkRev] = useState(0);
+
+  useEffect(() => {
+    scheduleWarmAllTerritoryChunks();
+    return subscribeTerritoryChunks(() => {
+      setTerritoryChunkRev((v) => v + 1);
+    });
+  }, []);
 
   const currentYear = useAtlasStore((s) => s.currentYear);
   const selectedEventId = useAtlasStore((s) => s.selectedEventId);
@@ -247,7 +256,8 @@ export default function MingMapCanvas() {
 
   const currentSnapshot = useMemo(
     () => getSnapshotForYear(currentYear),
-    [currentYear]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [currentYear, territoryChunkRev]
   );
 
   const activeCampaign = activeCampaignId

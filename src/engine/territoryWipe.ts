@@ -1,5 +1,10 @@
 import polygonClipping from 'polygon-clipping';
-import { TERRITORY_SNAPSHOT_BY_ID } from '@/lib/atlasData';
+import {
+  TERRITORY_SNAPSHOT_BY_ID,
+  ensureSnapshotIdLoaded,
+  isSnapshotChunkLoaded,
+  subscribeTerritoryChunks,
+} from '@/lib/territoryData';
 import type { LngLat } from '@/types/ming';
 
 type PcMultiPolygon = polygonClipping.MultiPolygon;
@@ -25,6 +30,21 @@ const simplifiedSnapshotPolityCache = new Map<
 const computedEraDeltaCache = new Map<string, EraWipePlan>();
 const customCampaignSliceCache = new Map<string, PcMultiPolygon>();
 const customCampaignBaseCache = new Map<string, GeoJSON.FeatureCollection>();
+
+// Evict geometry caches whenever a lazy-loaded historical snapshot chunk arrives
+subscribeTerritoryChunks(() => {
+  simplifiedSnapshotPolityCache.clear();
+  computedEraDeltaCache.clear();
+  customCampaignSliceCache.clear();
+  customCampaignBaseCache.clear();
+});
+
+function requireSnapshotReady(id: string): boolean {
+  if (!isSnapshotChunkLoaded(id) && typeof window !== 'undefined') {
+    void ensureSnapshotIdLoaded(id);
+  }
+  return isSnapshotChunkLoaded(id);
+}
 
 function sqSegDist(
   px: number,
@@ -189,6 +209,7 @@ function findFeatureMultiPoly(
   polityId: string,
   forSweep = false
 ): { mp: PcMultiPolygon; props: Record<string, unknown> } {
+  requireSnapshotReady(snapshotId);
   const cacheKey = `${snapshotId}::${polityId}::${forSweep ? 'sweep' : 'full'}`;
   const hit = simplifiedSnapshotPolityCache.get(cacheKey);
   if (hit) return hit;

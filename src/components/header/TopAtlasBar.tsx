@@ -32,7 +32,7 @@ import {
   ALL_CAMPAIGNS,
   ALL_CHARACTERS,
   ALL_EVENTS,
-  getSnapshotForYear,
+  getSnapshotMetaForYear,
 } from '@/lib/atlasData';
 import { useAtlasStore } from '@/store/useAtlasStore';
 import type { PerformanceMode, PlaceNameMode } from '@/types/ming';
@@ -121,7 +121,7 @@ export default function TopAtlasBar() {
     return () => controller.abort();
   }, []);
 
-  const snapshot = getSnapshotForYear(currentYear);
+  const snapshotMeta = getSnapshotMetaForYear(currentYear);
   const activeCampaign = ALL_CAMPAIGNS.find((c) => c.id === activeCampaignId);
   const activeCharacter = ALL_CHARACTERS.find((c) => c.id === activeCharacterId);
   const isDark = theme === 'xuanmo';
@@ -189,7 +189,7 @@ export default function TopAtlasBar() {
                 </button>
               </div>
               <p className="text-[10px] opacity-75 truncate hidden 2xl:block max-w-[220px]">
-                {snapshot.meta.title}
+                {snapshotMeta.title}
               </p>
             </div>
 
@@ -342,7 +342,7 @@ export default function TopAtlasBar() {
                 <span>原著目录</span>
               </button>
 
-              {/* 3b. Open-Source Territory Painter Studio Entry */}
+              {/* 3b. Open-Source Territory Painter & Campaign Builder Studios */}
               <Link
                 href="/dev/territory-painter"
                 className={`hidden xl:flex px-2.5 py-1.5 rounded-lg border text-xs font-medium items-center gap-1 shrink-0 transition cursor-pointer ${
@@ -354,6 +354,19 @@ export default function TopAtlasBar() {
               >
                 <Brush className="w-3.5 h-3.5" />
                 <span>擦写工坊</span>
+              </Link>
+
+              <Link
+                href="/dev/campaign-builder"
+                className={`hidden xl:flex px-2.5 py-1.5 rounded-lg border text-xs font-medium items-center gap-1 shrink-0 transition cursor-pointer ${
+                  isDark
+                    ? 'border-amber-500/35 hover:bg-amber-500/15 text-amber-200'
+                    : 'border-amber-900/25 hover:bg-amber-950/10 text-[#9E2318]'
+                }`}
+                title="打开零代码「可视化战役投稿工坊」：点击地图绘制行军箭矢并导出 PR 数据包"
+              >
+                <Swords className="w-3.5 h-3.5" />
+                <span>战役工坊</span>
               </Link>
 
               {/* 3c. Share Current Scene & Xuan-Paper Poster */}

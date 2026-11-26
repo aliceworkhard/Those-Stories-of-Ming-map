@@ -5,25 +5,8 @@ import landformsGeoJson from '@data/geo-base/ming-landforms.json';
 import institutionsGeoJson from '@data/geo-base/ming-institutions.json';
 import macroHistoryGeoJson from '@data/geo-base/ming-macro-history.json';
 import tacticalMicroGeoJson from '@data/geo-base/ming-tactical-micro.json';
-import landMaskGeoJson from '@data/geo-base/land-mask-east-asia.json';
 import odysseysJson from '@data/characters/odysseys.json';
 import territoriesIndexJson from '@data/territories/index.json';
-
-import ter1356 from '@data/territories/ter-1356.json';
-import ter1363 from '@data/territories/ter-1363.json';
-import ter1368 from '@data/territories/ter-1368.json';
-import ter1388 from '@data/territories/ter-1388.json';
-import ter1399 from '@data/territories/ter-1399.json';
-import ter1402 from '@data/territories/ter-1402.json';
-import ter1415 from '@data/territories/ter-1415.json';
-import ter1435 from '@data/territories/ter-1435.json';
-import ter1449 from '@data/territories/ter-1449.json';
-import ter1479 from '@data/territories/ter-1479.json';
-import ter1582 from '@data/territories/ter-1582.json';
-import ter1621 from '@data/territories/ter-1621.json';
-import ter1642 from '@data/territories/ter-1642.json';
-import ter1644 from '@data/territories/ter-1644.json';
-import ter1652 from '@data/territories/ter-1652.json';
 
 import eventsFoundingJson from '@data/events/era-founding.json';
 import eventsJingnanJson from '@data/events/era-jingnan.json';
@@ -93,11 +76,11 @@ export const MING_TACTICAL_MICRO_GEOJSON =
   tacticalMicroGeoJson as unknown as GeoJSON.FeatureCollection;
 
 export const TACTICAL_HOTSPOT_BY_CAMPAIGN: Record<string, TacticalHotspot> =
-  ((tacticalMicroGeoJson as unknown as { hotspots?: Record<string, TacticalHotspot> })
-    .hotspots ?? {});
-
-export const EAST_ASIA_LAND_MASK_GEOJSON =
-  landMaskGeoJson as unknown as GeoJSON.FeatureCollection;
+  ((
+    tacticalMicroGeoJson as unknown as {
+      hotspots?: Record<string, TacticalHotspot>;
+    }
+  ).hotspots ?? {});
 
 export const ALL_CHARACTERS = odysseysJson as unknown as CharacterOdyssey[];
 export const CHARACTER_MAP: Record<string, CharacterOdyssey> =
@@ -106,38 +89,16 @@ export const CHARACTER_MAP: Record<string, CharacterOdyssey> =
 export const TERRITORY_INDEX =
   territoriesIndexJson as unknown as TerritorySnapshotMeta[];
 
-const TERRITORY_DATA_BY_FILE: Record<string, GeoJSON.FeatureCollection> = {
-  'ter-1356.json': ter1356 as unknown as GeoJSON.FeatureCollection,
-  'ter-1363.json': ter1363 as unknown as GeoJSON.FeatureCollection,
-  'ter-1368.json': ter1368 as unknown as GeoJSON.FeatureCollection,
-  'ter-1388.json': ter1388 as unknown as GeoJSON.FeatureCollection,
-  'ter-1399.json': ter1399 as unknown as GeoJSON.FeatureCollection,
-  'ter-1402.json': ter1402 as unknown as GeoJSON.FeatureCollection,
-  'ter-1415.json': ter1415 as unknown as GeoJSON.FeatureCollection,
-  'ter-1435.json': ter1435 as unknown as GeoJSON.FeatureCollection,
-  'ter-1449.json': ter1449 as unknown as GeoJSON.FeatureCollection,
-  'ter-1479.json': ter1479 as unknown as GeoJSON.FeatureCollection,
-  'ter-1582.json': ter1582 as unknown as GeoJSON.FeatureCollection,
-  'ter-1621.json': ter1621 as unknown as GeoJSON.FeatureCollection,
-  'ter-1642.json': ter1642 as unknown as GeoJSON.FeatureCollection,
-  'ter-1644.json': ter1644 as unknown as GeoJSON.FeatureCollection,
-  'ter-1652.json': ter1652 as unknown as GeoJSON.FeatureCollection,
-};
-
-export const TERRITORY_SNAPSHOT_BY_ID: Record<
-  string,
-  { meta: TerritorySnapshotMeta; geojson: GeoJSON.FeatureCollection }
-> = Object.fromEntries(
-  TERRITORY_INDEX.map((meta) => [
-    meta.snapshotId,
-    {
-      meta,
-      geojson:
-        TERRITORY_DATA_BY_FILE[meta.file] ??
-        TERRITORY_DATA_BY_FILE['ter-1356.json'],
-    },
-  ])
-);
+export function getSnapshotMetaForYear(year: number): TerritorySnapshotMeta {
+  return (
+    TERRITORY_INDEX.find(
+      (item) => year >= item.effectiveRange[0] && year <= item.effectiveRange[1]
+    ) ??
+    (year < TERRITORY_INDEX[0].effectiveRange[0]
+      ? TERRITORY_INDEX[0]
+      : TERRITORY_INDEX[TERRITORY_INDEX.length - 1])
+  );
+}
 
 export const ALL_EVENTS: HistoricalEvent[] = [
   ...(eventsFoundingJson as unknown as HistoricalEvent[]),
@@ -176,26 +137,6 @@ export const ALL_CAMPAIGNS: Campaign[] = [
 export const CAMPAIGN_MAP: Record<string, Campaign> = Object.fromEntries(
   ALL_CAMPAIGNS.map((c) => [c.id, c])
 );
-
-export function getSnapshotForYear(year: number): {
-  meta: TerritorySnapshotMeta;
-  geojson: GeoJSON.FeatureCollection;
-} {
-  const matched =
-    TERRITORY_INDEX.find(
-      (item) => year >= item.effectiveRange[0] && year <= item.effectiveRange[1]
-    ) ??
-    (year < TERRITORY_INDEX[0].effectiveRange[0]
-      ? TERRITORY_INDEX[0]
-      : TERRITORY_INDEX[TERRITORY_INDEX.length - 1]);
-
-  return {
-    meta: matched,
-    geojson:
-      TERRITORY_DATA_BY_FILE[matched.file] ??
-      TERRITORY_DATA_BY_FILE['ter-1363.json'],
-  };
-}
 
 export function formatPlaceDisplay(
   ancientName: string,

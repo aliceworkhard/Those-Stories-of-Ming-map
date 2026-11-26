@@ -2,13 +2,18 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { Brush, ChevronDown, ChevronUp, Map as MapIcon } from 'lucide-react';
-import { CAMPAIGN_MAP, getSnapshotForYear } from '@/lib/atlasData';
+import { CAMPAIGN_MAP } from '@/lib/atlasData';
+import {
+  getSnapshotForYear,
+  subscribeTerritoryChunks,
+} from '@/lib/territoryData';
 import { buildCampaignTerritoryFrame } from '@/engine/territoryWipe';
 import { useAtlasStore } from '@/store/useAtlasStore';
 import type { TerritoryPolityProps } from '@/types/ming';
 
 export default function TerritoryLegendCard() {
   const [collapsed, setCollapsed] = useState(false);
+  const [chunkRev, setChunkRev] = useState(0);
   const [pinnedPolity, setPinnedPolity] = useState<TerritoryPolityProps | null>(
     null
   );
@@ -18,6 +23,7 @@ export default function TerritoryLegendCard() {
     if (typeof window !== 'undefined' && window.innerWidth < 640) {
       setCollapsed(true);
     }
+    return subscribeTerritoryChunks(() => setChunkRev((v) => v + 1));
   }, []);
 
   const currentYear = useAtlasStore((s) => s.currentYear);
@@ -93,7 +99,8 @@ export default function TerritoryLegendCard() {
       }
     }
     return list;
-  }, [activeCampaignId, activePhaseIndex, snapshot.geojson]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeCampaignId, activePhaseIndex, chunkRev, snapshot.geojson]);
 
   const inspectedPolity = hoveredPolity ?? pinnedPolity;
 
