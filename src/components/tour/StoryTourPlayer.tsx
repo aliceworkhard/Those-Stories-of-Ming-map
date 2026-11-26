@@ -8,9 +8,12 @@ import {
   Play,
   Swords,
   Video,
+  Volume2,
+  VolumeX,
   X,
 } from 'lucide-react';
 import { ALL_EVENTS, CAMPAIGN_MAP, EVENT_MAP } from '@/lib/atlasData';
+import { speakAtlasText, stopAtlasNarration } from '@/lib/narrator';
 import { subscribePlaybackTick } from '@/lib/playbackBus';
 import { useAtlasStore } from '@/store/useAtlasStore';
 
@@ -27,6 +30,8 @@ export default function StoryTourPlayer() {
   const stopStoryTour = useAtlasStore((s) => s.stopStoryTour);
   const stepStoryEvent = useAtlasStore((s) => s.stepStoryEvent);
   const startCampaign = useAtlasStore((s) => s.startCampaign);
+  const isNarratorEnabled = useAtlasStore((s) => s.isNarratorEnabled);
+  const toggleNarrator = useAtlasStore((s) => s.toggleNarrator);
   const theme = useAtlasStore((s) => s.theme);
 
   // Direct 60fps GPU `scaleX` progress bar update — ZERO React re-renders!
@@ -40,6 +45,33 @@ export default function StoryTourPlayer() {
       }
     });
   }, []);
+
+  // Optional Web Speech TTS Storytelling Narration synchronized with active tour stop!
+  useEffect(() => {
+    if (activeCampaignId || (!isStoryTourPlaying && !hasTourSession)) {
+      stopAtlasNarration();
+      return;
+    }
+    if (!isNarratorEnabled || !isStoryTourPlaying) {
+      stopAtlasNarration();
+      return;
+    }
+    const targetEvt = selectedEventId
+      ? EVENT_MAP[selectedEventId] ?? ALL_EVENTS[0]
+      : ALL_EVENTS[0];
+    speakAtlasText(
+      `公元${targetEvt.time.year}年，${targetEvt.title}。${targetEvt.summary}`,
+      storyTourSpeed === 1.5 ? 1.25 : 1.08
+    );
+    return () => stopAtlasNarration();
+  }, [
+    activeCampaignId,
+    hasTourSession,
+    isNarratorEnabled,
+    isStoryTourPlaying,
+    selectedEventId,
+    storyTourSpeed,
+  ]);
 
   if (activeCampaignId || (!isStoryTourPlaying && !hasTourSession)) {
     return null;
@@ -82,6 +114,23 @@ export default function StoryTourPlayer() {
         </div>
 
         <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={toggleNarrator}
+            className={`px-2 py-0.5 rounded-lg border text-[11px] font-bold flex items-center gap-1 cursor-pointer transition ${
+              isNarratorEnabled
+                ? 'bg-[#B83B2A] text-amber-50 border-amber-300'
+                : 'border-current/20 hover:bg-current/10 opacity-85'
+            }`}
+            title="开启/关闭明月说书语音旁白朗读"
+          >
+            {isNarratorEnabled ? (
+              <Volume2 className="w-3 h-3" />
+            ) : (
+              <VolumeX className="w-3 h-3" />
+            )}
+            <span>说书旁白</span>
+          </button>
           {linkedCampaign && (
             <button
               type="button"

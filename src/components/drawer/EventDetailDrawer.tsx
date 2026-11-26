@@ -23,6 +23,7 @@ import {
   Swords,
   Users,
   Video,
+  Volume2,
   X,
 } from 'lucide-react';
 import {
@@ -31,6 +32,7 @@ import {
   CHAPTER_MAP,
   EVENT_MAP,
 } from '@/lib/atlasData';
+import { speakAtlasText } from '@/lib/narrator';
 import { useAtlasStore } from '@/store/useAtlasStore';
 
 export default function EventDetailDrawer() {
@@ -162,6 +164,22 @@ export default function EventDetailDrawer() {
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
+          {/* Speak Current Event Summary & Causal Insight */}
+          <button
+            type="button"
+            onClick={() =>
+              speakAtlasText(
+                `${event.time.display}，${event.title}。${event.summary} 山川与制度关键：${event.why.geoFactor} ${event.why.systemFactor}`,
+                1.08
+              )
+            }
+            className="px-2 py-1 rounded-lg bg-current/8 hover:bg-current/15 text-[11px] font-medium flex items-center gap-1 cursor-pointer"
+            title="语音说书朗读当前事件始末与历史因果"
+          >
+            <Volume2 className="w-3.5 h-3.5 text-[#B83B2A] dark:text-amber-400" />
+            <span className="hidden sm:inline">说书</span>
+          </button>
+
           {/* Share Current Event Card / Deep-Link */}
           <button
             type="button"

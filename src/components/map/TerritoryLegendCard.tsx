@@ -379,6 +379,24 @@ export default function TerritoryLegendCard() {
                     <span>九边重镇防区</span>
                   </span>
                 )}
+                {layers.famineZones && (
+                  <span className="flex items-center gap-1.5 whitespace-nowrap">
+                    <span className="w-3.5 h-3.5 rounded-full bg-red-600/35 border border-red-700 inline-block shrink-0" />
+                    <span>小冰期旱蝗疫区</span>
+                  </span>
+                )}
+                {layers.grandCanalHubs && (
+                  <span className="flex items-center gap-1.5 whitespace-nowrap">
+                    <span className="w-3 h-3 rounded-full bg-[#0D9488] border border-amber-200 inline-block shrink-0" />
+                    <span>漕运钞关仓枢</span>
+                  </span>
+                )}
+                {layers.silverRoutes && (
+                  <span className="flex items-center gap-1.5 whitespace-nowrap">
+                    <span className="w-4 h-0.5 border-t-2 border-dashed border-amber-500 inline-block shrink-0" />
+                    <span>全球白银航线</span>
+                  </span>
+                )}
                 {activeCharacterId && (
                   <span className="flex items-center gap-1.5 whitespace-nowrap">
                     <span className="w-4 h-0.5 border-t-2 border-dashed border-[#B83B2A] inline-block shrink-0" />

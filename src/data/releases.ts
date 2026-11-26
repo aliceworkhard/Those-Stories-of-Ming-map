@@ -6,14 +6,26 @@ export interface AtlasReleaseEntry {
   highlights: string[];
 }
 
-export const CURRENT_ATLAS_VERSION = 'v1.1.0';
+export const CURRENT_ATLAS_VERSION = 'v1.2.0';
 
 export const ATLAS_RELEASES: AtlasReleaseEntry[] = [
+  {
+    version: 'v1.2.0',
+    date: '2026-11-27',
+    title: '明代经济·天灾·全球白银三大专题图层 · 明月说书语音旁白',
+    badge: '最新正式版',
+    highlights: [
+      '新增「崇祯小冰期旱蝗鼠疫奇荒热力层」：直观呈现陕北延绥、三晋、中州与京师连年灾疫及流寇蜂起的空间重合。',
+      '新增「京杭漕运四百万石总督钞关枢纽层」：标注淮安清江浦总督署、济宁南旺分水脊、临清钞关与通州大运仓南北命脉。',
+      '新增「隆庆开关全球白银流入航线层」：还原漳州月港↔吕宋马尼拉美洲大帆船银线、澳门↔长崎倭银航线及一条鞭法内陆银路。',
+      '上线「明月说书」Web Speech 语音导览：全史推演、战役沙盘与事件抽屉均支持同步语音播报历史叙事与胜负因果。',
+    ],
+  },
   {
     version: 'v1.1.0',
     date: '2026-11-27',
     title: '深度直链分享 · 宣纸朱印战报海报 · 版本日志系统',
-    badge: '最新正式版',
+    badge: '历史版本',
     highlights: [
       '全状态 URL 深度直链同步：支持将任意年份、事件、战役具体幕次（如萨尔浒第2幕）或人物足迹一键复制直链精准分享。',
       '宣纸朱印战报海报生成器：无损截取当前 WebGL 舆图画面，自动合成古典双栏边框、朱砂篆印与因果金句的高清 PNG 分享长图。',

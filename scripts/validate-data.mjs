@@ -266,6 +266,25 @@ if (fs.existsSync(instPath)) {
   }
 }
 
+const macroPath = path.join(DATA_DIR, 'geo-base', 'ming-macro-history.json');
+if (fs.existsSync(macroPath)) {
+  const mfc = JSON.parse(fs.readFileSync(macroPath, 'utf8'));
+  if (!Array.isArray(mfc.features) || mfc.features.length < 15) {
+    fail(`ming-macro-history.json expected >= 15 features, got ${mfc.features?.length}`);
+  } else {
+    for (const f of mfc.features) {
+      if (f.geometry?.type === 'Point') {
+        checkCoord(f.geometry.coordinates, `MacroHistory ${f.properties?.id}`);
+      } else if (f.geometry?.type === 'LineString') {
+        for (const pt of f.geometry.coordinates || []) {
+          checkCoord(pt, `MacroHistory line ${f.properties?.id}`);
+        }
+      }
+    }
+    ok(`Ming Little Ice Age famine, Grand Canal hubs & global silver routes verified (${mfc.features.length} features)`);
+  }
+}
+
 if (errors > 0) {
   console.error(`\nValidation FAILED with ${errors} error(s).`);
   process.exit(1);

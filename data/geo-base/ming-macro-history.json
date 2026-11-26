@@ -1,0 +1,256 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "description": "明代兴衰宏观历史地理三大专题图层：崇祯小冰期旱蝗鼠疫重灾层、京杭漕运四百万石枢纽层、隆庆开关全球白银流入航线层",
+    "coordinateSystem": "WGS-84 [lng, lat]"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "macro-famine-shanbei",
+        "layerGroup": "famine-zone",
+        "shortTitle": "陕北延绥奇荒震中",
+        "subNote": "1627–1640 连旱十三载 · 驿卒李自成张献忠起事源头",
+        "severity": 1.0
+      },
+      "geometry": { "type": "Point", "coordinates": [109.49, 36.60] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "macro-famine-guanzhong",
+        "layerGroup": "famine-zone",
+        "shortTitle": "关中西安赤地千里",
+        "subNote": "崇祯十三年斗米千钱 · 关中卫所军屯彻底崩溃",
+        "severity": 0.90
+      },
+      "geometry": { "type": "Point", "coordinates": [108.95, 34.27] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "macro-famine-shanxi-plague",
+        "layerGroup": "famine-zone",
+        "shortTitle": "三晋旱蝗与鼠疫源区",
+        "subNote": "崇祯六年山西大鼠疫爆发并沿驿道东传京畿",
+        "severity": 0.92
+      },
+      "geometry": { "type": "Point", "coordinates": [112.55, 37.87] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "macro-famine-henan",
+        "layerGroup": "famine-zone",
+        "shortTitle": "中州开封洛阳大饥荒",
+        "subNote": "连岁旱蝗绝收 · 饥民百万响应“迎闯王不纳粮”",
+        "severity": 0.96
+      },
+      "geometry": { "type": "Point", "coordinates": [114.35, 34.79] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "macro-famine-shandong",
+        "layerGroup": "famine-zone",
+        "shortTitle": "山东飞蝗蔽天重灾带",
+        "subNote": "崇祯十二至十四年大旱飞蝗 · 运河沿岸千里萧条",
+        "severity": 0.86
+      },
+      "geometry": { "type": "Point", "coordinates": [116.99, 36.65] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "macro-famine-beijing-plague",
+        "layerGroup": "famine-zone",
+        "shortTitle": "京师崇祯十六年大鼠疫",
+        "subNote": "“疙瘩病”席卷北京 · 京营十室九空无力守城",
+        "severity": 0.95
+      },
+      "geometry": { "type": "Point", "coordinates": [116.40, 39.90] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "macro-famine-huaibei",
+        "layerGroup": "famine-zone",
+        "shortTitle": "淮北凤阳旱涝交迫带",
+        "subNote": "夺淮黄河决口与奇旱交替 · 中都皇陵周遭荒芜",
+        "severity": 0.82
+      },
+      "geometry": { "type": "Point", "coordinates": [117.55, 33.25] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "macro-famine-xiangyang",
+        "layerGroup": "famine-zone",
+        "shortTitle": "湖广襄樊兵燹灾荒区",
+        "subNote": "流寇与官军往返拉锯十余年 · 江汉平原田亩尽废",
+        "severity": 0.80
+      },
+      "geometry": { "type": "Point", "coordinates": [112.14, 32.04] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "macro-canal-huaian",
+        "layerGroup": "canal-hub",
+        "shortTitle": "淮安清江浦 · 漕运总督署",
+        "subNote": "黄淮运交汇清口咽喉 · 节制天下十二把总运军",
+        "severity": 1.0
+      },
+      "geometry": { "type": "Point", "coordinates": [119.02, 33.59] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "macro-canal-yangzhou",
+        "layerGroup": "canal-hub",
+        "shortTitle": "扬州钞关 · 江南漕船首冲",
+        "subNote": "苏松常嘉湖百万石白粮入江北运门户与两淮盐都",
+        "severity": 0.9
+      },
+      "geometry": { "type": "Point", "coordinates": [119.42, 32.39] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "macro-canal-nanwang",
+        "layerGroup": "canal-hub",
+        "shortTitle": "济宁南旺分水枢纽",
+        "subNote": "宋礼白英筑戴村坝引汶济运 · “七分朝天子三分下江南”",
+        "severity": 0.95
+      },
+      "geometry": { "type": "Point", "coordinates": [116.40, 35.72] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "macro-canal-linqing",
+        "layerGroup": "canal-hub",
+        "shortTitle": "临清钞关 · 运河第一税埠",
+        "subNote": "会通河与卫河交汇 · 万历年间商税居全国八大钞关之首",
+        "severity": 0.92
+      },
+      "geometry": { "type": "Point", "coordinates": [115.71, 36.84] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "macro-canal-tongzhou",
+        "layerGroup": "canal-hub",
+        "shortTitle": "通州大运仓 · 四百万石终点",
+        "subNote": "大明京师百万官军仰食命脉 · 岁入四百万石漕粮储此",
+        "severity": 1.0
+      },
+      "geometry": { "type": "Point", "coordinates": [116.66, 39.91] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "macro-silver-manila-line",
+        "layerGroup": "silver-route",
+        "shortTitle": "月港 ↔ 马尼拉大帆船美洲白银东来线",
+        "subNote": "1567隆庆开关后，秘鲁波托西与墨西哥白银经吕宋源源流入福建",
+        "severity": 1.0
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [120.98, 14.60],
+          [119.95, 18.80],
+          [118.85, 22.15],
+          [117.78, 24.42]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "macro-silver-nagasaki-line",
+        "layerGroup": "silver-route",
+        "shortTitle": "长崎 ↔ 澳门/浙闽生丝换倭银航线",
+        "subNote": "日本石见银山白银换取江南湖丝，占晚明海外入华白银近四成",
+        "severity": 0.95
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [129.87, 32.75],
+          [126.80, 30.40],
+          [122.40, 27.20],
+          [118.20, 23.80],
+          [113.55, 22.19]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "macro-silver-inland-whip",
+        "layerGroup": "silver-route",
+        "shortTitle": "一条鞭法折银北解太仓与九边年例银路",
+        "subNote": "张居正改革以银折税：白银自东南商埠汇入江南，再北输京师与九边军镇",
+        "severity": 0.9
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [117.78, 24.42],
+          [118.43, 29.87],
+          [120.62, 31.30],
+          [119.02, 33.59],
+          [116.40, 39.90],
+          [113.30, 40.09]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "macro-silver-port-yuegang",
+        "layerGroup": "silver-port",
+        "shortTitle": "漳州月港（隆庆开关洋市）",
+        "subNote": "1567明穆宗开海准贩东西二洋 · 年入番银数百万两",
+        "severity": 1.0
+      },
+      "geometry": { "type": "Point", "coordinates": [117.78, 24.42] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "macro-silver-port-manila",
+        "layerGroup": "silver-port",
+        "shortTitle": "吕宋马尼拉（美洲银元中转港）",
+        "subNote": "阿卡普尔科马尼拉大帆船终点 · 闽商聚居数万人易丝换银",
+        "severity": 0.95
+      },
+      "geometry": { "type": "Point", "coordinates": [120.98, 14.60] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "macro-silver-port-macau",
+        "layerGroup": "silver-port",
+        "shortTitle": "澳门墺镜（亚欧丝银总枢纽）",
+        "subNote": "连接里斯本、果阿、马六甲与长崎的跨洋白银贸易支点",
+        "severity": 0.95
+      },
+      "geometry": { "type": "Point", "coordinates": [113.55, 22.19] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "macro-silver-port-nagasaki",
+        "layerGroup": "silver-port",
+        "shortTitle": "日本长崎（石见倭银输出港）",
+        "subNote": "明代生丝瓷器换取日本白银核心港口",
+        "severity": 0.9
+      },
+      "geometry": { "type": "Point", "coordinates": [129.87, 32.75] }
+    }
+  ]
+}

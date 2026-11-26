@@ -6,6 +6,7 @@ import {
   EVENT_MAP,
   MING_INSTITUTIONS_GEOJSON,
   MING_LANDFORMS_GEOJSON,
+  MING_MACRO_HISTORY_GEOJSON,
   MING_WATERWAYS_GEOJSON,
   PLACES_GEOJSON,
 } from '@/lib/atlasData';
@@ -1284,6 +1285,231 @@ export function mountHistoricalLayers(
   }
 
   // =========================================================================
+  // 7b. Macro-History Thematic Layers: Little Ice Age Famine, Grand Canal Hubs & Global Silver Routes
+  // =========================================================================
+  if (!map.getSource('ming-macro-history')) {
+    map.addSource('ming-macro-history', {
+      type: 'geojson',
+      data: MING_MACRO_HISTORY_GEOJSON,
+    });
+  }
+
+  if (!map.getLayer('ming-famine-aura')) {
+    // 1) Little Ice Age Drought / Locust / Plague Heat Aura (`famine-zone`)
+    map.addLayer({
+      id: 'ming-famine-aura',
+      type: 'circle',
+      source: 'ming-macro-history',
+      filter: ['==', ['get', 'layerGroup'], 'famine-zone'],
+      layout: { visibility: 'none' },
+      paint: {
+        'circle-radius': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          3.5,
+          ['*', 28, ['get', 'severity']],
+          7,
+          ['*', 68, ['get', 'severity']],
+        ],
+        'circle-color': isDark ? '#DC2626' : '#B91C1C',
+        'circle-opacity': isDark ? 0.28 : 0.22,
+        'circle-blur': 0.85,
+      },
+    });
+
+    map.addLayer({
+      id: 'ming-famine-core',
+      type: 'circle',
+      source: 'ming-macro-history',
+      filter: ['==', ['get', 'layerGroup'], 'famine-zone'],
+      layout: { visibility: 'none' },
+      paint: {
+        'circle-radius': 6.5,
+        'circle-color': '#991B1B',
+        'circle-stroke-width': 2,
+        'circle-stroke-color': '#FEF08A',
+      },
+    });
+
+    map.addLayer({
+      id: 'ming-famine-label',
+      type: 'symbol',
+      source: 'ming-macro-history',
+      filter: ['==', ['get', 'layerGroup'], 'famine-zone'],
+      layout: {
+        visibility: 'none',
+        'text-field': [
+          'format',
+          ['get', 'shortTitle'],
+          { 'font-scale': 1.0 },
+          '\n',
+          {},
+          ['get', 'subNote'],
+          { 'font-scale': 0.78 },
+        ],
+        'text-font': ['Noto Sans Regular'],
+        'text-size': 11.5,
+        'text-offset': [0, 0.95],
+        'text-anchor': 'top',
+        'text-optional': true,
+      },
+      paint: {
+        'text-color': isDark ? '#FECACA' : '#7F1D1D',
+        'text-halo-color': isDark
+          ? 'rgba(11, 15, 23, 0.96)'
+          : 'rgba(255, 252, 245, 0.97)',
+        'text-halo-width': 1.55,
+        'text-halo-blur': 0.2,
+      },
+    });
+
+    // 2) Grand Canal 4M-Dan Grain Hubs & Customs (`canal-hub`)
+    map.addLayer({
+      id: 'ming-canal-hubs-circle',
+      type: 'circle',
+      source: 'ming-macro-history',
+      filter: ['==', ['get', 'layerGroup'], 'canal-hub'],
+      layout: { visibility: 'none' },
+      paint: {
+        'circle-radius': 7.0,
+        'circle-color': '#0D9488',
+        'circle-stroke-width': 2.2,
+        'circle-stroke-color': '#FEF3C7',
+      },
+    });
+
+    map.addLayer({
+      id: 'ming-canal-hubs-label',
+      type: 'symbol',
+      source: 'ming-macro-history',
+      filter: ['==', ['get', 'layerGroup'], 'canal-hub'],
+      layout: {
+        visibility: 'none',
+        'text-field': [
+          'format',
+          ['get', 'shortTitle'],
+          { 'font-scale': 1.0 },
+          '\n',
+          {},
+          ['get', 'subNote'],
+          { 'font-scale': 0.78 },
+        ],
+        'text-font': ['Noto Sans Regular'],
+        'text-size': 11.5,
+        'text-offset': [0, 0.95],
+        'text-anchor': 'top',
+        'text-optional': true,
+      },
+      paint: {
+        'text-color': isDark ? '#5EEAD4' : '#0F766E',
+        'text-halo-color': isDark
+          ? 'rgba(11, 15, 23, 0.96)'
+          : 'rgba(255, 252, 245, 0.97)',
+        'text-halo-width': 1.55,
+        'text-halo-blur': 0.2,
+      },
+    });
+
+    // 3) Longqing Maritime Silver Routes & Ports (`silver-route` / `silver-port`)
+    map.addLayer({
+      id: 'ming-silver-routes-glow',
+      type: 'line',
+      source: 'ming-macro-history',
+      filter: ['==', ['get', 'layerGroup'], 'silver-route'],
+      layout: { visibility: 'none', 'line-cap': 'round', 'line-join': 'round' },
+      paint: {
+        'line-color': isDark ? '#FBBF24' : '#D97706',
+        'line-width': 8,
+        'line-opacity': 0.28,
+        'line-blur': 2.5,
+      },
+    });
+
+    map.addLayer({
+      id: 'ming-silver-routes-line',
+      type: 'line',
+      source: 'ming-macro-history',
+      filter: ['==', ['get', 'layerGroup'], 'silver-route'],
+      layout: { visibility: 'none', 'line-cap': 'round', 'line-join': 'round' },
+      paint: {
+        'line-color': isDark ? '#FDE68A' : '#B45309',
+        'line-width': 3.2,
+        'line-dasharray': [2.2, 1.4],
+        'line-opacity': 0.95,
+      },
+    });
+
+    map.addLayer({
+      id: 'ming-silver-routes-arrows',
+      type: 'symbol',
+      source: 'ming-macro-history',
+      filter: ['==', ['get', 'layerGroup'], 'silver-route'],
+      layout: {
+        visibility: 'none',
+        'symbol-placement': 'line',
+        'symbol-spacing': 90,
+        'icon-image': 'tactical-spearhead',
+        'icon-size': 0.42,
+        'icon-rotate': 90,
+        'icon-rotation-alignment': 'map',
+        'icon-allow-overlap': true,
+      },
+      paint: {
+        'icon-color': isDark ? '#FEF08A' : '#B45309',
+        'icon-halo-color': isDark ? '#0F172A' : '#FFFDF7',
+        'icon-halo-width': 1.4,
+      },
+    });
+
+    map.addLayer({
+      id: 'ming-silver-ports-circle',
+      type: 'circle',
+      source: 'ming-macro-history',
+      filter: ['==', ['get', 'layerGroup'], 'silver-port'],
+      layout: { visibility: 'none' },
+      paint: {
+        'circle-radius': 6.8,
+        'circle-color': '#D97706',
+        'circle-stroke-width': 2.2,
+        'circle-stroke-color': '#FFFBEB',
+      },
+    });
+
+    map.addLayer({
+      id: 'ming-silver-ports-label',
+      type: 'symbol',
+      source: 'ming-macro-history',
+      filter: ['==', ['get', 'layerGroup'], 'silver-port'],
+      layout: {
+        visibility: 'none',
+        'text-field': [
+          'format',
+          ['get', 'shortTitle'],
+          { 'font-scale': 1.0 },
+          '\n',
+          {},
+          ['get', 'subNote'],
+          { 'font-scale': 0.78 },
+        ],
+        'text-font': ['Noto Sans Regular'],
+        'text-size': 11.5,
+        'text-offset': [0, 0.95],
+        'text-anchor': 'top',
+        'text-optional': true,
+      },
+      paint: {
+        'text-color': isDark ? '#FDE68A' : '#92400E',
+        'text-halo-color': isDark
+          ? 'rgba(11, 15, 23, 0.96)'
+          : 'rgba(255, 252, 245, 0.97)',
+        'text-halo-width': 1.55,
+        'text-halo-blur': 0.2,
+      },
+    });
+  }
+
+  // =========================================================================
   // 8. Character Odyssey Trajectory & Numbered Life Stops — 100% WebGL!
   // =========================================================================
   if (!map.getSource('character-odyssey')) {
@@ -1850,6 +2076,19 @@ export function syncLayerVisibility(
   setVis('ming-princely-fiefs-label', layers.princelyFiefs);
   setVis('ming-nine-garrisons-circle', layers.nineGarrisons);
   setVis('ming-nine-garrisons-label', layers.nineGarrisons);
+
+  setVis('ming-famine-aura', layers.famineZones);
+  setVis('ming-famine-core', layers.famineZones);
+  setVis('ming-famine-label', layers.famineZones);
+
+  setVis('ming-canal-hubs-circle', layers.grandCanalHubs);
+  setVis('ming-canal-hubs-label', layers.grandCanalHubs);
+
+  setVis('ming-silver-routes-glow', layers.silverRoutes);
+  setVis('ming-silver-routes-line', layers.silverRoutes);
+  setVis('ming-silver-routes-arrows', layers.silverRoutes);
+  setVis('ming-silver-ports-circle', layers.silverRoutes);
+  setVis('ming-silver-ports-label', layers.silverRoutes);
 }
 
 export function buildPhaseRouteFeatures(

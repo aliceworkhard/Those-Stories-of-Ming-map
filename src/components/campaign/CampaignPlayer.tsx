@@ -17,9 +17,12 @@ import {
   Share2,
   Swords,
   Video,
+  Volume2,
+  VolumeX,
   X,
 } from 'lucide-react';
 import { ALL_CAMPAIGNS, CAMPAIGN_MAP } from '@/lib/atlasData';
+import { speakAtlasText, stopAtlasNarration } from '@/lib/narrator';
 import { subscribePlaybackTick } from '@/lib/playbackBus';
 import {
   useAtlasStore,
@@ -73,7 +76,25 @@ export default function CampaignPlayer() {
   const replayCurrentPhase = useAtlasStore((s) => s.replayCurrentPhase);
   const exitCampaign = useAtlasStore((s) => s.exitCampaign);
   const setShareModalOpen = useAtlasStore((s) => s.setShareModalOpen);
+  const isNarratorEnabled = useAtlasStore((s) => s.isNarratorEnabled);
+  const toggleNarrator = useAtlasStore((s) => s.toggleNarrator);
   const theme = useAtlasStore((s) => s.theme);
+
+  // Optional Web Speech TTS Battle Narration ("明月说书旁白")
+  useEffect(() => {
+    if (!activeCampaignId || !isNarratorEnabled) {
+      stopAtlasNarration();
+      return;
+    }
+    const cmp = CAMPAIGN_MAP[activeCampaignId];
+    const ph = cmp?.phases[activePhaseIndex] ?? cmp?.phases[0];
+    if (!cmp || !ph) return;
+    speakAtlasText(
+      `${cmp.title}，第${ph.phaseNo}幕：${ph.title}。${ph.narrative} 胜负手：${ph.whyKeyPoint}`,
+      campaignSpeed === 1.5 ? 1.22 : 1.06
+    );
+    return () => stopAtlasNarration();
+  }, [activeCampaignId, activePhaseIndex, campaignSpeed, isNarratorEnabled]);
 
   useEffect(() => {
     setUnlockedSteps(campaignArrowMode === 'static' ? 99 : 1);
@@ -596,6 +617,24 @@ export default function CampaignPlayer() {
               title="切换战役推演倍速"
             >
               {campaignSpeed}x
+            </button>
+
+            <button
+              type="button"
+              onClick={toggleNarrator}
+              className={`px-2 py-1.5 rounded-lg border text-xs font-bold flex items-center gap-1 cursor-pointer transition ${
+                isNarratorEnabled
+                  ? 'bg-[#9E2318] text-amber-50 border-amber-300'
+                  : 'border-current/20 hover:bg-current/10 opacity-85'
+              }`}
+              title="开启/关闭战役说书语音旁白"
+            >
+              {isNarratorEnabled ? (
+                <Volume2 className="w-3.5 h-3.5" />
+              ) : (
+                <VolumeX className="w-3.5 h-3.5" />
+              )}
+              <span className="hidden lg:inline">旁白</span>
             </button>
           </div>
 

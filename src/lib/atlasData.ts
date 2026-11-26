@@ -3,6 +3,7 @@ import placesJson from '@data/geo-base/ming-places.json';
 import waterwaysGeoJson from '@data/geo-base/ming-waterways.json';
 import landformsGeoJson from '@data/geo-base/ming-landforms.json';
 import institutionsGeoJson from '@data/geo-base/ming-institutions.json';
+import macroHistoryGeoJson from '@data/geo-base/ming-macro-history.json';
 import landMaskGeoJson from '@data/geo-base/land-mask-east-asia.json';
 import odysseysJson from '@data/characters/odysseys.json';
 import territoriesIndexJson from '@data/territories/index.json';
@@ -74,6 +75,9 @@ export const MING_LANDFORMS_GEOJSON =
 
 export const MING_INSTITUTIONS_GEOJSON =
   institutionsGeoJson as unknown as GeoJSON.FeatureCollection;
+
+export const MING_MACRO_HISTORY_GEOJSON =
+  macroHistoryGeoJson as unknown as GeoJSON.FeatureCollection;
 
 export const EAST_ASIA_LAND_MASK_GEOJSON =
   landMaskGeoJson as unknown as GeoJSON.FeatureCollection;

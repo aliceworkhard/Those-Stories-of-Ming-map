@@ -914,6 +914,18 @@ export default function TopAtlasBar() {
                 { key: 'greatWall', label: '明长城与九边重镇防线' },
                 { key: 'princelyFiefs', label: '洪武分封藩王与九边塞王封藩印' },
                 { key: 'nineGarrisons', label: '明代九边重镇防区与军饷制度层' },
+                {
+                  key: 'famineZones',
+                  label: '崇祯小冰期旱蝗鼠疫奇荒热力层',
+                },
+                {
+                  key: 'grandCanalHubs',
+                  label: '京杭漕运四百万石总督钞关枢纽层',
+                },
+                {
+                  key: 'silverRoutes',
+                  label: '隆庆开关马尼拉/长崎全球白银航线层',
+                },
                 { key: 'landforms', label: '名山脊线 · 湖泊 · 四海古注记' },
                 { key: 'places', label: '两京州府与战略关隘地名' },
                 { key: 'causalArcs', label: '历史事件跨时空因果飞弧' },

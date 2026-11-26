@@ -50,6 +50,9 @@ export interface LayerVisibility {
   showAllMicroEvents: boolean;
   princelyFiefs: boolean;
   nineGarrisons: boolean;
+  famineZones: boolean;
+  grandCanalHubs: boolean;
+  silverRoutes: boolean;
 }
 
 export type CampaignCameraMode = 'overview' | 'follow' | 'free';
@@ -103,6 +106,7 @@ interface AtlasState {
   isTocModalOpen: boolean;
   isShareModalOpen: boolean;
   isReleaseModalOpen: boolean;
+  isNarratorEnabled: boolean;
   theme: MapVisualTheme;
   perfMode: PerformanceMode;
   is3D: boolean;
@@ -157,6 +161,7 @@ interface AtlasState {
   setTocModalOpen: (open: boolean) => void;
   setShareModalOpen: (open: boolean) => void;
   setReleaseModalOpen: (open: boolean) => void;
+  toggleNarrator: () => void;
   setTheme: (theme: MapVisualTheme) => void;
   setPerfMode: (mode: PerformanceMode) => void;
   toggle3D: () => void;
@@ -213,6 +218,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   isTocModalOpen: false,
   isShareModalOpen: false,
   isReleaseModalOpen: false,
+  isNarratorEnabled: false,
   theme: 'xuanzhi',
   perfMode: 'balanced',
   // Default 2.5D stereo hillshade ON with 3D DEM Mesh OFF -> 0 Terrain Drape FBO overhead & silky 120fps!
@@ -229,6 +235,9 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     showAllMicroEvents: false,
     princelyFiefs: false,
     nineGarrisons: false,
+    famineZones: false,
+    grandCanalHubs: false,
+    silverRoutes: false,
   },
   cameraCommand: null,
 
@@ -772,6 +781,8 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   setTocModalOpen: (open) => set({ isTocModalOpen: open }),
   setShareModalOpen: (open) => set({ isShareModalOpen: open }),
   setReleaseModalOpen: (open) => set({ isReleaseModalOpen: open }),
+  toggleNarrator: () =>
+    set((state) => ({ isNarratorEnabled: !state.isNarratorEnabled })),
   setTheme: (theme) => {
     set({ theme });
     persistSnapshot(get());
