@@ -1,0 +1,250 @@
+{
+  "id": "cmp-1640-songjin",
+  "title": "松锦大战：松山断粮与大明九边精锐总崩盘",
+  "subtitle": "祖大寿困守锦州 · 皇太极奇袭笔架山粮栈 · 洪承畴十三万边军覆没（1640—1642）",
+  "yearRange": [1640, 1642],
+  "chapterIds": [
+    "v7-zhu-youjian-ch11",
+    "v7-zhu-youjian-ch12",
+    "v7-zhu-youjian-ch14"
+  ],
+  "summary": "崇祯十三年（1640）起，皇太极改变强攻坚城策略，于义州屯田长期围困关外前哨锦州。蓟辽总督洪承畴集结吴三桂、王朴、马科、白广恩、曹变蛟等八镇总兵共十三万九边最后精锐北援。洪承畴本欲“且战且守、步步为营”，兵部尚书陈新甲却携崇祯手诏催促速战，迫使明军主力脱离宁远杏山后盾孤军前推至松山乳峰山；皇太极抱病昼夜疾驰五百里亲临前线，一眼看穿明军粮草全囤于笔架山海滨，奇袭夺粮并连夜掘三重深壕切断松山杏山退路！明军夜半突围演成大溃败，曹变蛟夜袭皇太极大帐功败垂成，崇祯十五年二月松山副将夏承德献城降清，洪承畴被俘、祖大寿献锦州——大明倾国攒下的最后机动家底灰飞烟灭。",
+  "strategicOutcome": "明军精锐丧尽，关宁锦防线退缩至宁远孤城与山海关一线，再无力两线兼顾中原流寇，直接加速甲申亡国。",
+  "factions": [
+    {
+      "id": "ming-border-army",
+      "name": "大明蓟辽八总兵援锦联军",
+      "leader": "洪承畴 · 祖大寿 · 曹变蛟 · 吴三桂",
+      "color": "#B83B2A",
+      "badgeText": "明"
+    },
+    {
+      "id": "qing-eight-banners",
+      "name": "大清皇太极八旗主力",
+      "leader": "皇太极 · 多尔衮 · 豪格",
+      "color": "#1E3A8A",
+      "badgeText": "清"
+    }
+  ],
+  "phases": [
+    {
+      "phaseNo": 1,
+      "title": "第一幕：义州长围与督促速战 · 十三万九边精锐集结松山",
+      "dateLabel": "崇祯十三年至十四年（1640—1641）七月",
+      "year": 1641,
+      "narrative": "多尔衮、豪格轮番屯驻义州割毁锦州庄稼，锦州外城蒙古守兵叛变，祖大寿退守内城告急。洪承畴统率宣府、大同、延绥、宁夏、甘肃、辽东八大总兵十三万精兵集结宁远，稳扎稳打推进至松山北岗连破清军前哨。然而兵部尚书陈新甲与职方郎中张若麒催逼刻日决战，明军被迫放弃稳守转运之策，将全部主力挤入松山与乳峰山狭窄前线，而把关系全军生死的粮饷全部留在身后的笔架山海滩！",
+      "whyKeyPoint": "为啥洪承畴明明制定了“徐行稳进”正确方略却突然冒进？朝廷每年加派七百万两“练饷”已令天下沸腾，崇祯与陈新甲急于速胜撤兵省饷，结果文官监军张若麒越权催战把十三万大军送进了口袋阵。",
+      "camera": {
+        "center": [121.05, 40.92],
+        "zoom": 7.6,
+        "pitch": 38,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-border-army",
+        "leftLabel": "洪承畴八总兵十三万精锐",
+        "leftPower": 52,
+        "rightFactionId": "qing-eight-banners",
+        "rightLabel": "围困锦州之多尔衮八旗军",
+        "rightPower": 48
+      },
+      "routes": [
+        {
+          "id": "r-sj1-qing-siege",
+          "order": 1,
+          "factionId": "qing-eight-banners",
+          "type": "assault",
+          "label": "多尔衮自义州南压合围锦州内城，实施长期困死战术",
+          "commander": "多尔衮 · 济尔哈朗",
+          "coordinates": [
+            [121.24, 41.53],
+            [121.13, 41.10]
+          ]
+        },
+        {
+          "id": "r-sj1-hong-advance",
+          "order": 2,
+          "factionId": "ming-border-army",
+          "type": "assault",
+          "label": "洪承畴率八总兵十三万大军自宁远经杏山孤军前推至松山乳峰山",
+          "commander": "洪承畴 · 曹变蛟",
+          "coordinates": [
+            [120.73, 40.62],
+            [120.98, 40.86],
+            [121.15, 40.98]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-sj1-jinzhou",
+          "kind": "siege",
+          "label": "锦州内城死守",
+          "subLabel": "祖大寿浴血困守待援",
+          "coordinates": [121.127, 41.095],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 2,
+      "title": "第二幕：皇太极千里断粮道 · 笔架山失陷与曹变蛟夜斫御营",
+      "dateLabel": "崇祯十四年（1641）八月",
+      "year": 1641,
+      "narrative": "惊闻明军主力前压，鼻子流血不止的皇太极自盛京六日狂奔五百余里赶至松山，登高一望大喜：“明军但知进战，不知守后路，此天赐我也！”当即遣精骑绕袭松山与杏山之间，一举夺占笔架山海边十二堆总粮草，并连夜横掘深宽各丈余的三重断路大壕！八月廿一日夜明军分路突围，总兵王朴、吴三桂争先奔逃引发全线踩踏溃散，五万余将士死于壕沟与海潮之中；猛将曹变蛟率死士乘黑夜直冲皇太极黄龙大帐砍伤守卫，终因孤立无援身中数创退入松山孤城！",
+      "whyKeyPoint": "为啥笔架山一丢十三万人几天就垮了？辽西走廊山海狭窄，大军只带三日干粮，皇太极精准掐断松山到杏山的咽喉并挖死封锁壕，令明军重兵瞬间沦为无粮瓮中之鳖。",
+      "camera": {
+        "center": [121.45, 41.15],
+        "zoom": 7.2,
+        "pitch": 38,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-border-army",
+        "leftLabel": "断粮被围之松山孤军",
+        "leftPower": 24,
+        "rightFactionId": "qing-eight-banners",
+        "rightLabel": "皇太极御驾断粮合围大军",
+        "rightPower": 76
+      },
+      "routes": [
+        {
+          "id": "r-sj2-huangtaiji-rush",
+          "order": 1,
+          "factionId": "qing-eight-banners",
+          "type": "ambush",
+          "label": "皇太极自盛京疾驰五百里绕袭高桥与笔架山，截断明军总粮道！",
+          "commander": "皇太极",
+          "coordinates": [
+            [123.43, 41.80],
+            [122.15, 41.32],
+            [121.08, 40.89]
+          ]
+        },
+        {
+          "id": "r-sj2-ming-rout",
+          "order": 2,
+          "factionId": "ming-border-army",
+          "type": "retreat",
+          "label": "王朴、吴三桂等六总兵夜半争路南逃遭清军伏杀，五万余人覆没",
+          "commander": "王朴 · 吴三桂",
+          "coordinates": [
+            [121.15, 40.98],
+            [120.98, 40.86],
+            [120.73, 40.62]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-sj2-bijiashan",
+          "kind": "cutoff",
+          "label": "笔架山粮栈被夺",
+          "subLabel": "三重深壕锁死松山南归路",
+          "coordinates": [121.075, 40.892],
+          "color": "#1E3A8A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 3,
+      "title": "第三幕：孤胆死士夜斫黄龙帐 · 曹变蛟血战退守松山孤垒",
+      "dateLabel": "崇祯十四年（1641）八月廿二日—冬",
+      "year": 1641,
+      "narrative": "六镇总兵溃逃之后，唯有洪承畴与临洮猛将曹变蛟拒不后退，收拢万余残兵坚守松山！八月廿二日三更雨夜，曹变蛟挑选精锐死士突袭清军正黄旗大营，一路砍翻外围鹿角直杀入皇太极御帐，刀锋距皇太极仅数步之遥，砍伤守卫数人！终因四面八旗重兵合围，曹变蛟身中数创喋血杀回松山城内。此后严冬腊月，洪承畴与曹变蛟数次突围皆被清军红衣大炮与深壕挡回，城中粮尽连战马皮甲皆煮食殆尽！",
+      "whyKeyPoint": "为啥曹变蛟差一点就能复刻万军斩将奇迹？清军也没想到绝境孤军竟敢反冲御帐；此役虽未竟全功，却逼得皇太极严令诸王移营加固壕堑，改强攻为彻底绝粮困死。",
+      "camera": {
+        "center": [121.15, 40.98],
+        "zoom": 7.8,
+        "pitch": 38,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-border-army",
+        "leftLabel": "绝粮死战之曹变蛟松山守军",
+        "leftPower": 20,
+        "rightFactionId": "qing-eight-banners",
+        "rightLabel": "四面掘壕铁桶合围之清军",
+        "rightPower": 80
+      },
+      "routes": [
+        {
+          "id": "r-sj3-caobianjiao-night-raid",
+          "order": 1,
+          "factionId": "ming-border-army",
+          "type": "ambush",
+          "label": "曹变蛟率敢死队乘黑夜直扑乳峰山皇太极御营，血战突入大帐后杀回松山",
+          "commander": "曹变蛟",
+          "coordinates": [
+            [121.15, 40.98],
+            [121.19, 41.02],
+            [121.15, 40.98]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-sj3-night-raid",
+          "kind": "clash",
+          "label": "夜斫皇太极御帐",
+          "subLabel": "曹变蛟孤军喋血冲营",
+          "coordinates": [121.19, 41.02],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 4,
+      "title": "第四幕：松山城陷与锦州易帜 · 关外铁壁瓦解",
+      "dateLabel": "崇祯十五年（1642）二月—四月",
+      "year": 1642,
+      "narrative": "洪承畴、曹变蛟、巡抚邱民仰率万余残兵死守松山孤城半年，粮尽食马革鼠雀，崇祯帝甚至在宫中设坛为“殉国”的洪承畴御制祭文十六坛。崇祯十五年二月十八日夜，松山守备副将夏承德为保家小暗通清军，在南城架云梯引八旗兵入城！曹变蛟、邱民仰、王廷臣宁死不屈全部壮烈殉国，洪承畴绝食数日后在皇太极亲自解貂裘相劝下投降；三月粮尽援绝的锦州总兵祖大寿再次献城降清——关宁锦三大坚城仅存宁远一隅！",
+      "whyKeyPoint": "为啥松锦一败连山海关以东就再也救不回来了？因为这十三万人是崇祯搜刮全国最后财力拼出的唯一战略机动兵团，松锦覆没意味着明朝彻底丧失野战能力。",
+      "camera": {
+        "center": [121.25, 41.05],
+        "zoom": 7.3,
+        "pitch": 38,
+        "bearing": 0
+      },
+      "territoryWipe": {
+        "fromSnapshotId": "ter-1621",
+        "toSnapshotId": "ter-1642",
+        "victorColor": "#1E3A8A",
+        "victorLabel": "皇太极攻陷松山、锦州、塔山、杏山四城，大清席卷辽西走廊直抵宁远城下！"
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-border-army",
+        "leftLabel": "仅存宁远孤城残部",
+        "leftPower": 15,
+        "rightFactionId": "qing-eight-banners",
+        "rightLabel": "尽取松锦四城之大清铁骑",
+        "rightPower": 85
+      },
+      "routes": [
+        {
+          "id": "r-sj3-songshan-fall",
+          "order": 1,
+          "factionId": "qing-eight-banners",
+          "type": "assault",
+          "label": "夏承德内应献松山，曹变蛟邱民仰殉国，三月清军北接收降锦州杏山",
+          "commander": "豪格 · 多尔衮",
+          "coordinates": [
+            [121.15, 40.98],
+            [121.13, 41.10],
+            [120.92, 40.78]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-sj3-songshan",
+          "kind": "clash",
+          "label": "松山城破 · 曹变蛟殉国",
+          "subLabel": "洪承畴被俘 · 祖大寿献锦州",
+          "coordinates": [121.15, 40.98],
+          "color": "#1E3A8A"
+        }
+      ]
+    }
+  ]
+}

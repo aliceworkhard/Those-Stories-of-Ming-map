@@ -4,6 +4,7 @@ import waterwaysGeoJson from '@data/geo-base/ming-waterways.json';
 import landformsGeoJson from '@data/geo-base/ming-landforms.json';
 import institutionsGeoJson from '@data/geo-base/ming-institutions.json';
 import macroHistoryGeoJson from '@data/geo-base/ming-macro-history.json';
+import tacticalMicroGeoJson from '@data/geo-base/ming-tactical-micro.json';
 import landMaskGeoJson from '@data/geo-base/land-mask-east-asia.json';
 import odysseysJson from '@data/characters/odysseys.json';
 import territoriesIndexJson from '@data/territories/index.json';
@@ -43,7 +44,9 @@ import cmpQiJson from '@data/campaigns/cmp-1561-qijiguang-wokou.json';
 import cmpImjinJson from '@data/campaigns/cmp-1592-imjin-korea.json';
 import cmpSarhuJson from '@data/campaigns/cmp-1619-sarhu.json';
 import cmpNingyuanJson from '@data/campaigns/cmp-1626-ningyuan-guangning.json';
+import cmpSongjinJson from '@data/campaigns/cmp-1640-songjin.json';
 import cmpJiashenJson from '@data/campaigns/cmp-1644-jiashen-fall.json';
+import cmpKoxingaTaiwanJson from '@data/campaigns/cmp-1661-koxinga-taiwan.json';
 
 import type {
   BookTocIndex,
@@ -78,6 +81,20 @@ export const MING_INSTITUTIONS_GEOJSON =
 
 export const MING_MACRO_HISTORY_GEOJSON =
   macroHistoryGeoJson as unknown as GeoJSON.FeatureCollection;
+
+export interface TacticalHotspot {
+  title: string;
+  center: [number, number];
+  zoom: number;
+  pitch: number;
+}
+
+export const MING_TACTICAL_MICRO_GEOJSON =
+  tacticalMicroGeoJson as unknown as GeoJSON.FeatureCollection;
+
+export const TACTICAL_HOTSPOT_BY_CAMPAIGN: Record<string, TacticalHotspot> =
+  ((tacticalMicroGeoJson as unknown as { hotspots?: Record<string, TacticalHotspot> })
+    .hotspots ?? {});
 
 export const EAST_ASIA_LAND_MASK_GEOJSON =
   landMaskGeoJson as unknown as GeoJSON.FeatureCollection;
@@ -151,7 +168,9 @@ export const ALL_CAMPAIGNS: Campaign[] = [
   cmpImjinJson as unknown as Campaign,
   cmpSarhuJson as unknown as Campaign,
   cmpNingyuanJson as unknown as Campaign,
+  cmpSongjinJson as unknown as Campaign,
   cmpJiashenJson as unknown as Campaign,
+  cmpKoxingaTaiwanJson as unknown as Campaign,
 ];
 
 export const CAMPAIGN_MAP: Record<string, Campaign> = Object.fromEntries(

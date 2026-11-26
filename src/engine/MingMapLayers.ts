@@ -7,6 +7,7 @@ import {
   MING_INSTITUTIONS_GEOJSON,
   MING_LANDFORMS_GEOJSON,
   MING_MACRO_HISTORY_GEOJSON,
+  MING_TACTICAL_MICRO_GEOJSON,
   MING_WATERWAYS_GEOJSON,
   PLACES_GEOJSON,
 } from '@/lib/atlasData';
@@ -1510,6 +1511,118 @@ export function mountHistoricalLayers(
   }
 
   // =========================================================================
+  // 7c. Decisive Battlefield Micro-Tactical Sub-Sandtable (`minzoom: 7.4`)
+  // =========================================================================
+  if (!map.getSource('ming-tactical-micro')) {
+    map.addSource('ming-tactical-micro', {
+      type: 'geojson',
+      data: MING_TACTICAL_MICRO_GEOJSON,
+    });
+  }
+
+  if (!map.getLayer('ming-tactical-micro-lines')) {
+    map.addLayer({
+      id: 'ming-tactical-micro-lines',
+      type: 'line',
+      source: 'ming-tactical-micro',
+      minzoom: 7.4,
+      filter: ['==', ['geometry-type'], 'LineString'],
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: {
+        'line-color': ['get', 'color'],
+        'line-width': [
+          'match',
+          ['get', 'tacKind'],
+          'wall-line',
+          3.4,
+          'trench-line',
+          3.2,
+          2.8,
+        ],
+        'line-dasharray': [1.8, 1.2],
+        'line-opacity': 0.95,
+      },
+    });
+
+    map.addLayer({
+      id: 'ming-tactical-micro-line-labels',
+      type: 'symbol',
+      source: 'ming-tactical-micro',
+      minzoom: 7.8,
+      filter: ['==', ['geometry-type'], 'LineString'],
+      layout: {
+        'symbol-placement': 'line-center',
+        'text-field': ['get', 'label'],
+        'text-font': ['Noto Sans Regular'],
+        'text-size': 11.5,
+        'text-offset': [0, -0.8],
+      },
+      paint: {
+        'text-color': ['get', 'color'],
+        'text-halo-color': isDark
+          ? 'rgba(11, 15, 23, 0.97)'
+          : 'rgba(255, 253, 247, 0.98)',
+        'text-halo-width': 1.6,
+        'text-halo-blur': 0.2,
+      },
+    });
+
+    map.addLayer({
+      id: 'ming-tactical-micro-points',
+      type: 'circle',
+      source: 'ming-tactical-micro',
+      minzoom: 7.4,
+      filter: ['==', ['geometry-type'], 'Point'],
+      paint: {
+        'circle-radius': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          7.4,
+          5.5,
+          10.5,
+          8.5,
+        ],
+        'circle-color': ['get', 'color'],
+        'circle-stroke-width': 2.2,
+        'circle-stroke-color': '#FEF08A',
+      },
+    });
+
+    map.addLayer({
+      id: 'ming-tactical-micro-labels',
+      type: 'symbol',
+      source: 'ming-tactical-micro',
+      minzoom: 7.6,
+      filter: ['==', ['geometry-type'], 'Point'],
+      layout: {
+        'text-field': [
+          'format',
+          ['get', 'label'],
+          { 'font-scale': 1.0 },
+          '\n',
+          {},
+          ['get', 'subNote'],
+          { 'font-scale': 0.8 },
+        ],
+        'text-font': ['Noto Sans Regular'],
+        'text-size': 11.8,
+        'text-offset': [0, 1.0],
+        'text-anchor': 'top',
+        'text-allow-overlap': false,
+      },
+      paint: {
+        'text-color': isDark ? '#FEF3C7' : '#7F1D1D',
+        'text-halo-color': isDark
+          ? 'rgba(9, 13, 22, 0.97)'
+          : 'rgba(255, 253, 247, 0.98)',
+        'text-halo-width': 1.6,
+        'text-halo-blur': 0.2,
+      },
+    });
+  }
+
+  // =========================================================================
   // 8. Character Odyssey Trajectory & Numbered Life Stops — 100% WebGL!
   // =========================================================================
   if (!map.getSource('character-odyssey')) {
@@ -2089,6 +2202,11 @@ export function syncLayerVisibility(
   setVis('ming-silver-routes-arrows', layers.silverRoutes);
   setVis('ming-silver-ports-circle', layers.silverRoutes);
   setVis('ming-silver-ports-label', layers.silverRoutes);
+
+  setVis('ming-tactical-micro-lines', layers.tacticalMicro);
+  setVis('ming-tactical-micro-line-labels', layers.tacticalMicro);
+  setVis('ming-tactical-micro-points', layers.tacticalMicro);
+  setVis('ming-tactical-micro-labels', layers.tacticalMicro);
 }
 
 export function buildPhaseRouteFeatures(

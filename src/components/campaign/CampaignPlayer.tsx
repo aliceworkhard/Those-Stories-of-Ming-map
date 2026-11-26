@@ -20,8 +20,13 @@ import {
   Volume2,
   VolumeX,
   X,
+  ZoomIn,
 } from 'lucide-react';
-import { ALL_CAMPAIGNS, CAMPAIGN_MAP } from '@/lib/atlasData';
+import {
+  ALL_CAMPAIGNS,
+  CAMPAIGN_MAP,
+  TACTICAL_HOTSPOT_BY_CAMPAIGN,
+} from '@/lib/atlasData';
 import { speakAtlasText, stopAtlasNarration } from '@/lib/narrator';
 import { subscribePlaybackTick } from '@/lib/playbackBus';
 import {
@@ -78,6 +83,9 @@ export default function CampaignPlayer() {
   const setShareModalOpen = useAtlasStore((s) => s.setShareModalOpen);
   const isNarratorEnabled = useAtlasStore((s) => s.isNarratorEnabled);
   const toggleNarrator = useAtlasStore((s) => s.toggleNarrator);
+  const layers = useAtlasStore((s) => s.layers);
+  const toggleLayer = useAtlasStore((s) => s.toggleLayer);
+  const flyToCamera = useAtlasStore((s) => s.flyToCamera);
   const theme = useAtlasStore((s) => s.theme);
 
   // Optional Web Speech TTS Battle Narration ("明月说书旁白")
@@ -127,6 +135,7 @@ export default function CampaignPlayer() {
 
   const phase = campaign.phases[activePhaseIndex] ?? campaign.phases[0];
   const isLastPhase = activePhaseIndex >= campaign.phases.length - 1;
+  const tacticalHotspot = TACTICAL_HOTSPOT_BY_CAMPAIGN[campaign.id] ?? null;
   const isDark = theme === 'xuanmo';
   const strength = phase.strengthComparison;
 
@@ -364,9 +373,31 @@ export default function CampaignPlayer() {
 
             {/* Phase Title & Detailed Historical Narrative */}
             <div className="space-y-1.5">
-              <h2 className="font-serif font-bold text-sm sm:text-[15px] leading-snug text-[#B83B2A] dark:text-amber-300">
-                {phase.title}
-              </h2>
+              <div className="flex items-start justify-between gap-2">
+                <h2 className="font-serif font-bold text-sm sm:text-[15px] leading-snug text-[#B83B2A] dark:text-amber-300">
+                  {phase.title}
+                </h2>
+                {tacticalHotspot && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!layers.tacticalMicro) toggleLayer('tacticalMicro');
+                      setCampaignCameraMode('free');
+                      flyToCamera({
+                        center: tacticalHotspot.center,
+                        zoom: tacticalHotspot.zoom,
+                        pitch: tacticalHotspot.pitch,
+                        bearing: 0,
+                      });
+                    }}
+                    className="px-2 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold flex items-center gap-1 shrink-0 shadow-xs cursor-pointer"
+                    title={tacticalHotspot.title}
+                  >
+                    <ZoomIn className="w-3 h-3" />
+                    <span>微观阵势</span>
+                  </button>
+                )}
+              </div>
               <p className="text-xs leading-relaxed opacity-92">
                 {phase.narrative}
               </p>

@@ -1,0 +1,242 @@
+{
+  "id": "cmp-1661-koxinga-taiwan",
+  "title": "郑成功东征驱荷收复台湾之战",
+  "subtitle": "金厦誓师渡黑水沟 · 鹿耳门大潮奇袭 · 九月围困热兰遮受降（1661—1662）",
+  "yearRange": [1661, 1662],
+  "chapterIds": [
+    "v7-zhu-youjian-ch21"
+  ],
+  "summary": "永历十三年北伐南京失利后，南明延平王“国姓爷”郑成功困守厦门金门两岛，面对清廷严酷“迁界禁海”封锁，力排众将疑议采纳原荷兰通事何斌献上的台湾海道水文图，决计东征驱逐盘踞台湾三十八年的荷兰东印度公司殖民者！永历十五年（1661）三月郑成功亲率两万五千百战劲旅、战船三百五十余艘自金门料罗湾启航，顶狂风恶浪穿越澎湖黑水沟；四月初一乘天文大潮奇迹驶入鹿耳门天险，击沉荷军主力战舰“赫克托号”、速克赤嵌城，继而水陆并进围困热兰遮孤城九个月，迫使荷兰总督揆一于1662年二月初一签字献城投降，使宝岛台湾重归中华版图！",
+  "strategicOutcome": "结束荷兰殖民者对台湾三十八年的侵占，设立东都明京与承天府，开启大规模屯田开发，捍卫了中国东南海疆主权。",
+  "factions": [
+    {
+      "id": "ming-zheng-navy",
+      "name": "延平王郑成功南明东征水师",
+      "leader": "郑成功 · 陈永华 · 马信 · 施琅（前） · 刘国轩",
+      "color": "#B83B2A",
+      "badgeText": "明"
+    },
+    {
+      "id": "voc-dutch",
+      "name": "荷兰东印度公司殖民驻军",
+      "leader": "台湾总督揆一 · 拔鬼仔（佩德尔）",
+      "color": "#EA580C",
+      "badgeText": "荷"
+    }
+  ],
+  "phases": [
+    {
+      "phaseNo": 1,
+      "title": "第一幕：金厦誓师 · 横渡澎湖黑水沟抢占前哨",
+      "dateLabel": "永历十五年（1661）三月廿三日—三月卅日",
+      "year": 1661,
+      "narrative": "面对清廷沿海寸板不许下海的封锁线，郑成功在厦门思明州整训铁人军与水师船队，颁令“克复先人故土、以作恢复根基”。三月二十三日，两万五千将士自金门料罗湾扬帆东指，翌日安抵澎湖各屿休整；三十日夜无惧风暴强渡险恶的台湾海峡“黑水沟”，黎明时分三百余艘福船、鸟船突然出现在台南外海，令自恃重炮坚城的荷兰总督揆一惊惶失措！",
+      "whyKeyPoint": "为啥荷兰人直到郑军船队出现在眼前才反应过来？荷军盲目迷信季风期大舰队无法横渡黑水沟，更以为南航道有热兰遮重炮封锁便万无一失。",
+      "camera": {
+        "center": [119.15, 23.68],
+        "zoom": 7.1,
+        "pitch": 36,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-zheng-navy",
+        "leftLabel": "郑成功三百五十艘东征水师",
+        "leftPower": 65,
+        "rightFactionId": "voc-dutch",
+        "rightLabel": "荷兰热兰遮·赤嵌棱堡火炮守军",
+        "rightPower": 35
+      },
+      "routes": [
+        {
+          "id": "r-tw1-liaoluo-penghu",
+          "order": 1,
+          "factionId": "ming-zheng-navy",
+          "type": "naval",
+          "label": "郑成功亲率两万五千水师自厦门思明州、金门料罗湾启航进抵澎湖列岛",
+          "commander": "郑成功 · 马信",
+          "coordinates": [
+            [118.09, 24.48],
+            [118.42, 24.41],
+            [119.56, 23.57]
+          ]
+        },
+        {
+          "id": "r-tw1-cross-strait",
+          "order": 2,
+          "factionId": "ming-zheng-navy",
+          "type": "naval",
+          "label": "三月三十日夜冒风浪强渡台湾海峡“黑水沟”，直抵鹿耳门外海待潮！",
+          "commander": "郑成功 · 何斌引航",
+          "coordinates": [
+            [119.56, 23.57],
+            [119.88, 23.25],
+            [120.08, 23.04]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-tw1-xiamen",
+          "kind": "camp",
+          "label": "思明州·料罗湾誓师",
+          "subLabel": "三百五十艘战船扬帆东征",
+          "coordinates": [118.089, 24.479],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 2,
+      "title": "第二幕：潮涨丈余渡鹿耳 · 击沉赫克托号与速克赤嵌城",
+      "dateLabel": "永历十五年（1661）四月初一—四月初六",
+      "year": 1661,
+      "narrative": "荷军主水道大员港受热兰遮棱堡火炮直射，而北侧鹿耳门水道淤浅且被荷军凿沉旧船堵塞。四月初一中午天文大潮准时来临，鹿耳门潮水较平日暴涨丈余！在何斌测水引航下，郑成功大船队顺潮飞越浅礁直入宽阔的台江内海登陆禾寮港，一刀切断热兰遮城与普罗民遮城（赤嵌楼）的水陆联系！荷军第一战舰“赫克托号”出击遭六十艘明军快船围攻命中火药库轰然炸沉，陆上藤牌铁人军大破荷军火枪方阵击毙指挥官佩德尔，赤嵌守军断水投降！",
+      "whyKeyPoint": "为啥鹿耳门一步棋直接定下了胜局？绕开荷军重炮封锁的正门从浅滩涨潮天窗奇袭台江内海，让荷兰棱堡昂贵的正面火炮全部打空，瞬间完成了战略分割。",
+      "camera": {
+        "center": [120.16, 23.01],
+        "zoom": 9.8,
+        "pitch": 38,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-zheng-navy",
+        "leftLabel": "控扼台江内海之明郑水陆军",
+        "leftPower": 76,
+        "rightFactionId": "voc-dutch",
+        "rightLabel": "退缩热兰遮孤堡之荷军",
+        "rightPower": 24
+      },
+      "routes": [
+        {
+          "id": "r-tw2-luermen-breakthrough",
+          "order": 1,
+          "factionId": "ming-zheng-navy",
+          "type": "naval",
+          "label": "乘春潮暴涨飞渡鹿耳门浅滩突入台江内海，抢滩禾寮港截断双城联系",
+          "commander": "郑成功 · 陈泽",
+          "coordinates": [
+            [120.08, 23.045],
+            [120.132, 23.032],
+            [120.195, 23.005]
+          ]
+        },
+        {
+          "id": "r-tw2-sink-hector",
+          "order": 2,
+          "factionId": "ming-zheng-navy",
+          "type": "assault",
+          "label": "陈泽水师群船贴身火攻炸沉荷舰“赫克托号”，陆军合围迫降普罗民遮城",
+          "commander": "陈泽 · 马信",
+          "coordinates": [
+            [120.195, 23.005],
+            [120.202, 22.997],
+            [120.168, 23.002]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-tw2-chikan",
+          "kind": "siege",
+          "label": "速克赤嵌城（承天府）",
+          "subLabel": "炸沉赫克托号 · 全歼荷军出击队",
+          "coordinates": [120.202, 22.997],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 3,
+      "title": "第三幕：寓兵于农分屯全岛 · 台江海战痛击巴达维亚援舰",
+      "dateLabel": "永历十五年（1661）五月—九月",
+      "year": 1661,
+      "narrative": "热兰遮棱堡墙厚坚固，强攻伤亡颇重。郑成功果断采纳陈永华良策，留精兵锁困安平，其余各镇分赴南北路开垦屯田、安抚高山族各社，在岛上扎下不拔之根！八月荷兰东印度公司自爪哇巴达维亚急派考乌统十艘巨舰、七百援军驰救安平；九月十六日决战台江外海，明郑快船顶着荷舰舷侧排炮贴身跳帮纵火，一举击沉荷舰“考克尔肯号”、生擒夺获两舰，残余荷舰连夜逃往日本与巴达维亚，热兰遮孤城外援彻底断绝！",
+      "whyKeyPoint": "为啥两万五千大军在海岛围城九个月没断粮？一面海战全歼巴达维亚援舰锁死海面，一面推行“寓兵于农”就地屯垦，彻底破解了跨海远征最大的后勤死穴。",
+      "camera": {
+        "center": [120.02, 22.92],
+        "zoom": 7.6,
+        "pitch": 36,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-zheng-navy",
+        "leftLabel": "全岛屯田扎根之明郑海陆军",
+        "leftPower": 82,
+        "rightFactionId": "voc-dutch",
+        "rightLabel": "海援被歼断绝补给之荷军",
+        "rightPower": 18
+      },
+      "routes": [
+        {
+          "id": "r-tw3-batavia-repelled",
+          "order": 1,
+          "factionId": "voc-dutch",
+          "type": "retreat",
+          "label": "巴达维亚十艘荷军援舰驰救安平，被郑军水师贴身火攻夺舰击溃南逃",
+          "commander": "考乌 (Jacob Cauw)",
+          "coordinates": [
+            [119.45, 22.15],
+            [120.11, 22.98],
+            [119.65, 21.95]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-tw3-sea-clash",
+          "kind": "clash",
+          "label": "台江外海破荷援舰",
+          "subLabel": "击沉夺获荷舰三艘 · 断绝外援",
+          "coordinates": [120.11, 22.98],
+          "color": "#B83B2A"
+        }
+      ]
+    },
+    {
+      "phaseNo": 4,
+      "title": "第四幕：重炮攻克乌特勒支高地 · 揆一脱帽献城台湾光复",
+      "dateLabel": "永历十五年十二月—十六年（1662）二月初一",
+      "year": 1662,
+      "narrative": "永历十五年十二月，郑成功采纳弃暗投明的德籍军士建议，洞察热兰遮城南侧沙丘上的“乌特勒支圆堡”乃全城生死命门！次年正月初四，郑军集中三十余门大炮两小时狂轰两千五百发炮弹，夷平乌特勒支碉堡并居高临下架炮俯视热兰遮内城！孤立绝望的总督揆一召集议会放弃抵抗，于1662年2月1日正式签字献城，率残军撤离——沦陷三十八年的宝岛台湾重归中华版图！",
+      "whyKeyPoint": "为啥最后只用两天炮击就拿下了围困九个月的棱堡？西方星形棱堡最怕外围制高点失守，一旦乌特勒支高地易手成为明军炮台，热兰遮主城便彻底暴露在俯射火力之下。",
+      "camera": {
+        "center": [120.17, 23.00],
+        "zoom": 9.8,
+        "pitch": 38,
+        "bearing": 0
+      },
+      "strengthComparison": {
+        "leftFactionId": "ming-zheng-navy",
+        "leftLabel": "收复宝岛设东都明京之明郑军",
+        "leftPower": 92,
+        "rightFactionId": "voc-dutch",
+        "rightLabel": "签字献城撤离之荷兰残军",
+        "rightPower": 8
+      },
+      "routes": [
+        {
+          "id": "r-tw4-utrecht-final",
+          "order": 1,
+          "factionId": "ming-zheng-navy",
+          "type": "assault",
+          "label": "集中三十门重炮轰克乌特勒支圆堡制高点，揆一挂白旗签字献热兰遮城投降！",
+          "commander": "郑成功 · 刘国轩",
+          "coordinates": [
+            [120.202, 22.997],
+            [120.161, 23.001]
+          ]
+        }
+      ],
+      "markers": [
+        {
+          "id": "m-tw4-zeelandia",
+          "kind": "clash",
+          "label": "热兰遮受降 · 台湾光复",
+          "subLabel": "1662年2月1日宝岛重归华夏版图",
+          "coordinates": [120.161, 23.001],
+          "color": "#B83B2A"
+        }
+      ]
+    }
+  ]
+}

@@ -285,6 +285,29 @@ if (fs.existsSync(macroPath)) {
   }
 }
 
+const tacMicroPath = path.join(DATA_DIR, 'geo-base', 'ming-tactical-micro.json');
+if (fs.existsSync(tacMicroPath)) {
+  const tfc = JSON.parse(fs.readFileSync(tacMicroPath, 'utf8'));
+  if (!Array.isArray(tfc.features) || tfc.features.length < 10) {
+    fail(`ming-tactical-micro.json expected >= 10 features, got ${tfc.features?.length}`);
+  } else {
+    for (const f of tfc.features) {
+      const cmpId = f.properties?.campaignId;
+      if (cmpId && !campaignIdSet.has(cmpId)) {
+        fail(`Tactical micro feature ${f.properties?.id} references unknown campaignId ${cmpId}`);
+      }
+      if (f.geometry?.type === 'Point') {
+        checkCoord(f.geometry.coordinates, `TacticalMicro ${f.properties?.id}`);
+      } else if (f.geometry?.type === 'LineString') {
+        for (const pt of f.geometry.coordinates || []) {
+          checkCoord(pt, `TacticalMicro line ${f.properties?.id}`);
+        }
+      }
+    }
+    ok(`Micro-tactical decisive battlefield formations verified (${tfc.features.length} features)`);
+  }
+}
+
 if (errors > 0) {
   console.error(`\nValidation FAILED with ${errors} error(s).`);
   process.exit(1);

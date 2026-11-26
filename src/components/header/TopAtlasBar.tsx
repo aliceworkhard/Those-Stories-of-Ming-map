@@ -926,6 +926,10 @@ export default function TopAtlasBar() {
                   key: 'silverRoutes',
                   label: '隆庆开关马尼拉/长崎全球白银航线层',
                 },
+                {
+                  key: 'tacticalMicro',
+                  label: '决战现场高倍微观战术阵势层 (Zoom≥7.4)',
+                },
                 { key: 'landforms', label: '名山脊线 · 湖泊 · 四海古注记' },
                 { key: 'places', label: '两京州府与战略关隘地名' },
                 { key: 'causalArcs', label: '历史事件跨时空因果飞弧' },

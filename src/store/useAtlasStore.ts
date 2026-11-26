@@ -53,6 +53,7 @@ export interface LayerVisibility {
   famineZones: boolean;
   grandCanalHubs: boolean;
   silverRoutes: boolean;
+  tacticalMicro: boolean;
 }
 
 export type CampaignCameraMode = 'overview' | 'follow' | 'free';
@@ -238,6 +239,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     famineZones: false,
     grandCanalHubs: false,
     silverRoutes: false,
+    tacticalMicro: true,
   },
   cameraCommand: null,
 

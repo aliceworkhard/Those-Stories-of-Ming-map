@@ -1,0 +1,259 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "description": "决战现场微观战术级子沙盘图层（Zoom >= 7.4 自动浮现城防关隘、风向水文、火器伏击圈与封锁壕沟）",
+    "coordinateSystem": "WGS-84 [lng, lat]"
+  },
+  "hotspots": {
+    "cmp-1363-poyang": {
+      "title": "鄱阳湖康郎山火攻与湖口锁江微观阵势",
+      "center": [116.33, 29.22],
+      "zoom": 8.6,
+      "pitch": 38
+    },
+    "cmp-1449-tumu-beijing": {
+      "title": "北京保卫战九门列阵与德胜门神机营伏击阵",
+      "center": [116.385, 39.925],
+      "zoom": 10.6,
+      "pitch": 40
+    },
+    "cmp-1619-sarhu": {
+      "title": "萨尔浒山·界凡吉林崖天然险隘微观态势",
+      "center": [124.215, 41.89],
+      "zoom": 9.8,
+      "pitch": 40
+    },
+    "cmp-1626-ningyuan-guangning": {
+      "title": "宁远卫十字街西洋红夷大炮交叉火网阵",
+      "center": [120.735, 40.605],
+      "zoom": 10.4,
+      "pitch": 40
+    },
+    "cmp-1640-songjin": {
+      "title": "松山·笔架山海滩粮仓与清军三重断粮长壕",
+      "center": [121.14, 40.98],
+      "zoom": 9.5,
+      "pitch": 38
+    },
+    "cmp-1661-koxinga-taiwan": {
+      "title": "鹿耳门大潮入港秘道与热兰遮城水陆铁桶合围",
+      "center": [120.165, 23.008],
+      "zoom": 10.6,
+      "pitch": 38
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tac-poyang-wind",
+        "campaignId": "cmp-1363-poyang",
+        "tacKind": "wind-line",
+        "label": "七月廿一日申时东北劲风",
+        "subNote": "风助火势直扑上风向陈汉连环巨舰",
+        "color": "#0284C7"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [116.56, 29.12],
+          [116.41, 28.99]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tac-poyang-fireships",
+        "campaignId": "cmp-1363-poyang",
+        "tacKind": "fire-point",
+        "label": "敢死七舟火药芦苇突击点",
+        "subNote": "常遇春·郭兴乘风纵火焚毁赤龙巨舰数百艘",
+        "color": "#EA580C"
+      },
+      "geometry": { "type": "Point", "coordinates": [116.405, 28.985] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tac-poyang-hukou-blockade",
+        "campaignId": "cmp-1363-poyang",
+        "tacKind": "trench-line",
+        "label": "泾江口（湖口）两岸木栅锁江线",
+        "subNote": "朱元璋封死入长江唯一水道 · 汉军中流矢溃亡",
+        "color": "#9E2318"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [116.16, 29.76],
+          [116.27, 29.71]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tac-beijing-walls",
+        "campaignId": "cmp-1449-tumu-beijing",
+        "tacKind": "wall-line",
+        "label": "北京京师九门背城死战防线",
+        "subNote": "于谦下令二十二万军民列阵城外、自断退路",
+        "color": "#9E2318"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [116.355, 39.948],
+          [116.432, 39.948],
+          [116.432, 39.898],
+          [116.355, 39.898],
+          [116.355, 39.948]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tac-beijing-deshengmen",
+        "campaignId": "cmp-1449-tumu-beijing",
+        "tacKind": "artillery-point",
+        "label": "德胜门民居神机营伏击阵",
+        "subNote": "石亨空营诱敌 · 火铳神炮齐发轰毙也先弟孛罗平章",
+        "color": "#DC2626"
+      },
+      "geometry": { "type": "Point", "coordinates": [116.378, 39.951] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tac-beijing-xizhimen",
+        "campaignId": "cmp-1449-tumu-beijing",
+        "tacKind": "fort-point",
+        "label": "西直门孙镗浴血肉搏阵",
+        "subNote": "高礼毛福寿驰援合击 · 击溃瓦刺西翼包抄",
+        "color": "#B45309"
+      },
+      "geometry": { "type": "Point", "coordinates": [116.352, 39.940] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tac-sarhu-jilin-cliff",
+        "campaignId": "cmp-1619-sarhu",
+        "tacKind": "fort-point",
+        "label": "界凡吉林崖后金居高据险阵",
+        "subNote": "杜松轻敌渡浑河仰攻绝壁 · 遭八旗铁骑俯冲合围",
+        "color": "#1E3A8A"
+      },
+      "geometry": { "type": "Point", "coordinates": [124.195, 41.908] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tac-sarhu-camp",
+        "campaignId": "cmp-1619-sarhu",
+        "tacKind": "fire-point",
+        "label": "萨尔浒山明军车营孤垒",
+        "subNote": "杜松分兵致大营兵力单薄 · 右翼四旗一鼓踏破",
+        "color": "#9E2318"
+      },
+      "geometry": { "type": "Point", "coordinates": [124.232, 41.876] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tac-ningyuan-fort",
+        "campaignId": "cmp-1626-ningyuan-guangning",
+        "tacKind": "wall-line",
+        "label": "宁远卫方城四门红夷火炮阵",
+        "subNote": "袁崇焕刺血誓师 · 十一门西洋巨炮构筑交叉火网",
+        "color": "#9E2318"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [120.718, 40.625],
+          [120.738, 40.625],
+          [120.738, 40.610],
+          [120.718, 40.610],
+          [120.718, 40.625]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tac-ningyuan-cannon",
+        "campaignId": "cmp-1626-ningyuan-guangning",
+        "tacKind": "artillery-point",
+        "label": "西南城角红夷大炮与万人敌轰击点",
+        "subNote": "彭簪古·罗立点炮决血渠 · 重创后金八旗攻城楯车",
+        "color": "#EA580C"
+      },
+      "geometry": { "type": "Point", "coordinates": [120.719, 40.612] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tac-songjin-trench",
+        "campaignId": "cmp-1640-songjin",
+        "tacKind": "trench-line",
+        "label": "皇太极掘筑松山—杏山三重断路深壕",
+        "subNote": "挖壕立栅锁死南撤通道 · 夜突明军吴三桂王朴溃兵",
+        "color": "#1E3A8A"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.04, 40.93],
+          [121.15, 40.95],
+          [121.25, 40.94]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tac-songjin-bijiashan",
+        "campaignId": "cmp-1640-songjin",
+        "tacKind": "fire-point",
+        "label": "笔架山海中天桥总粮栈失守处",
+        "subNote": "清军绕袭夺取明军十二堆总粮草 · 十三万援军瞬间断炊",
+        "color": "#D97706"
+      },
+      "geometry": { "type": "Point", "coordinates": [121.075, 40.892] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tac-taiwan-luermen",
+        "campaignId": "cmp-1661-koxinga-taiwan",
+        "tacKind": "wind-line",
+        "label": "鹿耳门四月初一天文大潮入港秘道",
+        "subNote": "潮水暴涨丈余越过沉船浅礁 · 三百战舰直插台江内海",
+        "color": "#0284C7"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [120.085, 23.045],
+          [120.132, 23.032],
+          [120.185, 23.002]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tac-taiwan-zeelandia",
+        "campaignId": "cmp-1661-koxinga-taiwan",
+        "tacKind": "artillery-point",
+        "label": "热兰遮城（乌特勒支碉堡）制高轰击阵",
+        "subNote": "郑军夺取城南沙丘制高点架炮俯轰 · 荷督揆一挂白旗投降",
+        "color": "#9E2318"
+      },
+      "geometry": { "type": "Point", "coordinates": [120.161, 23.001] }
+    }
+  ]
+}

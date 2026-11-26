@@ -76,7 +76,9 @@ export type EventCategory =
   | 'institution'
   | 'voyage'
   | 'culture'
-  | 'anecdote';
+  | 'anecdote'
+  | 'reform'
+  | 'disaster';
 
 export interface EventWhyAnalysis {
   /** Geographic, terrain, waterway, or strategic pass explanation */
