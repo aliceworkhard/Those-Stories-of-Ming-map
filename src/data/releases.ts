@@ -1,0 +1,36 @@
+export interface AtlasReleaseEntry {
+  version: string;
+  date: string;
+  title: string;
+  badge: string;
+  highlights: string[];
+}
+
+export const CURRENT_ATLAS_VERSION = 'v1.1.0';
+
+export const ATLAS_RELEASES: AtlasReleaseEntry[] = [
+  {
+    version: 'v1.1.0',
+    date: '2026-11-27',
+    title: '深度直链分享 · 宣纸朱印战报海报 · 版本日志系统',
+    badge: '最新正式版',
+    highlights: [
+      '全状态 URL 深度直链同步：支持将任意年份、事件、战役具体幕次（如萨尔浒第2幕）或人物足迹一键复制直链精准分享。',
+      '宣纸朱印战报海报生成器：无损截取当前 WebGL 舆图画面，自动合成古典双栏边框、朱砂篆印与因果金句的高清 PNG 分享长图。',
+      '移动端视网膜超清渲染与半屏抽屉重构：解锁最高 3x 原生 DPI 与 @3x 印章纹理，半屏看图、点击地图空白即刻收起面板。',
+      'GitHub Releases 自动化发布流水线与站内版本更新日志弹窗上线。',
+    ],
+  },
+  {
+    version: 'v1.0.0',
+    date: '2026-11-25',
+    title: '《明朝那些事儿》全七部三百年贯通正式版（1344–1662）',
+    badge: '里程碑基线',
+    highlights: [
+      '15 期高精度州府拓扑疆域切片与局部布尔差集版图涂抹引擎，还原夺淮故黄河、京杭大运河与明长城九边。',
+      '12 场经典大战（53 幕、111 条有序行军线）分体式沙盘推演，支持「动态箭矢 / 静态箭矢」切换、路线悬停聚光与自动构图。',
+      '106 个五维大小历史事件、12 位风云人物一生足迹、23 项藩王与九边制度要素，完整映射全书 7 部 157 章目录锚点。',
+      '内置开源 Web GIS 制图工具「舆图画笔擦写工坊 (/dev/territory-painter)」及 Docker + Caddy 一键自部署套件。',
+    ],
+  },
+];

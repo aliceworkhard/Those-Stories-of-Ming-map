@@ -39,6 +39,7 @@ import {
   type EraWipePlan,
 } from '@/engine/territoryWipe';
 import { sampleAlongPath } from '@/lib/curve';
+import { registerMapInstanceForCapture } from '@/lib/mapCapture';
 import { emitPlaybackTick } from '@/lib/playbackBus';
 import { useAtlasStore } from '@/store/useAtlasStore';
 import type {
@@ -931,8 +932,10 @@ export default function MingMapCanvas() {
     window.addEventListener('resize', onWindowResize);
 
     mapRef.current = map;
+    registerMapInstanceForCapture(map);
 
     return () => {
+      registerMapInstanceForCapture(null);
       document.removeEventListener('visibilitychange', onVisibilityChange);
       window.removeEventListener('resize', onWindowResize);
       if (animFrameRef.current !== null) {

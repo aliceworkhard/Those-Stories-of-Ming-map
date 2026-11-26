@@ -11,6 +11,9 @@ import CampaignPlayer from '@/components/campaign/CampaignPlayer';
 import CharacterOdysseyPlayer from '@/components/odyssey/CharacterOdysseyPlayer';
 import TimelineBar from '@/components/timeline/TimelineBar';
 import BookTocModal from '@/components/modals/BookTocModal';
+import ShareAtlasModal from '@/components/modals/ShareAtlasModal';
+import ReleaseNotesModal from '@/components/modals/ReleaseNotesModal';
+import { buildAtlasQueryString } from '@/lib/urlState';
 import { useAtlasStore } from '@/store/useAtlasStore';
 
 const MingMapCanvas = dynamic(
@@ -33,17 +36,62 @@ const MingMapCanvas = dynamic(
 );
 
 export default function AtlasWorkspace() {
-  const theme = useAtlasStore((s) => s.theme);
-  const isDrawerOpen = useAtlasStore((s) => s.isDrawerOpen);
+  const hasHydratedCache = useAtlasStore((s) => s.hasHydratedCache);
+  const currentYear = useAtlasStore((s) => s.currentYear);
+  const selectedEventId = useAtlasStore((s) => s.selectedEventId);
   const activeCampaignId = useAtlasStore((s) => s.activeCampaignId);
+  const activePhaseIndex = useAtlasStore((s) => s.activePhaseIndex);
+  const campaignArrowMode = useAtlasStore((s) => s.campaignArrowMode);
+  const activeCharacterId = useAtlasStore((s) => s.activeCharacterId);
+  const activeCharacterStopIndex = useAtlasStore(
+    (s) => s.activeCharacterStopIndex
+  );
+  const theme = useAtlasStore((s) => s.theme);
+  const is3D = useAtlasStore((s) => s.is3D);
+  const isDrawerOpen = useAtlasStore((s) => s.isDrawerOpen);
   const isCampaignPanelOpen = useAtlasStore((s) => s.isCampaignPanelOpen);
   const hydrateFromStorage = useAtlasStore((s) => s.hydrateFromStorage);
+
   const isDark = theme === 'xuanmo';
   const drawerTakesRight = activeCampaignId ? isCampaignPanelOpen : isDrawerOpen;
 
   useEffect(() => {
     hydrateFromStorage();
   }, [hydrateFromStorage]);
+
+  // Throttled zero-overhead URL query state sync (`replaceState` -> 0 router re-renders!)
+  useEffect(() => {
+    if (!hasHydratedCache || typeof window === 'undefined') return;
+    const timer = window.setTimeout(() => {
+      const qs = buildAtlasQueryString({
+        currentYear,
+        selectedEventId,
+        activeCampaignId,
+        activePhaseIndex,
+        campaignArrowMode,
+        activeCharacterId,
+        activeCharacterStopIndex,
+        theme,
+        is3D,
+      });
+      const nextUrl = `${window.location.pathname}${qs}`;
+      if (`${window.location.pathname}${window.location.search}` !== nextUrl) {
+        window.history.replaceState(null, '', nextUrl);
+      }
+    }, 280);
+    return () => window.clearTimeout(timer);
+  }, [
+    hasHydratedCache,
+    currentYear,
+    selectedEventId,
+    activeCampaignId,
+    activePhaseIndex,
+    campaignArrowMode,
+    activeCharacterId,
+    activeCharacterStopIndex,
+    theme,
+    is3D,
+  ]);
 
   return (
     <main
@@ -62,6 +110,8 @@ export default function AtlasWorkspace() {
       <CharacterOdysseyPlayer />
       <TimelineBar />
       <BookTocModal />
+      <ShareAtlasModal />
+      <ReleaseNotesModal />
     </main>
   );
 }

@@ -6,6 +6,7 @@ import {
   CHARACTER_MAP,
   EVENT_MAP,
 } from '@/lib/atlasData';
+import { parseAtlasUrlParams } from '@/lib/urlState';
 import type {
   CameraPose,
   MapVisualTheme,
@@ -100,6 +101,8 @@ interface AtlasState {
   activeCharacterStopIndex: number;
 
   isTocModalOpen: boolean;
+  isShareModalOpen: boolean;
+  isReleaseModalOpen: boolean;
   theme: MapVisualTheme;
   perfMode: PerformanceMode;
   is3D: boolean;
@@ -152,6 +155,8 @@ interface AtlasState {
   exitCharacterOdyssey: () => void;
 
   setTocModalOpen: (open: boolean) => void;
+  setShareModalOpen: (open: boolean) => void;
+  setReleaseModalOpen: (open: boolean) => void;
   setTheme: (theme: MapVisualTheme) => void;
   setPerfMode: (mode: PerformanceMode) => void;
   toggle3D: () => void;
@@ -206,6 +211,8 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   activeCharacterStopIndex: 0,
 
   isTocModalOpen: false,
+  isShareModalOpen: false,
+  isReleaseModalOpen: false,
   theme: 'xuanzhi',
   perfMode: 'balanced',
   // Default 2.5D stereo hillshade ON with 3D DEM Mesh OFF -> 0 Terrain Drape FBO overhead & silky 120fps!
@@ -234,6 +241,74 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     const initDirOpen = !narrow;
     const initDrawerOpen = !mobile;
 
+    // Apply URL deep-link query overrides (`?campaign=...`, `?character=...`, `?event=...`, `?year=...`)
+    const applyUrlOverrides = () => {
+      const urlState = parseAtlasUrlParams(window.location.search);
+      if (urlState.theme) {
+        set({ theme: urlState.theme });
+      }
+      if (urlState.is3D && get().perfMode !== 'eco') {
+        set({ is3D: true });
+      }
+      if (urlState.campaignId && CAMPAIGN_MAP[urlState.campaignId]) {
+        const cmp = CAMPAIGN_MAP[urlState.campaignId];
+        const pIdx = urlState.phaseIndex ?? 0;
+        const phase = cmp.phases[pIdx] ?? cmp.phases[0];
+        set((s) => ({
+          activeCampaignId: cmp.id,
+          activePhaseIndex: pIdx,
+          isCampaignPlaying: true,
+          isCampaignPanelOpen: !mobile,
+          campaignArrowMode: urlState.arrowMode ?? s.campaignArrowMode,
+          isDirectoryOpen: false,
+          isDrawerOpen: false,
+          currentYear: phase.year,
+          campaignReplayNonce: s.campaignReplayNonce + 1,
+        }));
+      } else if (urlState.characterId && CHARACTER_MAP[urlState.characterId]) {
+        const ch = CHARACTER_MAP[urlState.characterId];
+        const sIdx = urlState.stopIndex ?? 0;
+        const stop = ch.stops[sIdx] ?? ch.stops[0];
+        set((s) => ({
+          activeCharacterId: ch.id,
+          activeCharacterStopIndex: sIdx,
+          isDirectoryOpen: mobile ? false : s.isDirectoryOpen,
+          isDrawerOpen: mobile ? false : s.isDrawerOpen,
+          currentYear: stop.year,
+          selectedEventId: stop.eventId ?? s.selectedEventId,
+          cameraCommand: {
+            pose: {
+              center: stop.coordinates,
+              zoom: 5.8,
+              pitch: s.is3D && s.perfMode !== 'eco' ? 38 : 0,
+              bearing: 0,
+            },
+            seq: (s.cameraCommand?.seq ?? 0) + 1,
+          },
+        }));
+      } else if (urlState.eventId || urlState.year !== undefined) {
+        const evt = urlState.eventId ? EVENT_MAP[urlState.eventId] : null;
+        set((s) => ({
+          currentYear: urlState.year ?? evt?.time.year ?? s.currentYear,
+          selectedEventId: evt ? evt.id : s.selectedEventId,
+          // If an explicit `?event=` deep-link was shared, open the detail sheet so recipient reads it immediately
+          isDrawerOpen: evt ? true : s.isDrawerOpen,
+          isDirectoryOpen: evt && narrow ? false : s.isDirectoryOpen,
+          cameraCommand: evt
+            ? {
+                pose: {
+                  ...evt.camera,
+                  pitch:
+                    s.is3D && s.perfMode !== 'eco' ? evt.camera.pitch ?? 38 : 0,
+                  bearing: 0,
+                },
+                seq: (s.cameraCommand?.seq ?? 0) + 1,
+              }
+            : s.cameraCommand,
+        }));
+      }
+    };
+
     try {
       const rawV2 = window.localStorage.getItem(ATLAS_PROGRESS_CACHE_KEY);
       const rawLegacy = rawV2
@@ -257,6 +332,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
             seq: prevSeq + 1,
           },
         });
+        applyUrlOverrides();
         return;
       }
 
@@ -309,6 +385,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
           seq: prevSeq + 1,
         },
       });
+      applyUrlOverrides();
     } catch {
       const startEvt = STORY_OPENING_EVENT;
       set({
@@ -322,6 +399,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
           seq: prevSeq + 1,
         },
       });
+      applyUrlOverrides();
     }
   },
 
@@ -692,6 +770,8 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     }),
 
   setTocModalOpen: (open) => set({ isTocModalOpen: open }),
+  setShareModalOpen: (open) => set({ isShareModalOpen: open }),
+  setReleaseModalOpen: (open) => set({ isReleaseModalOpen: open }),
   setTheme: (theme) => {
     set({ theme });
     persistSnapshot(get());

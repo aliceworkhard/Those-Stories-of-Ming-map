@@ -18,6 +18,7 @@ import {
   PanelRightOpen,
   Pause,
   ScrollText,
+  Share2,
   Sparkles,
   Swords,
   Users,
@@ -55,6 +56,7 @@ export default function EventDetailDrawer() {
   const perfMode = useAtlasStore((s) => s.perfMode);
   const toggle3D = useAtlasStore((s) => s.toggle3D);
   const flyToCamera = useAtlasStore((s) => s.flyToCamera);
+  const setShareModalOpen = useAtlasStore((s) => s.setShareModalOpen);
   const theme = useAtlasStore((s) => s.theme);
 
   // Keep war-room unobstructed while battle campaign player is open
@@ -160,6 +162,17 @@ export default function EventDetailDrawer() {
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
+          {/* Share Current Event Card / Deep-Link */}
+          <button
+            type="button"
+            onClick={() => setShareModalOpen(true)}
+            className="px-2 py-1 rounded-lg bg-current/8 hover:bg-current/15 text-[11px] font-medium flex items-center gap-1 cursor-pointer"
+            title="分享当前历史事件直链与宣纸海报"
+          >
+            <Share2 className="w-3.5 h-3.5 text-[#B83B2A] dark:text-amber-400" />
+            <span className="hidden sm:inline">分享</span>
+          </button>
+
           {/* Mobile Quick Switch to Event Directory */}
           <button
             type="button"

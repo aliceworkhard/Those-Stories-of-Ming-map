@@ -14,6 +14,7 @@ import {
   Play,
   RotateCcw,
   ScrollText,
+  Share2,
   Swords,
   Video,
   X,
@@ -71,6 +72,7 @@ export default function CampaignPlayer() {
   const setCampaignArrowMode = useAtlasStore((s) => s.setCampaignArrowMode);
   const replayCurrentPhase = useAtlasStore((s) => s.replayCurrentPhase);
   const exitCampaign = useAtlasStore((s) => s.exitCampaign);
+  const setShareModalOpen = useAtlasStore((s) => s.setShareModalOpen);
   const theme = useAtlasStore((s) => s.theme);
 
   useEffect(() => {
@@ -178,6 +180,15 @@ export default function CampaignPlayer() {
               </span>
 
               <div className="flex items-center gap-1 ml-auto">
+                <button
+                  type="button"
+                  onClick={() => setShareModalOpen(true)}
+                  className="px-2 py-1 rounded-lg bg-current/8 hover:bg-current/15 text-[11px] font-medium flex items-center gap-1 cursor-pointer"
+                  title="分享当前战役幕次直链与宣纸战报卡"
+                >
+                  <Share2 className="w-3.5 h-3.5 text-[#B83B2A] dark:text-amber-400" />
+                  <span>分享战报</span>
+                </button>
                 <button
                   type="button"
                   onClick={() => setCampaignPanelOpen(false)}

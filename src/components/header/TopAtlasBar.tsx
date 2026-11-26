@@ -18,13 +18,16 @@ import {
   Mountain,
   Pause,
   ScrollText,
+  Share2,
   Star,
   Swords,
   Sun,
+  Tag,
   Video,
   X,
 } from 'lucide-react';
 import { SITE_CONFIG } from '@/config/site';
+import { CURRENT_ATLAS_VERSION } from '@/data/releases';
 import {
   ALL_CAMPAIGNS,
   ALL_CHARACTERS,
@@ -59,6 +62,8 @@ export default function TopAtlasBar() {
   const startCharacterOdyssey = useAtlasStore((s) => s.startCharacterOdyssey);
   const exitCharacterOdyssey = useAtlasStore((s) => s.exitCharacterOdyssey);
   const setTocModalOpen = useAtlasStore((s) => s.setTocModalOpen);
+  const setShareModalOpen = useAtlasStore((s) => s.setShareModalOpen);
+  const setReleaseModalOpen = useAtlasStore((s) => s.setReleaseModalOpen);
   const theme = useAtlasStore((s) => s.theme);
   const setTheme = useAtlasStore((s) => s.setTheme);
   const perfMode = useAtlasStore((s) => s.perfMode);
@@ -171,6 +176,17 @@ export default function TopAtlasBar() {
                 <span className="px-1.5 py-0.5 rounded bg-[#9E2318]/12 text-[#9E2318] dark:text-amber-300 dark:bg-amber-400/15 border border-current/20 text-[10px] sm:text-[11px] font-bold tabular-nums shrink-0">
                   {currentYear}年
                 </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    closeAllMenus();
+                    setReleaseModalOpen(true);
+                  }}
+                  className="px-1.5 py-0.5 rounded bg-amber-500/15 hover:bg-amber-500/25 text-amber-900 dark:text-amber-200 border border-amber-500/35 text-[10px] font-mono font-bold shrink-0 cursor-pointer transition"
+                  title="查看《明途 · 舆图纪》各版本发布日志与 GitHub Releases"
+                >
+                  {CURRENT_ATLAS_VERSION}
+                </button>
               </div>
               <p className="text-[10px] opacity-75 truncate hidden 2xl:block max-w-[220px]">
                 {snapshot.meta.title}
@@ -339,6 +355,24 @@ export default function TopAtlasBar() {
                 <Brush className="w-3.5 h-3.5" />
                 <span>擦写工坊</span>
               </Link>
+
+              {/* 3c. Share Current Scene & Xuan-Paper Poster */}
+              <button
+                type="button"
+                onClick={() => {
+                  closeAllMenus();
+                  setShareModalOpen(true);
+                }}
+                className={`px-2.5 py-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1 shrink-0 transition cursor-pointer ${
+                  isDark
+                    ? 'border-amber-400/40 bg-amber-500/12 hover:bg-amber-500/22 text-amber-200'
+                    : 'border-[#9E2318]/30 bg-[#9E2318]/8 hover:bg-[#9E2318]/15 text-[#9E2318]'
+                }`}
+                title="生成当前战局/事件直达链接与宣纸朱印海报"
+              >
+                <Share2 className="w-3.5 h-3.5" />
+                <span>分享</span>
+              </button>
 
               {/* 4. GitHub Repo Jump & ★ Star CTA Badge */}
               <a
@@ -667,6 +701,32 @@ export default function TopAtlasBar() {
           >
             <BookOpen className="w-3.5 h-3.5 text-[#B83B2A] dark:text-amber-400" />
             <span>原著目录</span>
+          </button>
+
+          {/* 6b. Share Current Scene & Poster (Mobile/Tablet) */}
+          <button
+            type="button"
+            onClick={() => {
+              closeAllMenus();
+              setShareModalOpen(true);
+            }}
+            className={`px-2.5 py-1.5 rounded-xl border text-xs font-serif font-bold flex items-center gap-1 shrink-0 shadow-sm transition cursor-pointer ${panelClass}`}
+          >
+            <Share2 className="w-3.5 h-3.5 text-[#B83B2A] dark:text-amber-400" />
+            <span>分享海报</span>
+          </button>
+
+          {/* 6c. Version Release Notes (Mobile/Tablet) */}
+          <button
+            type="button"
+            onClick={() => {
+              closeAllMenus();
+              setReleaseModalOpen(true);
+            }}
+            className={`px-2.5 py-1.5 rounded-xl border text-xs font-serif font-bold flex items-center gap-1 shrink-0 shadow-sm transition cursor-pointer ${panelClass}`}
+          >
+            <Tag className="w-3.5 h-3.5 text-[#B83B2A] dark:text-amber-400" />
+            <span>版本日志</span>
           </button>
 
           {/* 7. GitHub ★ Star Link */}

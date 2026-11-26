@@ -4,6 +4,7 @@
 > *An open-source 3D WebGL interactive historical map, dynamic marching-route replay engine, 3D camera choreography director, and causal narrative graph inspired by Dangnian Mingyue's **Those Stories of Ming (《明朝那些事儿》)**.*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-B83B2A.svg)](./LICENSE)
+[![GitHub Release](https://img.shields.io/github/v/release/aliceworkhard/Those-Stories-of-Ming-map?color=9E2318&label=Release)](https://github.com/aliceworkhard/Those-Stories-of-Ming-map/releases)
 [![Live Online](https://img.shields.io/badge/在线体验-those--stories--of--ming--map.vercel.app-1D4ED8)](https://those-stories-of-ming-map.vercel.app)
 [![LINUX DO Discussion](https://img.shields.io/badge/LINUX_DO-社区交流专帖-D97706?logo=discourse&logoColor=white)](https://linux.do/t/topic/3236921)
 [![Friend Link: LINUX DO](https://img.shields.io/badge/友情链接-LINUX_DO_社区-F59E0B?logo=discourse&logoColor=white)](https://linux.do/)
