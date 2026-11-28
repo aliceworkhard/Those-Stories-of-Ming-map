@@ -243,26 +243,27 @@ function addDiamondSealSprite(
   bgColor: string,
   borderColor: string,
   activeHalo: boolean,
-  size = 64
+  logicalSize = 44
 ): void {
   if (map.hasImage(name)) return;
-  const pxSize = Math.round(size * 1.5);
+  const scale = 3;
+  const pxSize = Math.round(logicalSize * scale);
   const c = document.createElement('canvas');
   c.width = pxSize;
   c.height = pxSize;
   const ctx = c.getContext('2d');
   if (!ctx) return;
 
-  ctx.scale(1.5, 1.5);
-  const m = size / 2;
-  ctx.clearRect(0, 0, size, size);
+  ctx.scale(scale, scale);
+  const m = logicalSize / 2;
+  ctx.clearRect(0, 0, logicalSize, logicalSize);
 
   if (activeHalo) {
     ctx.beginPath();
-    ctx.arc(m, m, m - 4, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(245, 158, 11, 0.22)';
+    ctx.arc(m, m, m - 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(245, 158, 11, 0.24)';
     ctx.fill();
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 1.8;
     ctx.strokeStyle = '#F59E0B';
     ctx.stroke();
   }
@@ -270,24 +271,24 @@ function addDiamondSealSprite(
   ctx.save();
   ctx.translate(m, m);
   ctx.rotate(Math.PI / 4);
-  const box = activeHalo ? 29 : 25;
+  const box = activeHalo ? 22 : 19;
   ctx.fillStyle = bgColor;
   ctx.strokeStyle = borderColor;
-  ctx.lineWidth = activeHalo ? 3.4 : 2.6;
+  ctx.lineWidth = activeHalo ? 2.4 : 2.0;
   ctx.beginPath();
-  ctx.roundRect(-box / 2, -box / 2, box, box, 4);
+  ctx.roundRect(-box / 2, -box / 2, box, box, 3.2);
   ctx.fill();
   ctx.stroke();
   ctx.restore();
 
   ctx.fillStyle = '#FFFBEB';
-  ctx.font = `700 ${activeHalo ? 23 : 20}px "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", sans-serif`;
+  ctx.font = `700 ${activeHalo ? 14.5 : 13}px "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(char, m, m + 0.5);
 
   const img = ctx.getImageData(0, 0, pxSize, pxSize);
-  map.addImage(name, { width: pxSize, height: pxSize, data: img.data }, { pixelRatio: 3 });
+  map.addImage(name, { width: pxSize, height: pxSize, data: img.data }, { pixelRatio: scale });
 }
 
 function addCircleSealSprite(
@@ -297,46 +298,48 @@ function addCircleSealSprite(
   bgColor: string,
   borderColor: string,
   activeHalo: boolean,
-  size = 56
+  logicalSize = 38
 ): void {
   if (map.hasImage(name)) return;
-  const pxSize = Math.round(size * 1.5);
+  const scale = 3;
+  const pxSize = Math.round(logicalSize * scale);
   const c = document.createElement('canvas');
   c.width = pxSize;
   c.height = pxSize;
   const ctx = c.getContext('2d');
   if (!ctx) return;
 
-  ctx.scale(1.5, 1.5);
-  const m = size / 2;
-  ctx.clearRect(0, 0, size, size);
+  ctx.scale(scale, scale);
+  const m = logicalSize / 2;
+  ctx.clearRect(0, 0, logicalSize, logicalSize);
 
   if (activeHalo) {
     ctx.beginPath();
-    ctx.arc(m, m, m - 3, 0, Math.PI * 2);
+    ctx.arc(m, m, m - 2.2, 0, Math.PI * 2);
     ctx.fillStyle = 'rgba(245, 158, 11, 0.24)';
     ctx.fill();
-    ctx.lineWidth = 2.4;
+    ctx.lineWidth = 1.8;
     ctx.strokeStyle = '#F59E0B';
     ctx.stroke();
   }
 
+  const radius = activeHalo ? Math.min(14.5, m - 5.2) : Math.min(11.5, m - 4.5);
   ctx.beginPath();
-  ctx.arc(m, m, activeHalo ? 18 : 15, 0, Math.PI * 2);
+  ctx.arc(m, m, radius, 0, Math.PI * 2);
   ctx.fillStyle = bgColor;
   ctx.fill();
-  ctx.lineWidth = activeHalo ? 3.0 : 2.2;
+  ctx.lineWidth = activeHalo ? 2.2 : 1.8;
   ctx.strokeStyle = borderColor;
   ctx.stroke();
 
   ctx.fillStyle = '#FFFBEB';
-  ctx.font = `700 ${activeHalo ? 19 : 17}px "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", sans-serif`;
+  ctx.font = `700 ${activeHalo ? 14 : 12.5}px "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(char, m, m + 0.5);
 
   const img = ctx.getImageData(0, 0, pxSize, pxSize);
-  map.addImage(name, { width: pxSize, height: pxSize, data: img.data }, { pixelRatio: 3 });
+  map.addImage(name, { width: pxSize, height: pxSize, data: img.data }, { pixelRatio: scale });
 }
 
 /**
@@ -371,94 +374,98 @@ export function registerTacticalSprites(map: maplibregl.Map): void {
     }
   }
 
-  // 2. Capital Imperial Diamond Seal (@3x Retina)
+  // 2. Capital Imperial Diamond Seal (True @3x Retina: 24px logical -> 72px canvas)
   if (!map.hasImage('place-capital-seal')) {
-    const s = 36;
-    const px = 54;
+    const s = 24;
+    const scale = 3;
+    const px = s * scale;
     const c = document.createElement('canvas');
     c.width = px;
     c.height = px;
     const ctx = c.getContext('2d');
     if (ctx) {
-      ctx.scale(1.5, 1.5);
+      ctx.scale(scale, scale);
       const m = s / 2;
       ctx.save();
       ctx.translate(m, m);
       ctx.rotate(Math.PI / 4);
       ctx.fillStyle = '#9E2318';
       ctx.strokeStyle = '#F6D379';
-      ctx.lineWidth = 3;
-      ctx.fillRect(-8, -8, 16, 16);
-      ctx.strokeRect(-8, -8, 16, 16);
+      ctx.lineWidth = 2.0;
+      ctx.fillRect(-5.5, -5.5, 11, 11);
+      ctx.strokeRect(-5.5, -5.5, 11, 11);
       ctx.fillStyle = '#FFF7E0';
-      ctx.fillRect(-3, -3, 6, 6);
+      ctx.fillRect(-2.1, -2.1, 4.2, 4.2);
       ctx.restore();
       const img = ctx.getImageData(0, 0, px, px);
       map.addImage(
         'place-capital-seal',
         { width: px, height: px, data: img.data },
-        { pixelRatio: 3 }
+        { pixelRatio: scale }
       );
     }
   }
 
-  // 3. Garrison / Pass Fortress Emblem (@3x Retina)
+  // 3. Garrison / Pass Fortress Emblem (True @3x Retina: 20px logical -> 60px canvas)
   if (!map.hasImage('place-pass-fort')) {
-    const px = 42;
+    const s = 20;
+    const scale = 3;
+    const px = s * scale;
     const c = document.createElement('canvas');
     c.width = px;
     c.height = px;
     const ctx = c.getContext('2d');
     if (ctx) {
-      ctx.scale(1.5, 1.5);
+      ctx.scale(scale, scale);
       ctx.fillStyle = '#8C5218';
       ctx.strokeStyle = '#FBE6B2';
-      ctx.lineWidth = 2.4;
-      ctx.fillRect(6, 6, 16, 16);
-      ctx.strokeRect(6, 6, 16, 16);
+      ctx.lineWidth = 1.8;
+      ctx.fillRect(5, 5, 10, 10);
+      ctx.strokeRect(5, 5, 10, 10);
       ctx.fillStyle = '#FBE6B2';
-      ctx.fillRect(11, 11, 6, 6);
+      ctx.fillRect(8, 8, 4, 4);
       const img = ctx.getImageData(0, 0, px, px);
       map.addImage(
         'place-pass-fort',
         { width: px, height: px, data: img.data },
-        { pixelRatio: 3 }
+        { pixelRatio: scale }
       );
     }
   }
 
-  // 4. Prefecture / Port Classical Ringed Dot (@3x Retina)
+  // 4. Prefecture / Port Classical Ringed Dot (True @3x Retina: 18px logical -> 54px canvas)
   if (!map.hasImage('place-city-dot')) {
-    const s = 24;
-    const px = 36;
+    const s = 18;
+    const scale = 3;
+    const px = s * scale;
     const c = document.createElement('canvas');
     c.width = px;
     c.height = px;
     const ctx = c.getContext('2d');
     if (ctx) {
-      ctx.scale(1.5, 1.5);
+      ctx.scale(scale, scale);
       const m = s / 2;
       ctx.beginPath();
-      ctx.arc(m, m, 6, 0, Math.PI * 2);
+      ctx.arc(m, m, 4.6, 0, Math.PI * 2);
       ctx.fillStyle = '#FFFDF7';
       ctx.fill();
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = 2.0;
       ctx.strokeStyle = '#5C4938';
       ctx.stroke();
       ctx.beginPath();
-      ctx.arc(m, m, 2.5, 0, Math.PI * 2);
+      ctx.arc(m, m, 2.0, 0, Math.PI * 2);
       ctx.fillStyle = '#B83B2A';
       ctx.fill();
       const img = ctx.getImageData(0, 0, px, px);
       map.addImage(
         'place-city-dot',
         { width: px, height: px, data: img.data },
-        { pixelRatio: 3 }
+        { pixelRatio: scale }
       );
     }
   }
 
-  // 5. GPU Event Medallions (`战` / `史` / `轶` — normal & selected/causal active variants)
+  // 5. GPU Event Medallions (`战` / `史` / `轶` — True @3x Retina, crisp 24–32px CSS size!)
   addDiamondSealSprite(
     map,
     'event-seal-battle',
@@ -466,7 +473,7 @@ export function registerTacticalSprites(map: maplibregl.Map): void {
     '#B83B2A',
     '#FDE68A',
     false,
-    64
+    40
   );
   addDiamondSealSprite(
     map,
@@ -475,7 +482,7 @@ export function registerTacticalSprites(map: maplibregl.Map): void {
     '#8E1912',
     '#FEF08A',
     true,
-    68
+    44
   );
   addDiamondSealSprite(
     map,
@@ -484,7 +491,7 @@ export function registerTacticalSprites(map: maplibregl.Map): void {
     '#9F3526',
     '#FDE68A',
     false,
-    60
+    38
   );
   addDiamondSealSprite(
     map,
@@ -493,7 +500,7 @@ export function registerTacticalSprites(map: maplibregl.Map): void {
     '#8E1912',
     '#FEF08A',
     true,
-    66
+    44
   );
   addCircleSealSprite(
     map,
@@ -502,7 +509,7 @@ export function registerTacticalSprites(map: maplibregl.Map): void {
     '#B76E1D',
     '#FDE68A',
     false,
-    52
+    34
   );
   addCircleSealSprite(
     map,
@@ -511,7 +518,7 @@ export function registerTacticalSprites(map: maplibregl.Map): void {
     '#9A3412',
     '#FEF08A',
     true,
-    60
+    40
   );
 
   // 5b. SDF Marching Flow Chevron & 9-Slice Callout Banners for Campaign War-Room
@@ -575,7 +582,7 @@ export function registerTacticalSprites(map: maplibregl.Map): void {
     }
   }
 
-  // 6. GPU Battlefield Tactical Shockwave Seals (`围` / `决` / `伏` / `守` / `断`)
+  // 6. GPU Battlefield Tactical Shockwave Seals (`围` / `决` / `伏` / `守` / `断` — True @3x Retina!)
   addCircleSealSprite(
     map,
     'battle-marker-siege',
@@ -583,7 +590,7 @@ export function registerTacticalSprites(map: maplibregl.Map): void {
     '#9E2318',
     '#FDE68A',
     true,
-    64
+    40
   );
   addCircleSealSprite(
     map,
@@ -592,7 +599,7 @@ export function registerTacticalSprites(map: maplibregl.Map): void {
     '#B83B2A',
     '#FEF08A',
     true,
-    68
+    44
   );
   addCircleSealSprite(
     map,
@@ -601,7 +608,7 @@ export function registerTacticalSprites(map: maplibregl.Map): void {
     '#B45309',
     '#FDE68A',
     true,
-    64
+    40
   );
   addCircleSealSprite(
     map,
@@ -610,7 +617,7 @@ export function registerTacticalSprites(map: maplibregl.Map): void {
     '#1E40AF',
     '#BFDBFE',
     true,
-    64
+    40
   );
   addCircleSealSprite(
     map,
@@ -619,6 +626,6 @@ export function registerTacticalSprites(map: maplibregl.Map): void {
     '#6D28D9',
     '#DDD6FE',
     true,
-    64
+    40
   );
 }

@@ -98,7 +98,10 @@ function getTargetPixelRatio(perfMode: PerformanceMode): number {
   const pixelBudget = isSmallScreen ? 2_600_000 : 2_800_000;
   const budgetMaxRatio = Math.sqrt(pixelBudget / cssPixels);
   const maxRatio = isSmallScreen ? 2.5 : 1.5;
-  return Math.max(1, Math.min(dpr, maxRatio, budgetMaxRatio));
+  const raw = Math.max(1, Math.min(dpr, maxRatio, budgetMaxRatio));
+  // Snap to clean 0.25 steps (1.0, 1.25, 1.5, 2.0, 2.5) so CJK TinySDF glyphs stay razor-sharp!
+  const snapped = Math.round(raw * 4) / 4;
+  return Math.max(1, Math.min(dpr, maxRatio, snapped));
 }
 
 function ensureTerrainDemSource(

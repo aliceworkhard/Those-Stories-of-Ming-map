@@ -6,14 +6,25 @@ export interface AtlasReleaseEntry {
   highlights: string[];
 }
 
-export const CURRENT_ATLAS_VERSION = 'v1.4.1';
+export const CURRENT_ATLAS_VERSION = 'v1.4.2';
 
 export const ATLAS_RELEASES: AtlasReleaseEntry[] = [
+  {
+    version: 'v1.4.2',
+    date: '2026-11-28',
+    title: '地图图标真 @3x 尺寸修复 · 粗体清晰注记升级 · 「说书」一键启停修复',
+    badge: '最新正式版',
+    highlights: [
+      '修复「明月说书」开启后无法关闭的问题：事件详情抽屉的「说书」按钮接入实时语音播放状态，朗读期间切换为高亮「停说书」一键立即停止；收起抽屉、切换事件或退出战役/全史推演时自动停止朗读，彻底避免后台语音残留。',
+      '修复地图图标比例过小问题：修正 `mapStyle.ts` 中 `@3x` 精灵画布缩放（1.5×）与 `pixelRatio: 3` 声明不匹配导致事件印章（战/史/轶）、战役印记（决/围/伏/守/断）与城池图标被缩小一半的缺陷，恢复饱满清晰的 24–32px 视觉比例。',
+      '提升地图文字锐利度与可读性：主要政权国号、两京州府、事件与战役标签切换至 `Noto Sans Bold` 零模糊描边，并将均衡模式 `pixelRatio` 对齐至 `0.25` 整步，消除非整数缩放引发的中文字体发虚。',
+    ],
+  },
   {
     version: 'v1.4.1',
     date: '2026-11-28',
     title: '全链路丝滑流畅度深度治理（WebGL 零冗余上传 · GPU 像素预算 · 零级联重渲染）',
-    badge: '最新正式版',
+    badge: '历史版本',
     highlights: [
       '消除交互与启动期疆域 GeoJSON 重复上传风暴：将地图同步拆分为 6 条独立按需差分管道，点击事件、缩放跨档、切换图层与同年代拖动时间轴实现 0 次疆域多边形重传；后台 14 期疆域分包改为首屏稳定后逐个空闲加载并按当前快照精准通知。',
       'GPU/WebGL 渲染大幅减负：修复 2K/4K 桌面端均衡模式像素预算越界（严格控制在 2.8M 物理像素内，移动端仍享 2.5x 超清渲染）；疆域与水系源启用 tolerance 简化与 bevel 拐角、移除高开销 line-blur 羽化过绘，并用零 Worker 的 GPU feature-state 替代第 5 层全量多边形悬停图层；省电模式进一步关闭晕渲、林地与水体岸线。',

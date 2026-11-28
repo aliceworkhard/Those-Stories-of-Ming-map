@@ -99,7 +99,8 @@ function CampaignPlayerInner() {
     if (!cmp || !ph) return;
     speakAtlasText(
       `${cmp.title}，第${ph.phaseNo}幕：${ph.title}。${ph.narrative} 胜负手：${ph.whyKeyPoint}`,
-      campaignSpeed === 1.5 ? 1.22 : 1.06
+      campaignSpeed === 1.5 ? 1.22 : 1.06,
+      'campaign'
     );
     return () => stopAtlasNarration();
   }, [activeCampaignId, activePhaseIndex, campaignSpeed, isNarratorEnabled]);

@@ -66,7 +66,8 @@ function StoryTourPlayerInner() {
       : ALL_EVENTS[0];
     speakAtlasText(
       `公元${targetEvt.time.year}年，${targetEvt.title}。${targetEvt.summary}`,
-      storyTourSpeed === 1.5 ? 1.25 : 1.08
+      storyTourSpeed === 1.5 ? 1.25 : 1.08,
+      'tour'
     );
     return () => stopAtlasNarration();
   }, [

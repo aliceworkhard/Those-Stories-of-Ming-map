@@ -4,6 +4,19 @@
 
 ---
 
+## [v1.4.2] — 2026-11-28 · 地图图标尺寸与文字清晰度修复 + 「说书」语音一键启停修复
+
+### 🐛 问题修复与视觉打磨 (Bug Fixes & Visual Polish)
+- **🔊 修复「明月说书」打开后无法关闭的问题 (`narrator.ts`, `EventDetailDrawer.tsx`, `useAtlasStore.ts`)**：
+  - `narrator.ts` 新增实时语音播放状态机与订阅通知（`toggleSpeakAtlasText` / `subscribeNarrationState`），兼容 Chrome/Edge `speechSynthesis.paused` 状态强制清空队列；
+  - 事件详情抽屉的「说书」按钮改为实时启停切换（朗读中变为朱砂高亮 **「停说书」**），且收起抽屉、切换事件、关闭旁白或退出战役/全史推演时自动立即静音。
+- **🗺️ 修复地图图标过小与中文字体偏细发虚 (`mapStyle.ts`, `MingMapLayers.ts`, `MingMapCanvas.tsx`)**：
+  - 修正 `@3x` 精灵画布 `ctx.scale(1.5)` 与 `pixelRatio: 3` 不一致导致全图事件印章（`战`/`史`/`轶`）、战场印记（`决`/`围`/`伏`/`守`/`断`）与城池关隘图标缩水 50% 的问题，全部升级为真 `3x` 高清绘制并恢复舒适醒目比例；
+  - 政权国号、两京州府、事件与战役标签升级为 `Noto Sans Bold` 零模糊描边（`text-halo-blur: 0`），并调优 `text-radial-offset` 避免文字紧贴印章；
+  - 均衡模式 `pixelRatio` 对齐至 `0.25` 清洁步进（`1.0 / 1.25 / 1.5 / 2.0 / 2.5`），消除非整数倍率重采样导致的 CJK 字体模糊。
+
+---
+
 ## [v1.4.1] — 2026-11-28 · 全链路交互流畅度与 GPU/CPU 深度优化（响应 Issue #1）
 
 ### ⚡ 性能专项优化 (Performance & Responsiveness)

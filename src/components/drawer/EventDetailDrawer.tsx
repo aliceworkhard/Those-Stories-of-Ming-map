@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ArrowLeft,
   ArrowRight,
@@ -24,6 +24,7 @@ import {
   Users,
   Video,
   Volume2,
+  VolumeX,
   X,
 } from 'lucide-react';
 import {
@@ -33,12 +34,20 @@ import {
   EVENT_INDEX_MAP,
   EVENT_MAP,
 } from '@/lib/atlasData';
-import { speakAtlasText } from '@/lib/narrator';
+import {
+  getNarrationState,
+  stopAtlasNarration,
+  subscribeNarrationState,
+  toggleSpeakAtlasText,
+} from '@/lib/narrator';
 import { useAtlasStore } from '@/store/useAtlasStore';
 
 function EventDetailDrawerInner() {
   const [lensTab, setLensTab] = useState<'mingyue' | 'history'>('mingyue');
   const [mobileExpanded, setMobileExpanded] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(
+    () => getNarrationState().isSpeaking
+  );
 
   const selectedEventId = useAtlasStore((s) => s.selectedEventId);
   const isDrawerOpen = useAtlasStore((s) => s.isDrawerOpen);
@@ -61,6 +70,28 @@ function EventDetailDrawerInner() {
   const flyToCamera = useAtlasStore((s) => s.flyToCamera);
   const setShareModalOpen = useAtlasStore((s) => s.setShareModalOpen);
   const theme = useAtlasStore((s) => s.theme);
+
+  useEffect(() => {
+    setIsSpeaking(getNarrationState().isSpeaking);
+    return subscribeNarrationState((st) => {
+      setIsSpeaking(st.isSpeaking);
+    });
+  }, []);
+
+  // Automatically stop drawer-initiated speech when closing drawer, entering campaign, or switching event
+  useEffect(() => {
+    if ((!isDrawerOpen || activeCampaignId) && getNarrationState().source === 'drawer') {
+      stopAtlasNarration();
+    }
+  }, [isDrawerOpen, activeCampaignId]);
+
+  useEffect(() => {
+    return () => {
+      if (getNarrationState().source === 'drawer') {
+        stopAtlasNarration();
+      }
+    };
+  }, [selectedEventId]);
 
   // Keep war-room unobstructed while battle campaign player is open
   if (activeCampaignId) return null;
@@ -165,20 +196,38 @@ function EventDetailDrawerInner() {
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
-          {/* Speak Current Event Summary & Causal Insight */}
+          {/* Toggle Speak / Stop Current Event Summary & Causal Insight */}
           <button
             type="button"
             onClick={() =>
-              speakAtlasText(
+              toggleSpeakAtlasText(
                 `${event.time.display}，${event.title}。${event.summary} 山川与制度关键：${event.why.geoFactor} ${event.why.systemFactor}`,
-                1.08
+                1.08,
+                'drawer'
               )
             }
-            className="px-2 py-1 rounded-lg bg-current/8 hover:bg-current/15 text-[11px] font-medium flex items-center gap-1 cursor-pointer"
-            title="语音说书朗读当前事件始末与历史因果"
+            className={`px-2 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1 cursor-pointer transition ${
+              isSpeaking
+                ? 'bg-[#B83B2A] hover:bg-[#9B2C1D] text-amber-50 font-bold shadow-xs'
+                : 'bg-current/8 hover:bg-current/15'
+            }`}
+            title={
+              isSpeaking
+                ? '点击立即停止语音说书朗读'
+                : '语音说书朗读当前事件始末与历史因果'
+            }
           >
-            <Volume2 className="w-3.5 h-3.5 text-[#B83B2A] dark:text-amber-400" />
-            <span className="hidden sm:inline">说书</span>
+            {isSpeaking ? (
+              <>
+                <VolumeX className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">停说书</span>
+              </>
+            ) : (
+              <>
+                <Volume2 className="w-3.5 h-3.5 text-[#B83B2A] dark:text-amber-400" />
+                <span className="hidden sm:inline">说书</span>
+              </>
+            )}
           </button>
 
           {/* Share Current Event Card / Deep-Link */}

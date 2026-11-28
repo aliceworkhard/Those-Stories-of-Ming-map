@@ -7,6 +7,7 @@ import {
   EVENT_INDEX_MAP,
   EVENT_MAP,
 } from '@/lib/atlasData';
+import { stopAtlasNarration } from '@/lib/narrator';
 import { parseAtlasUrlParams } from '@/lib/urlState';
 import type {
   CameraPose,
@@ -602,11 +603,13 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     persistSnapshot(get());
   },
 
-  stopStoryTour: () =>
+  stopStoryTour: () => {
+    stopAtlasNarration();
     set({
       isStoryTourPlaying: false,
       storyTourProgress: 0,
-    }),
+    });
+  },
 
   setStoryTourPlaying: (playing) =>
     set((state) => ({
@@ -644,7 +647,8 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
     }));
   },
 
-  exitCampaign: () =>
+  exitCampaign: () => {
+    stopAtlasNarration();
     set((state) => {
       const mobile = isMobileViewport();
       const narrow = isNarrowViewport();
@@ -659,7 +663,8 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
         isDirectoryOpen: state.isImmersionMode ? false : !narrow,
         isDrawerOpen: state.isImmersionMode ? false : !mobile,
       };
-    }),
+    });
+  },
 
   setCampaignPhase: (phaseIndex) => {
     const { activeCampaignId } = get();
@@ -796,7 +801,13 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   setShareModalOpen: (open) => set({ isShareModalOpen: open }),
   setReleaseModalOpen: (open) => set({ isReleaseModalOpen: open }),
   toggleNarrator: () =>
-    set((state) => ({ isNarratorEnabled: !state.isNarratorEnabled })),
+    set((state) => {
+      const next = !state.isNarratorEnabled;
+      if (!next) {
+        stopAtlasNarration();
+      }
+      return { isNarratorEnabled: next };
+    }),
   setTheme: (theme) => {
     set({ theme });
     persistSnapshot(get());
