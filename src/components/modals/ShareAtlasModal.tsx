@@ -1,7 +1,17 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { Check, Copy, Download, Share2, Sparkles, X } from 'lucide-react';
+import {
+  Check,
+  Copy,
+  Download,
+  ExternalLink,
+  Share2,
+  Sparkles,
+  Star,
+  X,
+} from 'lucide-react';
+import { SITE_CONFIG } from '@/config/site';
 import {
   ALL_EVENTS,
   CAMPAIGN_MAP,
@@ -272,6 +282,27 @@ function ShareAtlasModalInner() {
                 />
               )}
             </div>
+          </div>
+
+          {/* 3. Subtle Open-Source Star & Community Support Footer */}
+          <div className="pt-2.5 border-t border-current/12 flex flex-wrap items-center justify-between gap-2 text-[11px]">
+            <span className="opacity-80">
+              喜欢《{SITE_CONFIG.title}》？欢迎点亮 Star 或推荐给《明朝那些事儿》同好书友
+            </span>
+            <a
+              href={SITE_CONFIG.repoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`px-2.5 py-1 rounded-lg border font-bold flex items-center gap-1.5 transition cursor-pointer shrink-0 ${
+                isDark
+                  ? 'border-amber-400/45 bg-amber-500/15 hover:bg-amber-500/25 text-amber-200'
+                  : 'border-amber-900/25 bg-amber-500/12 hover:bg-amber-500/22 text-amber-950'
+              }`}
+            >
+              <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+              <span>点亮 GitHub Star</span>
+              <ExternalLink className="w-3 h-3 opacity-70" />
+            </a>
           </div>
         </div>
       </div>

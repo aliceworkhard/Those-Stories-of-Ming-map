@@ -285,19 +285,23 @@ export async function renderXuanPaperShareCard(
     }
   }
 
-  // Footer Deep-Link Bar (`y = 668`)
+  // Footer Deep-Link & GitHub Repo Bar (`y = 672`)
   ctx.fillStyle = secondaryText;
-  ctx.font = '500 13px "PingFang SC", "Microsoft YaHei", sans-serif';
+  ctx.font = '500 12.5px "PingFang SC", "Microsoft YaHei", sans-serif';
   const cleanUrl =
-    payload.shareUrl.length > 76
-      ? `${payload.shareUrl.slice(0, 75)}…`
+    payload.shareUrl.length > 64
+      ? `${payload.shareUrl.slice(0, 63)}…`
       : payload.shareUrl;
-  ctx.fillText(`🔗 在线直达当前现场：${cleanUrl}`, 48, 672);
+  ctx.fillText(`🔗 现场直链：${cleanUrl}`, 48, 672);
 
   ctx.textAlign = 'right';
   ctx.fillStyle = accentColor;
-  ctx.font = '600 13px "PingFang SC", "Microsoft YaHei", sans-serif';
-  ctx.fillText('GitHub 开源 · MIT License', W - 48, 672);
+  ctx.font = '700 12.5px "PingFang SC", "Microsoft YaHei", sans-serif';
+  ctx.fillText(
+    '★ GitHub 开源：aliceworkhard/Those-Stories-of-Ming-map · MIT',
+    W - 48,
+    672
+  );
 
   return canvas.toDataURL('image/png');
 }

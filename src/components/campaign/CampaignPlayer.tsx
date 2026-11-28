@@ -15,6 +15,7 @@ import {
   RotateCcw,
   ScrollText,
   Share2,
+  Star,
   Swords,
   Video,
   Volume2,
@@ -22,6 +23,7 @@ import {
   X,
   ZoomIn,
 } from 'lucide-react';
+import { SITE_CONFIG } from '@/config/site';
 import {
   ALL_CAMPAIGNS,
   CAMPAIGN_MAP,
@@ -521,6 +523,20 @@ function CampaignPlayerInner() {
                 <p className="text-[11px] leading-relaxed opacity-92">
                   {campaign.strategicOutcome}
                 </p>
+                <div className="mt-2 pt-2 border-t border-current/12 flex items-center justify-between gap-2 text-[10px]">
+                  <span className="opacity-75">
+                    喜欢这场推演？欢迎点 Star 支持持续更新
+                  </span>
+                  <a
+                    href={SITE_CONFIG.repoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-2 py-0.5 rounded-md bg-amber-500/18 hover:bg-amber-500/30 text-amber-900 dark:text-amber-200 border border-amber-500/35 font-bold flex items-center gap-1 shrink-0 transition"
+                  >
+                    <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
+                    <span>GitHub Star</span>
+                  </a>
+                </div>
               </div>
             )}
           </div>
