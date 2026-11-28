@@ -76,11 +76,12 @@ function getPhaseTotalDurationMs(
 }
 
 /**
- * Computes an adaptive physical-framebuffer pixelRatio with strict fill-rate protection:
- * - Mobile (<1024px): stays crisp up to 2.5x Retina (1.5x in eco, 3x in ultra) within 2.6M px.
- * - Desktop (>=1024px): enforces a strict 2.8M physical-pixel budget in `balanced` mode
- *   (max 1.5x on 13-14" Retina laptops, 1.0x on 2K/4K monitors) — eliminating the 8M-18M px
- *   fill-rate bottleneck while keeping `ultra` available for native Retina rendering!
+ * Computes the WebGL framebuffer pixelRatio prioritizing 1:1 native sharpness:
+ * - `balanced` (default): Uses EXACT 1:1 native `window.devicePixelRatio` (up to 2x on desktop,
+ *   3x on mobile/tablet) so WebGL map text & lines match native HTML UI sharpness with ZERO
+ *   bilinear upscaling blur! (Only guards extreme 5K/6K viewports > 9.5M physical pixels.)
+ * - `eco`: Intentionally downscales to 1.0x on desktop (1.5x max on phones) for older iGPUs.
+ * - `ultra`: Full native Retina up to 3x + 3D terrain mesh.
  */
 function getTargetPixelRatio(perfMode: PerformanceMode): number {
   if (typeof window === 'undefined') return 1;
@@ -95,13 +96,13 @@ function getTargetPixelRatio(perfMode: PerformanceMode): number {
     return Math.min(dpr, 3);
   }
 
-  const pixelBudget = isSmallScreen ? 2_600_000 : 2_800_000;
-  const budgetMaxRatio = Math.sqrt(pixelBudget / cssPixels);
-  const maxRatio = isSmallScreen ? 2.5 : 1.5;
-  const raw = Math.max(1, Math.min(dpr, maxRatio, budgetMaxRatio));
-  // Snap to clean 0.25 steps (1.0, 1.25, 1.5, 2.0, 2.5) so CJK TinySDF glyphs stay razor-sharp!
-  const snapped = Math.round(raw * 4) / 4;
-  return Math.max(1, Math.min(dpr, maxRatio, snapped));
+  // `balanced`: exact 1:1 native DPR (up to 2x desktop / 3x mobile) — zero upscaling blur!
+  const target = isSmallScreen ? Math.min(dpr, 3) : Math.min(dpr, 2);
+  const physicalPixels = cssPixels * target * target;
+  if (physicalPixels > 9_500_000) {
+    return Math.max(1, Math.min(target, Math.sqrt(9_500_000 / cssPixels)));
+  }
+  return target;
 }
 
 function ensureTerrainDemSource(
@@ -627,6 +628,10 @@ function MingMapCanvasInner() {
       refreshExpiredTiles: false,
       validateStyle: false,
       attributionControl: false,
+      canvasContextAttributes: {
+        antialias: initState.perfMode !== 'eco',
+        powerPreference: 'high-performance',
+      },
       localIdeographFontFamily:
         "'PingFang SC', 'HarmonyOS Sans SC', 'MiSans', 'Hiragino Sans GB', 'Microsoft YaHei UI', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif",
     });

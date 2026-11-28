@@ -4,6 +4,15 @@
 
 ---
 
+## [v1.4.3] — 2026-11-28 · 高分屏 1:1 原生视网膜超清渲染与 WebGL 抗锯齿修复
+
+### 🔍 清晰度修复 (HiDPI & Visual Crispness)
+- **解锁 1:1 显示器原生 `devicePixelRatio` (`MingMapCanvas.tsx`)**：修复 2K/2.5K 高分屏在「均衡」模式下因像素预算降采样再被浏览器双线性拉伸导致的整体地图发虚问题，桌面端恢复 1:1 原生最高 `2×`、移动端原生最高 `3×` 清晰渲染。
+- **开启 WebGL 硬件抗锯齿 (`antialias: true`)**：均衡/极致模式下开启硬件 MSAA 抗锯齿，显著提升河流、国界、海岸线与行军箭矢锐利度。
+- **恢复高倍缩放山川与边界精度 (`mapStyle.ts`, `MingMapLayers.ts`)**：`hillshade-dem` 提升至 `maxzoom: 8`（极致 `9`），疆域与古水系 GeoJSON 源收紧至 `tolerance: 0.4` / `maxzoom: 11`。
+
+---
+
 ## [v1.4.2] — 2026-11-28 · 地图图标尺寸与文字清晰度修复 + 「说书」语音一键启停修复
 
 ### 🐛 问题修复与视觉打磨 (Bug Fixes & Visual Polish)

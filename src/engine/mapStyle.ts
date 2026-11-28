@@ -39,7 +39,7 @@ export function createHistoricalBaseStyle(
   const isDark = theme === 'xuanmo';
   const isEco = perfMode === 'eco';
   const useTerrainMesh = enable3D && !isEco;
-  const hillshadeMaxZoom = perfMode === 'ultra' ? 8 : 7;
+  const hillshadeMaxZoom = perfMode === 'ultra' ? 9 : 8;
 
   // Song/Ming Blue-and-Green Scroll (Light) vs Obsidian-Bronze Sand-Table (Dark)
   const landColor = isDark ? '#0F141D' : '#EFE6D4';

@@ -192,9 +192,9 @@ export function mountHistoricalLayers(
       type: 'geojson',
       data: initialTerritories,
       generateId: true,
-      tolerance: 0.65,
+      tolerance: 0.4,
       buffer: 64,
-      maxzoom: 10,
+      maxzoom: 11,
     });
   }
 
@@ -202,9 +202,9 @@ export function mountHistoricalLayers(
     map.addSource('ming-territory-wipe', {
       type: 'geojson',
       data: EMPTY_FC,
-      tolerance: 0.65,
+      tolerance: 0.4,
       buffer: 64,
-      maxzoom: 10,
+      maxzoom: 11,
     });
   }
 
@@ -444,9 +444,9 @@ export function mountHistoricalLayers(
     map.addSource('ming-waterways', {
       type: 'geojson',
       data: MING_WATERWAYS_GEOJSON,
-      tolerance: 0.65,
+      tolerance: 0.4,
       buffer: 64,
-      maxzoom: 10,
+      maxzoom: 11,
     });
   }
 

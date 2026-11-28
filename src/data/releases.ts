@@ -6,14 +6,25 @@ export interface AtlasReleaseEntry {
   highlights: string[];
 }
 
-export const CURRENT_ATLAS_VERSION = 'v1.4.2';
+export const CURRENT_ATLAS_VERSION = 'v1.4.3';
 
 export const ATLAS_RELEASES: AtlasReleaseEntry[] = [
+  {
+    version: 'v1.4.3',
+    date: '2026-11-28',
+    title: '高分屏 1:1 原生视网膜超清修复 · WebGL 硬件抗锯齿开启',
+    badge: '最新正式版',
+    highlights: [
+      '彻底解决 2K/2.5K/4K 桌面高分屏地图整体发虚问题：「均衡」模式解锁 1:1 显示器原生 `devicePixelRatio`（桌面端最高原生 2×、移动端最高原生 3×），消除画布降采样再双线性拉伸放大引发的整体模糊；仅「省电」模式主动降采样。',
+      '开启 WebGL 硬件抗锯齿（`antialias: true`，省电模式关闭），斜向水系、疆域国界与行军箭矢边缘更平滑锐利。',
+      '提升高倍放大时的地形与边界精度：山体晕渲 DEM 恢复 `maxzoom: 8`（极致 `9`），疆域与古水系矢量简化容差收紧至 `0.4`（`maxzoom: 11`）。',
+    ],
+  },
   {
     version: 'v1.4.2',
     date: '2026-11-28',
     title: '地图图标真 @3x 尺寸修复 · 粗体清晰注记升级 · 「说书」一键启停修复',
-    badge: '最新正式版',
+    badge: '历史版本',
     highlights: [
       '修复「明月说书」开启后无法关闭的问题：事件详情抽屉的「说书」按钮接入实时语音播放状态，朗读期间切换为高亮「停说书」一键立即停止；收起抽屉、切换事件或退出战役/全史推演时自动停止朗读，彻底避免后台语音残留。',
       '修复地图图标比例过小问题：修正 `mapStyle.ts` 中 `@3x` 精灵画布缩放（1.5×）与 `pixelRatio: 3` 声明不匹配导致事件印章（战/史/轶）、战役印记（决/围/伏/守/断）与城池图标被缩小一半的缺陷，恢复饱满清晰的 24–32px 视觉比例。',
