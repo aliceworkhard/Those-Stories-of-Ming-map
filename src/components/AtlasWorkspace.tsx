@@ -36,62 +36,59 @@ const MingMapCanvas = dynamic(
 );
 
 export default function AtlasWorkspace() {
-  const hasHydratedCache = useAtlasStore((s) => s.hasHydratedCache);
-  const currentYear = useAtlasStore((s) => s.currentYear);
-  const selectedEventId = useAtlasStore((s) => s.selectedEventId);
-  const activeCampaignId = useAtlasStore((s) => s.activeCampaignId);
-  const activePhaseIndex = useAtlasStore((s) => s.activePhaseIndex);
-  const campaignArrowMode = useAtlasStore((s) => s.campaignArrowMode);
-  const activeCharacterId = useAtlasStore((s) => s.activeCharacterId);
-  const activeCharacterStopIndex = useAtlasStore(
-    (s) => s.activeCharacterStopIndex
+  // Subscribe ONLY to root-container visual booleans so scrubbing years / clicking events /
+  // switching phases NEVER re-renders AtlasWorkspace or its 12 sibling children!
+  const isDark = useAtlasStore((s) => s.theme === 'xuanmo');
+  const drawerTakesRight = useAtlasStore((s) =>
+    s.activeCampaignId ? s.isCampaignPanelOpen : s.isDrawerOpen
   );
-  const theme = useAtlasStore((s) => s.theme);
-  const is3D = useAtlasStore((s) => s.is3D);
-  const isDrawerOpen = useAtlasStore((s) => s.isDrawerOpen);
-  const isCampaignPanelOpen = useAtlasStore((s) => s.isCampaignPanelOpen);
-  const hydrateFromStorage = useAtlasStore((s) => s.hydrateFromStorage);
-
-  const isDark = theme === 'xuanmo';
-  const drawerTakesRight = activeCampaignId ? isCampaignPanelOpen : isDrawerOpen;
 
   useEffect(() => {
-    hydrateFromStorage();
-  }, [hydrateFromStorage]);
+    useAtlasStore.getState().hydrateFromStorage();
 
-  // Throttled zero-overhead URL query state sync (`replaceState` -> 0 router re-renders!)
-  useEffect(() => {
-    if (!hasHydratedCache || typeof window === 'undefined') return;
-    const timer = window.setTimeout(() => {
-      const qs = buildAtlasQueryString({
-        currentYear,
-        selectedEventId,
-        activeCampaignId,
-        activePhaseIndex,
-        campaignArrowMode,
-        activeCharacterId,
-        activeCharacterStopIndex,
-        theme,
-        is3D,
-      });
-      const nextUrl = `${window.location.pathname}${qs}`;
-      if (`${window.location.pathname}${window.location.search}` !== nextUrl) {
-        window.history.replaceState(null, '', nextUrl);
-      }
-    }, 280);
-    return () => window.clearTimeout(timer);
-  }, [
-    hasHydratedCache,
-    currentYear,
-    selectedEventId,
-    activeCampaignId,
-    activePhaseIndex,
-    campaignArrowMode,
-    activeCharacterId,
-    activeCharacterStopIndex,
-    theme,
-    is3D,
-  ]);
+    // Imperative zero-re-render URL query sync via Zustand subscribe (debounced 280ms)
+    let timer: number | null = null;
+    let lastSig = '';
+    const scheduleUrlSync = () => {
+      const s = useAtlasStore.getState();
+      if (!s.hasHydratedCache || typeof window === 'undefined') return;
+      const sig = `${s.currentYear}|${s.selectedEventId ?? ''}|${
+        s.activeCampaignId ?? ''
+      }|${s.activePhaseIndex}|${s.campaignArrowMode}|${
+        s.activeCharacterId ?? ''
+      }|${s.activeCharacterStopIndex}|${s.theme}|${s.is3D ? 1 : 0}`;
+      if (sig === lastSig) return;
+      lastSig = sig;
+
+      if (timer !== null) window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        timer = null;
+        const cur = useAtlasStore.getState();
+        const qs = buildAtlasQueryString({
+          currentYear: cur.currentYear,
+          selectedEventId: cur.selectedEventId,
+          activeCampaignId: cur.activeCampaignId,
+          activePhaseIndex: cur.activePhaseIndex,
+          campaignArrowMode: cur.campaignArrowMode,
+          activeCharacterId: cur.activeCharacterId,
+          activeCharacterStopIndex: cur.activeCharacterStopIndex,
+          theme: cur.theme,
+          is3D: cur.is3D,
+        });
+        const nextUrl = `${window.location.pathname}${qs}`;
+        if (`${window.location.pathname}${window.location.search}` !== nextUrl) {
+          window.history.replaceState(null, '', nextUrl);
+        }
+      }, 280);
+    };
+
+    scheduleUrlSync();
+    const unsub = useAtlasStore.subscribe(scheduleUrlSync);
+    return () => {
+      unsub();
+      if (timer !== null) window.clearTimeout(timer);
+    };
+  }, []);
 
   return (
     <main

@@ -49,15 +49,18 @@ export const TERRITORY_SNAPSHOT_BY_ID: Record<
 );
 
 const loadedSnapshotIdSet = new Set<string>(['ter-1356']);
-const listeners = new Set<() => void>();
+type TerritoryChunkListener = (loadedSnapshotIds: string[]) => void;
+const listeners = new Set<TerritoryChunkListener>();
 
-function notifyTerritoryListeners(): void {
+function notifyTerritoryListeners(loadedSnapshotIds: string[]): void {
   for (const fn of listeners) {
-    fn();
+    fn(loadedSnapshotIds);
   }
 }
 
-export function subscribeTerritoryChunks(listener: () => void): () => void {
+export function subscribeTerritoryChunks(
+  listener: TerritoryChunkListener
+): () => void {
   listeners.add(listener);
   return () => {
     listeners.delete(listener);
@@ -84,13 +87,17 @@ export async function ensureTerritoryFileLoaded(
     .then((mod) => {
       const fc = (mod.default ?? mod) as GeoJSON.FeatureCollection;
       loadedGeoJsonByFile[fileName] = fc;
+      const updatedIds: string[] = [];
       for (const meta of TERRITORY_INDEX) {
         if (meta.file === fileName) {
           TERRITORY_SNAPSHOT_BY_ID[meta.snapshotId] = { meta, geojson: fc };
           loadedSnapshotIdSet.add(meta.snapshotId);
+          updatedIds.push(meta.snapshotId);
         }
       }
-      notifyTerritoryListeners();
+      if (updatedIds.length > 0) {
+        notifyTerritoryListeners(updatedIds);
+      }
       return fc;
     })
     .catch(() => FALLBACK_1356_GEOJSON);
@@ -108,32 +115,53 @@ export async function ensureSnapshotIdLoaded(snapshotId: string): Promise<void> 
 let warmStarted = false;
 
 /**
- * Pre-warms all remaining 14 historical GIS territory chunks during browser idle time
- * so first-paint JS bundle stays ultra-lean while timeline scrubbing remains 0ms instant!
+ * Gently pre-warms remaining historical GIS territory chunks ONE BY ONE during browser
+ * idle periods AFTER initial map tiles have settled — avoiding the 14x parallel parse &
+ * GC spike during first interaction while keeping later timeline scrubbing instant!
  */
 export function scheduleWarmAllTerritoryChunks(): void {
   if (typeof window === 'undefined' || warmStarted) return;
   warmStarted = true;
 
-  const runWarm = () => {
-    void Promise.all(
-      Object.keys(TERRITORY_CHUNK_LOADERS).map((file) =>
-        ensureTerritoryFileLoaded(file)
-      )
-    );
-  };
+  const queue = Object.keys(TERRITORY_CHUNK_LOADERS).filter(
+    (file) => !loadedGeoJsonByFile[file]
+  );
+  if (queue.length === 0) return;
 
   const ric = (
     window as Window & {
-      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      requestIdleCallback?: (
+        cb: () => void,
+        opts?: { timeout: number }
+      ) => number;
     }
   ).requestIdleCallback;
 
-  if (typeof ric === 'function') {
-    ric(runWarm, { timeout: 1200 });
-  } else {
-    window.setTimeout(runWarm, 450);
-  }
+  let idx = 0;
+  const loadNext = () => {
+    while (idx < queue.length && loadedGeoJsonByFile[queue[idx]]) {
+      idx++;
+    }
+    if (idx >= queue.length) return;
+    const nextFile = queue[idx++];
+    void ensureTerritoryFileLoaded(nextFile).finally(() => {
+      if (idx >= queue.length) return;
+      if (typeof ric === 'function') {
+        window.setTimeout(() => ric(loadNext, { timeout: 2500 }), 180);
+      } else {
+        window.setTimeout(loadNext, 280);
+      }
+    });
+  };
+
+  // Defer warming until initial WebGL map render & vector tiles settle
+  window.setTimeout(() => {
+    if (typeof ric === 'function') {
+      ric(loadNext, { timeout: 3000 });
+    } else {
+      loadNext();
+    }
+  }, 2200);
 }
 
 export function getSnapshotForYear(year: number): {
@@ -152,8 +180,10 @@ export function getSnapshotForYear(year: number): {
     void ensureTerritoryFileLoaded(matched.file);
   }
 
-  return {
-    meta: matched,
-    geojson: loadedGeoJsonByFile[matched.file] ?? FALLBACK_1356_GEOJSON,
-  };
+  return (
+    TERRITORY_SNAPSHOT_BY_ID[matched.snapshotId] ?? {
+      meta: matched,
+      geojson: loadedGeoJsonByFile[matched.file] ?? FALLBACK_1356_GEOJSON,
+    }
+  );
 }

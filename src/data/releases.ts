@@ -6,14 +6,26 @@ export interface AtlasReleaseEntry {
   highlights: string[];
 }
 
-export const CURRENT_ATLAS_VERSION = 'v1.4.0';
+export const CURRENT_ATLAS_VERSION = 'v1.4.1';
 
 export const ATLAS_RELEASES: AtlasReleaseEntry[] = [
+  {
+    version: 'v1.4.1',
+    date: '2026-11-28',
+    title: '全链路丝滑流畅度深度治理（WebGL 零冗余上传 · GPU 像素预算 · 零级联重渲染）',
+    badge: '最新正式版',
+    highlights: [
+      '消除交互与启动期疆域 GeoJSON 重复上传风暴：将地图同步拆分为 6 条独立按需差分管道，点击事件、缩放跨档、切换图层与同年代拖动时间轴实现 0 次疆域多边形重传；后台 14 期疆域分包改为首屏稳定后逐个空闲加载并按当前快照精准通知。',
+      'GPU/WebGL 渲染大幅减负：修复 2K/4K 桌面端均衡模式像素预算越界（严格控制在 2.8M 物理像素内，移动端仍享 2.5x 超清渲染）；疆域与水系源启用 tolerance 简化与 bevel 拐角、移除高开销 line-blur 羽化过绘，并用零 Worker 的 GPU feature-state 替代第 5 层全量多边形悬停图层；省电模式进一步关闭晕渲、林地与水体岸线。',
+      '消除 120Hz 鼠标移动与拖拽期命中风暴：移除 4 个图层代理 mouseenter 监听器，合并为拖拽自动跳过的节流单通命中检测，手动拖拽/缩放期间暂停动态箭矢 Worker 队列争抢。',
+      '消除 React 级联重渲染与主线程卡顿：URL 同步改为无重渲染订阅、localStorage 进度保存 300ms 防抖、全站 12 组件接入 React.memo、拆离顶栏年份微件、时间轴 RAF 帧合批、目录列表启用 content-visibility 虚拟化渲染与战役布尔裁切 BBox 快速剔除。',
+    ],
+  },
   {
     version: 'v1.4.0',
     date: '2026-11-27',
     title: '可视化战役投稿工坊 (/dev/campaign-builder) · 疆域切片异步分包瘦身',
-    badge: '最新正式版',
+    badge: '历史版本',
     highlights: [
       '上线零代码众包神器「可视化战役投稿工坊 (/dev/campaign-builder)」：点击地图即可绘制多路有序行军箭矢、放置交战印章、实时预览动态推演并一键导出标准合规 JSON 提交 PR。',
       '首屏包体极速瘦身优化：将非首屏 14 期高精度疆域 GIS 切片与东亚海岸线掩膜拆分为异步按需分包 + 空闲时间自动预热（requestIdleCallback），首页主包体积从 859 kB 直降至 312 kB（压降 63.7%）。',

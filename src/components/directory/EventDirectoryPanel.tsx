@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ListOrdered,
   MapPin,
@@ -16,8 +16,38 @@ import { useAtlasStore } from '@/store/useAtlasStore';
 
 type DirectoryFilter = 'all' | 'macro' | 'micro' | 'campaign';
 
-export default function EventDirectoryPanel() {
+// Pre-computed once at module load for instant 0-allocation keyword filtering
+const STATIC_COUNTS = {
+  all: ALL_EVENTS.length,
+  macro: ALL_EVENTS.filter((e) => e.tier === 'macro').length,
+  micro: ALL_EVENTS.filter((e) => e.tier === 'micro').length,
+  campaign: ALL_EVENTS.filter((e) => Boolean(e.campaignId)).length,
+};
+
+const EVENT_SEARCH_HAYSTACK = new Map<string, string>(
+  ALL_EVENTS.map((evt) => [
+    evt.id,
+    [
+      evt.title,
+      String(evt.time.year),
+      evt.time.reignTitle,
+      evt.location.ancientName,
+      evt.location.modernName,
+      ...evt.actors,
+    ]
+      .join(' ')
+      .toLowerCase(),
+  ])
+);
+
+const ROW_CONTENT_VISIBILITY_STYLE: React.CSSProperties = {
+  contentVisibility: 'auto',
+  containIntrinsicSize: 'auto 74px',
+};
+
+function EventDirectoryPanelInner() {
   const [query, setQuery] = useState('');
+  const deferredQuery = useDeferredValue(query);
   const [filter, setFilter] = useState<DirectoryFilter>('all');
   const [mobileExpanded, setMobileExpanded] = useState(false);
   const activeItemRef = useRef<HTMLButtonElement | null>(null);
@@ -37,43 +67,25 @@ export default function EventDirectoryPanel() {
   const isTourHudOpen =
     !activeCampaignId && (isStoryTourPlaying || hasTourSession);
 
-  const counts = useMemo(
-    () => ({
-      all: ALL_EVENTS.length,
-      macro: ALL_EVENTS.filter((e) => e.tier === 'macro').length,
-      micro: ALL_EVENTS.filter((e) => e.tier === 'micro').length,
-      campaign: ALL_EVENTS.filter((e) => Boolean(e.campaignId)).length,
-    }),
-    []
-  );
+  const counts = STATIC_COUNTS;
 
   const filteredEvents = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = deferredQuery.trim().toLowerCase();
     return ALL_EVENTS.filter((evt) => {
       if (filter === 'macro' && evt.tier !== 'macro') return false;
       if (filter === 'micro' && evt.tier !== 'micro') return false;
       if (filter === 'campaign' && !evt.campaignId) return false;
       if (!q) return true;
-      const haystack = [
-        evt.title,
-        String(evt.time.year),
-        evt.time.reignTitle,
-        evt.location.ancientName,
-        evt.location.modernName,
-        ...evt.actors,
-      ]
-        .join(' ')
-        .toLowerCase();
-      return haystack.includes(q);
+      return (EVENT_SEARCH_HAYSTACK.get(evt.id) ?? '').includes(q);
     });
-  }, [filter, query]);
+  }, [filter, deferredQuery]);
 
-  // Keep selected event scrolled smoothly into view inside the directory
+  // Keep selected event scrolled cleanly into view without smooth-scroll layout contention during flyTo
   useEffect(() => {
     if (isDirectoryOpen && activeItemRef.current) {
       activeItemRef.current.scrollIntoView({
         block: 'nearest',
-        behavior: 'smooth',
+        behavior: 'auto',
       });
     }
   }, [selectedEventId, isDirectoryOpen]);
@@ -255,6 +267,7 @@ export default function EventDirectoryPanel() {
               <button
                 key={item.id}
                 ref={active ? activeItemRef : null}
+                style={ROW_CONTENT_VISIBILITY_STYLE}
                 type="button"
                 onClick={() => {
                   exitCampaign();
@@ -331,3 +344,6 @@ export default function EventDirectoryPanel() {
     </aside>
   );
 }
+
+const EventDirectoryPanel = React.memo(EventDirectoryPanelInner);
+export default EventDirectoryPanel;

@@ -12,12 +12,17 @@ import {
   VolumeX,
   X,
 } from 'lucide-react';
-import { ALL_EVENTS, CAMPAIGN_MAP, EVENT_MAP } from '@/lib/atlasData';
+import {
+  ALL_EVENTS,
+  CAMPAIGN_MAP,
+  EVENT_INDEX_MAP,
+  EVENT_MAP,
+} from '@/lib/atlasData';
 import { speakAtlasText, stopAtlasNarration } from '@/lib/narrator';
 import { subscribePlaybackTick } from '@/lib/playbackBus';
 import { useAtlasStore } from '@/store/useAtlasStore';
 
-export default function StoryTourPlayer() {
+function StoryTourPlayerInner() {
   const barRef = useRef<HTMLDivElement | null>(null);
 
   const isStoryTourPlaying = useAtlasStore((s) => s.isStoryTourPlaying);
@@ -80,7 +85,7 @@ export default function StoryTourPlayer() {
   const evt = selectedEventId
     ? EVENT_MAP[selectedEventId] ?? ALL_EVENTS[0]
     : ALL_EVENTS[0];
-  const idx = Math.max(0, ALL_EVENTS.findIndex((e) => e.id === evt.id));
+  const idx = EVENT_INDEX_MAP[evt.id] ?? 0;
   const linkedCampaign = evt.campaignId ? CAMPAIGN_MAP[evt.campaignId] : null;
   const isDark = theme === 'xuanmo';
 
@@ -213,3 +218,6 @@ export default function StoryTourPlayer() {
     </section>
   );
 }
+
+const StoryTourPlayer = React.memo(StoryTourPlayerInner);
+export default StoryTourPlayer;

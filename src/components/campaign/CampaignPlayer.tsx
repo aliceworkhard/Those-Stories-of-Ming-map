@@ -53,7 +53,7 @@ function getTacticLabel(type: CampaignRoute['type']): string {
   }
 }
 
-export default function CampaignPlayer() {
+function CampaignPlayerInner() {
   const barRef = useRef<HTMLDivElement | null>(null);
   const [unlockedSteps, setUnlockedSteps] = useState(1);
 
@@ -750,3 +750,6 @@ export default function CampaignPlayer() {
     </>
   );
 }
+
+const CampaignPlayer = React.memo(CampaignPlayerInner);
+export default CampaignPlayer;

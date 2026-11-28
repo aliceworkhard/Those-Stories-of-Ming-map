@@ -31,12 +31,30 @@ const computedEraDeltaCache = new Map<string, EraWipePlan>();
 const customCampaignSliceCache = new Map<string, PcMultiPolygon>();
 const customCampaignBaseCache = new Map<string, GeoJSON.FeatureCollection>();
 
-// Evict geometry caches whenever a lazy-loaded historical snapshot chunk arrives
-subscribeTerritoryChunks(() => {
-  simplifiedSnapshotPolityCache.clear();
-  computedEraDeltaCache.clear();
+// Selectively evict ONLY geometry caches affected by the newly arrived snapshot chunk
+subscribeTerritoryChunks((loadedIds) => {
+  if (!loadedIds || loadedIds.length === 0) return;
+  const loadedSet = new Set(loadedIds);
+  for (const k of simplifiedSnapshotPolityCache.keys()) {
+    const snapId = k.split('::')[0];
+    if (loadedSet.has(snapId)) simplifiedSnapshotPolityCache.delete(k);
+  }
+  for (const k of computedEraDeltaCache.keys()) {
+    const [fromId, toId] = k.split('->');
+    if (loadedSet.has(fromId) || loadedSet.has(toId)) {
+      computedEraDeltaCache.delete(k);
+    }
+  }
+  // Evict campaign caches that depended on any newly arrived snapshot
   customCampaignSliceCache.clear();
   customCampaignBaseCache.clear();
+  if (
+    loadedSet.has('ter-1363') ||
+    loadedSet.has('ter-1368') ||
+    loadedSet.has('ter-1399')
+  ) {
+    cachedSlices = null;
+  }
 });
 
 function requireSnapshotReady(id: string): boolean {
@@ -270,10 +288,19 @@ function getCachedBoxSlice(
   return sliced;
 }
 
+function bboxesOverlap(
+  a: [number, number, number, number],
+  b: [number, number, number, number]
+): boolean {
+  return a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
+}
+
 /**
  * Generates a modified base FeatureCollection where a local contested slice `zoneMp`
  * is carved out of existing regimes and colored as the pre-battle opposing force,
  * so ONLY `zoneMp` changes color when conquered!
+ * Uses per-polygon bbox rejection so non-overlapping polities/islands skip boolean
+ * clipping in ~0.001ms instead of running polygon-clipping over all 6,000+ vertices.
  */
 function getCarvedContestedBase(
   cacheKey: string,
@@ -284,12 +311,43 @@ function getCarvedContestedBase(
   const hit = customCampaignBaseCache.get(cacheKey);
   if (hit) return hit;
 
+  const zoneBbox = multiPolyBbox(zoneMp);
   const nextFeatures: GeoJSON.Feature[] = [];
   for (const f of baseFc.features) {
     const mp = toPcMultiPolygon(f.geometry);
     if (mp.length === 0) continue;
-    const rem = polygonClipping.difference(mp, zoneMp);
-    const remFeat = mpToFeature(rem, (f.properties ?? {}) as Record<string, unknown>);
+
+    if (!zoneBbox) {
+      nextFeatures.push(f);
+      continue;
+    }
+
+    const untouchedPolys: PcMultiPolygon = [];
+    const overlappingPolys: PcMultiPolygon = [];
+    for (const poly of mp) {
+      const outer = poly?.[0] as unknown as PcRing | undefined;
+      if (!outer || outer.length < 4) continue;
+      if (bboxesOverlap(ringBbox(outer), zoneBbox)) {
+        overlappingPolys.push(poly);
+      } else {
+        untouchedPolys.push(poly);
+      }
+    }
+
+    if (overlappingPolys.length === 0) {
+      nextFeatures.push(f);
+      continue;
+    }
+
+    const carvedOverlap = polygonClipping.difference(overlappingPolys, zoneMp);
+    const merged: PcMultiPolygon =
+      untouchedPolys.length > 0
+        ? [...untouchedPolys, ...carvedOverlap]
+        : carvedOverlap;
+    const remFeat = mpToFeature(
+      merged,
+      (f.properties ?? {}) as Record<string, unknown>
+    );
     if (remFeat) nextFeatures.push(remFeat);
   }
   const zoneFeat = mpToFeature(zoneMp, contestedProps);
@@ -310,7 +368,7 @@ function buildOrganicBrushMask(
   seedAngle = 0
 ): PcMultiPolygon {
   if (rx <= 0.02 || ry <= 0.02) return [];
-  const steps = 20;
+  const steps = 16;
   const ring: [number, number][] = [];
   for (let i = 0; i <= steps; i++) {
     const theta = (i / steps) * Math.PI * 2;
@@ -800,16 +858,39 @@ function buildSweepResponse(
   };
 }
 
+export const CAMPAIGN_REQUIRED_SNAPSHOTS: Record<string, string[]> = {
+  'cmp-1363-poyang': ['ter-1363'],
+  'cmp-1367-northern-expedition': ['ter-1363', 'ter-1368'],
+  'cmp-1387-buyur-lake': ['ter-1368', 'ter-1388'],
+  'cmp-1399-jingnan': ['ter-1399'],
+  'cmp-1405-zhenghe-voyages': ['ter-1415', 'ter-1435'],
+  'cmp-1449-tumu-beijing': ['ter-1435', 'ter-1449'],
+  'cmp-1519-ning-rebellion': ['ter-1479'],
+  'cmp-1561-qijiguang-wokou': ['ter-1582'],
+  'cmp-1592-imjin-korea': ['ter-1582'],
+  'cmp-1619-sarhu': ['ter-1582', 'ter-1621'],
+  'cmp-1626-ningyuan-guangning': ['ter-1621'],
+  'cmp-1640-songjin': ['ter-1642'],
+  'cmp-1644-jiashen-fall': ['ter-1642', 'ter-1644', 'ter-1652'],
+  'cmp-1661-koxinga-taiwan': ['ter-1652'],
+};
+
 export function buildCampaignTerritoryFrame(
   campaignId: string,
   phaseIndex: number,
   wipeProgress: number
 ): CampaignTerritoryFrame {
-  const cache = getCampaignGeoCache();
+  const reqSnaps = CAMPAIGN_REQUIRED_SNAPSHOTS[campaignId];
+  if (reqSnaps) {
+    for (const id of reqSnaps) {
+      requireSnapshotReady(id);
+    }
+  }
   const eased = easeInOutCubic(wipeProgress);
 
   // 1. 1363 Poyang Lake Campaign (ONLY Chen Han's Huguang/Jiangxi changes!)
   if (campaignId === 'cmp-1363-poyang') {
+    requireSnapshotReady('ter-1363');
     const base = TERRITORY_SNAPSHOT_BY_ID['ter-1363'].geojson;
     if (phaseIndex < 4) {
       return {
@@ -820,6 +901,7 @@ export function buildCampaignTerritoryFrame(
       };
     }
 
+    const cache = getCampaignGeoCache();
     return buildSweepResponse(
       base,
       cache.chenHanMp,
@@ -844,6 +926,9 @@ export function buildCampaignTerritoryFrame(
 
   // 2. 1366-1368 Northern Expedition (Each phase paints ONLY that phase's conquered province!)
   if (campaignId === 'cmp-1367-northern-expedition') {
+    requireSnapshotReady('ter-1363');
+    requireSnapshotReady('ter-1368');
+    const cache = getCampaignGeoCache();
     const base = cache.basePostPoyang;
     const mingProps = {
       polityId: 'ming-empire',
@@ -915,6 +1000,8 @@ export function buildCampaignTerritoryFrame(
 
   // 3. 1399-1402 Jingnan Campaign (ONLY Daning in Phase 2 & Jianghuai-Nanjing Corridor in Phase 5!)
   if (campaignId === 'cmp-1399-jingnan') {
+    requireSnapshotReady('ter-1399');
+    const cache = getCampaignGeoCache();
     if (phaseIndex === 0) {
       return {
         baseGeoJSON: cache.baseJingnanPhase1,
@@ -1483,6 +1570,26 @@ export function buildCampaignTerritoryFrame(
         '局部疆域涂抹：郑成功横渡鹿耳门受降揆一，仅宝岛台湾重归华夏版图！'
       );
     }
+  }
+
+  // 13. 1640-1642 Battle of Songjin
+  if (campaignId === 'cmp-1640-songjin') {
+    return {
+      baseGeoJSON: TERRITORY_SNAPSHOT_BY_ID['ter-1642'].geojson,
+      wipeOverlayGeoJSON: EMPTY_FC,
+      caption: null,
+      hasWipeInPhase: false,
+    };
+  }
+
+  // 14. 1661-1662 Koxinga Recovering Taiwan
+  if (campaignId === 'cmp-1661-koxinga-taiwan') {
+    return {
+      baseGeoJSON: TERRITORY_SNAPSHOT_BY_ID['ter-1652'].geojson,
+      wipeOverlayGeoJSON: EMPTY_FC,
+      caption: null,
+      hasWipeInPhase: false,
+    };
   }
 
   return {

@@ -16,8 +16,11 @@ import {
 import { buildAtlasShareUrl } from '@/lib/urlState';
 import { useAtlasStore } from '@/store/useAtlasStore';
 
-export default function ShareAtlasModal() {
-  const isOpen = useAtlasStore((s) => s.isShareModalOpen);
+/**
+ * Outer guard subscribes ONLY to `isShareModalOpen` so when closed (99% of the time),
+ * changing years / clicking events / switching phases triggers ZERO re-renders!
+ */
+function ShareAtlasModalInner() {
   const setShareModalOpen = useAtlasStore((s) => s.setShareModalOpen);
 
   const currentYear = useAtlasStore((s) => s.currentYear);
@@ -116,7 +119,6 @@ export default function ShareAtlasModal() {
   ]);
 
   useEffect(() => {
-    if (!isOpen) return;
     let cancelled = false;
     setGenerating(true);
     setCopied(false);
@@ -133,9 +135,7 @@ export default function ShareAtlasModal() {
     return () => {
       cancelled = true;
     };
-  }, [isOpen, posterPayload]);
-
-  if (!isOpen) return null;
+  }, [posterPayload]);
 
   const isDark = theme === 'xuanmo';
 
@@ -278,3 +278,11 @@ export default function ShareAtlasModal() {
     </div>
   );
 }
+
+const ShareAtlasModal = React.memo(function ShareAtlasModal() {
+  const isOpen = useAtlasStore((s) => s.isShareModalOpen);
+  if (!isOpen) return null;
+  return <ShareAtlasModalInner />;
+});
+
+export default ShareAtlasModal;

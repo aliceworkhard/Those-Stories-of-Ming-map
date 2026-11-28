@@ -1,12 +1,48 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Minus, Pause, Play, Plus } from 'lucide-react';
 import { SITE_CONFIG } from '@/config/site';
 import { ALL_EVENTS } from '@/lib/atlasData';
 import { useAtlasStore } from '@/store/useAtlasStore';
 
-export default function TimelineBar() {
+const MIN_YEAR = SITE_CONFIG.timeline.minYear;
+const MAX_YEAR = SITE_CONFIG.timeline.extendedMaxYear;
+const YEAR_SPAN = MAX_YEAR - MIN_YEAR;
+
+// Pre-indexed O(1) lookup for macro events by year & static tick descriptors
+const MACRO_EVENT_ID_BY_YEAR = new Map<number, string>();
+for (const ev of ALL_EVENTS) {
+  if (ev.tier === 'macro' && !MACRO_EVENT_ID_BY_YEAR.has(ev.time.year)) {
+    MACRO_EVENT_ID_BY_YEAR.set(ev.time.year, ev.id);
+  }
+}
+
+const STATIC_TIMELINE_TICKS = ALL_EVENTS.filter(
+  (e) => e.time.year <= MAX_YEAR
+).map((ev) => ({
+  id: ev.id,
+  leftPct: `${((ev.time.year - MIN_YEAR) / YEAR_SPAN) * 100}%`,
+  isMacro: ev.tier === 'macro',
+}));
+
+const TimelineEventTicks = React.memo(function TimelineEventTicks() {
+  return (
+    <div className="relative w-full h-2 mt-0.5 pointer-events-none hidden sm:block">
+      {STATIC_TIMELINE_TICKS.map((tick) => (
+        <span
+          key={tick.id}
+          style={{ left: tick.leftPct }}
+          className={`absolute top-0 w-1 rounded-full ${
+            tick.isMacro ? 'h-2 bg-[#B83B2A]' : 'h-1.5 bg-amber-500/80'
+          }`}
+        />
+      ))}
+    </div>
+  );
+});
+
+function TimelineBarInner() {
   const currentYear = useAtlasStore((s) => s.currentYear);
   const activeCampaignId = useAtlasStore((s) => s.activeCampaignId);
   const activeCharacterId = useAtlasStore((s) => s.activeCharacterId);
@@ -21,16 +57,28 @@ export default function TimelineBar() {
   const flyToCamera = useAtlasStore((s) => s.flyToCamera);
   const theme = useAtlasStore((s) => s.theme);
 
+  // RAF-coalesced year scrubbing + debounced macro-event drawer sync so slider drag is 120fps!
+  const scrubRafRef = useRef<number | null>(null);
+  const pendingYearRef = useRef<number | null>(null);
+  const selectDebounceRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (scrubRafRef.current !== null) cancelAnimationFrame(scrubRafRef.current);
+      if (selectDebounceRef.current !== null) {
+        window.clearTimeout(selectDebounceRef.current);
+      }
+    };
+  }, []);
+
   const isDark = theme === 'xuanmo';
-  const minYear = SITE_CONFIG.timeline.minYear;
-  const maxYear = SITE_CONFIG.timeline.extendedMaxYear;
   const hasDedicatedPlayer =
     Boolean(activeCampaignId) ||
     Boolean(activeCharacterId) ||
     isStoryTourPlaying ||
     hasTourSession;
 
-  const clampedSliderYear = Math.max(minYear, Math.min(maxYear, currentYear));
+  const clampedSliderYear = Math.max(MIN_YEAR, Math.min(MAX_YEAR, currentYear));
 
   return (
     <footer
@@ -100,7 +148,7 @@ export default function TimelineBar() {
         })}
       </div>
 
-      {/* Year Step Controls + Range Scrubber with Event Ticks */}
+      {/* Year Step Controls + Range Scrubber with Static Event Ticks */}
       <div className="flex items-center gap-2 flex-1 w-full">
         <button
           type="button"
@@ -114,41 +162,36 @@ export default function TimelineBar() {
         <div className="relative flex-1 flex flex-col justify-center">
           <input
             type="range"
-            min={minYear}
-            max={maxYear}
+            min={MIN_YEAR}
+            max={MAX_YEAR}
             value={clampedSliderYear}
             onChange={(e) => {
               const nextYr = Number(e.target.value);
-              // Skip heavy era-wipe animation while continuously dragging the range slider -> instant 120fps scrubbing!
-              setCurrentYear(nextYr, true);
-              const exactEvt = ALL_EVENTS.find(
-                (ev) => ev.time.year === nextYr && ev.tier === 'macro'
-              );
-              if (exactEvt) {
-                selectEvent(exactEvt.id, false);
+              pendingYearRef.current = nextYr;
+              if (scrubRafRef.current === null) {
+                scrubRafRef.current = requestAnimationFrame(() => {
+                  scrubRafRef.current = null;
+                  const yr = pendingYearRef.current;
+                  if (yr === null) return;
+                  setCurrentYear(yr, true);
+                });
+              }
+              const exactEvtId = MACRO_EVENT_ID_BY_YEAR.get(nextYr);
+              if (selectDebounceRef.current !== null) {
+                window.clearTimeout(selectDebounceRef.current);
+              }
+              if (exactEvtId) {
+                selectDebounceRef.current = window.setTimeout(() => {
+                  selectDebounceRef.current = null;
+                  selectEvent(exactEvtId, false);
+                }, 65);
               }
             }}
             aria-label="拖动年份滑块观察疆域与事件演变"
             className="w-full accent-[#B83B2A] cursor-pointer h-1.5 rounded-lg"
           />
 
-          {/* Tick Marks for Mapped Events */}
-          <div className="relative w-full h-2 mt-0.5 pointer-events-none hidden sm:block">
-            {ALL_EVENTS.filter((e) => e.time.year <= maxYear).map((ev) => {
-              const pct = ((ev.time.year - minYear) / (maxYear - minYear)) * 100;
-              return (
-                <span
-                  key={ev.id}
-                  style={{ left: `${pct}%` }}
-                  className={`absolute top-0 w-1 rounded-full ${
-                    ev.tier === 'macro'
-                      ? 'h-2 bg-[#B83B2A]'
-                      : 'h-1.5 bg-amber-500/80'
-                  }`}
-                />
-              );
-            })}
-          </div>
+          <TimelineEventTicks />
         </div>
 
         <button
@@ -167,3 +210,6 @@ export default function TimelineBar() {
     </footer>
   );
 }
+
+const TimelineBar = React.memo(TimelineBarInner);
+export default TimelineBar;

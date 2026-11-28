@@ -1,12 +1,29 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { BookOpen, ExternalLink, MapPin, Swords, X } from 'lucide-react';
 import { SITE_CONFIG } from '@/config/site';
 import { ALL_CAMPAIGNS, ALL_EVENTS, BOOK_TOC } from '@/lib/atlasData';
 import { useAtlasStore } from '@/store/useAtlasStore';
 
-export default function BookTocModal() {
+// Hoisted static indexes computed once at module load (0 per-mount cost!)
+const EVENTS_BY_CHAPTER: Record<string, typeof ALL_EVENTS> = {};
+for (const ev of ALL_EVENTS) {
+  for (const cid of ev.bookLens.chapterIds) {
+    if (!EVENTS_BY_CHAPTER[cid]) EVENTS_BY_CHAPTER[cid] = [];
+    EVENTS_BY_CHAPTER[cid].push(ev);
+  }
+}
+
+const CAMPAIGNS_BY_CHAPTER: Record<string, typeof ALL_CAMPAIGNS> = {};
+for (const cmp of ALL_CAMPAIGNS) {
+  for (const cid of cmp.chapterIds) {
+    if (!CAMPAIGNS_BY_CHAPTER[cid]) CAMPAIGNS_BY_CHAPTER[cid] = [];
+    CAMPAIGNS_BY_CHAPTER[cid].push(cmp);
+  }
+}
+
+function BookTocModalInner() {
   const [selectedVolume, setSelectedVolume] = useState<number>(1);
 
   const isOpen = useAtlasStore((s) => s.isTocModalOpen);
@@ -15,28 +32,6 @@ export default function BookTocModal() {
   const startCampaign = useAtlasStore((s) => s.startCampaign);
   const exitCampaign = useAtlasStore((s) => s.exitCampaign);
   const theme = useAtlasStore((s) => s.theme);
-
-  const eventsByChapter = useMemo(() => {
-    const map: Record<string, typeof ALL_EVENTS> = {};
-    for (const ev of ALL_EVENTS) {
-      for (const cid of ev.bookLens.chapterIds) {
-        if (!map[cid]) map[cid] = [];
-        map[cid].push(ev);
-      }
-    }
-    return map;
-  }, []);
-
-  const campaignsByChapter = useMemo(() => {
-    const map: Record<string, typeof ALL_CAMPAIGNS> = {};
-    for (const cmp of ALL_CAMPAIGNS) {
-      for (const cid of cmp.chapterIds) {
-        if (!map[cid]) map[cid] = [];
-        map[cid].push(cmp);
-      }
-    }
-    return map;
-  }, []);
 
   if (!isOpen) return null;
 
@@ -47,7 +42,7 @@ export default function BookTocModal() {
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/55 backdrop-blur-xs flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4"
       onClick={() => setTocModalOpen(false)}
     >
       <div
@@ -102,8 +97,8 @@ export default function BookTocModal() {
         {/* Chapter List */}
         <div className="flex-1 overflow-y-auto p-4 space-y-2">
           {chaptersInVol.map((ch) => {
-            const evs = eventsByChapter[ch.id] ?? [];
-            const cmps = campaignsByChapter[ch.id] ?? [];
+            const evs = EVENTS_BY_CHAPTER[ch.id] ?? [];
+            const cmps = CAMPAIGNS_BY_CHAPTER[ch.id] ?? [];
             const hasContent = evs.length > 0 || cmps.length > 0;
 
             return (
@@ -208,3 +203,6 @@ export default function BookTocModal() {
     </div>
   );
 }
+
+const BookTocModal = React.memo(BookTocModalInner);
+export default BookTocModal;

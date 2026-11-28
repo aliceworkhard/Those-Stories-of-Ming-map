@@ -4,6 +4,23 @@
 
 ---
 
+## [v1.4.1] — 2026-11-28 · 全链路交互流畅度与 GPU/CPU 深度优化（响应 Issue #1）
+
+### ⚡ 性能专项优化 (Performance & Responsiveness)
+- **消除交互与启动期疆域 GeoJSON 重复上传风暴 (`MingMapCanvas.tsx`, `territoryData.ts`)**：
+  - 拆分原先全量同步 `useEffect` 为 6 条独立差分更新管道并加入引用/签名去重，点击历史事件、缩放跨档、切换图层与同年代拖动时间轴不再重复触发 5,300–7,300 顶点多边形 Worker 重切分与三角剖分；
+  - 将后台 14 期非首屏疆域切片的并发预热改为首屏渲染稳定后逐个空闲加载，并按当前所需 `snapshotId` 定向通知，彻底消除页面打开后连续 14 次重绘风暴。
+- **WebGL 渲染几何、像素填充率与省电模式深度减负 (`mapStyle.ts`, `MingMapLayers.ts`)**：
+  - 修复桌面端 2K/4K 屏在均衡模式下的 `pixelRatio` 预算越界问题（物理像素由最高 8.3M–18.6M 严格收敛至 2.8M 以内，移动端仍保持最高 2.5x 视网膜清晰度，极致模式保留原生 3x）；
+  - 疆域与水系 GeoJSON 源启用 `tolerance: 0.65` + `maxzoom: 10`，将高顶点描边改为 `bevel/butt` 并移除 `line-blur` 羽化过绘；使用零 Worker 的 GPU `feature-state` 高亮替代第 5 层全量多边形悬停层；均衡模式山体晕渲 DEM `maxzoom` 降至 `7`，省电模式彻底关闭山体晕渲、林地与岸线描边。
+- **消除鼠标拖拽命中风暴与战役 Worker 队列争抢**：
+  - 移除 4 个图层级 `mouseenter/mouseleave` 代理监听器，合并为在拖拽/缩放期间 0ms 跳过的单通节流 `mousemove` 命中检测；手动拖拽缩放地图时自动暂停动态行军箭矢 `setData`，让出 100% GPU 与 Worker 算力。
+- **消除 React 级联重渲染与主线程同步阻塞 (`AtlasWorkspace.tsx`, `useAtlasStore.ts`, `TimelineBar.tsx`, `EventDirectoryPanel.tsx`, `territoryWipe.ts`)**：
+  - URL 同步迁入无重渲染 `zustand.subscribe`，全站 12 个核心组件与弹窗接入 `React.memo`，拆离顶栏年份微件与关闭态分享弹窗订阅；
+  - `localStorage` 持久化改为 300ms 防抖；时间轴接入 RAF 帧合批与静态刻度提升；事件目录启用预计算检索索引、`useDeferredValue` 与 `content-visibility: auto`；战役局部疆域布尔裁切加入多边形 BBox 预检与惰性缓存。
+
+---
+
 ## [v1.4.0] — 2026-11-27 · 零代码「可视化战役投稿工坊」与首屏疆域异步分包瘦身
 
 ### ✨ 新增特性与性能优化 (New Features & Performance)

@@ -39,13 +39,49 @@ import type { PerformanceMode, PlaceNameMode } from '@/types/ming';
 
 const STAR_CACHE_KEY = 'ming_atlas_gh_stars_v1';
 
-export default function TopAtlasBar() {
+/**
+ * Isolated year & era-title indicator so continuous timeline scrubbing updates ONLY
+ * this tiny pill instead of re-rendering the entire 970-line TopAtlasBar!
+ */
+const TopBarBrandTitle = React.memo(function TopBarBrandTitle({
+  onOpenReleases,
+}: {
+  onOpenReleases: () => void;
+}) {
+  const currentYear = useAtlasStore((s) => s.currentYear);
+  const snapshotMeta = getSnapshotMetaForYear(currentYear);
+
+  return (
+    <div className="min-w-0">
+      <div className="flex items-center gap-1 sm:gap-1.5">
+        <h1 className="font-serif font-bold text-xs sm:text-base tracking-wide truncate">
+          {SITE_CONFIG.title}
+        </h1>
+        <span className="px-1.5 py-0.5 rounded bg-[#9E2318]/12 text-[#9E2318] dark:text-amber-300 dark:bg-amber-400/15 border border-current/20 text-[10px] sm:text-[11px] font-bold tabular-nums shrink-0">
+          {currentYear}年
+        </span>
+        <button
+          type="button"
+          onClick={onOpenReleases}
+          className="px-1.5 py-0.5 rounded bg-amber-500/15 hover:bg-amber-500/25 text-amber-900 dark:text-amber-200 border border-amber-500/35 text-[10px] font-mono font-bold shrink-0 cursor-pointer transition"
+          title="查看《明途 · 舆图纪》各版本发布日志与 GitHub Releases"
+        >
+          {CURRENT_ATLAS_VERSION}
+        </button>
+      </div>
+      <p className="text-[10px] opacity-75 truncate hidden 2xl:block max-w-[220px]">
+        {snapshotMeta.title}
+      </p>
+    </div>
+  );
+});
+
+function TopAtlasBarInner() {
   const [layerMenuOpen, setLayerMenuOpen] = useState(false);
   const [campaignMenuOpen, setCampaignMenuOpen] = useState(false);
   const [characterMenuOpen, setCharacterMenuOpen] = useState(false);
   const [starCount, setStarCount] = useState<number | null>(null);
 
-  const currentYear = useAtlasStore((s) => s.currentYear);
   const activeCampaignId = useAtlasStore((s) => s.activeCampaignId);
   const activeCharacterId = useAtlasStore((s) => s.activeCharacterId);
   const isStoryTourPlaying = useAtlasStore((s) => s.isStoryTourPlaying);
@@ -121,11 +157,17 @@ export default function TopAtlasBar() {
     return () => controller.abort();
   }, []);
 
-  const snapshotMeta = getSnapshotMetaForYear(currentYear);
   const activeCampaign = ALL_CAMPAIGNS.find((c) => c.id === activeCampaignId);
   const activeCharacter = ALL_CHARACTERS.find((c) => c.id === activeCharacterId);
   const isDark = theme === 'xuanmo';
   const anyMenuOpen = layerMenuOpen || campaignMenuOpen || characterMenuOpen;
+
+  const handleOpenReleases = React.useCallback(() => {
+    setLayerMenuOpen(false);
+    setCampaignMenuOpen(false);
+    setCharacterMenuOpen(false);
+    setReleaseModalOpen(true);
+  }, [setReleaseModalOpen]);
 
   // Opaque classical Xuan-paper / Obsidian surface (0 GPU-heavy backdrop-blur!)
   const panelClass = isDark
@@ -168,30 +210,7 @@ export default function TopAtlasBar() {
               </span>
             </div>
 
-            <div className="min-w-0">
-              <div className="flex items-center gap-1 sm:gap-1.5">
-                <h1 className="font-serif font-bold text-xs sm:text-base tracking-wide truncate">
-                  {SITE_CONFIG.title}
-                </h1>
-                <span className="px-1.5 py-0.5 rounded bg-[#9E2318]/12 text-[#9E2318] dark:text-amber-300 dark:bg-amber-400/15 border border-current/20 text-[10px] sm:text-[11px] font-bold tabular-nums shrink-0">
-                  {currentYear}年
-                </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    closeAllMenus();
-                    setReleaseModalOpen(true);
-                  }}
-                  className="px-1.5 py-0.5 rounded bg-amber-500/15 hover:bg-amber-500/25 text-amber-900 dark:text-amber-200 border border-amber-500/35 text-[10px] font-mono font-bold shrink-0 cursor-pointer transition"
-                  title="查看《明途 · 舆图纪》各版本发布日志与 GitHub Releases"
-                >
-                  {CURRENT_ATLAS_VERSION}
-                </button>
-              </div>
-              <p className="text-[10px] opacity-75 truncate hidden 2xl:block max-w-[220px]">
-                {snapshotMeta.title}
-              </p>
-            </div>
+            <TopBarBrandTitle onOpenReleases={handleOpenReleases} />
 
             {/* Desktop (lg+) Primary Mode Buttons (on <lg, these live unclipped in Row 2!) */}
             <div className="hidden lg:flex items-center gap-2 ml-0.5">
@@ -972,3 +991,6 @@ export default function TopAtlasBar() {
     </>
   );
 }
+
+const TopAtlasBar = React.memo(TopAtlasBarInner);
+export default TopAtlasBar;

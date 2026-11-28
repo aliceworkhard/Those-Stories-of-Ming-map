@@ -14,7 +14,7 @@ import { useAtlasStore } from '@/store/useAtlasStore';
 
 const CIRCLED_NUMS = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧'];
 
-export default function CharacterOdysseyPlayer() {
+function CharacterOdysseyPlayerInner() {
   const [autoPlay, setAutoPlay] = useState(false);
 
   const activeCharacterId = useAtlasStore((s) => s.activeCharacterId);
@@ -190,3 +190,6 @@ export default function CharacterOdysseyPlayer() {
     </section>
   );
 }
+
+const CharacterOdysseyPlayer = React.memo(CharacterOdysseyPlayerInner);
+export default CharacterOdysseyPlayer;

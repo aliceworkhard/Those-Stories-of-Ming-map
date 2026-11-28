@@ -4,6 +4,7 @@ import {
   ALL_EVENTS,
   CAMPAIGN_MAP,
   CHARACTER_MAP,
+  EVENT_INDEX_MAP,
   EVENT_MAP,
 } from '@/lib/atlasData';
 import { parseAtlasUrlParams } from '@/lib/urlState';
@@ -27,16 +28,27 @@ interface PersistedAtlasProgress {
   placeNameMode: PlaceNameMode;
 }
 
+let persistTimerId: number | null = null;
+let pendingPersistPayload: PersistedAtlasProgress | null = null;
+
 function saveProgressToCache(partial: PersistedAtlasProgress): void {
   if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.setItem(
-      ATLAS_PROGRESS_CACHE_KEY,
-      JSON.stringify(partial)
-    );
-  } catch {
-    // Ignore storage quota / private mode restrictions gracefully
-  }
+  pendingPersistPayload = partial;
+  if (persistTimerId !== null) return;
+  persistTimerId = window.setTimeout(() => {
+    persistTimerId = null;
+    const payload = pendingPersistPayload;
+    pendingPersistPayload = null;
+    if (!payload) return;
+    try {
+      window.localStorage.setItem(
+        ATLAS_PROGRESS_CACHE_KEY,
+        JSON.stringify(payload)
+      );
+    } catch {
+      // Ignore storage quota / private mode restrictions gracefully
+    }
+  }, 300);
 }
 
 export interface LayerVisibility {
@@ -508,7 +520,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
 
   stepStoryEvent: (delta) => {
     const { selectedEventId, isStoryTourPlaying } = get();
-    const curIdx = ALL_EVENTS.findIndex((e) => e.id === selectedEventId);
+    const curIdx = selectedEventId ? (EVENT_INDEX_MAP[selectedEventId] ?? -1) : -1;
     const baseIdx = curIdx >= 0 ? curIdx : 0;
     const nextIdx = baseIdx + delta;
 
@@ -557,7 +569,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   startStoryTour: (fromEventId) => {
     const state = get();
     let targetId = fromEventId ?? state.selectedEventId ?? ALL_EVENTS[0].id;
-    const idx = ALL_EVENTS.findIndex((e) => e.id === targetId);
+    const idx = EVENT_INDEX_MAP[targetId] ?? -1;
     if (!fromEventId && idx >= ALL_EVENTS.length - 1) {
       targetId = ALL_EVENTS[0].id;
     }

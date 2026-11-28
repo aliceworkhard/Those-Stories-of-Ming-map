@@ -30,12 +30,13 @@ import {
   ALL_EVENTS,
   CAMPAIGN_MAP,
   CHAPTER_MAP,
+  EVENT_INDEX_MAP,
   EVENT_MAP,
 } from '@/lib/atlasData';
 import { speakAtlasText } from '@/lib/narrator';
 import { useAtlasStore } from '@/store/useAtlasStore';
 
-export default function EventDetailDrawer() {
+function EventDetailDrawerInner() {
   const [lensTab, setLensTab] = useState<'mingyue' | 'history'>('mingyue');
   const [mobileExpanded, setMobileExpanded] = useState(false);
 
@@ -69,7 +70,7 @@ export default function EventDetailDrawer() {
   const event = selectedEventId
     ? EVENT_MAP[selectedEventId] ?? ALL_EVENTS[0]
     : ALL_EVENTS[0];
-  const eventIndex = ALL_EVENTS.findIndex((e) => e.id === event.id);
+  const eventIndex = EVENT_INDEX_MAP[event.id] ?? 0;
   const linkedCampaign = event?.campaignId
     ? CAMPAIGN_MAP[event.campaignId] ?? null
     : null;
@@ -520,3 +521,6 @@ export default function EventDetailDrawer() {
     </aside>
   );
 }
+
+const EventDetailDrawer = React.memo(EventDetailDrawerInner);
+export default EventDetailDrawer;

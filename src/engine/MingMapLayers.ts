@@ -21,6 +21,7 @@ import type {
   HistoricalEvent,
   LngLat,
   MapVisualTheme,
+  PerformanceMode,
   PlaceNameMode,
 } from '@/types/ming';
 import type {
@@ -169,9 +170,11 @@ export function mountHistoricalLayers(
   map: maplibregl.Map,
   initialTerritories: GeoJSON.FeatureCollection,
   theme: MapVisualTheme,
-  placeNameMode: PlaceNameMode = 'both'
+  placeNameMode: PlaceNameMode = 'both',
+  perfMode: PerformanceMode = 'balanced'
 ): void {
   const isDark = theme === 'xuanmo';
+  const isEco = perfMode === 'eco';
   const beforeWaterId = map.getLayer('vector-water-fill')
     ? 'vector-water-fill'
     : undefined;
@@ -181,11 +184,17 @@ export function mountHistoricalLayers(
 
   // =========================================================================
   // 1. Sovereign Territories + Victory Brush Paint-Over Layer Stack
+  //    Optimized: tolerance 0.65 + maxzoom 10 + bevel joins + zero-worker
+  //    feature-state hover highlight (eliminates 5th duplicate polygon layer!)
   // =========================================================================
   if (!map.getSource('ming-territories')) {
     map.addSource('ming-territories', {
       type: 'geojson',
       data: initialTerritories,
+      generateId: true,
+      tolerance: 0.65,
+      buffer: 64,
+      maxzoom: 10,
     });
   }
 
@@ -193,6 +202,9 @@ export function mountHistoricalLayers(
     map.addSource('ming-territory-wipe', {
       type: 'geojson',
       data: EMPTY_FC,
+      tolerance: 0.65,
+      buffer: 64,
+      maxzoom: 10,
     });
   }
 
@@ -213,6 +225,52 @@ export function mountHistoricalLayers(
           'fill-antialias': false,
           'fill-color': ['get', 'color'],
           'fill-opacity': [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false],
+            [
+              'match',
+              ['get', 'controlType'],
+              'tributary-garrison',
+              isDark ? 0.24 : 0.2,
+              isDark ? 0.34 : 0.28,
+            ],
+            [
+              'match',
+              ['get', 'controlType'],
+              'tributary-garrison',
+              isDark ? 0.14 : 0.12,
+              isDark ? 0.24 : 0.19,
+            ],
+          ],
+        },
+      },
+      beforeTerrainShadeId
+    );
+
+    map.addLayer(
+      {
+        id: 'ming-territories-frontier-band',
+        type: 'line',
+        source: 'ming-territories',
+        layout: {
+          visibility: isEco ? 'none' : 'visible',
+          'line-join': 'bevel',
+          'line-cap': 'butt',
+        },
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            3.5,
+            ['match', ['get', 'controlType'], 'tributary-garrison', 2.2, 3.8],
+            7,
+            ['match', ['get', 'controlType'], 'tributary-garrison', 3.4, 6.2],
+            10,
+            ['match', ['get', 'controlType'], 'tributary-garrison', 4.8, 8.2],
+          ],
+          'line-opacity': [
             'match',
             ['get', 'controlType'],
             'tributary-garrison',
@@ -226,47 +284,14 @@ export function mountHistoricalLayers(
 
     map.addLayer(
       {
-        id: 'ming-territories-frontier-band',
-        type: 'line',
-        source: 'ming-territories',
-        layout: {
-          'line-join': 'round',
-          'line-cap': 'round',
-        },
-        paint: {
-          'line-color': ['get', 'color'],
-          'line-width': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            3.5,
-            ['match', ['get', 'controlType'], 'tributary-garrison', 2.4, 4.5],
-            7,
-            ['match', ['get', 'controlType'], 'tributary-garrison', 4.0, 8.0],
-            10,
-            ['match', ['get', 'controlType'], 'tributary-garrison', 6.0, 11.0],
-          ],
-          'line-opacity': [
-            'match',
-            ['get', 'controlType'],
-            'tributary-garrison',
-            isDark ? 0.18 : 0.15,
-            isDark ? 0.32 : 0.25,
-          ],
-          'line-blur': 2.0,
-        },
-      },
-      beforeTerrainShadeId
-    );
-
-    map.addLayer(
-      {
         id: 'ming-territories-outline-casing',
         type: 'line',
         source: 'ming-territories',
+        minzoom: 5.2,
         layout: {
-          'line-join': 'round',
-          'line-cap': 'round',
+          visibility: isEco ? 'none' : 'visible',
+          'line-join': 'bevel',
+          'line-cap': 'butt',
         },
         paint: {
           'line-color': isDark
@@ -276,14 +301,14 @@ export function mountHistoricalLayers(
             'interpolate',
             ['linear'],
             ['zoom'],
-            3.5,
-            2.4,
+            5.2,
+            2.8,
             7,
             3.6,
             10,
             4.8,
           ],
-          'line-opacity': 0.72,
+          'line-opacity': 0.7,
         },
       },
       beforeTerrainShadeId
@@ -295,21 +320,41 @@ export function mountHistoricalLayers(
         type: 'line',
         source: 'ming-territories',
         layout: {
-          'line-join': 'round',
-          'line-cap': 'round',
+          'line-join': 'bevel',
+          'line-cap': 'butt',
         },
         paint: {
-          'line-color': ['coalesce', ['get', 'borderColor'], ['get', 'color']],
+          'line-color': [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false],
+            isDark ? '#FCD34D' : '#9B1C1C',
+            ['coalesce', ['get', 'borderColor'], ['get', 'color']],
+          ],
           'line-width': [
             'interpolate',
             ['linear'],
             ['zoom'],
             3.5,
-            ['match', ['get', 'controlType'], 'tributary-garrison', 1.1, 1.8],
+            [
+              'case',
+              ['boolean', ['feature-state', 'hover'], false],
+              2.8,
+              ['match', ['get', 'controlType'], 'tributary-garrison', 1.1, 1.8],
+            ],
             7,
-            ['match', ['get', 'controlType'], 'tributary-garrison', 1.6, 2.6],
+            [
+              'case',
+              ['boolean', ['feature-state', 'hover'], false],
+              4.0,
+              ['match', ['get', 'controlType'], 'tributary-garrison', 1.6, 2.6],
+            ],
             10,
-            ['match', ['get', 'controlType'], 'tributary-garrison', 2.1, 3.4],
+            [
+              'case',
+              ['boolean', ['feature-state', 'hover'], false],
+              5.2,
+              ['match', ['get', 'controlType'], 'tributary-garrison', 2.1, 3.4],
+            ],
           ],
           'line-dasharray': [
             'match',
@@ -366,7 +411,7 @@ export function mountHistoricalLayers(
         type: 'line',
         source: 'ming-territory-wipe',
         filter: ['!=', ['get', 'isEraserOnly'], 1],
-        layout: { 'line-join': 'round', 'line-cap': 'round' },
+        layout: { 'line-join': 'bevel', 'line-cap': 'butt' },
         paint: {
           'line-color': ['get', 'color'],
           'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 2.0, 8, 3.2],
@@ -377,33 +422,17 @@ export function mountHistoricalLayers(
     );
   }
 
-  if (!map.getLayer('ming-territories-hover')) {
+  if (!map.getLayer('ming-territory-wipe-front')) {
     map.addLayer({
       id: 'ming-territory-wipe-front',
       type: 'line',
       source: 'ming-territory-wipe',
       filter: ['==', ['get', 'isActivelyWiping'], 1],
-      layout: { 'line-join': 'round', 'line-cap': 'round' },
+      layout: { 'line-join': 'bevel', 'line-cap': 'butt' },
       paint: {
         'line-color': ['coalesce', ['get', 'frontColor'], '#F59E0B'],
         'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 3.0, 8, 5.0],
         'line-opacity': 0.9,
-      },
-    });
-
-    map.addLayer({
-      id: 'ming-territories-hover',
-      type: 'line',
-      source: 'ming-territories',
-      filter: ['==', ['get', 'polityId'], '__none__'],
-      layout: {
-        'line-join': 'round',
-        'line-cap': 'round',
-      },
-      paint: {
-        'line-color': isDark ? '#FCD34D' : '#9B1C1C',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 2.5, 8, 4.2],
-        'line-opacity': 0.95,
       },
     });
   }
@@ -415,6 +444,9 @@ export function mountHistoricalLayers(
     map.addSource('ming-waterways', {
       type: 'geojson',
       data: MING_WATERWAYS_GEOJSON,
+      tolerance: 0.65,
+      buffer: 64,
+      maxzoom: 10,
     });
   }
 
@@ -423,19 +455,20 @@ export function mountHistoricalLayers(
       id: 'ming-rivers-casing',
       type: 'line',
       source: 'ming-waterways',
+      minzoom: 4.2,
       filter: [
         'in',
         ['get', 'kind'],
         ['literal', ['major-river', 'secondary-river']],
       ],
-      layout: { 'line-join': 'round', 'line-cap': 'round' },
+      layout: { 'line-join': 'bevel', 'line-cap': 'butt' },
       paint: {
         'line-color': isDark ? '#071320' : '#E8F3F8',
         'line-width': [
           'interpolate',
           ['linear'],
           ['zoom'],
-          3.5,
+          4.2,
           ['match', ['get', 'kind'], 'major-river', 2.4, 1.3],
           7,
           ['match', ['get', 'kind'], 'major-river', 4.4, 2.4],
@@ -455,7 +488,7 @@ export function mountHistoricalLayers(
         ['get', 'kind'],
         ['literal', ['major-river', 'secondary-river']],
       ],
-      layout: { 'line-join': 'round', 'line-cap': 'round' },
+      layout: { 'line-join': 'bevel', 'line-cap': 'round' },
       paint: {
         'line-color': isDark ? '#3B89C4' : '#2E7296',
         'line-width': [
@@ -478,7 +511,7 @@ export function mountHistoricalLayers(
       type: 'line',
       source: 'ming-waterways',
       filter: ['==', ['get', 'kind'], 'yellow-river-ming'],
-      layout: { 'line-join': 'round', 'line-cap': 'round' },
+      layout: { 'line-join': 'bevel', 'line-cap': 'butt' },
       paint: {
         'line-color': isDark ? '#1C1406' : '#FDF6E4',
         'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 2.8, 7, 4.8, 10, 7.0],
@@ -491,7 +524,7 @@ export function mountHistoricalLayers(
       type: 'line',
       source: 'ming-waterways',
       filter: ['==', ['get', 'kind'], 'yellow-river-ming'],
-      layout: { 'line-join': 'round', 'line-cap': 'round' },
+      layout: { 'line-join': 'bevel', 'line-cap': 'round' },
       paint: {
         'line-color': isDark ? '#EAB338' : '#B97316',
         'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 1.6, 7, 3.0, 10, 4.4],
@@ -504,7 +537,7 @@ export function mountHistoricalLayers(
       type: 'line',
       source: 'ming-waterways',
       filter: ['==', ['get', 'kind'], 'canal'],
-      layout: { 'line-join': 'round', 'line-cap': 'round' },
+      layout: { 'line-join': 'bevel', 'line-cap': 'butt' },
       paint: {
         'line-color': isDark ? '#38C6BD' : '#0B7D72',
         'line-width': ['interpolate', ['linear'], ['zoom'], 4, 1.4, 7, 2.4, 10, 3.4],
@@ -517,11 +550,12 @@ export function mountHistoricalLayers(
       id: 'ming-great-wall-casing',
       type: 'line',
       source: 'ming-waterways',
+      minzoom: 4.5,
       filter: ['==', ['get', 'kind'], 'great-wall'],
-      layout: { 'line-join': 'round', 'line-cap': 'round' },
+      layout: { 'line-join': 'bevel', 'line-cap': 'butt' },
       paint: {
         'line-color': isDark ? '#0B0F17' : '#EFE5D4',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 3.0, 7, 5.0, 10, 6.8],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 4.5, 3.2, 7, 5.0, 10, 6.8],
         'line-opacity': 0.72,
       },
     });
@@ -531,7 +565,7 @@ export function mountHistoricalLayers(
       type: 'line',
       source: 'ming-waterways',
       filter: ['==', ['get', 'kind'], 'great-wall'],
-      layout: { 'line-join': 'round', 'line-cap': 'round' },
+      layout: { 'line-join': 'bevel', 'line-cap': 'butt' },
       paint: {
         'line-color': isDark ? '#94A3B8' : '#6B5344',
         'line-width': ['interpolate', ['linear'], ['zoom'], 3.5, 1.3, 7, 2.2, 10, 3.0],
@@ -1819,13 +1853,32 @@ export function updateCausalArcsOnMap(
   src.setData(visible ? buildCausalArcGeoJSON(selectedEvent) : EMPTY_FC);
 }
 
+const wipeSourceEmptyMap = new WeakMap<GeoJSONSource, boolean>();
+const eventsSourceSigMap = new WeakMap<GeoJSONSource, string>();
+const polityOpacityModeMap = new WeakMap<maplibregl.Map, boolean>();
+const spotlightRouteMap = new WeakMap<maplibregl.Map, string>();
+
+export function resetLayerSyncGuards(map: maplibregl.Map): void {
+  polityOpacityModeMap.delete(map);
+  spotlightRouteMap.delete(map);
+  const wipeSrc = map.getSource('ming-territory-wipe') as GeoJSONSource | undefined;
+  if (wipeSrc) wipeSourceEmptyMap.delete(wipeSrc);
+  const evtSrc = map.getSource('ming-events') as GeoJSONSource | undefined;
+  if (evtSrc) eventsSourceSigMap.delete(evtSrc);
+}
+
 export function updateTerritoryWipeOnMap(
   map: maplibregl.Map,
   wipeGeoJSON: GeoJSON.FeatureCollection | null
 ): void {
   const src = map.getSource('ming-territory-wipe') as GeoJSONSource | undefined;
   if (!src) return;
-  src.setData(wipeGeoJSON ?? EMPTY_FC);
+  const isEmpty = !wipeGeoJSON || wipeGeoJSON.features.length === 0;
+  if (isEmpty && wipeSourceEmptyMap.get(src) === true) {
+    return;
+  }
+  wipeSourceEmptyMap.set(src, isEmpty);
+  src.setData(isEmpty ? EMPTY_FC : wipeGeoJSON);
 }
 
 export function updateCharacterOdysseyOnMap(
@@ -1904,6 +1957,8 @@ export function updateEventsOnMap(
   if (!src) return;
 
   if (options.inCampaign) {
+    if (eventsSourceSigMap.get(src) === '__campaign_empty__') return;
+    eventsSourceSigMap.set(src, '__campaign_empty__');
     src.setData(EMPTY_FC);
     return;
   }
@@ -1922,6 +1977,19 @@ export function updateEventsOnMap(
 
     return evt.tier === 'macro' ? options.macroVis : showMicro;
   });
+
+  // Skip WebGL GeoJSON worker re-tiling if the exact rendered event set & visual flags are unchanged!
+  let sig = `${options.zoomBucket}|${options.allMicroVis ? 1 : 0}|${options.selectedEventId ?? ''}`;
+  for (let i = 0; i < visibleEvents.length; i++) {
+    const e = visibleEvents[i];
+    const inFocus = Math.abs(e.time.year - options.currentYear) <= 10 ? 1 : 0;
+    const isCausal = options.causalIds.has(e.id) ? 1 : 0;
+    sig += `;${e.id}:${inFocus}${isCausal}`;
+  }
+  if (eventsSourceSigMap.get(src) === sig) {
+    return;
+  }
+  eventsSourceSigMap.set(src, sig);
 
   // Group co-located visible events (within 0.05 deg, e.g. Nanjing or Beijing) and spread onto a micro-ring
   // scaled cleanly to current zoom Bucket so same-city seals never stack!
@@ -2144,34 +2212,38 @@ export function updateCampaignAnnotationsOnMap(
 
 export function syncLayerVisibility(
   map: maplibregl.Map,
-  layers: LayerVisibility
+  layers: LayerVisibility,
+  perfMode: PerformanceMode = 'balanced'
 ): void {
+  const isEco = perfMode === 'eco';
   const setVis = (id: string, visible: boolean) => {
-    if (map.getLayer(id)) {
-      map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
+    if (!map.getLayer(id)) return;
+    const next = visible ? 'visible' : 'none';
+    const current = (map.getLayoutProperty(id, 'visibility') as string | undefined) ?? 'visible';
+    if (current !== next) {
+      map.setLayoutProperty(id, 'visibility', next);
     }
   };
 
   setVis('ming-territories-fill', layers.territories);
-  setVis('ming-territories-frontier-band', layers.territories);
-  setVis('ming-territories-outline-casing', layers.territories);
+  setVis('ming-territories-frontier-band', layers.territories && !isEco);
+  setVis('ming-territories-outline-casing', layers.territories && !isEco);
   setVis('ming-territories-outline', layers.territories);
   setVis('ming-territory-wipe-eraser', layers.territories);
   setVis('ming-territory-wipe-fill', layers.territories);
   setVis('ming-territory-wipe-outline', layers.territories);
   setVis('ming-territory-wipe-front', layers.territories);
-  setVis('ming-territories-hover', layers.territories);
   setVis('ming-polity-labels', layers.territories);
 
   setVis('vector-natural-waterways', layers.waterways);
-  setVis('ming-rivers-casing', layers.waterways);
+  setVis('ming-rivers-casing', layers.waterways && !isEco);
   setVis('ming-rivers-line', layers.waterways);
-  setVis('ming-yellow-river-casing', layers.waterways);
+  setVis('ming-yellow-river-casing', layers.waterways && !isEco);
   setVis('ming-yellow-river-line', layers.waterways);
   setVis('ming-grand-canal-line', layers.waterways);
   setVis('ming-waterways-label', layers.waterways);
 
-  setVis('ming-great-wall-casing', layers.greatWall);
+  setVis('ming-great-wall-casing', layers.greatWall && !isEco);
   setVis('ming-great-wall-base', layers.greatWall);
   setVis('ming-great-wall-line', layers.greatWall);
 
@@ -2180,7 +2252,7 @@ export function syncLayerVisibility(
 
   setVis('ming-places-symbol', layers.places);
 
-  setVis('causal-arcs-glow', layers.causalArcs);
+  setVis('causal-arcs-glow', layers.causalArcs && !isEco);
   setVis('causal-arcs-line', layers.causalArcs);
   setVis('causal-arcs-arrows', layers.causalArcs);
   setVis('causal-arcs-label', layers.causalArcs);
@@ -2197,7 +2269,7 @@ export function syncLayerVisibility(
   setVis('ming-canal-hubs-circle', layers.grandCanalHubs);
   setVis('ming-canal-hubs-label', layers.grandCanalHubs);
 
-  setVis('ming-silver-routes-glow', layers.silverRoutes);
+  setVis('ming-silver-routes-glow', layers.silverRoutes && !isEco);
   setVis('ming-silver-routes-line', layers.silverRoutes);
   setVis('ming-silver-routes-arrows', layers.silverRoutes);
   setVis('ming-silver-ports-circle', layers.silverRoutes);
@@ -2349,14 +2421,23 @@ export function setCampaignSpotlightRoute(
   routeId: string | null,
   inCampaign: boolean
 ): void {
-  if (map.getLayer('campaign-routes-spotlight')) {
+  const nextFilterId = routeId ?? '__none__';
+  if (
+    map.getLayer('campaign-routes-spotlight') &&
+    spotlightRouteMap.get(map) !== nextFilterId
+  ) {
+    spotlightRouteMap.set(map, nextFilterId);
     map.setFilter('campaign-routes-spotlight', [
       '==',
       ['get', 'id'],
-      routeId ?? '__none__',
+      nextFilterId,
     ]);
   }
-  if (map.getLayer('ming-polity-labels')) {
+  if (
+    map.getLayer('ming-polity-labels') &&
+    polityOpacityModeMap.get(map) !== inCampaign
+  ) {
+    polityOpacityModeMap.set(map, inCampaign);
     map.setPaintProperty(
       'ming-polity-labels',
       'text-opacity',

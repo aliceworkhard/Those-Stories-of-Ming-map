@@ -117,6 +117,10 @@ export const EVENT_MAP: Record<string, HistoricalEvent> = Object.fromEntries(
   ALL_EVENTS.map((e) => [e.id, e])
 );
 
+export const EVENT_INDEX_MAP: Record<string, number> = Object.fromEntries(
+  ALL_EVENTS.map((e, idx) => [e.id, idx])
+);
+
 export const ALL_CAMPAIGNS: Campaign[] = [
   cmpPoyangJson as unknown as Campaign,
   cmpNorthJson as unknown as Campaign,

@@ -8,15 +8,28 @@ export function getTerrainExaggeration(perfMode: PerformanceMode): number {
   return 1.12;
 }
 
+export const TERRAIN_DEM_TILES = [
+  'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png',
+];
+
+export function createTerrainDemSourceSpec(perfMode: PerformanceMode) {
+  return {
+    type: 'raster-dem' as const,
+    tiles: TERRAIN_DEM_TILES,
+    tileSize: 256,
+    maxzoom: perfMode === 'ultra' ? 10 : 8,
+    encoding: 'terrarium' as const,
+  };
+}
+
 /**
  * Clean-room Oriental Historical Atlas Style Specification (Zero API keys!)
  * - Engineered for whisper-quiet GPU & CPU performance:
- *   1. Default 2.5D mineral hillshading (`hillshade-dem`, maxzoom 8 = ~4 tiles) renders
- *      stereo mountain relief at 120+ FPS with ZERO 3D Terrain Drape FBO overhead!
- *   2. Optional 3D Terrain Mesh (`terrain-dem`, maxzoom 8 in balanced / 10 in ultra)
- *      activates only when explicitly toggled ON.
- *   3. Eliminates expensive full-continent blurred water glow passes to cut GPU fragment
- *      shader overdraw by ~40% on high-DPI displays.
+ *   1. Default 2.5D mineral hillshading (`hillshade-dem`, maxzoom 7 in balanced / 8 in ultra,
+ *      omitted in eco) cuts AWS DEM PNG decodes & hillshade FBO work by 75% with ZERO 3D Drape FBO!
+ *   2. Optional 3D Terrain Mesh (`terrain-dem`) is only registered when 3D is toggled ON.
+ *   3. Bevel/butt line joins and zoom-gated base layers minimize WebGL line-fan triangle counts
+ *      and fragment overdraw across all East Asian coastlines.
  */
 export function createHistoricalBaseStyle(
   theme: MapVisualTheme,
@@ -24,8 +37,9 @@ export function createHistoricalBaseStyle(
   perfMode: PerformanceMode = 'balanced'
 ): StyleSpecification {
   const isDark = theme === 'xuanmo';
-  const useTerrainMesh = enable3D && perfMode !== 'eco';
-  const terrainMaxZoom = perfMode === 'ultra' ? 10 : 8;
+  const isEco = perfMode === 'eco';
+  const useTerrainMesh = enable3D && !isEco;
+  const hillshadeMaxZoom = perfMode === 'ultra' ? 8 : 7;
 
   // Song/Ming Blue-and-Green Scroll (Light) vs Obsidian-Bronze Sand-Table (Dark)
   const landColor = isDark ? '#0F141D' : '#EFE6D4';
@@ -37,34 +51,171 @@ export function createHistoricalBaseStyle(
   const hillHighlight = isDark ? '#3A475C' : '#FFFDF8';
   const hillAccent = isDark ? '#253142' : '#9B8362';
 
-  const demTiles = [
-    'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png',
+  const sources: StyleSpecification['sources'] = {
+    openmaptiles: {
+      type: 'vector',
+      url: 'https://tiles.openfreemap.org/planet',
+    },
+  };
+
+  if (!isEco) {
+    sources['hillshade-dem'] = {
+      type: 'raster-dem',
+      tiles: TERRAIN_DEM_TILES,
+      tileSize: 256,
+      maxzoom: hillshadeMaxZoom,
+      encoding: 'terrarium',
+    };
+  }
+
+  if (useTerrainMesh) {
+    sources['terrain-dem'] = createTerrainDemSourceSpec(perfMode);
+  }
+
+  const layers: StyleSpecification['layers'] = [
+    {
+      id: 'land-background',
+      type: 'background',
+      paint: {
+        'background-color': landColor,
+      },
+    },
   ];
+
+  if (!isEco) {
+    layers.push(
+      {
+        id: 'landcover-organic',
+        type: 'fill',
+        source: 'openmaptiles',
+        'source-layer': 'landcover',
+        minzoom: perfMode === 'ultra' ? 3.5 : 4.8,
+        filter: [
+          'all',
+          ['match', ['geometry-type'], ['MultiPolygon', 'Polygon'], true, false],
+          ['in', ['get', 'class'], ['literal', ['wood', 'grass']]],
+        ],
+        paint: {
+          'fill-antialias': false,
+          'fill-color': woodColor,
+          'fill-opacity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            4.8,
+            isDark ? 0.22 : 0.28,
+            9,
+            isDark ? 0.32 : 0.38,
+          ],
+        },
+      },
+      {
+        id: 'mountain-hillshade',
+        type: 'hillshade',
+        source: 'hillshade-dem',
+        paint: {
+          'hillshade-illumination-direction': 315,
+          'hillshade-exaggeration': isDark ? 0.38 : 0.34,
+          'hillshade-shadow-color': hillShadow,
+          'hillshade-highlight-color': hillHighlight,
+          'hillshade-accent-color': hillAccent,
+        },
+      }
+    );
+  }
+
+  layers.push({
+    id: 'vector-water-fill',
+    type: 'fill',
+    source: 'openmaptiles',
+    'source-layer': 'water',
+    filter: [
+      'all',
+      ['match', ['geometry-type'], ['MultiPolygon', 'Polygon'], true, false],
+      ['!=', ['get', 'brunnel'], 'tunnel'],
+    ],
+    paint: {
+      'fill-antialias': !isEco,
+      'fill-color': waterColor,
+    },
+  });
+
+  if (!isEco) {
+    layers.push({
+      id: 'vector-water-shoreline',
+      type: 'line',
+      source: 'openmaptiles',
+      'source-layer': 'water',
+      minzoom: 3.5,
+      filter: ['!=', ['get', 'brunnel'], 'tunnel'],
+      layout: {
+        'line-join': 'bevel',
+        'line-cap': 'butt',
+      },
+      paint: {
+        'line-color': shorelineColor,
+        'line-width': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          3.5,
+          0.7,
+          7,
+          1.1,
+          11,
+          1.55,
+        ],
+        'line-opacity': isDark ? 0.84 : 0.86,
+      },
+    });
+  }
+
+  layers.push({
+    id: 'vector-natural-waterways',
+    type: 'line',
+    source: 'openmaptiles',
+    'source-layer': 'waterway',
+    minzoom: isEco ? 6.0 : 4.8,
+    filter: [
+      'all',
+      [
+        'match',
+        ['geometry-type'],
+        ['LineString', 'MultiLineString'],
+        true,
+        false,
+      ],
+      ['!=', ['get', 'brunnel'], 'tunnel'],
+      ['in', ['get', 'class'], ['literal', ['river', 'stream']]],
+      ['!=', ['get', 'name'], '黄河'],
+      ['!=', ['get', 'name:zh'], '黄河'],
+    ],
+    layout: {
+      'line-join': 'bevel',
+      'line-cap': 'butt',
+    },
+    paint: {
+      'line-color': naturalStreamColor,
+      'line-width': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        4.8,
+        ['match', ['get', 'class'], 'river', 0.55, 0.22],
+        7,
+        ['match', ['get', 'class'], 'river', 1.15, 0.5],
+        11,
+        ['match', ['get', 'class'], 'river', 2.0, 0.9],
+      ],
+      'line-opacity': ['interpolate', ['linear'], ['zoom'], 4.8, 0.42, 8, 0.68],
+    },
+  });
 
   return {
     version: 8,
     name: isDark ? 'Ming-Xuanmo-Sandtable' : 'Ming-Qinglv-Scroll',
     glyphs: 'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf',
-    sources: {
-      openmaptiles: {
-        type: 'vector',
-        url: 'https://tiles.openfreemap.org/planet',
-      },
-      'hillshade-dem': {
-        type: 'raster-dem',
-        tiles: demTiles,
-        tileSize: 256,
-        maxzoom: 8,
-        encoding: 'terrarium',
-      },
-      'terrain-dem': {
-        type: 'raster-dem',
-        tiles: demTiles,
-        tileSize: 256,
-        maxzoom: terrainMaxZoom,
-        encoding: 'terrarium',
-      },
-    },
+    sources,
     ...(useTerrainMesh
       ? {
           terrain: {
@@ -81,133 +232,7 @@ export function createHistoricalBaseStyle(
           },
         }
       : {}),
-    layers: [
-      {
-        id: 'land-background',
-        type: 'background',
-        paint: {
-          'background-color': landColor,
-        },
-      },
-      {
-        id: 'landcover-organic',
-        type: 'fill',
-        source: 'openmaptiles',
-        'source-layer': 'landcover',
-        minzoom: 3.5,
-        filter: [
-          'all',
-          ['match', ['geometry-type'], ['MultiPolygon', 'Polygon'], true, false],
-          ['in', ['get', 'class'], ['literal', ['wood', 'grass']]],
-        ],
-        paint: {
-          'fill-antialias': false,
-          'fill-color': woodColor,
-          'fill-opacity': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            3.5,
-            isDark ? 0.22 : 0.3,
-            9,
-            isDark ? 0.32 : 0.4,
-          ],
-        },
-      },
-      {
-        id: 'mountain-hillshade',
-        type: 'hillshade',
-        source: 'hillshade-dem',
-        paint: {
-          'hillshade-illumination-direction': 315,
-          'hillshade-exaggeration': isDark ? 0.38 : 0.34,
-          'hillshade-shadow-color': hillShadow,
-          'hillshade-highlight-color': hillHighlight,
-          'hillshade-accent-color': hillAccent,
-        },
-      },
-      {
-        id: 'vector-water-fill',
-        type: 'fill',
-        source: 'openmaptiles',
-        'source-layer': 'water',
-        filter: [
-          'all',
-          ['match', ['geometry-type'], ['MultiPolygon', 'Polygon'], true, false],
-          ['!=', ['get', 'brunnel'], 'tunnel'],
-        ],
-        paint: {
-          'fill-antialias': true,
-          'fill-color': waterColor,
-        },
-      },
-      {
-        id: 'vector-water-shoreline',
-        type: 'line',
-        source: 'openmaptiles',
-        'source-layer': 'water',
-        filter: ['!=', ['get', 'brunnel'], 'tunnel'],
-        layout: {
-          'line-join': 'round',
-          'line-cap': 'round',
-        },
-        paint: {
-          'line-color': shorelineColor,
-          'line-width': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            3,
-            0.75,
-            7,
-            1.15,
-            11,
-            1.6,
-          ],
-          'line-opacity': isDark ? 0.86 : 0.88,
-        },
-      },
-      {
-        id: 'vector-natural-waterways',
-        type: 'line',
-        source: 'openmaptiles',
-        'source-layer': 'waterway',
-        minzoom: 4.5,
-        filter: [
-          'all',
-          [
-            'match',
-            ['geometry-type'],
-            ['LineString', 'MultiLineString'],
-            true,
-            false,
-          ],
-          ['!=', ['get', 'brunnel'], 'tunnel'],
-          ['in', ['get', 'class'], ['literal', ['river', 'stream']]],
-          ['!=', ['get', 'name'], '黄河'],
-          ['!=', ['get', 'name:zh'], '黄河'],
-        ],
-        layout: {
-          'line-join': 'round',
-          'line-cap': 'round',
-        },
-        paint: {
-          'line-color': naturalStreamColor,
-          'line-width': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            4.5,
-            ['match', ['get', 'class'], 'river', 0.55, 0.22],
-            7,
-            ['match', ['get', 'class'], 'river', 1.15, 0.5],
-            11,
-            ['match', ['get', 'class'], 'river', 2.0, 0.9],
-          ],
-          'line-opacity': ['interpolate', ['linear'], ['zoom'], 4.5, 0.42, 8, 0.68],
-        },
-      },
-    ],
+    layers,
   };
 }
 

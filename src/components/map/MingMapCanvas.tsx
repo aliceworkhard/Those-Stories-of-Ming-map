@@ -14,6 +14,7 @@ import {
 } from '@/lib/territoryData';
 import {
   createHistoricalBaseStyle,
+  createTerrainDemSourceSpec,
   getTerrainExaggeration,
   registerTacticalSprites,
 } from '@/engine/mapStyle';
@@ -21,6 +22,7 @@ import {
   buildPhaseRouteFeatures,
   buildPolityLabelGeoJSON,
   mountHistoricalLayers,
+  resetLayerSyncGuards,
   setCampaignSpotlightRoute,
   setCampaignStaticRoutesOnMap,
   setPlaceNameModeOnGpu,
@@ -34,6 +36,7 @@ import {
   type PreparedRouteCurve,
 } from '@/engine/MingMapLayers';
 import {
+  CAMPAIGN_REQUIRED_SNAPSHOTS,
   buildCampaignTerritoryFrame,
   buildEraWipeOverlayGeoJSON,
   getEraWipePlan,
@@ -54,6 +57,10 @@ const OPENING_FLY_DURATION_MS = 1050;
 const STORY_STOP_DURATION_MS = 5600;
 const ERA_WIPE_DURATION_MS = 1650;
 const CAMPAIGN_WIPE_DURATION_MS = 1850;
+const EMPTY_FC: GeoJSON.FeatureCollection = {
+  type: 'FeatureCollection',
+  features: [],
+};
 
 function getRouteGrowDurationMs(routeCount: number): number {
   if (routeCount <= 1) return 2200;
@@ -69,12 +76,11 @@ function getPhaseTotalDurationMs(
 }
 
 /**
- * Computes an adaptive Retina WebGL pixelRatio using a physical-framebuffer pixel budget:
- * - Smartphones & tablets (`390x844` @ 3x = 2.96M px) get FULL native `devicePixelRatio` (up to `3x`)
- *   with ZERO non-integer `1.25x` bilinear upscaling blur!
- * - Standard 1080p/1440p laptops also get native 1:1 `devicePixelRatio`.
- * - Massive 4K/5K desktop monitors stay protected within a 4.5M physical-pixel budget in `balanced` mode
- *   (or full native DPR in `ultra` mode).
+ * Computes an adaptive physical-framebuffer pixelRatio with strict fill-rate protection:
+ * - Mobile (<1024px): stays crisp up to 2.5x Retina (1.5x in eco, 3x in ultra) within 2.6M px.
+ * - Desktop (>=1024px): enforces a strict 2.8M physical-pixel budget in `balanced` mode
+ *   (max 1.5x on 13-14" Retina laptops, 1.0x on 2K/4K monitors) — eliminating the 8M-18M px
+ *   fill-rate bottleneck while keeping `ultra` available for native Retina rendering!
  */
 function getTargetPixelRatio(perfMode: PerformanceMode): number {
   if (typeof window === 'undefined') return 1;
@@ -83,16 +89,29 @@ function getTargetPixelRatio(perfMode: PerformanceMode): number {
   const isSmallScreen = window.innerWidth < 1024;
 
   if (perfMode === 'eco') {
-    // Even in eco mode on phones, keep >= 1.75x-2x so small CJK text stays legible
-    return isSmallScreen ? Math.min(dpr, 2) : 1;
+    return isSmallScreen ? Math.min(dpr, 1.5) : 1;
   }
   if (perfMode === 'ultra') {
     return Math.min(dpr, 3);
   }
 
-  // `balanced` mode: full native Retina DPR (up to 3x) within a 4.5M physical-pixel budget!
-  const budgetMaxRatio = Math.sqrt(4_500_000 / cssPixels);
-  return Math.min(dpr, 3, Math.max(1.5, budgetMaxRatio));
+  const pixelBudget = isSmallScreen ? 2_600_000 : 2_800_000;
+  const budgetMaxRatio = Math.sqrt(pixelBudget / cssPixels);
+  const maxRatio = isSmallScreen ? 2.5 : 1.5;
+  return Math.max(1, Math.min(dpr, maxRatio, budgetMaxRatio));
+}
+
+function ensureTerrainDemSource(
+  map: maplibregl.Map,
+  perfMode: PerformanceMode
+): boolean {
+  if (map.getSource('terrain-dem')) return true;
+  try {
+    map.addSource('terrain-dem', createTerrainDemSourceSpec(perfMode));
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -183,7 +202,7 @@ function fitPhaseTheaterOnMap(
   );
 }
 
-export default function MingMapCanvas() {
+function MingMapCanvasInner() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const styleReadyRef = useRef(false);
@@ -191,10 +210,22 @@ export default function MingMapCanvas() {
   const animFrameRef = useRef<number | null>(null);
   const startDirectorLoopRef = useRef<() => void>(() => {});
 
+  // Granular WebGL upload-deduplication refs (prevents redundant setData worker stalls!)
+  const lastBaseGeoRef = useRef<GeoJSON.FeatureCollection | null>(null);
+  const lastCausalKeyRef = useRef<string | null>(null);
+  const lastOdysseyKeyRef = useRef<string | null>(null);
+  const campaignLayersPopulatedRef = useRef(false);
+  const lastAppliedPixelRatioRef = useRef(1);
+
+  // Zero-worker GPU feature-state hover tracking
+  const hoveredPolityIdRef = useRef<string | null>(null);
+  const hoveredFeatureIdRef = useRef<string | number | null>(null);
+  const hoveredRouteIdRef = useRef<string | null>(null);
+  const lastCursorRef = useRef<string>('');
+
   // On-Demand Animation Clocks & Throttles (0% CPU/GPU when idle!)
   const phaseElapsedMsRef = useRef(0);
   const routeGrowElapsedMsRef = useRef(0);
-  const routeGrowFinishedRef = useRef(false);
   const unlockedStepsRef = useRef(1);
   const campaignWipeElapsedMsRef = useRef(0);
   const campaignHasWipeRef = useRef(false);
@@ -206,7 +237,6 @@ export default function MingMapCanvas() {
   const activePhaseRef = useRef<CampaignPhase | null>(null);
   const is3DRef = useRef(false);
   const terrainSuspendedRef = useRef(false);
-  const hoveredPolityIdRef = useRef<string | null>(null);
 
   // Era-to-Era Victory Brush Paint-Over State
   const displayedSnapshotIdRef = useRef<string | null>(null);
@@ -220,13 +250,6 @@ export default function MingMapCanvas() {
 
   const [zoomBucket, setZoomBucket] = useState<'far' | 'mid' | 'close'>('far');
   const [territoryChunkRev, setTerritoryChunkRev] = useState(0);
-
-  useEffect(() => {
-    scheduleWarmAllTerritoryChunks();
-    return subscribeTerritoryChunks(() => {
-      setTerritoryChunkRev((v) => v + 1);
-    });
-  }, []);
 
   const currentYear = useAtlasStore((s) => s.currentYear);
   const selectedEventId = useAtlasStore((s) => s.selectedEventId);
@@ -260,6 +283,28 @@ export default function MingMapCanvas() {
     [currentYear, territoryChunkRev]
   );
 
+  // Track which snapshot IDs the currently rendered map actually cares about,
+  // so background pre-warming of the other 14 chunks triggers 0 re-renders!
+  const neededSnapshotIdsRef = useRef<Set<string>>(new Set(['ter-1356']));
+  {
+    const needed = new Set<string>([currentSnapshot.meta.snapshotId]);
+    if (activeCampaignId) {
+      for (const reqId of CAMPAIGN_REQUIRED_SNAPSHOTS[activeCampaignId] ?? []) {
+        needed.add(reqId);
+      }
+    }
+    neededSnapshotIdsRef.current = needed;
+  }
+
+  useEffect(() => {
+    scheduleWarmAllTerritoryChunks();
+    return subscribeTerritoryChunks((loadedIds) => {
+      if (loadedIds.some((id) => neededSnapshotIdsRef.current.has(id))) {
+        setTerritoryChunkRev((v) => v + 1);
+      }
+    });
+  }, []);
+
   const activeCampaign = activeCampaignId
     ? CAMPAIGN_MAP[activeCampaignId] ?? null
     : null;
@@ -281,10 +326,56 @@ export default function MingMapCanvas() {
   const causalLinkedSetRef = useRef(causalLinkedSet);
   causalLinkedSetRef.current = causalLinkedSet;
 
+  const clearTerritoryHoverState = (map: maplibregl.Map) => {
+    if (hoveredFeatureIdRef.current !== null && map.getSource('ming-territories')) {
+      try {
+        map.setFeatureState(
+          { source: 'ming-territories', id: hoveredFeatureIdRef.current },
+          { hover: false }
+        );
+      } catch {
+        // ignore if style swapped
+      }
+    }
+    hoveredFeatureIdRef.current = null;
+    if (hoveredPolityIdRef.current !== null) {
+      hoveredPolityIdRef.current = null;
+      useAtlasStore.getState().setHoveredPolity(null);
+    }
+  };
+
+  /**
+   * Uploads base territory polygons ONLY when the actual GeoJSON object reference changed!
+   * Prevents redundant 5,000-7,300 vertex GeoJSON worker re-triangulations on event clicks,
+   * zoom changes, layer toggles, and same-era timeline scrubbing.
+   */
+  const uploadBaseTerritoriesIfChanged = (
+    map: maplibregl.Map,
+    nextGeo: GeoJSON.FeatureCollection
+  ) => {
+    if (lastBaseGeoRef.current === nextGeo) return;
+    lastBaseGeoRef.current = nextGeo;
+    hoveredFeatureIdRef.current = null;
+    if (map.getSource('ming-territories')) {
+      try {
+        map.removeFeatureState({ source: 'ming-territories' });
+      } catch {
+        // ignore
+      }
+    }
+    const terSource = map.getSource('ming-territories') as
+      | maplibregl.GeoJSONSource
+      | undefined;
+    const polPtSource = map.getSource('ming-polity-points') as
+      | maplibregl.GeoJSONSource
+      | undefined;
+    if (terSource) terSource.setData(nextGeo);
+    if (polPtSource) polPtSource.setData(buildPolityLabelGeoJSON(nextGeo));
+  };
+
   /**
    * Temporarily suspends MapLibre's 3D Terrain Drape RTT FBO pipeline ONLY while
-   * GeoJSON line/polygon animations (`campaign-routes` / `ming-territory-wipe`) are
-   * actively mutating so frames render directly to screen at 120+ FPS with zero FBO thrash!
+   * GeoJSON polygon wipes (`ming-territory-wipe`) are actively mutating!
    */
   const syncTerrainDrapeSuspension = (
     map: maplibregl.Map,
@@ -303,7 +394,7 @@ export default function MingMapCanvas() {
       }
     } else if (!shouldSuspend && terrainSuspendedRef.current) {
       terrainSuspendedRef.current = false;
-      if (map.getSource('terrain-dem')) {
+      if (ensureTerrainDemSource(map, st.perfMode)) {
         map.setTerrain({
           source: 'terrain-dem',
           exaggeration: getTerrainExaggeration(st.perfMode),
@@ -312,21 +403,11 @@ export default function MingMapCanvas() {
     }
   };
 
-  const syncAllMapSourcesAndLayers = () => {
-    const map = mapRef.current;
-    if (!map || !styleReadyRef.current) return;
+  // --- Granular Sync Helpers (each updates ONLY its own slice of WebGL state!) ---
+
+  const syncTerritoriesLayer = (map: maplibregl.Map) => {
     const st = useAtlasStore.getState();
-
-    registerTacticalSprites(map);
-    mountHistoricalLayers(map, currentSnapshot.geojson, st.theme, st.placeNameMode);
-    syncLayerVisibility(map, st.layers);
-
-    const terSource = map.getSource('ming-territories') as
-      | maplibregl.GeoJSONSource
-      | undefined;
-    const polPtSource = map.getSource('ming-polity-points') as
-      | maplibregl.GeoJSONSource
-      | undefined;
+    const snap = getSnapshotForYear(st.currentYear);
 
     if (st.activeCampaignId) {
       eraWipeRef.current = null;
@@ -336,68 +417,65 @@ export default function MingMapCanvas() {
         0
       );
       campaignHasWipeRef.current = cmpFrame.hasWipeInPhase;
-      if (terSource) terSource.setData(cmpFrame.baseGeoJSON);
-      if (polPtSource) {
-        polPtSource.setData(buildPolityLabelGeoJSON(cmpFrame.baseGeoJSON));
-      }
+      uploadBaseTerritoriesIfChanged(map, cmpFrame.baseGeoJSON);
       updateTerritoryWipeOnMap(map, cmpFrame.wipeOverlayGeoJSON);
-      st.setActiveWipeCaption(cmpFrame.caption);
+      if (st.activeWipeCaption !== cmpFrame.caption) {
+        st.setActiveWipeCaption(cmpFrame.caption);
+      }
       displayedSnapshotIdRef.current = null;
-    } else {
-      campaignHasWipeRef.current = false;
-      const nextSnapId = currentSnapshot.meta.snapshotId;
-      const prevSnapId = displayedSnapshotIdRef.current;
-      const skipWipe = st.skipNextEraWipe;
-      if (skipWipe) st.clearSkipNextEraWipe();
+      return;
+    }
 
-      if (
-        !skipWipe &&
-        prevSnapId &&
-        prevSnapId !== nextSnapId &&
-        TERRITORY_SNAPSHOT_BY_ID[prevSnapId] &&
-        st.layers.territories &&
-        st.perfMode !== 'eco'
-      ) {
+    campaignHasWipeRef.current = false;
+    const nextSnapId = snap.meta.snapshotId;
+    const prevSnapId = displayedSnapshotIdRef.current;
+    const skipWipe = st.skipNextEraWipe;
+    if (skipWipe) st.clearSkipNextEraWipe();
+
+    if (
+      !skipWipe &&
+      prevSnapId &&
+      prevSnapId !== nextSnapId &&
+      TERRITORY_SNAPSHOT_BY_ID[prevSnapId] &&
+      st.layers.territories &&
+      st.perfMode !== 'eco'
+    ) {
+      const plan = getEraWipePlan(prevSnapId, nextSnapId);
+      if (plan.targets.length > 0) {
         const prevGeo = TERRITORY_SNAPSHOT_BY_ID[prevSnapId].geojson;
-        const plan = getEraWipePlan(prevSnapId, nextSnapId);
         eraWipeRef.current = {
           fromId: prevSnapId,
           toId: nextSnapId,
           plan,
           elapsedMs: 0,
         };
-        if (terSource) terSource.setData(prevGeo);
+        uploadBaseTerritoriesIfChanged(map, prevGeo);
+        const polPtSource = map.getSource('ming-polity-points') as
+          | maplibregl.GeoJSONSource
+          | undefined;
         if (polPtSource) {
-          polPtSource.setData(buildPolityLabelGeoJSON(currentSnapshot.geojson));
+          polPtSource.setData(buildPolityLabelGeoJSON(snap.geojson));
         }
         updateTerritoryWipeOnMap(map, null);
         st.setActiveWipeCaption(plan.caption);
         startDirectorLoopRef.current();
-      } else if (!eraWipeRef.current || eraWipeRef.current.toId !== nextSnapId) {
-        eraWipeRef.current = null;
-        displayedSnapshotIdRef.current = nextSnapId;
-        if (terSource) terSource.setData(currentSnapshot.geojson);
-        if (polPtSource) {
-          polPtSource.setData(buildPolityLabelGeoJSON(currentSnapshot.geojson));
-        }
-        updateTerritoryWipeOnMap(map, null);
-        st.setActiveWipeCaption(null);
+        return;
       }
     }
 
-    const activeEvt = st.selectedEventId ? EVENT_MAP[st.selectedEventId] : null;
-    updateCausalArcsOnMap(
-      map,
-      activeEvt,
-      st.layers.causalArcs && !st.activeCampaignId && !st.activeCharacterId
-    );
+    if (!eraWipeRef.current || eraWipeRef.current.toId !== nextSnapId) {
+      eraWipeRef.current = null;
+      displayedSnapshotIdRef.current = nextSnapId;
+      uploadBaseTerritoriesIfChanged(map, snap.geojson);
+      updateTerritoryWipeOnMap(map, null);
+      if (st.activeWipeCaption !== null) {
+        st.setActiveWipeCaption(null);
+      }
+    }
+  };
 
-    updateCharacterOdysseyOnMap(
-      map,
-      st.activeCampaignId ? null : st.activeCharacterId,
-      st.activeCharacterStopIndex
-    );
-
+  const syncEventsLayer = (map: maplibregl.Map) => {
+    const st = useAtlasStore.getState();
     const z = map.getZoom();
     const curBucket: 'far' | 'mid' | 'close' =
       z >= 6.6 ? 'close' : z >= 5.6 ? 'mid' : 'far';
@@ -412,36 +490,99 @@ export default function MingMapCanvas() {
       inOdyssey: Boolean(st.activeCharacterId),
       causalIds: causalLinkedSetRef.current,
     });
+  };
 
-    const { featureCollection, preparedCurves } = buildPhaseRouteFeatures(
-      activeCampaign,
-      activePhase
-    );
-    activeCurvesRef.current = preparedCurves;
+  const syncCausalArcsLayer = (map: maplibregl.Map) => {
+    const st = useAtlasStore.getState();
+    const visible =
+      st.layers.causalArcs && !st.activeCampaignId && !st.activeCharacterId;
+    const nextKey = visible && st.selectedEventId ? st.selectedEventId : '__off__';
+    if (lastCausalKeyRef.current === nextKey) return;
+    lastCausalKeyRef.current = nextKey;
+    const activeEvt = st.selectedEventId ? EVENT_MAP[st.selectedEventId] : null;
+    updateCausalArcsOnMap(map, activeEvt, visible);
+  };
 
-    // Route lines + origin rings + destination spearheads are ALWAYS 100% stationary ("线不用动")!
-    setCampaignStaticRoutesOnMap(map, featureCollection, preparedCurves);
-    setCampaignSpotlightRoute(
-      map,
-      st.activeCampaignId ? st.spotlightRouteId : null,
-      Boolean(st.activeCampaignId)
-    );
+  const syncOdysseyLayer = (map: maplibregl.Map) => {
+    const st = useAtlasStore.getState();
+    const charId = st.activeCampaignId ? null : st.activeCharacterId;
+    const nextKey = charId ? `${charId}:${st.activeCharacterStopIndex}` : '__off__';
+    if (lastOdysseyKeyRef.current === nextKey) return;
+    lastOdysseyKeyRef.current = nextKey;
+    updateCharacterOdysseyOnMap(map, charId, st.activeCharacterStopIndex);
+  };
 
-    if (!activeCampaign) {
-      updateCampaignArrowheadsOnMap(map, [], 'static', 1);
-      updateCampaignAnnotationsOnMap(map, [], null, 0, st.theme);
-    } else {
-      updateCampaignAnnotationsOnMap(
-        map,
-        preparedCurves,
-        activePhase,
-        preparedCurves.length,
-        st.theme
-      );
-      if (st.campaignArrowMode === 'static') {
-        updateCampaignArrowheadsOnMap(map, preparedCurves, 'static', 1);
+  const syncCampaignStaticLayers = (map: maplibregl.Map) => {
+    const st = useAtlasStore.getState();
+    const cmp = st.activeCampaignId ? CAMPAIGN_MAP[st.activeCampaignId] ?? null : null;
+    const ph = cmp ? cmp.phases[st.activePhaseIndex] ?? cmp.phases[0] : null;
+
+    if (!cmp || !ph) {
+      activeCurvesRef.current = [];
+      if (campaignLayersPopulatedRef.current) {
+        campaignLayersPopulatedRef.current = false;
+        setCampaignStaticRoutesOnMap(map, EMPTY_FC, []);
+        setCampaignSpotlightRoute(map, null, false);
+        updateCampaignArrowheadsOnMap(map, [], 'static', 1);
+        updateCampaignAnnotationsOnMap(map, [], null, 0, st.theme);
       }
+      return;
     }
+
+    campaignLayersPopulatedRef.current = true;
+    const { featureCollection, preparedCurves } = buildPhaseRouteFeatures(cmp, ph);
+    activeCurvesRef.current = preparedCurves;
+    setCampaignStaticRoutesOnMap(map, featureCollection, preparedCurves);
+    setCampaignSpotlightRoute(map, st.spotlightRouteId, true);
+    updateCampaignAnnotationsOnMap(
+      map,
+      preparedCurves,
+      ph,
+      preparedCurves.length,
+      st.theme
+    );
+    if (st.campaignArrowMode === 'static') {
+      updateCampaignArrowheadsOnMap(map, preparedCurves, 'static', 1);
+    } else {
+      updateCampaignArrowheadsOnMap(map, preparedCurves, 'dynamic', 0, 0);
+    }
+  };
+
+  /**
+   * Full mount called ONLY on initial `map.on('load')` and after `map.setStyle(...)`
+   * (theme / perfMode change). Resets all dedup guards and mounts all sources once.
+   */
+  const mountAndSyncFullStyle = (map: maplibregl.Map) => {
+    const st = useAtlasStore.getState();
+    const snap = getSnapshotForYear(st.currentYear);
+
+    lastBaseGeoRef.current = null;
+    lastCausalKeyRef.current = null;
+    lastOdysseyKeyRef.current = null;
+    hoveredFeatureIdRef.current = null;
+    campaignLayersPopulatedRef.current = true;
+
+    registerTacticalSprites(map);
+    mountHistoricalLayers(
+      map,
+      snap.geojson,
+      st.theme,
+      st.placeNameMode,
+      st.perfMode
+    );
+    resetLayerSyncGuards(map);
+    // Record initial uploaded base so syncTerritoriesLayer avoids immediate duplicate setData
+    lastBaseGeoRef.current = snap.geojson;
+    if (!st.activeCampaignId) {
+      displayedSnapshotIdRef.current = snap.meta.snapshotId;
+    }
+
+    syncLayerVisibility(map, st.layers, st.perfMode);
+    syncTerritoriesLayer(map);
+    syncCausalArcsLayer(map);
+    syncOdysseyLayer(map);
+    syncEventsLayer(map);
+    syncCampaignStaticLayers(map);
   };
 
   // 1. Initialize MapLibre GL & On-Demand Hardware-Friendly Director Loop
@@ -455,6 +596,9 @@ export default function MingMapCanvas() {
         ? EVENT_MAP[initState.selectedEventId]?.camera
         : null) ??
       SITE_CONFIG.defaultCamera;
+
+    const initialPixelRatio = getTargetPixelRatio(initState.perfMode);
+    lastAppliedPixelRatioRef.current = initialPixelRatio;
 
     const map = new maplibregl.Map({
       container: containerRef.current,
@@ -470,14 +614,16 @@ export default function MingMapCanvas() {
           ? Math.min(44, initialPose.pitch ?? 38)
           : 0,
       bearing: 0,
-      pixelRatio: getTargetPixelRatio(initState.perfMode),
+      pixelRatio: initialPixelRatio,
       maxTileCacheSize: initState.perfMode === 'eco' ? 48 : 96,
       maxPitch: 52,
       minZoom: 2.5,
       maxZoom: 13.0,
-      fadeDuration: 80,
+      fadeDuration: 0,
+      renderWorldCopies: false,
+      refreshExpiredTiles: false,
+      validateStyle: false,
       attributionControl: false,
-      // Uniform-stroke CJK Sans-Serif prevents hairline horizontal stroke loss in MapLibre's 24px TinySDF atlas!
       localIdeographFontFamily:
         "'PingFang SC', 'HarmonyOS Sans SC', 'MiSans', 'Hiragino Sans GB', 'Microsoft YaHei UI', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif",
     });
@@ -491,6 +637,13 @@ export default function MingMapCanvas() {
       'bottom-right'
     );
 
+    const setCanvasCursor = (next: string) => {
+      if (lastCursorRef.current !== next) {
+        lastCursorRef.current = next;
+        map.getCanvas().style.cursor = next;
+      }
+    };
+
     const onManualInput = (e: { originalEvent?: Event }) => {
       if (!e.originalEvent) return;
       if (useAtlasStore.getState().activeCampaignId) {
@@ -501,115 +654,168 @@ export default function MingMapCanvas() {
     map.on('touchstart', onManualInput);
     map.on('wheel', onManualInput);
 
-    // Native GPU Click & Pointer Hit-Testing for WebGL Event Medallions (`战` / `史` / `轶`)
-    map.on('click', 'ming-events-symbol', (e) => {
-      const feat = e.features?.[0];
-      const eventId = feat?.properties?.eventId;
-      if (typeof eventId === 'string' && eventId) {
-        useAtlasStore.getState().selectEvent(eventId, true);
-      }
-    });
-
-    map.on('mouseenter', 'ming-events-symbol', () => {
-      map.getCanvas().style.cursor = 'pointer';
-    });
-    map.on('mouseleave', 'ming-events-symbol', () => {
-      map.getCanvas().style.cursor = '';
-    });
-
-    // Mobile Natural Gesture: Tap empty map canvas (<640px) to dismiss open bottom sheets!
+    // Unified Single Click Handler (replaces 4 delegated layer listeners -> 0 raw mousemove overhead!)
     map.on('click', (e) => {
-      if (typeof window === 'undefined' || window.innerWidth >= 640) return;
+      if (!styleReadyRef.current) return;
       const st = useAtlasStore.getState();
-      if (!st.isDrawerOpen && !st.isDirectoryOpen && !st.isCampaignPanelOpen) {
+
+      if (st.activeCampaignId) {
+        const cmpLayers = [
+          'campaign-callouts-pill',
+          'campaign-routes-solid',
+          'campaign-routes-dashed',
+        ].filter((id) => Boolean(map.getLayer(id)));
+        if (cmpLayers.length > 0) {
+          const hits = map.queryRenderedFeatures(e.point, { layers: cmpLayers });
+          const rId = String(
+            hits[0]?.properties?.routeId ?? hits[0]?.properties?.id ?? ''
+          );
+          if (rId) {
+            st.focusCampaignRoute(rId);
+            return;
+          }
+        }
+        if (
+          typeof window !== 'undefined' &&
+          window.innerWidth < 640 &&
+          st.isCampaignPanelOpen
+        ) {
+          st.setCampaignPanelOpen(false);
+        }
         return;
       }
-      const interactiveLayers = [
-        'ming-events-symbol',
-        'campaign-callouts-pill',
-        'campaign-routes-solid',
-        'campaign-routes-dashed',
-      ].filter((id) => Boolean(map.getLayer(id)));
 
-      if (interactiveLayers.length > 0) {
+      if (map.getLayer('ming-events-symbol')) {
         const hits = map.queryRenderedFeatures(e.point, {
-          layers: interactiveLayers,
+          layers: ['ming-events-symbol'],
         });
-        if (hits.length > 0) return;
+        const eventId = hits[0]?.properties?.eventId;
+        if (typeof eventId === 'string' && eventId) {
+          st.selectEvent(eventId, true);
+          return;
+        }
       }
 
-      if (st.isDrawerOpen) st.setDrawerOpen(false);
-      if (st.isDirectoryOpen) st.setDirectoryOpen(false);
-      if (st.isCampaignPanelOpen) st.setCampaignPanelOpen(false);
+      // Mobile (<640px): Tap empty map canvas to dismiss open bottom sheets
+      if (
+        typeof window !== 'undefined' &&
+        window.innerWidth < 640 &&
+        (st.isDrawerOpen || st.isDirectoryOpen)
+      ) {
+        if (st.isDrawerOpen) st.setDrawerOpen(false);
+        if (st.isDirectoryOpen) st.setDirectoryOpen(false);
+      }
     });
 
-    // Interactive Tactical Route & Pill Hit-Testing (`① / ② / ③`)
-    const campaignHitLayers = [
-      'campaign-callouts-pill',
-      'campaign-routes-solid',
-      'campaign-routes-dashed',
-    ] as const;
-
-    for (const layerId of campaignHitLayers) {
-      map.on('mouseenter', layerId, (e) => {
-        const feat = e.features?.[0];
-        const rId = String(
-          feat?.properties?.routeId ?? feat?.properties?.id ?? ''
-        );
-        map.getCanvas().style.cursor = 'pointer';
-        if (rId && useAtlasStore.getState().activeCampaignId) {
-          useAtlasStore.getState().setSpotlightRouteId(rId);
-        }
-      });
-
-      map.on('mouseleave', layerId, () => {
-        map.getCanvas().style.cursor = '';
-        if (useAtlasStore.getState().activeCampaignId) {
-          useAtlasStore.getState().setSpotlightRouteId(null);
-        }
-      });
-
-      map.on('click', layerId, (e) => {
-        const feat = e.features?.[0];
-        const rId = String(
-          feat?.properties?.routeId ?? feat?.properties?.id ?? ''
-        );
-        if (rId && useAtlasStore.getState().activeCampaignId) {
-          useAtlasStore.getState().focusCampaignRoute(rId);
-        }
-      });
-    }
-
-    // Zero-Interference Territory Hover Highlight:
-    // Completely skipped while camera is moving or any animation loop is active!
+    // Unified Throttled Mousemove Hit-Testing (0ms while dragging, zooming, or animating!)
+    // Replaces 4 MapLibre delegated mouseenter listeners that queried on every raw 120Hz mouse pixel!
     let lastHoverMs = 0;
     map.on('mousemove', (e) => {
-      if (map.isMoving() || animFrameRef.current !== null) return;
+      if (!styleReadyRef.current || map.isMoving()) return;
+      if (e.originalEvent && e.originalEvent.buttons !== 0) return;
       const now = performance.now();
-      if (now - lastHoverMs < 85 || !styleReadyRef.current) return;
+      if (now - lastHoverMs < 90) return;
       lastHoverMs = now;
-      if (!map.getLayer('ming-territories-fill')) return;
 
-      const hits = map.queryRenderedFeatures(e.point, {
-        layers: ['ming-territories-fill'],
-      });
-      const topFeat = hits[0];
-      const nextId = topFeat
-        ? String(topFeat.properties?.polityId ?? '')
+      const st = useAtlasStore.getState();
+
+      // Campaign Mode: hit-test ONLY route lines & callout pills
+      if (st.activeCampaignId) {
+        if (hoveredPolityIdRef.current !== null || hoveredFeatureIdRef.current !== null) {
+          clearTerritoryHoverState(map);
+        }
+        const cmpLayers = [
+          'campaign-callouts-pill',
+          'campaign-routes-solid',
+          'campaign-routes-dashed',
+        ].filter((id) => Boolean(map.getLayer(id)));
+        if (cmpLayers.length === 0) {
+          setCanvasCursor('');
+          return;
+        }
+        const hits = map.queryRenderedFeatures(e.point, { layers: cmpLayers });
+        const nextRouteId = hits[0]
+          ? String(hits[0].properties?.routeId ?? hits[0].properties?.id ?? '') || null
+          : null;
+        setCanvasCursor(nextRouteId ? 'pointer' : '');
+        if (nextRouteId !== hoveredRouteIdRef.current) {
+          hoveredRouteIdRef.current = nextRouteId;
+          st.setSpotlightRouteId(nextRouteId);
+        }
+        return;
+      }
+
+      if (hoveredRouteIdRef.current !== null) {
+        hoveredRouteIdRef.current = null;
+      }
+
+      // Normal Mode: batch event medallion & territory hover in ONE queryRenderedFeatures call!
+      const queryLayers: string[] = [];
+      if (map.getLayer('ming-events-symbol')) {
+        queryLayers.push('ming-events-symbol');
+      }
+      const checkTerritoryHover =
+        st.layers.territories &&
+        animFrameRef.current === null &&
+        Boolean(map.getLayer('ming-territories-fill'));
+      if (checkTerritoryHover) {
+        queryLayers.push('ming-territories-fill');
+      }
+      if (queryLayers.length === 0) {
+        setCanvasCursor('');
+        return;
+      }
+
+      const hits = map.queryRenderedFeatures(e.point, { layers: queryLayers });
+      let hitEvent = false;
+      let topTerritory: maplibregl.MapGeoJSONFeature | undefined;
+      for (let i = 0; i < hits.length; i++) {
+        const h = hits[i];
+        if (!hitEvent && h.layer.id === 'ming-events-symbol') {
+          hitEvent = true;
+        } else if (!topTerritory && h.layer.id === 'ming-territories-fill') {
+          topTerritory = h;
+        }
+      }
+
+      setCanvasCursor(hitEvent ? 'pointer' : '');
+
+      if (!checkTerritoryHover) return;
+
+      const nextFeatureId = topTerritory?.id ?? null;
+      const nextPolityId = topTerritory
+        ? String(topTerritory.properties?.polityId ?? '') || null
         : null;
 
-      if (nextId !== hoveredPolityIdRef.current) {
-        hoveredPolityIdRef.current = nextId;
-        if (map.getLayer('ming-territories-hover')) {
-          map.setFilter('ming-territories-hover', [
-            '==',
-            ['get', 'polityId'],
-            nextId ?? '__none__',
-          ]);
+      if (nextFeatureId !== hoveredFeatureIdRef.current) {
+        if (hoveredFeatureIdRef.current !== null) {
+          try {
+            map.setFeatureState(
+              { source: 'ming-territories', id: hoveredFeatureIdRef.current },
+              { hover: false }
+            );
+          } catch {
+            // ignore
+          }
         }
-        if (topFeat?.properties) {
-          const p = topFeat.properties;
-          useAtlasStore.getState().setHoveredPolity({
+        hoveredFeatureIdRef.current = nextFeatureId;
+        if (nextFeatureId !== null) {
+          try {
+            map.setFeatureState(
+              { source: 'ming-territories', id: nextFeatureId },
+              { hover: true }
+            );
+          } catch {
+            // ignore
+          }
+        }
+      }
+
+      if (nextPolityId !== hoveredPolityIdRef.current) {
+        hoveredPolityIdRef.current = nextPolityId;
+        if (topTerritory?.properties) {
+          const p = topTerritory.properties;
+          st.setHoveredPolity({
             polityId: String(p.polityId ?? ''),
             polityName: String(p.polityName ?? ''),
             shortLabel: String(p.shortLabel ?? ''),
@@ -624,24 +830,24 @@ export default function MingMapCanvas() {
             changeReason: String(p.changeReason ?? ''),
           } satisfies TerritoryPolityProps);
         } else {
-          useAtlasStore.getState().setHoveredPolity(null);
+          st.setHoveredPolity(null);
         }
       }
     });
 
-    map.getCanvas().addEventListener('mouseleave', () => {
-      if (hoveredPolityIdRef.current !== null) {
-        hoveredPolityIdRef.current = null;
-        if (styleReadyRef.current && map.getLayer('ming-territories-hover')) {
-          map.setFilter('ming-territories-hover', [
-            '==',
-            ['get', 'polityId'],
-            '__none__',
-          ]);
+    const onCanvasLeave = () => {
+      setCanvasCursor('');
+      if (hoveredRouteIdRef.current !== null) {
+        hoveredRouteIdRef.current = null;
+        if (useAtlasStore.getState().activeCampaignId) {
+          useAtlasStore.getState().setSpotlightRouteId(null);
         }
-        useAtlasStore.getState().setHoveredPolity(null);
       }
-    });
+      if (styleReadyRef.current) {
+        clearTerritoryHoverState(map);
+      }
+    };
+    map.getCanvas().addEventListener('mouseleave', onCanvasLeave);
 
     const updateZoomBucket = () => {
       const z = map.getZoom();
@@ -652,7 +858,7 @@ export default function MingMapCanvas() {
 
     map.on('load', () => {
       styleReadyRef.current = true;
-      syncAllMapSourcesAndLayers();
+      mountAndSyncFullStyle(map);
       updateZoomBucket();
       startDirectorLoopRef.current();
     });
@@ -692,9 +898,15 @@ export default function MingMapCanvas() {
       lastFrameTimeRef.current = now;
 
       const store = useAtlasStore.getState();
-      const minArrowInterval = store.perfMode === 'eco' ? 30 : 16;
+      const minArrowInterval =
+        store.perfMode === 'eco'
+          ? 52
+          : !store.isCampaignPlaying
+          ? 48
+          : store.perfMode === 'ultra'
+          ? 20
+          : 33;
 
-      // Only territory polygon wipes mutate draped fill/line geometry!
       const hasMutatingGeoJSON =
         eraWipeRef.current !== null ||
         (Boolean(store.activeCampaignId) &&
@@ -706,7 +918,7 @@ export default function MingMapCanvas() {
         syncTerrainDrapeSuspension(currentMap, hasMutatingGeoJSON);
       }
 
-      // --- MODE C: Local-Delta Era-to-Era Brush Paint-Over (ONLY changed border region!) ---
+      // --- MODE C: Local-Delta Era-to-Era Brush Paint-Over (30fps push!) ---
       if (
         currentMap &&
         styleReadyRef.current &&
@@ -719,15 +931,14 @@ export default function MingMapCanvas() {
 
         if (rawWipe >= 1) {
           const destSnap = TERRITORY_SNAPSHOT_BY_ID[wipe.toId];
-          const terSrc = currentMap.getSource('ming-territories') as
-            | maplibregl.GeoJSONSource
-            | undefined;
-          if (terSrc && destSnap) terSrc.setData(destSnap.geojson);
+          if (destSnap) {
+            uploadBaseTerritoriesIfChanged(currentMap, destSnap.geojson);
+          }
           updateTerritoryWipeOnMap(currentMap, null);
           displayedSnapshotIdRef.current = wipe.toId;
           eraWipeRef.current = null;
           store.setActiveWipeCaption(null);
-        } else if (now - lastEraWipePushMsRef.current >= 24) {
+        } else if (now - lastEraWipePushMsRef.current >= 34) {
           lastEraWipePushMsRef.current = now;
           const overlay = buildEraWipeOverlayGeoJSON(
             wipe.toId,
@@ -753,9 +964,13 @@ export default function MingMapCanvas() {
           getPhaseTotalDurationMs(curves.length, campaignHasWipeRef.current) /
           speed;
 
+        // Give 100% WebGL & Worker priority while the user is actively dragging/zooming!
+        const userManuallyNavigating =
+          currentMap.isMoving() &&
+          (userInteractedInPhaseRef.current || !store.isCampaignPlaying);
+
         if (store.campaignArrowMode === 'dynamic') {
           routeGrowElapsedMsRef.current += dt;
-          // If phase auto-play is paused (`!isCampaignPlaying`), loop sequential `①->②->③` + continuous glide!
           const effectiveElapsed = store.isCampaignPlaying
             ? Math.min(growTotalMs, routeGrowElapsedMsRef.current)
             : routeGrowElapsedMsRef.current % cycleWithHoldMs;
@@ -768,7 +983,10 @@ export default function MingMapCanvas() {
               nextUnlocked = Math.max(nextUnlocked, c.stepNo);
             }
           }
-          if (nextUnlocked !== unlockedStepsRef.current && !store.isCampaignPlaying) {
+          if (
+            nextUnlocked !== unlockedStepsRef.current &&
+            !store.isCampaignPlaying
+          ) {
             emitPlaybackTick({
               mode: 'campaign',
               percent: 0,
@@ -777,7 +995,10 @@ export default function MingMapCanvas() {
           }
           unlockedStepsRef.current = nextUnlocked;
 
-          if (now - lastWebglFrameMsRef.current >= minArrowInterval) {
+          if (
+            !userManuallyNavigating &&
+            now - lastWebglFrameMsRef.current >= minArrowInterval
+          ) {
             lastWebglFrameMsRef.current = now;
             updateCampaignArrowheadsOnMap(
               currentMap,
@@ -788,7 +1009,6 @@ export default function MingMapCanvas() {
             );
           }
         } else {
-          // `static` mode: advance timer silently for wipe/camera if playing, keep arrowheads 100% still!
           routeGrowElapsedMsRef.current = Math.min(
             growTotalMs,
             routeGrowElapsedMsRef.current + dt
@@ -796,10 +1016,7 @@ export default function MingMapCanvas() {
           unlockedStepsRef.current = curves.length;
         }
 
-        const rawGrow = Math.min(
-          1,
-          routeGrowElapsedMsRef.current / growTotalMs
-        );
+        const rawGrow = Math.min(1, routeGrowElapsedMsRef.current / growTotalMs);
 
         // Progressive Local-Delta Territory Paint-Over once attacking sequence reaches >= 62%
         if (campaignHasWipeRef.current && rawGrow >= 0.62) {
@@ -812,7 +1029,7 @@ export default function MingMapCanvas() {
             campaignWipeElapsedMsRef.current / CAMPAIGN_WIPE_DURATION_MS
           );
           if (
-            now - lastCampaignWipePushMsRef.current >= 26 ||
+            now - lastCampaignWipePushMsRef.current >= 34 ||
             wipeRatio >= 0.999
           ) {
             lastCampaignWipePushMsRef.current = now;
@@ -934,10 +1151,21 @@ export default function MingMapCanvas() {
         startDirectorLoop();
       }
     };
+
+    let resizeTimer: number | null = null;
     const onWindowResize = () => {
-      const st = useAtlasStore.getState();
-      map.setPixelRatio(getTargetPixelRatio(st.perfMode));
+      if (resizeTimer !== null) window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        resizeTimer = null;
+        const st = useAtlasStore.getState();
+        const nextRatio = getTargetPixelRatio(st.perfMode);
+        if (Math.abs(nextRatio - lastAppliedPixelRatioRef.current) > 0.04) {
+          lastAppliedPixelRatioRef.current = nextRatio;
+          map.setPixelRatio(nextRatio);
+        }
+      }, 160);
     };
+
     document.addEventListener('visibilitychange', onVisibilityChange);
     window.addEventListener('resize', onWindowResize);
 
@@ -946,8 +1174,10 @@ export default function MingMapCanvas() {
 
     return () => {
       registerMapInstanceForCapture(null);
+      map.getCanvas().removeEventListener('mouseleave', onCanvasLeave);
       document.removeEventListener('visibilitychange', onVisibilityChange);
       window.removeEventListener('resize', onWindowResize);
+      if (resizeTimer !== null) window.clearTimeout(resizeTimer);
       if (animFrameRef.current !== null) {
         cancelAnimationFrame(animFrameRef.current);
       }
@@ -979,7 +1209,9 @@ export default function MingMapCanvas() {
     if (!map) return;
 
     if (prevPerfRef.current !== perfMode) {
-      map.setPixelRatio(getTargetPixelRatio(perfMode));
+      const nextRatio = getTargetPixelRatio(perfMode);
+      lastAppliedPixelRatioRef.current = nextRatio;
+      map.setPixelRatio(nextRatio);
     }
 
     if (prevThemeRef.current !== theme || prevPerfRef.current !== perfMode) {
@@ -988,10 +1220,17 @@ export default function MingMapCanvas() {
       prev3DRef.current = is3D;
       terrainSuspendedRef.current = false;
       styleReadyRef.current = false;
-      map.setStyle(createHistoricalBaseStyle(theme, is3D, perfMode));
+      // Detach active 3D terrain mesh BEFORE replacing style to avoid MapLibre v5
+      // `shaderPreludeCode` TypeError when transitioning out of 3D (`极致` -> `均衡`/`省电`)!
+      if (map.getTerrain()) {
+        map.setTerrain(null);
+      }
+      map.setStyle(createHistoricalBaseStyle(theme, is3D, perfMode), {
+        diff: false,
+      });
       map.once('styledata', () => {
         styleReadyRef.current = true;
-        syncAllMapSourcesAndLayers();
+        mountAndSyncFullStyle(map);
         startDirectorLoopRef.current();
       });
       return;
@@ -1000,15 +1239,17 @@ export default function MingMapCanvas() {
     if (prev3DRef.current !== is3D) {
       prev3DRef.current = is3D;
       terrainSuspendedRef.current = false;
-      if (styleReadyRef.current && map.getSource('terrain-dem')) {
-        map.setTerrain(
-          is3D && perfMode !== 'eco'
-            ? {
-                source: 'terrain-dem',
-                exaggeration: getTerrainExaggeration(perfMode),
-              }
-            : null
-        );
+      if (styleReadyRef.current) {
+        if (is3D && perfMode !== 'eco') {
+          if (ensureTerrainDemSource(map, perfMode)) {
+            map.setTerrain({
+              source: 'terrain-dem',
+              exaggeration: getTerrainExaggeration(perfMode),
+            });
+          }
+        } else {
+          map.setTerrain(null);
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1021,20 +1262,53 @@ export default function MingMapCanvas() {
     setPlaceNameModeOnGpu(map, placeNameMode);
   }, [placeNameMode]);
 
-  // 4. Sync WebGL Territory Polygons, Events, Causal Arcs, Odyssey & Visibility
+  // 4a. Layer Visibility ONLY (0 GeoJSON uploads!)
   useEffect(() => {
-    syncAllMapSourcesAndLayers();
+    const map = mapRef.current;
+    if (!map || !styleReadyRef.current) return;
+    syncLayerVisibility(map, layers, perfMode);
+  }, [layers, perfMode]);
+
+  // 4b. Territory Polygons ONLY (0 uploads on event click, zoom, or same-era scrub!)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !styleReadyRef.current) return;
+    syncTerritoriesLayer(map);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentSnapshot, activeCampaignId, activePhaseIndex, territoryChunkRev]);
+
+  // 4c. Event Medallions ONLY (signature-deduplicated!)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !styleReadyRef.current) return;
+    syncEventsLayer(map);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    currentSnapshot,
-    layers,
-    activeCampaignId,
-    activePhaseIndex,
-    activeCharacterId,
-    activeCharacterStopIndex,
     selectedEventId,
+    currentYear,
     zoomBucket,
+    layers.macroEvents,
+    layers.showAllMicroEvents,
+    activeCampaignId,
+    activeCharacterId,
+    causalLinkedSet,
   ]);
+
+  // 4d. Causal Arcs ONLY
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !styleReadyRef.current) return;
+    syncCausalArcsLayer(map);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedEventId, layers.causalArcs, activeCampaignId, activeCharacterId]);
+
+  // 4e. Character Odyssey ONLY
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !styleReadyRef.current) return;
+    syncOdysseyLayer(map);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeCharacterId, activeCharacterStopIndex, activeCampaignId]);
 
   // 5. Reset Story Tour Clock on Event Change
   useEffect(() => {
@@ -1043,14 +1317,20 @@ export default function MingMapCanvas() {
     startDirectorLoopRef.current();
   }, [selectedEventId, storyTourNonce, isStoryTourPlaying]);
 
-  // 6. Campaign Phase Opening Camera & Stationary Route Setup
+  // 6. Campaign Phase Stationary Routes, Annotations & Opening Camera (Single Source of Truth!)
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !activeCampaign || !activePhase) return;
+    if (!map) return;
+
+    if (!activeCampaign || !activePhase) {
+      if (styleReadyRef.current) {
+        syncCampaignStaticLayers(map);
+      }
+      return;
+    }
 
     phaseElapsedMsRef.current = 0;
     routeGrowElapsedMsRef.current = 0;
-    routeGrowFinishedRef.current = false;
     unlockedStepsRef.current = 1;
     campaignWipeElapsedMsRef.current = 0;
     userInteractedInPhaseRef.current = false;
@@ -1062,6 +1342,7 @@ export default function MingMapCanvas() {
     activeCurvesRef.current = preparedCurves;
 
     if (styleReadyRef.current) {
+      campaignLayersPopulatedRef.current = true;
       setCampaignStaticRoutesOnMap(map, featureCollection, preparedCurves);
       setCampaignSpotlightRoute(map, null, true);
       updateCampaignAnnotationsOnMap(
@@ -1280,3 +1561,6 @@ export default function MingMapCanvas() {
     />
   );
 }
+
+const MingMapCanvas = React.memo(MingMapCanvasInner);
+export default MingMapCanvas;

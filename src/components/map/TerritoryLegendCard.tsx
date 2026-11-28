@@ -1,30 +1,25 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Brush, ChevronDown, ChevronUp, Map as MapIcon } from 'lucide-react';
 import { CAMPAIGN_MAP } from '@/lib/atlasData';
 import {
   getSnapshotForYear,
   subscribeTerritoryChunks,
 } from '@/lib/territoryData';
-import { buildCampaignTerritoryFrame } from '@/engine/territoryWipe';
+import {
+  CAMPAIGN_REQUIRED_SNAPSHOTS,
+  buildCampaignTerritoryFrame,
+} from '@/engine/territoryWipe';
 import { useAtlasStore } from '@/store/useAtlasStore';
 import type { TerritoryPolityProps } from '@/types/ming';
 
-export default function TerritoryLegendCard() {
+function TerritoryLegendCardInner() {
   const [collapsed, setCollapsed] = useState(false);
   const [chunkRev, setChunkRev] = useState(0);
   const [pinnedPolity, setPinnedPolity] = useState<TerritoryPolityProps | null>(
     null
   );
-
-  // Default collapsed on mobile (<640px) so the phone map starts clean & unobstructed!
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.innerWidth < 640) {
-      setCollapsed(true);
-    }
-    return subscribeTerritoryChunks(() => setChunkRev((v) => v + 1));
-  }, []);
 
   const currentYear = useAtlasStore((s) => s.currentYear);
   const hoveredPolity = useAtlasStore((s) => s.hoveredPolity);
@@ -43,6 +38,29 @@ export default function TerritoryLegendCard() {
 
   const isDark = theme === 'xuanmo';
   const snapshot = getSnapshotForYear(currentYear);
+
+  const neededSnapshotIdsRef = useRef<Set<string>>(new Set(['ter-1356']));
+  {
+    const needed = new Set<string>([snapshot.meta.snapshotId]);
+    if (activeCampaignId) {
+      for (const reqId of CAMPAIGN_REQUIRED_SNAPSHOTS[activeCampaignId] ?? []) {
+        needed.add(reqId);
+      }
+    }
+    neededSnapshotIdsRef.current = needed;
+  }
+
+  // Default collapsed on mobile (<640px) & only react when an actually displayed chunk arrives!
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 640) {
+      setCollapsed(true);
+    }
+    return subscribeTerritoryChunks((loadedIds) => {
+      if (loadedIds.some((id) => neededSnapshotIdsRef.current.has(id))) {
+        setChunkRev((v) => v + 1);
+      }
+    });
+  }, []);
 
   const polities = useMemo(() => {
     const sourceGeoJSON = activeCampaignId
@@ -132,7 +150,7 @@ export default function TerritoryLegendCard() {
       aria-label="舆图势力与地理军事图例"
       className={`pointer-events-auto fixed z-22 ${
         mobileSheetOpen && !activeWipeCaption ? 'hidden sm:flex' : 'flex'
-      } flex-col gap-1.5 transition-all ${positionClass}`}
+      } flex-col gap-1.5 transition-[left,bottom] duration-150 ${positionClass}`}
     >
       {/* 1. Live Victory Paint-Over Banner (when territory is actively being painted by victor) */}
       {activeWipeCaption && (
@@ -418,3 +436,6 @@ export default function TerritoryLegendCard() {
     </aside>
   );
 }
+
+const TerritoryLegendCard = React.memo(TerritoryLegendCardInner);
+export default TerritoryLegendCard;

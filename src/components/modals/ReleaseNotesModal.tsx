@@ -6,7 +6,7 @@ import { SITE_CONFIG } from '@/config/site';
 import { ATLAS_RELEASES, CURRENT_ATLAS_VERSION } from '@/data/releases';
 import { useAtlasStore } from '@/store/useAtlasStore';
 
-export default function ReleaseNotesModal() {
+function ReleaseNotesModalInner() {
   const isOpen = useAtlasStore((s) => s.isReleaseModalOpen);
   const setReleaseModalOpen = useAtlasStore((s) => s.setReleaseModalOpen);
   const theme = useAtlasStore((s) => s.theme);
@@ -102,3 +102,6 @@ export default function ReleaseNotesModal() {
     </div>
   );
 }
+
+const ReleaseNotesModal = React.memo(ReleaseNotesModalInner);
+export default ReleaseNotesModal;
